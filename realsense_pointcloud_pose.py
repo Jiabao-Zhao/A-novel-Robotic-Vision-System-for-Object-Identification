@@ -109,8 +109,8 @@ def main():
     o3d.visualization.draw_geometries(
         geometries,
         window_name="Point Cloud Pose Visualization",
-        width=1280,
-        height=720,
+        width=1000,
+        height=700,
         front=[0.0, -1.0, 0.45],
         up=[0.0, 0.0, 1.0],
         zoom=0.7,
@@ -451,8 +451,8 @@ def show_visualization(results, clouds, metadata, axis_length=0.08):
     o3d.visualization.draw_geometries(
         geometries,
         window_name="Point Cloud Pose Visualization",
-        width=1280,
-        height=720,
+        width=1000,
+        height=700,
         front=[0.0, -1.0, 0.45],
         up=[0.0, 0.0, 1.0],
         zoom=0.7,
