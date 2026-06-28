@@ -48,6 +48,15 @@ CONFIG = PipelineConfig(
     }
 )
 
+CALIBRATED_INTRINSICS = {
+    "width": 640,
+    "height": 480,
+    "fx": 623.9816462749620,
+    "fy": 613.8080113982506,
+    "cx": 318.5163260449835,
+    "cy": 237.5512378918142,
+}
+
 
 def capture_realsense_rgbd(config) -> tuple:
     pipeline = rs.pipeline()
@@ -89,12 +98,12 @@ def rgbd_to_pointcloud(color_frame, depth_frame, intrinsics) -> o3d.geometry.Poi
         convert_rgb_to_intensity=False,
     )
     camera = o3d.camera.PinholeCameraIntrinsic(
-        intrinsics.width,
-        intrinsics.height,
-        intrinsics.fx,
-        intrinsics.fy,
-        intrinsics.ppx,
-        intrinsics.ppy,
+        CALIBRATED_INTRINSICS["width"],
+        CALIBRATED_INTRINSICS["height"],
+        CALIBRATED_INTRINSICS["fx"],
+        CALIBRATED_INTRINSICS["fy"],
+        CALIBRATED_INTRINSICS["cx"],
+        CALIBRATED_INTRINSICS["cy"],
     )
     return o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, camera)
 
