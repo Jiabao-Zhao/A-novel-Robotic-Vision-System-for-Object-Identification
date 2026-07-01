@@ -119,7 +119,7 @@ def show_visualization(results, clouds, metadata, axis_length_m=AXIS_LENGTH_M):
         x_mm, y_mm, z_mm = pose_field(result, "center_mm")
         roll_deg, pitch_deg, yaw_deg = pose_field(result, "rpy_deg")
         print(
-            f"{pose_field(result, 'object_id')}: "
+            f"{pose_field(result, 'id')}: "
             f"x={x_mm:.3f} mm, y={y_mm:.3f} mm, z={z_mm:.3f} mm, "
             f"roll={roll_deg:.3f} deg, pitch={pitch_deg:.3f} deg, yaw={yaw_deg:.3f} deg"
         )
