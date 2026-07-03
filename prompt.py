@@ -1,23 +1,36 @@
 import json
 
-def _vlm_classification_prompt(user_text, detections):
+def _vlm_prompt(user_text, detections):
+    detections_json = json.dumps(detections, separators=(",", ":"))
+
     return f"""
-Classify all requested targets in the image.
+You are classifying already-localized objects in a robot workspace image.
 
-Targets: {user_text}
-Boxes: {json.dumps(detections, separators=(",", ":"))}
+The localization module has already detected the objects. You must NOT perform localization.
+Your job is to classify the target object and associate it with one detected object_id.
 
-Return only JSON: [{{"id":"6","c":"green block"}}]
-If none found: []
-""".strip()
+Detected object fields may include:
+- object_id
+- bbox_2d_xyxy
+- centroid_3d_m
+- bbox_3d_size_m
+- height_above_table_m
+- rpy_deg
 
+Rules:
+- Use the RGB image for appearance-based classification.
+- Use the provided geometry only to match the user instruction to the correct localized object.
+- Choose object_id only from the localized objects list.
+- Do not return coordinates, bounding boxes, masks, depth values, or robot poses.
+- Return only compact JSON.
+- If the target object is visible and classifiable, return:
+{{"object_id":"object_1","object_type":"green block"}}
+- If the target object is not visible or cannot be matched to any localized object, return:
+{{"object_id":null,"object_type":null}}
 
-def _vlm_classification_localization_prompt(user_text):
-    return f"""
-Classify and localize targets in the image.
+User instruction:
+{user_text}
 
-Target: {user_text}
-
-Return only JSON: [{{"c":"green block","box":[120,80,180,140]}}]
-If none found: []
+Localized objects:
+{detections_json}
 """.strip()

@@ -232,7 +232,7 @@ def save_outputs(results, clouds, output_dir, visualization_metadata):
     visualization_dir.mkdir(parents=True, exist_ok=True)
 
     o3d.io.write_point_cloud(str(output_dir / "workspace_cloud.ply"), clouds["workspace"])
-    o3d.io.write_point_cloud(str(visualization_dir / "table_plane_cloud.ply"), clouds["table"])
+    o3d.io.write_point_cloud(str(visualization_dir / "table_plane_cloud.ply"), clouds["table"]
 
     for index, cluster in enumerate(clouds["clusters"], start=1):
         o3d.io.write_point_cloud(str(output_dir / f"object_cluster_{index}.ply"), cluster)
