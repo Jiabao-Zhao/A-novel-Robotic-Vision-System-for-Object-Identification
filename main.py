@@ -6,7 +6,7 @@ from vlm_module import classify_from_localization
 
 OPEN_3D_VISUALIZATION = False
 USE_SAVED_RAW_CAPTURE = False
-USER_TEXT = "find the cable shark device"
+USER_TEXT = "find the cable shark device and USB-D connector"
 SAVED_RGB_PATH = Path("output/raw/RGB.png")
 SAVED_DEPTH_PATH = Path("output/raw/depth_data.npz")
 

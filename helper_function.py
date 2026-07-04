@@ -1,4 +1,5 @@
 import json
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
@@ -277,6 +278,101 @@ class RBGAnnotation:
             "8": ["111", "101", "111", "101", "111"],
             "9": ["111", "101", "111", "001", "111"],
         }
+
+
+@dataclass
+class CADModel:
+    cad_id: str
+    cad_name: str
+    file_path: str
+    description: str
+    category: str
+
+
+class CADRetrieval:
+    """
+    Text-only CAD retrieval:
+
+        m* = arg max over m_k in M [ max over q_i in Q sim(E(q_i), E(t_k)) ]
+
+    M is the CAD model library, m_k is one CAD model record, t_k is the
+    combined text metadata for m_k, Q is the expanded query set from the VLM
+    classification result, E(.) is an embedding function, sim(.) is cosine
+    similarity, and m* is the selected CAD model.
+    """
+
+    equation = "m* = arg max_{m_k in M} [ max_{q_i in Q} sim(E(q_i), E(t_k)) ]"
+
+    @staticmethod
+    def load_library(library_path):
+        records = json.loads(Path(library_path).read_text(encoding="utf-8"))
+        return [
+            CADModel(
+                cad_id=record["cad_id"],
+                cad_name=record["cad_name"],
+                file_path=record["file_path"],
+                description=record["description"],
+                category=record["category"],
+            )
+            for record in records
+        ]
+
+    @staticmethod
+    def build_model_text(cad_model):
+        parts = [
+            cad_model.cad_name,
+            cad_model.description,
+            cad_model.category,
+            cad_model.file_path,
+        ]
+        return " ".join(str(part).strip() for part in parts if str(part).strip())
+
+    @staticmethod
+    def cosine_similarity(query_embedding, model_embedding):
+        query = np.asarray(query_embedding, dtype=float).reshape(-1)
+        model = np.asarray(model_embedding, dtype=float).reshape(-1)
+        query_norm = np.linalg.norm(query)
+        model_norm = np.linalg.norm(model)
+        if query_norm == 0 or model_norm == 0:
+            return 0.0
+        return float(np.dot(query, model) / (query_norm * model_norm))
+
+    def retrieve(
+        self,
+        classification_text,
+        cad_models,
+        query_alternatives=None,
+        embedding_function=None,
+    ):
+        queries = [classification_text] + list(query_alternatives or [])
+        query_embeddings = [
+            (query, embedding_function(query))
+            for query in queries
+        ]
+
+        best_model = None
+        best_score = -np.inf
+        best_query = ""
+
+        for cad_model in cad_models:
+            model_text = self.build_model_text(cad_model)
+            model_embedding = embedding_function(model_text)
+            for query, query_embedding in query_embeddings:
+                score = self.cosine_similarity(query_embedding, model_embedding)
+                if score > best_score:
+                    best_model = cad_model
+                    best_score = score
+                    best_query = query
+
+        result = {
+            "selected_cad_id": best_model.cad_id,
+            "selected_cad_name": best_model.cad_name,
+            "selected_file_path": best_model.file_path,
+            "score": float(best_score),
+            "matched_query": best_query,
+            "equation": self.equation,
+        }
+        return best_model, result
 
 
 if __name__ == "__main__":
