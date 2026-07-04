@@ -14,21 +14,6 @@ logger = logging.getLogger(__name__)
 ZERO_TCP_OFFSET = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 FIXED_TCP_OFFSET = [0.0, 0.0, 0.22438, 0.0, 0.0, 0.0]
 DEFAULT_TCP_OFFSET = list(FIXED_TCP_OFFSET)
-SAFE_HOME_CONFIG = {
-    "enabled": True,
-    "home_joints_rad": [
-        -1.3946722189532679,
-        -0.7461099785617371,
-        -2.337867498397827,
-        -1.6291781864561976,
-        1.5701189041137695,
-        -2.96495229402651,
-    ],
-    "joint_speed": 0.35,
-    "joint_acceleration": 0.35,
-    "settle_s": 0.05,
-    "skip_if_within_rad": 0.005,
-}
 ROBOT_HOSTNAME = "192.168.1.172"
 RTDE_CONTROL_FREQUENCY_HZ = 125.0
 RTDE_RECEIVE_FREQUENCY_HZ = 125.0
@@ -59,17 +44,18 @@ def read_active_tcp_offset(rtde_interface, fallback=None):
 
 class RTDEStateFeedback:
     def __init__(self, rate=RTDE_RECEIVE_FREQUENCY_HZ):
+        self.hostname = ROBOT_HOSTNAME
         self.rate = float(rate)
         self.nominal_dt = 1.0 / self.rate
-        self._hostname = ROBOT_HOSTNAME
-        self._variables = list(RTDE_RECEIVE_VARIABLES)
+        self.variables = list(RTDE_RECEIVE_VARIABLES)
+        self.fixed_tcp_offset = list(FIXED_TCP_OFFSET)
+        self.tcp_offset = list(FIXED_TCP_OFFSET)
 
         self._rtde_r = self._connect_receive()
         self.lock = threading.Lock()
         self.first_sample_ready = threading.Event()
         self.running = True
         self.thread = threading.Thread(target=self._read_loop, daemon=True)
-        self.TCP = list(FIXED_TCP_OFFSET)
         self._last_receive_reconnect_s = 0.0
 
         self.pose = None
@@ -82,9 +68,9 @@ class RTDEStateFeedback:
 
     def _connect_receive(self):
         return RTDEReceiveInterface(
-            self._hostname,
+            self.hostname,
             self.rate,
-            self._variables,
+            self.variables,
         )
 
     def _reconnect_receive(self):
@@ -157,7 +143,7 @@ class RTDEStateFeedback:
             return self.wrench.copy()
 
     def get_tcp_offset(self):
-        return list(self.TCP)
+        return list(self.tcp_offset)
 
     def get_q(self):
         self.first_sample_ready.wait()
@@ -174,11 +160,29 @@ class RTDEStateFeedback:
         self.thread.join(timeout=1.0)
         self._rtde_r.disconnect()
 
+
 class RTDECommander:
-    def __init__(self, robot_state):
+    def __init__(self, robot_state, rate=RTDE_CONTROL_FREQUENCY_HZ):
         self.hostname = ROBOT_HOSTNAME
-        self.control_frequency_hz = RTDE_CONTROL_FREQUENCY_HZ
-        self._rtde_c = self._connect_control()
+        self.control_frequency_hz = float(rate)
+        self.robot_state = robot_state
+        self.fixed_tcp_offset = list(FIXED_TCP_OFFSET)
+        self.tcp_offset = list(FIXED_TCP_OFFSET)
+        self.safe_home_config = {
+            "enabled": True,
+            "home_joints_rad": [
+                -1.3946722189532679,
+                -0.7461099785617371,
+                -2.337867498397827,
+                -1.6291781864561976,
+                1.5701189041137695,
+                -2.96495229402651,
+            ],
+            "joint_speed": 0.35,
+            "joint_acceleration": 0.35,
+            "settle_s": 0.05,
+            "skip_if_within_rad": 0.005,
+        }
         self.acc = 0.5
         self.vel = 0.3
         self.vz = -0.01
@@ -192,11 +196,9 @@ class RTDECommander:
         self.motion_joint_speed_tol = 0.01
         self.motion_settle_samples = 5
         self.last_gripper_width = None
-        self.RobotState = robot_state
-        self.TCP = list(FIXED_TCP_OFFSET)
         logger.info(
             "Fixed TCP offset: %s",
-            self._format_tcp_offset(self.TCP),
+            self._format_tcp_offset(self.tcp_offset),
         )
         self.task_frame = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         self.selection_vector = [0, 0, 1, 0, 0, 0]
@@ -216,12 +218,12 @@ class RTDECommander:
         self.spiral_speed = 0.005
         self.spiral_max_radius = 0.02
         self.spiral_dt = 0.008
+        self._rtde_c = self._connect_control()
 
     def _connect_control(self):
         return RTDEControlInterface(self.hostname, self.control_frequency_hz)
-    # ═════════════════════════════════════════════════════════════════════════════
-    #  Robot Dynamics
-    # ═════════════════════════════════════════════════════════════════════════════
+
+    # Robot dynamics
 
     @staticmethod
     def rpy_to_rotvec(rpy_deg):
@@ -229,13 +231,13 @@ class RTDECommander:
         return r.as_rotvec()
 
     def build_pose(self, pose_xyz_rpy):
-        pos_m = [c / 1000.0 for c in pose_xyz_rpy[:3]]  # mm → m
+        pos_m = [c / 1000.0 for c in pose_xyz_rpy[:3]]  # mm to m
         rotvec = self.rpy_to_rotvec(pose_xyz_rpy[3:])
         return list(pos_m) + list(rotvec)
 
     def inverse_kin(self, pose_xyz_rpy):
         pose = self.build_pose(pose_xyz_rpy)
-        qnear = self.RobotState.get_q()
+        qnear = self.robot_state.get_q()
         try:
             raw = self._rtde_c.getInverseKinematics(pose, qnear)
             q = np.asarray(raw, dtype=float)
@@ -249,8 +251,8 @@ class RTDECommander:
         return q
 
     def refresh_tcp_offset(self, log=False):
-        self.TCP = list(FIXED_TCP_OFFSET)
-        return list(self.TCP)
+        self.tcp_offset = list(self.fixed_tcp_offset)
+        return list(self.tcp_offset)
 
     @staticmethod
     def _format_tcp_offset(tcp):
@@ -263,7 +265,10 @@ class RTDECommander:
 
     def forward_kin(self, q):
         self.refresh_tcp_offset()
-        return np.asarray(self._rtde_c.getForwardKinematics(list(q), self.TCP), dtype=float)
+        return np.asarray(
+            self._rtde_c.getForwardKinematics(list(q), self.tcp_offset),
+            dtype=float,
+        )
 
     def forward_kin_as_pose(self, q):
         fk_raw = self.forward_kin(q)
@@ -280,12 +285,15 @@ class RTDECommander:
 
     def get_jacobian(self, q):
         self.refresh_tcp_offset()
-        J = np.asarray(self._rtde_c.getJacobian(list(q), self.TCP), dtype=float)
+        J = np.asarray(self._rtde_c.getJacobian(list(q), self.tcp_offset), dtype=float)
         return J.reshape(6, 6)
 
     def get_jacobian_time_derivative(self, q, qd):
         self.refresh_tcp_offset()
-        J_dot = np.asarray(self._rtde_c.getJacobianTimeDerivative(list(q), list(qd), self.TCP), dtype=float)
+        J_dot = np.asarray(
+            self._rtde_c.getJacobianTimeDerivative(list(q), list(qd), self.tcp_offset),
+            dtype=float,
+        )
         return J_dot.reshape(6, 6)
 
     def get_mass_matrix(self, q):
@@ -299,9 +307,7 @@ class RTDECommander:
     def direct_torque(self, tau):
         self._rtde_c.directTorque(list(np.asarray(tau, dtype=float)))
 
-    # ═════════════════════════════════════════════════════════════════════════════
-    #  Utility
-    # ═════════════════════════════════════════════════════════════════════════════
+    # Utility
     def zero_ft_sensor(self):
         self._rtde_c.zeroFtSensor()
 
@@ -311,8 +317,8 @@ class RTDECommander:
         stable = 0
 
         while time.monotonic() < deadline:
-            tcp_speed = self.RobotState.get_tcp_speed()
-            qd = self.RobotState.get_qd()
+            tcp_speed = self.robot_state.get_tcp_speed()
+            qd = self.robot_state.get_qd()
             linear_speed = float(np.linalg.norm(tcp_speed[:3]))
             joint_speed = float(np.linalg.norm(qd))
 
@@ -369,9 +375,7 @@ class RTDECommander:
         self._ensure_control_connected()
         self._rtde_c.zeroFtSensor()
 
-    # ═════════════════════════════════════════════════════════════════════════════
-    #  Move in cartesian coordinate
-    # ═════════════════════════════════════════════════════════════════════════════
+    # Move in cartesian coordinates
     def go_home(self, open_gripper=True, pre_lift_z_mm=0.0):
         if open_gripper:
             self.set_gripper_open()
@@ -383,7 +387,7 @@ class RTDECommander:
 
     def _execute_safe_home_route(self):
         self._ensure_control_connected()
-        config = SAFE_HOME_CONFIG
+        config = self.safe_home_config
         if not bool(config.get("enabled", True)):
             raise RuntimeError("Safe home route is disabled.")
         speed = float(config.get("joint_speed", self.vel))
@@ -406,7 +410,7 @@ class RTDECommander:
             time.sleep(settle_s)
 
     def _current_joint_positions(self):
-        getter = getattr(self.RobotState, "get_q", None)
+        getter = getattr(self.robot_state, "get_q", None)
         if not callable(getter):
             raise RuntimeError("Cannot execute safe home route because robot joint feedback is unavailable.")
         q = np.asarray(getter(), dtype=float).reshape(-1)
@@ -415,7 +419,7 @@ class RTDECommander:
         return q
 
     def is_at_home(self, tolerance_rad=None):
-        config = SAFE_HOME_CONFIG
+        config = self.safe_home_config
         target_q = self._validate_joint_target(
             config["home_joints_rad"],
             label="home_joints_rad",
@@ -449,7 +453,7 @@ class RTDECommander:
 
     def move_in_x(self, dx):
         """Move in X direction by dx mm"""
-        p = self.RobotState.get_pose()
+        p = self.robot_state.get_pose()
         p[0] += dx
         pose = self.build_pose(p)
         self._rtde_c.moveL(pose, self.acc, self.vel, asynchronous=False)
@@ -457,7 +461,7 @@ class RTDECommander:
 
     def move_in_y(self, dy):
         """Move in Y direction by dy mm"""
-        p = self.RobotState.get_pose()
+        p = self.robot_state.get_pose()
         p[1] += dy
         pose = self.build_pose(p)
         self._rtde_c.moveL(pose, self.acc, self.vel, asynchronous=False)
@@ -465,14 +469,14 @@ class RTDECommander:
 
     def move_in_z(self, dz):
         """Move in Z direction by dz mm"""
-        p = self.RobotState.get_pose()
+        p = self.robot_state.get_pose()
         p[2] += dz
         pose = self.build_pose(p)
         self._rtde_c.moveL(pose, self.acc, self.vel, asynchronous=False)
         self.wait_until_motion_complete()
 
     def move_in_cartesian(self, dx, dy, dz, d_roll, d_pitch, d_yaw):
-        p = self.RobotState.get_pose()
+        p = self.robot_state.get_pose()
         p[0] += dx
         p[1] += dy
         p[2] += dz
@@ -610,7 +614,7 @@ class RTDECommander:
         self.wait_until_motion_complete()
 
     def rotate_single_joint(self, joint_index, delta_deg):
-        current_q = self.RobotState.get_q()
+        current_q = self.robot_state.get_q()
         target_q = current_q.copy()
         target_q[joint_index] += math.radians(delta_deg)
         self._rtde_c.moveJ(target_q, self.vel, self.acc, asynchronous=False)
@@ -650,7 +654,7 @@ class RTDECommander:
                     print("[move_until_contact] Timeout - no contact detected")
                     return False
 
-                wrench = self.RobotState.get_wrench()
+                wrench = self.robot_state.get_wrench()
                 fz = wrench[2]
 
                 if abs(fz) >= self.fz_threshold:
