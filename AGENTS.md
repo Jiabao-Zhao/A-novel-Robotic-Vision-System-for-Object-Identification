@@ -240,6 +240,7 @@ For tabletop components:
 Treat the phrase "6D pose" carefully. Some objects have unobservable orientation components due to symmetry, occlusion, or insufficient point-cloud coverage.
 
 For the larger proposed framework, CAD comparison can refine pose, but CAD registration should not be implemented in this repository unless the user asks for it.
+When explicitly requested, the CAD alignment baseline is: CAD sampling -> FPFH/RANSAC global registration -> ICP refinement -> augmented object point cloud.
 
 ## Output Expectations
 

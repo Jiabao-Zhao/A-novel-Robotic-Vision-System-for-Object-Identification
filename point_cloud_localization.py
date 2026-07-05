@@ -28,6 +28,7 @@ class PointCloudConfig:
     dbscan_eps_m: float = 0.02
     dbscan_min_points: int = 30
     min_cluster_points: int = 100
+    raw_cluster_padding_m: float = 0.004
 
 
 @dataclass
@@ -94,7 +95,8 @@ class PointCloudLocalization:
         paths = self.save_outputs(
             rgb_path=Path(rgb_path),
             depth_path=Path(depth_path),
-            workspace_cloud=downsampled_cloud,
+            workspace_cloud=workspace_cloud,
+            downsampled_cloud=downsampled_cloud,
             table_cloud=table_cloud,
             clusters=clusters,
             plane_model=plane_model,
@@ -192,6 +194,7 @@ class PointCloudLocalization:
         rgb_path,
         depth_path,
         workspace_cloud,
+        downsampled_cloud,
         table_cloud,
         clusters,
         plane_model,
@@ -202,11 +205,14 @@ class PointCloudLocalization:
         self.config.annotation_dir.mkdir(parents=True, exist_ok=True)
 
         workspace_path = self.config.output_dir / "workspace_cloud.ply"
+        downsampled_workspace_path = self.config.output_dir / "workspace_cloud_downsampled.ply"
         table_path = self.config.output_dir / "table_plane_cloud.ply"
         segmented_path = self.config.output_dir / "segmented_table_and_objects.ply"
 
         o3d.io.write_point_cloud(str(workspace_path), workspace_cloud)
+        o3d.io.write_point_cloud(str(downsampled_workspace_path), downsampled_cloud)
         o3d.io.write_point_cloud(str(table_path), table_cloud)
+        raw_object_cloud = self.remove_table_from_raw_cloud(workspace_cloud, plane_model)
 
         segmented_cloud = o3d.geometry.PointCloud()
         table_vis = o3d.geometry.PointCloud(table_cloud)
@@ -215,10 +221,13 @@ class PointCloudLocalization:
 
         for index, cluster in enumerate(clusters, start=1):
             object_path = self.config.output_dir / f"object_cluster_{index}.ply"
+            downsampled_object_path = self.config.output_dir / f"object_cluster_{index}_downsampled.ply"
+            raw_cluster = self.crop_raw_cluster(raw_object_cloud, cluster)
             cluster_vis = o3d.geometry.PointCloud(cluster)
             color = self.cluster_colors[(index - 1) % len(self.cluster_colors)]
             cluster_vis.paint_uniform_color(color)
-            o3d.io.write_point_cloud(str(object_path), cluster_vis)
+            o3d.io.write_point_cloud(str(object_path), raw_cluster)
+            o3d.io.write_point_cloud(str(downsampled_object_path), cluster_vis)
             segmented_cloud += cluster_vis
             if index <= len(objects):
                 objects[index - 1].pointcloud_path = str(object_path)
@@ -241,10 +250,29 @@ class PointCloudLocalization:
             "localization": self.localization_path,
             "annotated_rgb": annotated_path,
             "workspace_cloud": workspace_path,
+            "downsampled_workspace_cloud": downsampled_workspace_path,
             "table_cloud": table_path,
             "segmented_cloud": segmented_path,
             "object_count": len(objects),
         }
+
+    def remove_table_from_raw_cloud(self, workspace_cloud, plane_model):
+        points = np.asarray(workspace_cloud.points)
+        normal = np.asarray(plane_model[:3], dtype=float)
+        normal_norm = np.linalg.norm(normal)
+        distances = np.abs(points @ normal + float(plane_model[3])) / normal_norm
+        indices = np.flatnonzero(distances > self.config.plane_distance_threshold_m).tolist()
+        return workspace_cloud.select_by_index(indices)
+
+    def crop_raw_cluster(self, raw_object_cloud, downsampled_cluster):
+        bounds = downsampled_cluster.get_axis_aligned_bounding_box()
+        padding = np.full(3, self.config.raw_cluster_padding_m)
+        bounds.min_bound = bounds.min_bound - padding
+        bounds.max_bound = bounds.max_bound + padding
+        raw_cluster = raw_object_cloud.crop(bounds)
+        if raw_cluster.is_empty():
+            return o3d.geometry.PointCloud(downsampled_cluster)
+        return raw_cluster
 
     def annotate_rgb(self, rgb_path, objects):
         annotator = RBGAnnotation()
@@ -267,14 +295,16 @@ class PointCloudLocalization:
             self.localization_path,
             self.annotated_rgb_path,
             self.config.output_dir / "workspace_cloud.ply",
+            self.config.output_dir / "workspace_cloud_downsampled.ply",
             self.config.output_dir / "table_plane_cloud.ply",
             self.config.output_dir / "segmented_table_and_objects.ply",
         ]:
             if path.exists():
                 path.unlink()
         if self.config.output_dir.exists():
-            for path in self.config.output_dir.glob("object_cluster_*.ply"):
-                path.unlink()
+            for pattern in ["object_cluster_*.ply", "object_cluster_*_downsampled.ply"]:
+                for path in self.config.output_dir.glob(pattern):
+                    path.unlink()
 
     def show_segmentation(self, table_cloud, clusters):
         geometries = []

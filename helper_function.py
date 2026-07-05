@@ -10,6 +10,7 @@ class PointCloudPlot:
     def __init__(self):
         self.result_dir = Path("Output/pointcloud_pose")
         self.visualization_dir = Path("Output/visualization")
+        self.current_registration_dir = Path("output/registered_point_cloud")
         self.axis_length_m = 0.08
 
     def orient_normal_to_points(self, plane_model, points) -> np.ndarray:
@@ -164,6 +165,56 @@ class PointCloudPlot:
             ],
         }
         self.show_visualization(payload["objects"], clouds, metadata)
+
+    def show_registered_point_cloud(self):
+        observed_path = self.current_registration_dir / "observed_cloud.ply"
+        cad_path = self.current_registration_dir / "cad_aligned_cloud.ply"
+        if not observed_path.exists():
+            raise FileNotFoundError(f"Missing observed point cloud: {observed_path}")
+        if not cad_path.exists():
+            raise FileNotFoundError(f"Missing aligned CAD point cloud: {cad_path}")
+
+        observed_cloud = o3d.io.read_point_cloud(str(observed_path))
+        cad_cloud = o3d.io.read_point_cloud(str(cad_path))
+        observed_cloud.paint_uniform_color([1.0, 0.0, 0.0])
+        cad_cloud.paint_uniform_color([0.0, 0.45, 1.0])
+        o3d.visualization.draw_geometries(
+            [observed_cloud, cad_cloud],
+            window_name="Observed Object And Aligned CAD",
+            width=1000,
+            height=700,
+        )
+
+    def show_current_object_clusters(self):
+        cluster_paths = sorted(
+            path
+            for path in Path("output/point_cloud_localization").glob("object_cluster_*.ply")
+            if not path.stem.endswith("_downsampled")
+        )
+        if not cluster_paths:
+            raise FileNotFoundError("Missing raw object clusters in output/point_cloud_localization")
+
+        geometries = []
+        colors = [
+            [0.90, 0.10, 0.10],
+            [0.10, 0.55, 0.95],
+            [0.10, 0.75, 0.25],
+            [0.95, 0.60, 0.10],
+            [0.60, 0.25, 0.95],
+            [0.95, 0.25, 0.70],
+        ]
+        for index, path in enumerate(cluster_paths):
+            cloud = o3d.io.read_point_cloud(str(path))
+            cloud.paint_uniform_color(colors[index % len(colors)])
+            geometries.append(cloud)
+            print(f"{path.name}: {len(cloud.points)} points")
+
+        o3d.visualization.draw_geometries(
+            geometries,
+            window_name="Raw Object Clusters",
+            width=1000,
+            height=700,
+        )
 
 
 class RBGAnnotation:
@@ -376,4 +427,4 @@ class CADRetrieval:
 
 
 if __name__ == "__main__":
-    PointCloudPlot().show_saved_visualization()
+    PointCloudPlot().show_registered_point_cloud()
