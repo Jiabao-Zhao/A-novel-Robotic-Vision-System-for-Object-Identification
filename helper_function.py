@@ -479,7 +479,7 @@ class CameraInHandTransformation:
     def __init__(self):
         self.registration_path = Path("output/registered_point_cloud/cad_registration_result.json")
         self.output_dir = Path("output/robot_pose")
-        self.output_path = self.output_dir / "object_center_base.json"
+        self.output_path = self.output_dir / "object_pose_base.json"
         self.T_ee_from_camera = self.camera_to_ee()
 
     @staticmethod
@@ -513,6 +513,15 @@ class CameraInHandTransformation:
             raise ValueError(f"Object cloud is empty: {cloud_path}")
         return np.asarray(cloud.get_axis_aligned_bounding_box().get_center(), dtype=float)
 
+    def object_pose_camera(self):
+        registration = json.loads(self.registration_path.read_text(encoding="utf-8"))
+        T_camera_from_object = np.asarray(
+            registration["T_observed_from_cad"],
+            dtype=float,
+        ).reshape(4, 4)
+        center_camera = self.object_center_camera(registration["aligned_cad_cloud_path"])
+        return center_camera, T_camera_from_object
+
     def transform_center_to_base(self, T_base_from_ee, center_camera_m=None):
         T_base_from_ee = np.asarray(T_base_from_ee, dtype=float).reshape(4, 4)
         if center_camera_m is None:
@@ -529,11 +538,61 @@ class CameraInHandTransformation:
             "T_base_from_camera": T_base_from_camera.tolist(),
         }
 
+    def transform_pose_to_base(self, T_base_from_ee):
+        T_base_from_ee = np.asarray(T_base_from_ee, dtype=float).reshape(4, 4)
+        center_camera_m, T_camera_from_object = self.object_pose_camera()
+        T_base_from_camera = T_base_from_ee @ self.T_ee_from_camera
+        T_base_from_object = T_base_from_camera @ T_camera_from_object
+
+        center_camera_h = np.array([*center_camera_m, 1.0])
+        center_base_h = T_base_from_camera @ center_camera_h
+        R_camera_from_object = T_camera_from_object[:3, :3]
+        R_base_from_object = T_base_from_object[:3, :3]
+        object_rpy_base_deg = self.rotation_matrix_to_rpy_deg(R_base_from_object)
+        tcp_pick_rpy_base_deg = np.array([180.0, 0.0, object_rpy_base_deg[2]])
+        tcp_pick_rotvec_base_rad = self.rpy_deg_to_rotvec(tcp_pick_rpy_base_deg)
+        object_center_base_mm = center_base_h[:3] * 1000.0
+
+        return {
+            "object_center_camera_m": center_camera_m.tolist(),
+            "object_center_base_m": center_base_h[:3].tolist(),
+            "object_center_base_mm": object_center_base_mm.tolist(),
+            "object_rpy_camera_deg": self.rotation_matrix_to_rpy_deg(R_camera_from_object).tolist(),
+            "object_rpy_base_deg": object_rpy_base_deg.tolist(),
+            "object_pose_base_xyz_rpy_mm_deg": (
+                np.concatenate(
+                    [
+                        object_center_base_mm,
+                        object_rpy_base_deg,
+                    ]
+                ).tolist()
+            ),
+            "tcp_pick_rpy_base_deg": tcp_pick_rpy_base_deg.tolist(),
+            "tcp_pick_rotvec_base_rad": tcp_pick_rotvec_base_rad.tolist(),
+            "tcp_pick_pose_base_xyz_rxryrz_mm_rad": (
+                np.concatenate([object_center_base_mm, tcp_pick_rotvec_base_rad]).tolist()
+            ),
+            "T_camera_from_object": T_camera_from_object.tolist(),
+            "T_base_from_object": T_base_from_object.tolist(),
+            "T_ee_from_camera": self.T_ee_from_camera.tolist(),
+            "T_base_from_ee": T_base_from_ee.tolist(),
+            "T_base_from_camera": T_base_from_camera.tolist(),
+        }
+
     def run(self, T_base_from_ee, center_camera_m=None):
-        result = self.transform_center_to_base(T_base_from_ee, center_camera_m)
+        if center_camera_m is None:
+            result = self.transform_pose_to_base(T_base_from_ee)
+        else:
+            result = self.transform_center_to_base(T_base_from_ee, center_camera_m)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.output_path.write_text(json.dumps(result, indent=2), encoding="utf-8")
         return result
+
+    @staticmethod
+    def matrix_mm_to_m(transform_mm):
+        transform = np.asarray(transform_mm, dtype=float).reshape(4, 4).copy()
+        transform[:3, 3] /= 1000.0
+        return transform
 
     @staticmethod
     def ur_pose_to_matrix(actual_tcp_pose):
@@ -564,6 +623,79 @@ class CameraInHandTransformation:
             ]
         )
         return np.eye(3) + np.sin(theta) * skew + (1.0 - np.cos(theta)) * (skew @ skew)
+
+    @staticmethod
+    def rotation_matrix_to_rpy_deg(rotation):
+        rotation = np.asarray(rotation, dtype=float).reshape(3, 3)
+        sy = float(np.sqrt(rotation[0, 0] ** 2 + rotation[1, 0] ** 2))
+        singular = sy < 1e-9
+        if not singular:
+            roll = np.arctan2(rotation[2, 1], rotation[2, 2])
+            pitch = np.arctan2(-rotation[2, 0], sy)
+            yaw = np.arctan2(rotation[1, 0], rotation[0, 0])
+        else:
+            roll = np.arctan2(-rotation[1, 2], rotation[1, 1])
+            pitch = np.arctan2(-rotation[2, 0], sy)
+            yaw = 0.0
+        return np.degrees([roll, pitch, yaw])
+
+    @staticmethod
+    def rpy_deg_to_rotvec(rpy_deg):
+        roll, pitch, yaw = np.radians(np.asarray(rpy_deg, dtype=float).reshape(3))
+        cx, cy, cz = np.cos([roll, pitch, yaw])
+        sx, sy, sz = np.sin([roll, pitch, yaw])
+        rx = np.array(
+            [
+                [1.0, 0.0, 0.0],
+                [0.0, cx, -sx],
+                [0.0, sx, cx],
+            ]
+        )
+        ry = np.array(
+            [
+                [cy, 0.0, sy],
+                [0.0, 1.0, 0.0],
+                [-sy, 0.0, cy],
+            ]
+        )
+        rz = np.array(
+            [
+                [cz, -sz, 0.0],
+                [sz, cz, 0.0],
+                [0.0, 0.0, 1.0],
+            ]
+        )
+        return CameraInHandTransformation.rotation_matrix_to_rotvec(rz @ ry @ rx)
+
+    @staticmethod
+    def rotation_matrix_to_rotvec(rotation):
+        rotation = np.asarray(rotation, dtype=float).reshape(3, 3)
+        cos_theta = np.clip((np.trace(rotation) - 1.0) / 2.0, -1.0, 1.0)
+        theta = float(np.arccos(cos_theta))
+        if theta < 1e-12:
+            return np.zeros(3)
+        if abs(np.pi - theta) < 1e-6:
+            axis = np.sqrt(np.maximum((np.diag(rotation) + 1.0) / 2.0, 0.0))
+            if rotation[2, 1] - rotation[1, 2] < 0:
+                axis[0] = -axis[0]
+            if rotation[0, 2] - rotation[2, 0] < 0:
+                axis[1] = -axis[1]
+            if rotation[1, 0] - rotation[0, 1] < 0:
+                axis[2] = -axis[2]
+            norm = np.linalg.norm(axis)
+            if norm == 0:
+                axis = np.array([1.0, 0.0, 0.0])
+            else:
+                axis = axis / norm
+            return axis * theta
+        axis = np.array(
+            [
+                rotation[2, 1] - rotation[1, 2],
+                rotation[0, 2] - rotation[2, 0],
+                rotation[1, 0] - rotation[0, 1],
+            ]
+        ) / (2.0 * np.sin(theta))
+        return axis * theta
 
 
 @dataclass

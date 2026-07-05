@@ -3,13 +3,14 @@ import re
 from pathlib import Path
 
 from CADPointCloudRegistration import CADPointCloudRegistration
-from helper_function import CADRetrieval
+from helper_function import CADRetrieval, CameraInHandTransformation
 from point_cloud_localization import PointCloudLocalization
 from vlm_module import classify_from_localization
 
 
 OPEN_3D_VISUALIZATION = False
 USE_SAVED_RAW_CAPTURE = False
+OUTPUT_ROBOT_BASE_POSE = True
 USER_TEXT = "find the red block"
 SAVED_RGB_PATH = Path("output/raw/RGB.png")
 SAVED_DEPTH_PATH = Path("output/raw/depth_data.npz")
@@ -80,6 +81,41 @@ def retrieve_cad_model(classification_text):
     )
 
 
+def current_base_from_ee_matrix_m():
+    from robot_controller import RTDECommander, RTDEStateFeedback
+
+    state = None
+    robot = None
+    try:
+        state = RTDEStateFeedback()
+        robot = RTDECommander(state)
+        T_base_from_ee_mm = robot.camera_mount_pose_matrix_mm()
+        return CameraInHandTransformation.matrix_mm_to_m(T_base_from_ee_mm)
+    finally:
+        if robot is not None:
+            robot.disconnect()
+        if state is not None:
+            state.stop()
+
+
+def output_robot_base_pose():
+    T_base_from_ee = current_base_from_ee_matrix_m()
+    pose_result = CameraInHandTransformation().run(T_base_from_ee)
+    x, y, z, roll, pitch, yaw = pose_result["object_pose_base_xyz_rpy_mm_deg"]
+    rx, ry, rz = pose_result["tcp_pick_rotvec_base_rad"]
+    print(
+        "Object pose in robot base frame: "
+        f"x={x:.3f} mm, y={y:.3f} mm, z={z:.3f} mm, "
+        f"roll={roll:.3f} deg, pitch={pitch:.3f} deg, yaw={yaw:.3f} deg"
+    )
+    print(
+        "Top-down UR pick orientation: "
+        f"rx={rx:.6f} rad, ry={ry:.6f} rad, rz={rz:.6f} rad"
+    )
+    print("Saved robot-base pose JSON: output/robot_pose/object_pose_base.json")
+    return pose_result
+
+
 def main():
     paths = run_pipeline()
 
@@ -118,6 +154,8 @@ def main():
     print(f"Saved augmented point cloud: {registration_result['augmented_cloud_path']}")
     print(f"Saved registration JSON: {registration_result['result_path']}")
 
+    if OUTPUT_ROBOT_BASE_POSE:
+        output_robot_base_pose()
 
 if __name__ == "__main__":
     main()
