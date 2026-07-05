@@ -15,12 +15,13 @@ class CADRegistrationConfig:
     ransac_distance_factor: float = 1.5
     ransac_attempts: int = 5
     icp_stages: tuple = (
-        (0.015, 0.030, 60),
-        (0.008, 0.015, 40),
-        (0.004, 0.008, 30),
+        (0.020, 0.040, 80),
+        (0.012, 0.020, 60),
+        (0.008, 0.012, 40),
     )
     rotation_det_tolerance: float = 1e-3
     max_translation_m: float = 2.0
+    min_icp_fitness: float = 1e-6
 
 
 class CADPointCloudRegistration:
@@ -203,28 +204,40 @@ class CADPointCloudRegistration:
         """
         transform = np.asarray(initial_transform, dtype=float).copy()
         final_result = None
-        for voxel_size_m, distance_m, max_iterations in self.config.icp_stages:
+        result = None
+        for stage_index, (voxel_size_m, distance_m, max_iterations) in enumerate(self.config.icp_stages):
             source = source_cloud.voxel_down_sample(float(voxel_size_m))
             target = target_cloud.voxel_down_sample(float(voxel_size_m))
             if source.is_empty() or target.is_empty():
                 continue
             self._estimate_normals(source, float(voxel_size_m))
             self._estimate_normals(target, float(voxel_size_m))
+            target.orient_normals_towards_camera_location(np.array([0.0, 0.0, 0.0]))
+            estimation = (
+                o3d.pipelines.registration.TransformationEstimationPointToPoint()
+                if stage_index == 0
+                else o3d.pipelines.registration.TransformationEstimationPointToPlane()
+            )
             final_result = o3d.pipelines.registration.registration_icp(
                 source,
                 target,
                 float(distance_m),
                 transform,
-                o3d.pipelines.registration.TransformationEstimationPointToPlane(),
+                estimation,
                 o3d.pipelines.registration.ICPConvergenceCriteria(
                     max_iteration=int(max_iterations)
                 ),
             )
-            transform = np.asarray(final_result.transformation, dtype=float)
+            if final_result.fitness <= self.config.min_icp_fitness:
+                if result is None:
+                    result = final_result
+                break
+            result = final_result
+            transform = np.asarray(result.transformation, dtype=float)
 
-        if final_result is None:
+        if result is None:
             raise RuntimeError("ICP could not run because a downsampled cloud was empty.")
-        return final_result, transform
+        return result, transform
 
     def score_alignment(self, cad_cloud, observed_cloud, transform):
         """Score the final CAD-to-observed alignment using bidirectional distances."""
@@ -421,6 +434,12 @@ class CADPointCloudRegistration:
             record["rotation_determinant"] = float(np.linalg.det(final_transform[:3, :3]))
             record["icp_fitness"] = float(icp.fitness)
             record["icp_inlier_rmse"] = float(icp.inlier_rmse)
+            if record["icp_fitness"] <= self.config.min_icp_fitness:
+                reason = "ICP found no valid correspondences"
+                record["rejected_reason"] = reason
+                rejection_reasons.append(f"{record['candidate_name']}: {reason}")
+                records.append(record)
+                continue
             if not final_valid:
                 record["rejected_reason"] = final_reason
                 rejection_reasons.append(f"{record['candidate_name']}: {final_reason}")

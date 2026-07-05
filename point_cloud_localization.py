@@ -9,7 +9,7 @@ from camera_capturing import CameraCapture
 from helper_function import RBGAnnotation
 
 
-CALIBRATED_INTRINSICS = {
+DEFAULT_INTRINSICS = {
     "width": 640,
     "height": 480,
     "fx": 623.9816462749620,
@@ -56,12 +56,18 @@ class PointCloudLocalization:
         ]
 
     def run(self, visualize=False):
-        rgb, depth, depth_scale_m = self.camera.capture_rgbd()
-        rgb_path, depth_path = self.camera.save_raw_capture(rgb, depth, depth_scale_m)
+        rgb, depth, depth_scale_m, camera_intrinsics = self.camera.capture_rgbd()
+        rgb_path, depth_path = self.camera.save_raw_capture(
+            rgb,
+            depth,
+            depth_scale_m,
+            camera_intrinsics,
+        )
         return self.run_from_arrays(
             rgb=rgb,
             depth=depth,
             depth_scale_m=depth_scale_m,
+            camera_intrinsics=camera_intrinsics,
             rgb_path=rgb_path,
             depth_path=depth_path,
             visualize=visualize,
@@ -77,21 +83,37 @@ class PointCloudLocalization:
         with np.load(depth_path) as data:
             depth = data["depth_data"]
             depth_scale_m = float(data["depth_scale_m"])
+            camera_intrinsics = self.load_intrinsics_from_npz(data)
         return self.run_from_arrays(
             rgb=rgb,
             depth=depth,
             depth_scale_m=depth_scale_m,
+            camera_intrinsics=camera_intrinsics,
             rgb_path=Path(rgb_path),
             depth_path=Path(depth_path),
             visualize=visualize,
         )
 
-    def run_from_arrays(self, rgb, depth, depth_scale_m, rgb_path, depth_path, visualize=False):
-        workspace_cloud = self.rgbd_to_pointcloud(rgb, depth, depth_scale_m)
+    def run_from_arrays(
+        self,
+        rgb,
+        depth,
+        depth_scale_m,
+        camera_intrinsics,
+        rgb_path,
+        depth_path,
+        visualize=False,
+    ):
+        workspace_cloud = self.rgbd_to_pointcloud(
+            rgb,
+            depth,
+            depth_scale_m,
+            camera_intrinsics,
+        )
         downsampled_cloud = workspace_cloud.voxel_down_sample(self.config.voxel_size_m)
         object_cloud, plane_model, table_cloud = self.segment_table_plane(downsampled_cloud)
         clusters = self.cluster_objects(object_cloud)
-        objects = self.localize_clusters(clusters)
+        objects = self.localize_clusters(clusters, camera_intrinsics)
         paths = self.save_outputs(
             rgb_path=Path(rgb_path),
             depth_path=Path(depth_path),
@@ -101,6 +123,7 @@ class PointCloudLocalization:
             clusters=clusters,
             plane_model=plane_model,
             objects=objects,
+            camera_intrinsics=camera_intrinsics,
         )
 
         if visualize:
@@ -108,7 +131,7 @@ class PointCloudLocalization:
 
         return paths
 
-    def rgbd_to_pointcloud(self, rgb, depth, depth_scale_m):
+    def rgbd_to_pointcloud(self, rgb, depth, depth_scale_m, camera_intrinsics):
         rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(
             o3d.geometry.Image(np.ascontiguousarray(rgb)),
             o3d.geometry.Image(np.ascontiguousarray(depth)),
@@ -118,17 +141,17 @@ class PointCloudLocalization:
         )
         return o3d.geometry.PointCloud.create_from_rgbd_image(
             rgbd,
-            self.camera_intrinsics(),
+            self.camera_intrinsics(camera_intrinsics),
         )
 
-    def camera_intrinsics(self):
+    def camera_intrinsics(self, camera_intrinsics):
         return o3d.camera.PinholeCameraIntrinsic(
-            CALIBRATED_INTRINSICS["width"],
-            CALIBRATED_INTRINSICS["height"],
-            CALIBRATED_INTRINSICS["fx"],
-            CALIBRATED_INTRINSICS["fy"],
-            CALIBRATED_INTRINSICS["cx"],
-            CALIBRATED_INTRINSICS["cy"],
+            int(camera_intrinsics["width"]),
+            int(camera_intrinsics["height"]),
+            float(camera_intrinsics["fx"]),
+            float(camera_intrinsics["fy"]),
+            float(camera_intrinsics["cx"]),
+            float(camera_intrinsics["cy"]),
         )
 
     def segment_table_plane(self, workspace_cloud):
@@ -157,7 +180,7 @@ class PointCloudLocalization:
         clusters.sort(key=lambda cluster: len(cluster.points), reverse=True)
         return clusters
 
-    def localize_clusters(self, clusters):
+    def localize_clusters(self, clusters, camera_intrinsics):
         objects = []
         for index, cluster in enumerate(clusters, start=1):
             points = np.asarray(cluster.points)
@@ -167,21 +190,21 @@ class PointCloudLocalization:
             objects.append(
                 LocalizedObject(
                     object_id=f"object_{index:03d}",
-                    roi=self.project_points_to_roi(points),
+                    roi=self.project_points_to_roi(points, camera_intrinsics),
                 )
             )
         return objects
 
-    def project_points_to_roi(self, points):
+    def project_points_to_roi(self, points, camera_intrinsics):
         valid = np.isfinite(points).all(axis=1) & (points[:, 2] > 0)
         if not np.any(valid):
             return {"x1": 0, "y1": 0, "x2": 0, "y2": 0}
 
         visible = points[valid]
-        u = CALIBRATED_INTRINSICS["fx"] * visible[:, 0] / visible[:, 2] + CALIBRATED_INTRINSICS["cx"]
-        v = CALIBRATED_INTRINSICS["fy"] * visible[:, 1] / visible[:, 2] + CALIBRATED_INTRINSICS["cy"]
-        u = np.clip(u, 0, CALIBRATED_INTRINSICS["width"] - 1)
-        v = np.clip(v, 0, CALIBRATED_INTRINSICS["height"] - 1)
+        u = camera_intrinsics["fx"] * visible[:, 0] / visible[:, 2] + camera_intrinsics["cx"]
+        v = camera_intrinsics["fy"] * visible[:, 1] / visible[:, 2] + camera_intrinsics["cy"]
+        u = np.clip(u, 0, int(camera_intrinsics["width"]) - 1)
+        v = np.clip(v, 0, int(camera_intrinsics["height"]) - 1)
 
         x0 = int(np.floor(u.min()))
         y0 = int(np.floor(v.min()))
@@ -199,6 +222,7 @@ class PointCloudLocalization:
         clusters,
         plane_model,
         objects,
+        camera_intrinsics,
     ):
         self.clear_outputs()
         self.config.output_dir.mkdir(parents=True, exist_ok=True)
@@ -238,6 +262,10 @@ class PointCloudLocalization:
             "frame": "camera",
             "rgb_path": str(rgb_path),
             "depth_path": str(depth_path),
+            "camera_intrinsics": {
+                name: float(value) if name not in ("width", "height") else int(value)
+                for name, value in camera_intrinsics.items()
+            },
             "object_count": len(objects),
             "plane_model": [float(value) for value in plane_model],
             "objects": [asdict(obj) for obj in objects],
@@ -254,6 +282,24 @@ class PointCloudLocalization:
             "table_cloud": table_path,
             "segmented_cloud": segmented_path,
             "object_count": len(objects),
+        }
+
+    @staticmethod
+    def load_intrinsics_from_npz(data):
+        if "camera_intrinsics" not in data:
+            return dict(DEFAULT_INTRINSICS)
+
+        values = np.asarray(data["camera_intrinsics"], dtype=float).reshape(-1)
+        if values.size != 6 or not np.all(values > 0):
+            return dict(DEFAULT_INTRINSICS)
+
+        return {
+            "width": int(values[0]),
+            "height": int(values[1]),
+            "fx": float(values[2]),
+            "fy": float(values[3]),
+            "cx": float(values[4]),
+            "cy": float(values[5]),
         }
 
     def remove_table_from_raw_cloud(self, workspace_cloud, plane_model):
