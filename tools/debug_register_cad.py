@@ -36,9 +36,8 @@ def main():
     print(f"Selected candidate: {result['selected_candidate_id']} "
           f"{result['selected_candidate_name']} ({result['selected_candidate_source']})")
     print(f"Final score: {result['final_score']:.6f}")
+    print(f"Constrained RMSE: {result['constrained_rmse_m']}")
     print(f"Score breakdown: {json.dumps(result['final_score_breakdown'], indent=2)}")
-    print(f"ICP fitness: {result['icp_fitness']}")
-    print(f"ICP RMSE: {result['icp_inlier_rmse']}")
     print(f"CAD extent: {result['cad_extent_m']}")
     print(f"Observed extent: {result['observed_extent_m']}")
     print(f"Warnings: {result['warnings']}")

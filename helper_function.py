@@ -344,6 +344,228 @@ class RBGAnnotation:
         }
 
 
+class AugmentedPointCloudProjection:
+    def __init__(self):
+        self.localization_path = Path("output/point_cloud_localization/point_cloud_localization.json")
+        self.registration_path = Path("output/registered_point_cloud/cad_registration_result.json")
+        self.output_dir = Path("output/projection")
+        self.rgb_projection_path = self.output_dir / "RGB_augmented_point_cloud_projection.png"
+        self.depth_projection_path = self.output_dir / "depth_augmented_point_cloud_projection.png"
+        self.metadata_path = self.output_dir / "augmented_point_cloud_projection.json"
+        self.point_radius_px = 2
+        self.observed_color = np.array([255, 30, 30], dtype=np.uint8)
+        self.cad_color = np.array([0, 105, 255], dtype=np.uint8)
+
+    def run(self):
+        localization = json.loads(self.localization_path.read_text(encoding="utf-8"))
+        registration = json.loads(self.registration_path.read_text(encoding="utf-8"))
+        intrinsics = localization["camera_intrinsics"]
+        rgb_path = Path(localization["rgb_path"])
+        observed_path = Path(registration["observed_cloud_path"])
+        cad_path = Path(registration["aligned_cad_cloud_path"])
+        augmented_path = Path(registration["augmented_cloud_path"])
+
+        rgb = self.load_rgb_image(rgb_path)
+        observed_cloud = o3d.io.read_point_cloud(str(observed_path))
+        cad_cloud = o3d.io.read_point_cloud(str(cad_path))
+        augmented_cloud = o3d.io.read_point_cloud(str(augmented_path))
+
+        rgb_projection = rgb.copy()
+        cad_pixels = self.project_cloud(cad_cloud, intrinsics)
+        observed_pixels = self.project_cloud(observed_cloud, intrinsics)
+        self.draw_projected_points(rgb_projection, cad_pixels, self.cad_color)
+        self.draw_projected_points(rgb_projection, observed_pixels, self.observed_color)
+        depth_projection = self.render_depth_projection(augmented_cloud, intrinsics)
+
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        self.write_image(self.rgb_projection_path, rgb_projection)
+        self.write_image(self.depth_projection_path, depth_projection)
+
+        metadata = {
+            "rgb_path": str(rgb_path),
+            "observed_cloud_path": str(observed_path),
+            "aligned_cad_cloud_path": str(cad_path),
+            "augmented_cloud_path": str(augmented_path),
+            "rgb_projection_path": str(self.rgb_projection_path),
+            "depth_projection_path": str(self.depth_projection_path),
+            "observed_projected_point_count": int(len(observed_pixels)),
+            "cad_projected_point_count": int(len(cad_pixels)),
+            "point_radius_px": int(self.point_radius_px),
+            "observed_color_rgb": self.observed_color.tolist(),
+            "cad_color_rgb": self.cad_color.tolist(),
+        }
+        self.metadata_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+        return metadata
+
+    @staticmethod
+    def load_rgb_image(path):
+        image = np.asarray(o3d.io.read_image(str(path)))
+        if image.ndim != 3 or image.shape[2] < 3:
+            raise ValueError(f"Expected RGB image at {path}")
+        return np.ascontiguousarray(image[:, :, :3].copy())
+
+    @staticmethod
+    def write_image(path, image):
+        o3d.io.write_image(
+            str(path),
+            o3d.geometry.Image(np.ascontiguousarray(image.astype(np.uint8))),
+        )
+
+    def project_cloud(self, cloud, intrinsics):
+        points = np.asarray(cloud.points, dtype=float)
+        if points.size == 0:
+            return np.empty((0, 3), dtype=float)
+
+        width = int(intrinsics["width"])
+        height = int(intrinsics["height"])
+        fx = float(intrinsics["fx"])
+        fy = float(intrinsics["fy"])
+        cx = float(intrinsics["cx"])
+        cy = float(intrinsics["cy"])
+        valid = np.isfinite(points).all(axis=1) & (points[:, 2] > 0)
+        points = points[valid]
+        if points.size == 0:
+            return np.empty((0, 3), dtype=float)
+
+        u = fx * points[:, 0] / points[:, 2] + cx
+        v = fy * points[:, 1] / points[:, 2] + cy
+        inside = (u >= 0) & (u < width) & (v >= 0) & (v < height)
+        return np.column_stack((u[inside], v[inside], points[inside, 2]))
+
+    def draw_projected_points(self, image, projected_points, color):
+        if len(projected_points) == 0:
+            return image
+
+        height, width = image.shape[:2]
+        radius = max(1, int(self.point_radius_px))
+        u = np.rint(projected_points[:, 0]).astype(int)
+        v = np.rint(projected_points[:, 1]).astype(int)
+        for du in range(-radius, radius + 1):
+            for dv in range(-radius, radius + 1):
+                if du * du + dv * dv > radius * radius:
+                    continue
+                uu = np.clip(u + du, 0, width - 1)
+                vv = np.clip(v + dv, 0, height - 1)
+                image[vv, uu] = color
+        return image
+
+    def render_depth_projection(self, cloud, intrinsics):
+        projected = self.project_cloud(cloud, intrinsics)
+        width = int(intrinsics["width"])
+        height = int(intrinsics["height"])
+        depth = np.full((height, width), np.inf, dtype=float)
+        if len(projected) == 0:
+            return np.zeros((height, width, 3), dtype=np.uint8)
+
+        u = np.rint(projected[:, 0]).astype(int)
+        v = np.rint(projected[:, 1]).astype(int)
+        z = projected[:, 2]
+        np.minimum.at(depth, (v, u), z)
+        valid = np.isfinite(depth)
+        if not np.any(valid):
+            return np.zeros((height, width, 3), dtype=np.uint8)
+
+        near, far = np.percentile(depth[valid], [2, 98])
+        if far <= near:
+            far = near + 1e-6
+        normalized = np.zeros_like(depth)
+        normalized[valid] = np.clip((depth[valid] - near) / (far - near), 0.0, 1.0)
+        intensity = (255.0 * (1.0 - normalized)).astype(np.uint8)
+        intensity[~valid] = 0
+        return np.repeat(intensity[:, :, None], 3, axis=2)
+
+
+class CameraInHandTransformation:
+    def __init__(self):
+        self.registration_path = Path("output/registered_point_cloud/cad_registration_result.json")
+        self.output_dir = Path("output/robot_pose")
+        self.output_path = self.output_dir / "object_center_base.json"
+        self.T_ee_from_camera = self.camera_to_ee()
+
+    @staticmethod
+    def camera_to_ee():
+        """
+        Camera-in-hand calibration from the MATLAB hand-eye calibration workflow.
+
+        The translation values from the provided calibration are in millimeters,
+        so they are converted to meters here. The matrix maps:
+
+            camera frame -> end-effector frame
+        """
+        transform = np.array(
+            [
+                [-0.994932591781407, -0.095336836012590, 0.031937838221171, 25.592566657792],
+                [0.096220059168056, -0.994983958303154, 0.027360974636959, 73.297417454375],
+                [0.029169127940838, 0.030295386092556, 0.999115284417506, 18.666004062560674],
+                [0.0, 0.0, 0.0, 1.0],
+            ],
+            dtype=float,
+        )
+        transform[:3, 3] /= 1000.0
+        return transform
+
+    def object_center_camera(self, cloud_path=None):
+        if cloud_path is None:
+            registration = json.loads(self.registration_path.read_text(encoding="utf-8"))
+            cloud_path = registration["aligned_cad_cloud_path"]
+        cloud = o3d.io.read_point_cloud(str(cloud_path))
+        if cloud.is_empty():
+            raise ValueError(f"Object cloud is empty: {cloud_path}")
+        return np.asarray(cloud.get_axis_aligned_bounding_box().get_center(), dtype=float)
+
+    def transform_center_to_base(self, T_base_from_ee, center_camera_m=None):
+        T_base_from_ee = np.asarray(T_base_from_ee, dtype=float).reshape(4, 4)
+        if center_camera_m is None:
+            center_camera_m = self.object_center_camera()
+        center_camera_h = np.array([*np.asarray(center_camera_m, dtype=float), 1.0])
+        T_base_from_camera = T_base_from_ee @ self.T_ee_from_camera
+        center_base_h = T_base_from_camera @ center_camera_h
+        return {
+            "object_center_camera_m": center_camera_h[:3].tolist(),
+            "object_center_base_m": center_base_h[:3].tolist(),
+            "object_center_base_mm": (center_base_h[:3] * 1000.0).tolist(),
+            "T_ee_from_camera": self.T_ee_from_camera.tolist(),
+            "T_base_from_ee": T_base_from_ee.tolist(),
+            "T_base_from_camera": T_base_from_camera.tolist(),
+        }
+
+    def run(self, T_base_from_ee, center_camera_m=None):
+        result = self.transform_center_to_base(T_base_from_ee, center_camera_m)
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        self.output_path.write_text(json.dumps(result, indent=2), encoding="utf-8")
+        return result
+
+    @staticmethod
+    def ur_pose_to_matrix(actual_tcp_pose):
+        """
+        Convert a UR actual_TCP_pose [x, y, z, rx, ry, rz] into T_base_from_ee.
+
+        UR translation is expected in meters and rotation is expected as a
+        Rodrigues rotation vector in radians.
+        """
+        pose = np.asarray(actual_tcp_pose, dtype=float).reshape(6)
+        transform = np.eye(4)
+        transform[:3, :3] = CameraInHandTransformation.rotvec_to_matrix(pose[3:6])
+        transform[:3, 3] = pose[:3]
+        return transform
+
+    @staticmethod
+    def rotvec_to_matrix(rotvec):
+        rotvec = np.asarray(rotvec, dtype=float).reshape(3)
+        theta = float(np.linalg.norm(rotvec))
+        if theta < 1e-12:
+            return np.eye(3)
+        axis = rotvec / theta
+        skew = np.array(
+            [
+                [0.0, -axis[2], axis[1]],
+                [axis[2], 0.0, -axis[0]],
+                [-axis[1], axis[0], 0.0],
+            ]
+        )
+        return np.eye(3) + np.sin(theta) * skew + (1.0 - np.cos(theta)) * (skew @ skew)
+
+
 @dataclass
 class CADModel:
     cad_id: str

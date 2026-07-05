@@ -24,6 +24,78 @@ RTDE_RECEIVE_VARIABLES = [
     "actual_q",
     "actual_qd",
 ]
+T_EE_CAMERA = np.array([
+    [-0.994932591781407, -0.095336836012590, 0.031937838221171, 25.592566657792],
+    [0.096220059168056, -0.994983958303154, 0.027360974636959, 73.297417454375],
+    [0.029169127940838, 0.030295386092556, 0.999115284417506, 18.666004062560674],
+    [0.0, 0.0, 0.0, 1.0],
+])
+RG2_REFERENCE_OPEN_WIDTH_MM = 70.0
+RG2_DEFAULT_OPEN_WIDTH_MM = 70.0
+RG2_DEFAULT_CLOSE_WIDTH_MM = 10.0
+RG2_MIN_WIDTH_MM = 1.0
+RG2_MAX_WIDTH_MM = 110.0
+RG2_OPEN_CLEARANCE_MM = 30.0
+RG2_CLOSE_MARGIN_MM = 2.0
+RG2_PICK_OPEN_FORCE = 10.0
+RG2_PICK_CLOSE_FORCE = 10.0
+RG2_PICK_CLEARANCE_Z_MM = 50.0
+RG2_FINGERTIP_HEIGHT_CURVE_MM = (
+    (10.0, 64.0), (15.0, 57.0), (20.0, 52.0), (25.0, 50.0),
+    (40.0, 49.0), (50.0, 48.0), (60.0, 45.0), (70.0, 42.0),
+    (80.0, 40.0), (90.0, 38.0), (100.0, 36.0), (110.0, 36.0),
+)
+
+
+def clamp(value, lower, upper):
+    return min(float(upper), max(float(lower), float(value)))
+
+
+def rg2_fingertip_height_mm(width_mm):
+    width = clamp(
+        width_mm,
+        RG2_FINGERTIP_HEIGHT_CURVE_MM[0][0],
+        RG2_FINGERTIP_HEIGHT_CURVE_MM[-1][0],
+    )
+    for (x0, y0), (x1, y1) in zip(
+        RG2_FINGERTIP_HEIGHT_CURVE_MM,
+        RG2_FINGERTIP_HEIGHT_CURVE_MM[1:],
+    ):
+        if x0 <= width <= x1:
+            return y0 + ((width - x0) / (x1 - x0)) * (y1 - y0)
+    return RG2_FINGERTIP_HEIGHT_CURVE_MM[-1][1]
+
+
+def rg2_tcp_reference_z_offset_mm(width_mm):
+    return abs(
+        rg2_fingertip_height_mm(width_mm)
+        - rg2_fingertip_height_mm(RG2_REFERENCE_OPEN_WIDTH_MM)
+    )
+
+
+def rg2_gripper_plan(grasp_width_mm=None):
+    if grasp_width_mm is None:
+        open_width = RG2_DEFAULT_OPEN_WIDTH_MM
+        close_width = RG2_DEFAULT_CLOSE_WIDTH_MM
+        effective_tip_width = RG2_REFERENCE_OPEN_WIDTH_MM
+    else:
+        open_width = clamp(
+            grasp_width_mm + RG2_OPEN_CLEARANCE_MM,
+            RG2_MIN_WIDTH_MM,
+            RG2_MAX_WIDTH_MM,
+        )
+        close_width = clamp(
+            grasp_width_mm - RG2_CLOSE_MARGIN_MM,
+            RG2_MIN_WIDTH_MM,
+            open_width,
+        )
+        effective_tip_width = grasp_width_mm
+
+    return {
+        "open_width_mm": float(open_width),
+        "close_width_mm": float(close_width),
+        "tcp_reference_z_offset_mm": float(rg2_tcp_reference_z_offset_mm(effective_tip_width)),
+    }
 
 
 def read_active_tcp_offset(rtde_interface, fallback=None):
@@ -269,6 +341,31 @@ class RTDECommander:
             self._rtde_c.getForwardKinematics(list(q), self.tcp_offset),
             dtype=float,
         )
+
+    def camera_mount_pose_matrix_mm(self):
+        """
+        Return T_base_ee in millimeters for the camera mount.
+
+        This deliberately uses ZERO_TCP_OFFSET, not the active RG2 picking TCP,
+        so the gripper TCP offset is not applied twice when transforming the
+        camera-frame object point.
+        """
+        q = self.robot_state.get_q()
+        fk = np.asarray(
+            self._rtde_c.getForwardKinematics(list(q), ZERO_TCP_OFFSET),
+            dtype=float,
+        )
+        transform = np.eye(4)
+        transform[:3, :3] = Rotation.from_rotvec(fk[3:6]).as_matrix()
+        transform[:3, 3] = fk[:3] * 1000.0
+        return transform
+
+    def camera_point_to_base_mm(self, point_camera_mm, T_base_ee=None):
+        if T_base_ee is None:
+            T_base_ee = self.camera_mount_pose_matrix_mm()
+        point_camera = np.append(np.asarray(point_camera_mm, dtype=float).reshape(3), 1.0)
+        point_base = np.asarray(T_base_ee, dtype=float).reshape(4, 4) @ T_EE_CAMERA @ point_camera
+        return point_base[:3]
 
     def forward_kin_as_pose(self, q):
         fk_raw = self.forward_kin(q)
@@ -612,6 +709,53 @@ class RTDECommander:
         pose = self.build_pose(p)
         self._rtde_c.moveL(pose, self.acc, self.vel, asynchronous=False)
         self.wait_until_motion_complete()
+
+    def pick_known_camera_point(
+            self,
+            point_camera_mm,
+            grasp_width_mm=None,
+            object_height_mm=None,
+            clearance_z_mm=RG2_PICK_CLEARANCE_Z_MM,
+            open_force=RG2_PICK_OPEN_FORCE,
+            close_force=RG2_PICK_CLOSE_FORCE,
+            go_home_after=True,
+    ):
+        """
+        Execute a top-down RG2 pick for a known camera-frame object point.
+
+        point_camera_mm is [x, y, z] in the wrist-mounted camera frame. If that
+        z is the detected top surface, pass object_height_mm so the closed grasp
+        target uses z - object_height_mm / 2.
+        """
+        T_base_ee = self.camera_mount_pose_matrix_mm()
+        x, y, z = self.camera_point_to_base_mm(point_camera_mm, T_base_ee)
+
+        closed_grasp_z = float(z)
+        if object_height_mm is not None:
+            closed_grasp_z -= float(object_height_mm) / 2.0
+
+        plan = rg2_gripper_plan(grasp_width_mm)
+        pick_z = closed_grasp_z + plan["tcp_reference_z_offset_mm"]
+        clearance_z_mm = float(clearance_z_mm)
+        approach_pose = [float(x), float(y), pick_z + clearance_z_mm, -180.0, 0.0, 0.0]
+
+        self.gripper_set(plan["open_width_mm"], open_force)
+        self.move_to_cartesian(*approach_pose)
+        self.move_in_z(-clearance_z_mm)
+        self.gripper_set(plan["close_width_mm"], close_force)
+        self.move_in_z(clearance_z_mm)
+        if go_home_after:
+            self.go_home(open_gripper=False)
+
+        return {
+            "point_camera_mm": np.asarray(point_camera_mm, dtype=float).reshape(3).tolist(),
+            "point_base_mm": [float(x), float(y), float(z)],
+            "closed_grasp_z_mm": float(closed_grasp_z),
+            "pick_z_mm": float(pick_z),
+            "approach_pose_xyz_rpy": approach_pose,
+            "gripper_plan": plan,
+            "T_base_ee_zero_tcp_mm": T_base_ee.tolist(),
+        }
 
     def rotate_single_joint(self, joint_index, delta_deg):
         current_q = self.robot_state.get_q()
