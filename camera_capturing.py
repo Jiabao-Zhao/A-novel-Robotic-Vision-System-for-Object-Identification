@@ -17,11 +17,14 @@ class CameraCapture:
         self.capture_frames = 15
         self.use_spatial_filter = True
         self.use_temporal_filter = True
+        self.use_disparity_filter = True
+        self.use_hole_filling_filter = True
         self.spatial_filter_magnitude = 2
         self.spatial_filter_smooth_alpha = 0.5
         self.spatial_filter_smooth_delta = 20
         self.temporal_filter_smooth_alpha = 0.4
         self.temporal_filter_smooth_delta = 20
+        self.hole_filling_mode = 0
 
     def capture_rgbd(self):
         pipeline = rs.pipeline()
@@ -33,14 +36,14 @@ class CameraCapture:
 
         profile = pipeline.start(config)
         align = rs.align(rs.stream.color)
-        spatial_filter, temporal_filter = self.create_depth_filters()
+        depth_filters = self.create_depth_filters()
 
         try:
             for _ in range(self.warmup_frames):
                 frames = align.process(pipeline.wait_for_frames())
                 depth_frame = frames.get_depth_frame()
                 if depth_frame:
-                    self.filter_depth_frame(depth_frame, spatial_filter, temporal_filter)
+                    self.filter_depth_frame(depth_frame, depth_filters)
 
             rgb = None
             depth_frames = []
@@ -52,11 +55,7 @@ class CameraCapture:
                 if not color_frame or not depth_frame:
                     raise RuntimeError("RealSense did not return both color and depth frames.")
 
-                filtered_depth_frame = self.filter_depth_frame(
-                    depth_frame,
-                    spatial_filter,
-                    temporal_filter,
-                )
+                filtered_depth_frame = self.filter_depth_frame(depth_frame, depth_filters)
                 rgb = np.asanyarray(color_frame.get_data()).copy()
                 depth_frames.append(np.asanyarray(filtered_depth_frame.get_data()).copy())
 
@@ -86,6 +85,8 @@ class CameraCapture:
             depth_frame_count=int(self.capture_frames),
             spatial_filter_enabled=bool(self.use_spatial_filter),
             temporal_filter_enabled=bool(self.use_temporal_filter),
+            disparity_filter_enabled=bool(self.use_disparity_filter),
+            hole_filling_filter_enabled=bool(self.use_hole_filling_filter),
         )
 
         return rgb_path, depth_path
@@ -119,46 +120,71 @@ class CameraCapture:
         ]
 
     def create_depth_filters(self):
-        spatial_filter = rs.spatial_filter() if self.use_spatial_filter else None
-        temporal_filter = rs.temporal_filter() if self.use_temporal_filter else None
+        filters = {
+            "depth_to_disparity": rs.disparity_transform(True)
+            if self.use_disparity_filter
+            else None,
+            "spatial": rs.spatial_filter() if self.use_spatial_filter else None,
+            "temporal": rs.temporal_filter() if self.use_temporal_filter else None,
+            "hole_filling": rs.hole_filling_filter()
+            if self.use_hole_filling_filter
+            else None,
+            "disparity_to_depth": rs.disparity_transform(False)
+            if self.use_disparity_filter
+            else None,
+        }
 
-        if spatial_filter is not None:
+        if filters["spatial"] is not None:
             self.set_filter_option(
-                spatial_filter,
+                filters["spatial"],
                 rs.option.filter_magnitude,
                 self.spatial_filter_magnitude,
             )
             self.set_filter_option(
-                spatial_filter,
+                filters["spatial"],
                 rs.option.filter_smooth_alpha,
                 self.spatial_filter_smooth_alpha,
             )
             self.set_filter_option(
-                spatial_filter,
+                filters["spatial"],
                 rs.option.filter_smooth_delta,
                 self.spatial_filter_smooth_delta,
             )
 
-        if temporal_filter is not None:
+        if filters["temporal"] is not None:
             self.set_filter_option(
-                temporal_filter,
+                filters["temporal"],
                 rs.option.filter_smooth_alpha,
                 self.temporal_filter_smooth_alpha,
             )
             self.set_filter_option(
-                temporal_filter,
+                filters["temporal"],
                 rs.option.filter_smooth_delta,
                 self.temporal_filter_smooth_delta,
             )
 
-        return spatial_filter, temporal_filter
+        if filters["hole_filling"] is not None:
+            self.set_filter_option(
+                filters["hole_filling"],
+                rs.option.holes_fill,
+                self.hole_filling_mode,
+            )
 
-    def filter_depth_frame(self, depth_frame, spatial_filter, temporal_filter):
+        return filters
+
+    @staticmethod
+    def filter_depth_frame(depth_frame, depth_filters):
         filtered = depth_frame
-        if spatial_filter is not None:
-            filtered = spatial_filter.process(filtered)
-        if temporal_filter is not None:
-            filtered = temporal_filter.process(filtered)
+        for filter_name in [
+            "depth_to_disparity",
+            "spatial",
+            "temporal",
+            "hole_filling",
+            "disparity_to_depth",
+        ]:
+            depth_filter = depth_filters.get(filter_name)
+            if depth_filter is not None:
+                filtered = depth_filter.process(filtered)
         return filtered.as_depth_frame()
 
     @staticmethod

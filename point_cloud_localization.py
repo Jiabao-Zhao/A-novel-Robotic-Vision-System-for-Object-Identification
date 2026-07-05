@@ -28,7 +28,20 @@ class PointCloudConfig:
     dbscan_eps_m: float = 0.02
     dbscan_min_points: int = 30
     min_cluster_points: int = 100
+    min_cluster_extent_m: float = 0.006
+    max_cluster_aspect_ratio: float = 12.0
+    min_roi_width_px: int = 20
+    min_roi_height_px: int = 12
+    edge_artifact_margin_px: int = 3
+    bottom_edge_artifact_max_thickness_m: float = 0.012
+    bottom_edge_artifact_max_roi_height_ratio: float = 0.16
     raw_cluster_padding_m: float = 0.004
+    raw_cluster_dbscan_eps_m: float = 0.006
+    raw_cluster_dbscan_min_points: int = 20
+    statistical_outlier_neighbors: int = 20
+    statistical_outlier_std_ratio: float = 2.0
+    radius_outlier_radius_m: float = 0.006
+    radius_outlier_min_neighbors: int = 6
 
 
 @dataclass
@@ -112,7 +125,7 @@ class PointCloudLocalization:
         )
         downsampled_cloud = workspace_cloud.voxel_down_sample(self.config.voxel_size_m)
         object_cloud, plane_model, table_cloud = self.segment_table_plane(downsampled_cloud)
-        clusters = self.cluster_objects(object_cloud)
+        clusters = self.cluster_objects(object_cloud, camera_intrinsics)
         objects = self.localize_clusters(clusters, camera_intrinsics)
         paths = self.save_outputs(
             rgb_path=Path(rgb_path),
@@ -164,7 +177,7 @@ class PointCloudLocalization:
         table_cloud = workspace_cloud.select_by_index(inliers)
         return object_cloud, plane_model, table_cloud
 
-    def cluster_objects(self, object_cloud):
+    def cluster_objects(self, object_cloud, camera_intrinsics):
         labels = np.asarray(
             object_cloud.cluster_dbscan(
                 eps=self.config.dbscan_eps_m,
@@ -176,9 +189,43 @@ class PointCloudLocalization:
         for label in sorted(set(labels.tolist()) - {-1}):
             indices = np.flatnonzero(labels == label).tolist()
             if len(indices) >= self.config.min_cluster_points:
-                clusters.append(object_cloud.select_by_index(indices))
+                cluster = object_cloud.select_by_index(indices)
+                if self.is_valid_object_cluster(cluster, camera_intrinsics):
+                    clusters.append(cluster)
         clusters.sort(key=lambda cluster: len(cluster.points), reverse=True)
         return clusters
+
+    def is_valid_object_cluster(self, cluster, camera_intrinsics):
+        extent = np.asarray(cluster.get_axis_aligned_bounding_box().get_extent(), dtype=float)
+        if extent.size != 3 or not np.all(np.isfinite(extent)):
+            return False
+        max_extent = float(np.max(extent))
+        min_extent = float(np.min(extent))
+        if min_extent < self.config.min_cluster_extent_m:
+            return False
+        if max_extent / max(min_extent, 1e-9) > self.config.max_cluster_aspect_ratio:
+            return False
+
+        roi = self.project_points_to_roi(np.asarray(cluster.points), camera_intrinsics)
+        roi_width = int(roi["x2"] - roi["x1"])
+        roi_height = int(roi["y2"] - roi["y1"])
+        if roi_width < self.config.min_roi_width_px or roi_height < self.config.min_roi_height_px:
+            return False
+
+        image_width = int(camera_intrinsics["width"])
+        image_height = int(camera_intrinsics["height"])
+        touches_edge = (
+            roi["x1"] <= self.config.edge_artifact_margin_px
+            or roi["y1"] <= self.config.edge_artifact_margin_px
+            or roi["x2"] >= image_width - self.config.edge_artifact_margin_px
+            or roi["y2"] >= image_height - self.config.edge_artifact_margin_px
+        )
+        touches_bottom = roi["y2"] >= image_height - self.config.edge_artifact_margin_px
+        if touches_bottom and min_extent < self.config.bottom_edge_artifact_max_thickness_m:
+            return False
+        if touches_bottom and roi_height < self.config.bottom_edge_artifact_max_roi_height_ratio * image_height:
+            return False
+        return not (touches_edge and min(roi_width, roi_height) < 2 * self.config.min_roi_height_px)
 
     def localize_clusters(self, clusters, camera_intrinsics):
         objects = []
@@ -246,7 +293,9 @@ class PointCloudLocalization:
         for index, cluster in enumerate(clusters, start=1):
             object_path = self.config.output_dir / f"object_cluster_{index}.ply"
             downsampled_object_path = self.config.output_dir / f"object_cluster_{index}_downsampled.ply"
-            raw_cluster = self.crop_raw_cluster(raw_object_cloud, cluster)
+            raw_cluster = self.clean_raw_cluster(
+                self.crop_raw_cluster(raw_object_cloud, cluster)
+            )
             cluster_vis = o3d.geometry.PointCloud(cluster)
             color = self.cluster_colors[(index - 1) % len(self.cluster_colors)]
             cluster_vis.paint_uniform_color(color)
@@ -319,6 +368,39 @@ class PointCloudLocalization:
         if raw_cluster.is_empty():
             return o3d.geometry.PointCloud(downsampled_cluster)
         return raw_cluster
+
+    def clean_raw_cluster(self, cloud):
+        if cloud.is_empty():
+            return cloud
+
+        cleaned = o3d.geometry.PointCloud(cloud)
+        if len(cleaned.points) >= self.config.statistical_outlier_neighbors:
+            cleaned, _ = cleaned.remove_statistical_outlier(
+                nb_neighbors=self.config.statistical_outlier_neighbors,
+                std_ratio=self.config.statistical_outlier_std_ratio,
+            )
+
+        if len(cleaned.points) >= self.config.radius_outlier_min_neighbors:
+            cleaned, _ = cleaned.remove_radius_outlier(
+                nb_points=self.config.radius_outlier_min_neighbors,
+                radius=self.config.radius_outlier_radius_m,
+            )
+
+        if len(cleaned.points) >= self.config.raw_cluster_dbscan_min_points:
+            labels = np.asarray(
+                cleaned.cluster_dbscan(
+                    eps=self.config.raw_cluster_dbscan_eps_m,
+                    min_points=self.config.raw_cluster_dbscan_min_points,
+                    print_progress=False,
+                )
+            )
+            valid_labels = sorted(set(labels.tolist()) - {-1})
+            if valid_labels:
+                largest_label = max(valid_labels, key=lambda label: int(np.sum(labels == label)))
+                indices = np.flatnonzero(labels == largest_label).tolist()
+                cleaned = cleaned.select_by_index(indices)
+
+        return cleaned if not cleaned.is_empty() else cloud
 
     def annotate_rgb(self, rgb_path, objects):
         annotator = RBGAnnotation()
