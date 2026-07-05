@@ -216,6 +216,19 @@ class PointCloudPlot:
             height=700,
         )
 
+    def show_segmented_table_and_objects(self):
+        segmented_path = Path("output/point_cloud_localization/segmented_table_and_objects.ply")
+        if not segmented_path.exists():
+            raise FileNotFoundError(f"Missing segmented table/object cloud: {segmented_path}")
+
+        cloud = o3d.io.read_point_cloud(str(segmented_path))
+        o3d.visualization.draw_geometries(
+            [cloud],
+            window_name="Segmented Table And Objects",
+            width=1000,
+            height=700,
+        )
+
 
 class RBGAnnotation:
     def __init__(self):
