@@ -55,8 +55,8 @@ def selected_object_from_vlm(vlm_path):
     return object_id, object_type
 
 
-def observed_cloud_from_localization(localization_path, object_id):
-    payload = json.loads(Path(localization_path).read_text(encoding="utf-8"))
+def observed_cloud_from_localization(localization_payload, object_id):
+    payload = localization_payload
     for item in payload["objects"]:
         if item["object_id"] == object_id:
             cloud_path = Path(item["pointcloud_path"])
@@ -92,6 +92,9 @@ def main():
     print(f"Saved table point cloud: {paths['table_cloud']}")
     print(f"Saved segmented point cloud: {paths['segmented_cloud']}")
 
+    localization_payload = json.loads(Path(paths["localization"]).read_text(encoding="utf-8"))
+    plane_model = localization_payload.get("plane_model")
+
     vlm_path = classify_from_localization(
         user_text=USER_TEXT,
         image_path=paths["annotated_rgb"],
@@ -100,7 +103,7 @@ def main():
     print(f"Saved VLM result: {vlm_path}")
 
     object_id, object_type = selected_object_from_vlm(vlm_path)
-    observed_cloud_path = observed_cloud_from_localization(paths["localization"], object_id)
+    observed_cloud_path = observed_cloud_from_localization(localization_payload, object_id)
     cad_model, cad_result = retrieve_cad_model(object_type)
     print(f"Selected object: {object_id} ({object_type})")
     print(f"Selected CAD model: {cad_result['selected_cad_name']}")
@@ -109,6 +112,7 @@ def main():
     registration_result = CADPointCloudRegistration().run(
         cad_path=cad_model.file_path,
         observed_cloud_path=observed_cloud_path,
+        plane_model=plane_model,
     )
     print(f"Saved aligned CAD point cloud: {registration_result['aligned_cad_cloud_path']}")
     print(f"Saved augmented point cloud: {registration_result['augmented_cloud_path']}")
