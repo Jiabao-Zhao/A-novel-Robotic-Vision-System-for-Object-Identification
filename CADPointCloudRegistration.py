@@ -10,6 +10,8 @@ import open3d as o3d
 class CADRegistrationConfig:
     voxel_size_m: float = 0.005
     cad_sample_points: int = 20000
+    auto_scale_cad_to_meters: bool = True
+    cad_mm_extent_threshold_m: float = 1.0
     yaw_step_deg: float = 10.0
     constrained_iterations: int = 12
     xy_step_m: float = 0.003
@@ -48,12 +50,14 @@ class CADPointCloudRegistration:
         if suffix in point_cloud_suffixes:
             cloud = o3d.io.read_point_cloud(str(path))
             if not cloud.is_empty():
+                self.normalize_cad_units(cloud)
                 return cloud
 
         if suffix in mesh_suffixes or suffix == ".ply":
             mesh = o3d.io.read_triangle_mesh(str(path))
             if mesh.is_empty() or len(mesh.triangles) == 0:
                 raise ValueError(f"CAD file is not a readable triangle mesh: {path}")
+            self.normalize_cad_units(mesh)
             mesh.compute_vertex_normals()
             o3d.utility.random.seed(int(self.config.random_seed))
             return mesh.sample_points_uniformly(self.config.cad_sample_points)
@@ -63,6 +67,21 @@ class CADPointCloudRegistration:
             f"Unsupported CAD format for Open3D direct loading: {path.suffix}. "
             f"Use one of: {supported}."
         )
+
+    def normalize_cad_units(self, geometry):
+        """
+        Open3D reads CAD/STL coordinates without unit metadata.
+
+        The perception pipeline works in meters. If a CAD file has an extent
+        larger than a plausible tabletop object in meters, treat it as
+        millimeters and scale it by 0.001.
+        """
+        if not self.config.auto_scale_cad_to_meters:
+            return geometry
+        extent = np.asarray(geometry.get_axis_aligned_bounding_box().get_extent(), dtype=float)
+        if extent.size and float(np.max(extent)) > self.config.cad_mm_extent_threshold_m:
+            geometry.scale(0.001, center=(0.0, 0.0, 0.0))
+        return geometry
 
     def run(
         self,
@@ -146,41 +165,52 @@ class CADPointCloudRegistration:
         cad_metadata = cad_metadata or {}
         table = self.table_frame(plane_model, observed_cloud)
         warnings = table["warnings"]
-        cad_up = self.axis_from_metadata(cad_metadata.get("cad_up_axis", "Z"))
-        base_rotation = self.rotation_between_vectors(cad_up, table["normal"])
+        cad_up_axis_names = cad_metadata.get("cad_up_axis_candidates")
+        if cad_up_axis_names is None:
+            cad_up_axis_names = (
+                [cad_metadata["cad_up_axis"]]
+                if "cad_up_axis" in cad_metadata
+                else self.default_cad_up_axes()
+            )
+        if isinstance(cad_up_axis_names, str):
+            cad_up_axis_names = [cad_up_axis_names]
         yaw_candidates = cad_metadata.get("yaw_candidates_deg", self.default_yaw_candidates())
 
         records = []
         best = None
-        for yaw_deg in yaw_candidates:
-            initial = self.table_contact_transform(
-                cad_cloud,
-                observed_cloud,
-                table,
-                base_rotation,
-                float(yaw_deg),
-            )
-            final_transform, score_breakdown = self.refine_xy_yaw(
-                cad_cloud,
-                observed_cloud,
-                table,
-                initial,
-            )
-            record = {
-                "candidate_id": len(records) + 1,
-                "candidate_name": f"table_yaw_{float(yaw_deg):.1f}",
-                "source": "table_yaw",
-                "initial_yaw_deg": float(yaw_deg),
-                "initial_transform": initial.tolist(),
-                "final_transform": final_transform.tolist(),
-                "score": float(score_breakdown["rmse_m"]),
-                "rmse_m": float(score_breakdown["rmse_m"]),
-                "score_breakdown": score_breakdown,
-                "rejected_reason": None,
-            }
-            records.append(record)
-            if best is None or record["score"] < best["score"]:
-                best = record
+        for cad_up_axis_name in cad_up_axis_names:
+            cad_up = self.axis_from_metadata(cad_up_axis_name)
+            base_rotation = self.rotation_between_vectors(cad_up, table["normal"])
+            for yaw_deg in yaw_candidates:
+                initial = self.table_contact_transform(
+                    cad_cloud,
+                    observed_cloud,
+                    table,
+                    base_rotation,
+                    float(yaw_deg),
+                )
+                final_transform, score_breakdown = self.refine_xy_yaw(
+                    cad_cloud,
+                    observed_cloud,
+                    table,
+                    initial,
+                )
+                record = {
+                    "candidate_id": len(records) + 1,
+                    "candidate_name": f"cad_up_{cad_up_axis_name}_yaw_{float(yaw_deg):.1f}",
+                    "source": "table_up_axis_yaw",
+                    "cad_up_axis": str(cad_up_axis_name),
+                    "initial_yaw_deg": float(yaw_deg),
+                    "initial_transform": initial.tolist(),
+                    "final_transform": final_transform.tolist(),
+                    "score": float(score_breakdown["rmse_m"]),
+                    "rmse_m": float(score_breakdown["rmse_m"]),
+                    "score_breakdown": score_breakdown,
+                    "rejected_reason": None,
+                }
+                records.append(record)
+                if best is None or record["score"] < best["score"]:
+                    best = record
 
         if best is None:
             raise RuntimeError("No tabletop yaw candidates were generated.")
@@ -345,6 +375,10 @@ class CADPointCloudRegistration:
     def default_yaw_candidates(self):
         step = float(self.config.yaw_step_deg)
         return np.arange(0.0, 360.0, step).tolist()
+
+    @staticmethod
+    def default_cad_up_axes():
+        return ["Z", "-Z", "X", "-X", "Y", "-Y"]
 
     @staticmethod
     def delta_transform(translation, rotation):

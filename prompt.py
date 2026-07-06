@@ -30,3 +30,52 @@ User instruction:
 Localized objects:
 {detections_json}
 """.strip()
+
+
+def _llm_planner_prompt(user_text, perception_context, action_schema):
+    perception_json = json.dumps(perception_context, separators=(",", ":"))
+    actions_json = json.dumps(action_schema, separators=(",", ":"))
+
+    return f"""
+You are a high-level robotic task planner. Your job is to choose a compact
+sequence actions from the provided action schema to complete the user request.
+
+The perception system has already selected the target object. 
+You must not write robot code or invent low-level motion commands
+
+
+Rules:
+- Return only valid JSON.
+- Use only action names from the approved action schema.
+- Do not invent new functions.
+- Do not invent object IDs.
+- If the user only asks to find, inspect, locate, or identify an object, return
+  a non-executing report_pose plan.
+- If the user asks to pick an object, use pick_object with object_id and
+  object_type only. Do not include point_camera_mm or object_rpy_base_deg.
+- If the request is unsafe or missing required perception data, return a plan
+  with status "blocked" and explain the missing information in "reason".
+
+Return JSON in this shape:
+{{
+  "status": "ready" | "blocked",
+  "reason": "short explanation",
+  "target_object_id": "object id or null",
+  "target_object_type": "object type or null",
+  "actions": [
+    {{
+      "action": "approved action name",
+      "arguments": {{}}
+    }}
+  ]
+}}
+
+User instruction:
+{user_text}
+
+Perception context:
+{perception_json}
+
+Approved action schema:
+{actions_json}
+""".strip()

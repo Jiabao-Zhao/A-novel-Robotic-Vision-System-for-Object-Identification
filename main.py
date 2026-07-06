@@ -3,7 +3,8 @@ import re
 from pathlib import Path
 
 from CADPointCloudRegistration import CADPointCloudRegistration
-from helper_function import CADRetrieval, CameraInHandTransformation
+from helper_function import CADRetrieval
+from LLM_planner import plan_from_outputs
 from point_cloud_localization import PointCloudLocalization
 from vlm_module import classify_from_localization
 
@@ -11,7 +12,8 @@ from vlm_module import classify_from_localization
 OPEN_3D_VISUALIZATION = False
 USE_SAVED_RAW_CAPTURE = False
 OUTPUT_ROBOT_BASE_POSE = True
-USER_TEXT = "find the red block"
+RUN_LLM_PLANNER = False
+USER_TEXT = "find the big white gear"
 SAVED_RGB_PATH = Path("output/raw/RGB.png")
 SAVED_DEPTH_PATH = Path("output/raw/depth_data.npz")
 CAD_LIBRARY_PATH = Path("CAD/cad_library.json")
@@ -81,7 +83,7 @@ def retrieve_cad_model(classification_text):
     )
 
 
-def current_base_from_ee_matrix_m():
+def output_robot_base_pose():
     from robot_controller import RTDECommander, RTDEStateFeedback
 
     state = None
@@ -89,18 +91,13 @@ def current_base_from_ee_matrix_m():
     try:
         state = RTDEStateFeedback()
         robot = RTDECommander(state)
-        T_base_from_ee_mm = robot.camera_mount_pose_matrix_mm()
-        return CameraInHandTransformation.matrix_mm_to_m(T_base_from_ee_mm)
+        pose_result = robot.output_object_pose_base()
     finally:
         if robot is not None:
             robot.disconnect()
         if state is not None:
             state.stop()
 
-
-def output_robot_base_pose():
-    T_base_from_ee = current_base_from_ee_matrix_m()
-    pose_result = CameraInHandTransformation().run(T_base_from_ee)
     x, y, z, roll, pitch, yaw = pose_result["object_pose_base_xyz_rpy_mm_deg"]
     rx, ry, rz = pose_result["tcp_pick_rotvec_base_rad"]
     print(
@@ -114,6 +111,12 @@ def output_robot_base_pose():
     )
     print("Saved robot-base pose JSON: output/robot_pose/object_pose_base.json")
     return pose_result
+
+
+def output_llm_plan():
+    planner_path = plan_from_outputs(USER_TEXT)
+    print(f"Saved LLM planner result: {planner_path}")
+    return planner_path
 
 
 def main():
@@ -156,6 +159,9 @@ def main():
 
     if OUTPUT_ROBOT_BASE_POSE:
         output_robot_base_pose()
+
+    if RUN_LLM_PLANNER:
+        output_llm_plan()
 
 if __name__ == "__main__":
     main()

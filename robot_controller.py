@@ -1,8 +1,11 @@
 import threading
 import time
 import logging
+import json
+from pathlib import Path
 
 import numpy as np
+import open3d as o3d
 from rtde_receive import RTDEReceiveInterface
 from rtde_control import RTDEControlInterface
 from scipy.spatial.transform import Rotation
@@ -302,10 +305,32 @@ class RTDECommander:
         r = Rotation.from_euler('xyz', rpy_deg, degrees=True)
         return r.as_rotvec()
 
-    def build_pose(self, pose_xyz_rpy):
+    def build_pose(self, pose_xyz_rpy, nearest_to_current=True):
         pos_m = [c / 1000.0 for c in pose_xyz_rpy[:3]]  # mm to m
         rotvec = self.rpy_to_rotvec(pose_xyz_rpy[3:])
+        if nearest_to_current:
+            try:
+                current_rotvec = self.robot_state.get_raw_pose()[3:6]
+                rotvec = self.nearest_equivalent_rotvec(rotvec, current_rotvec)
+            except Exception:
+                pass
         return list(pos_m) + list(rotvec)
+
+    @staticmethod
+    def nearest_equivalent_rotvec(desired_rotvec, current_rotvec):
+        desired = np.asarray(desired_rotvec, dtype=float).reshape(3)
+        current = np.asarray(current_rotvec, dtype=float).reshape(3)
+        theta = float(np.linalg.norm(desired))
+        if theta < 1e-12:
+            return desired
+
+        axis = desired / theta
+        candidates = [
+            desired,
+            desired + 2.0 * math.pi * axis,
+            desired - 2.0 * math.pi * axis,
+        ]
+        return min(candidates, key=lambda candidate: float(np.linalg.norm(candidate - current)))
 
     def inverse_kin(self, pose_xyz_rpy):
         pose = self.build_pose(pose_xyz_rpy)
@@ -367,6 +392,69 @@ class RTDECommander:
         point_base = np.asarray(T_base_ee, dtype=float).reshape(4, 4) @ T_EE_CAMERA @ point_camera
         return point_base[:3]
 
+    def output_object_pose_base(
+            self,
+            registration_path="output/registered_point_cloud/cad_registration_result.json",
+            output_path="output/robot_pose/object_pose_base.json",
+    ):
+        result = self.object_pose_base_from_registration(registration_path)
+        output_path = Path(output_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(json.dumps(result, indent=2), encoding="utf-8")
+        return result
+
+    def object_pose_base_from_registration(self, registration_path):
+        registration = json.loads(Path(registration_path).read_text(encoding="utf-8"))
+        T_base_ee_mm = self.camera_mount_pose_matrix_mm()
+        T_base_camera_mm = T_base_ee_mm @ T_EE_CAMERA
+
+        T_camera_object_m = np.asarray(registration["T_observed_from_cad"], dtype=float).reshape(4, 4)
+        T_camera_object_mm = T_camera_object_m.copy()
+        T_camera_object_mm[:3, 3] *= 1000.0
+        T_base_object_mm = T_base_camera_mm @ T_camera_object_mm
+
+        center_camera_m = self.object_center_camera_m(registration["aligned_cad_cloud_path"])
+        center_camera_mm = center_camera_m * 1000.0
+        center_base_mm = (T_base_camera_mm @ np.array([*center_camera_mm, 1.0]))[:3]
+
+        R_camera_object = T_camera_object_mm[:3, :3]
+        R_base_object = T_base_object_mm[:3, :3]
+        object_rpy_camera_deg = Rotation.from_matrix(R_camera_object).as_euler("xyz", degrees=True)
+        object_rpy_base_deg = Rotation.from_matrix(R_base_object).as_euler("xyz", degrees=True)
+
+        tcp_pick_rpy_base_deg = np.array([180.0, 0.0, object_rpy_base_deg[2]])
+        desired_pick_rotvec = self.rpy_to_rotvec(tcp_pick_rpy_base_deg)
+        current_rotvec = self.robot_state.get_raw_pose()[3:6]
+        tcp_pick_rotvec = self.nearest_equivalent_rotvec(desired_pick_rotvec, current_rotvec)
+
+        return {
+            "object_center_camera_m": center_camera_m.tolist(),
+            "object_center_camera_mm": center_camera_mm.tolist(),
+            "object_center_base_mm": center_base_mm.tolist(),
+            "object_rpy_camera_deg": object_rpy_camera_deg.tolist(),
+            "object_rpy_base_deg": object_rpy_base_deg.tolist(),
+            "object_pose_base_xyz_rpy_mm_deg": (
+                np.concatenate([center_base_mm, object_rpy_base_deg]).tolist()
+            ),
+            "tcp_pick_rpy_base_deg": tcp_pick_rpy_base_deg.tolist(),
+            "tcp_pick_rotvec_base_rad": tcp_pick_rotvec.tolist(),
+            "tcp_pick_pose_base_xyz_rxryrz_mm_rad": (
+                np.concatenate([center_base_mm, tcp_pick_rotvec]).tolist()
+            ),
+            "T_camera_from_object": T_camera_object_m.tolist(),
+            "T_base_from_object_mm": T_base_object_mm.tolist(),
+            "T_ee_from_camera_mm": T_EE_CAMERA.tolist(),
+            "T_base_from_ee_zero_tcp_mm": T_base_ee_mm.tolist(),
+            "T_base_from_camera_mm": T_base_camera_mm.tolist(),
+        }
+
+    @staticmethod
+    def object_center_camera_m(cloud_path):
+        cloud = o3d.io.read_point_cloud(str(cloud_path))
+        if cloud.is_empty():
+            raise ValueError(f"Object cloud is empty: {cloud_path}")
+        return np.asarray(cloud.get_axis_aligned_bounding_box().get_center(), dtype=float)
+
     def forward_kin_as_pose(self, q):
         fk_raw = self.forward_kin(q)
         r = Rotation.from_rotvec(fk_raw[3:6])
@@ -379,31 +467,6 @@ class RTDECommander:
             float(pitch),
             float(yaw),
             ]
-
-    def get_jacobian(self, q):
-        self.refresh_tcp_offset()
-        J = np.asarray(self._rtde_c.getJacobian(list(q), self.tcp_offset), dtype=float)
-        return J.reshape(6, 6)
-
-    def get_jacobian_time_derivative(self, q, qd):
-        self.refresh_tcp_offset()
-        J_dot = np.asarray(
-            self._rtde_c.getJacobianTimeDerivative(list(q), list(qd), self.tcp_offset),
-            dtype=float,
-        )
-        return J_dot.reshape(6, 6)
-
-    def get_mass_matrix(self, q):
-        M = np.asarray(self._rtde_c.getMassMatrix(list(q)), dtype=float)
-        return M.reshape(6, 6)
-
-    def get_coriolis_and_centrifugal_torques(self, q, qd):
-        C = np.asarray(self._rtde_c.getCoriolisAndCentrifugalTorques(list(q), list(qd)), dtype=float)
-        return C
-
-    def direct_torque(self, tau):
-        self._rtde_c.directTorque(list(np.asarray(tau, dtype=float)))
-
     # Utility
     def zero_ft_sensor(self):
         self._rtde_c.zeroFtSensor()
@@ -468,10 +531,6 @@ class RTDECommander:
     def set_gripper_close(self, blocking=True):
         self.gripper_set(10, 10, blocking=blocking, settle_s=2.0)
 
-    def zeroFtSensor(self):
-        self._ensure_control_connected()
-        self._rtde_c.zeroFtSensor()
-
     # Move in cartesian coordinates
     def go_home(self, open_gripper=True, pre_lift_z_mm=0.0):
         if open_gripper:
@@ -515,22 +574,6 @@ class RTDECommander:
             raise RuntimeError("Current robot joint feedback is invalid.")
         return q
 
-    def is_at_home(self, tolerance_rad=None):
-        config = self.safe_home_config
-        target_q = self._validate_joint_target(
-            config["home_joints_rad"],
-            label="home_joints_rad",
-        )
-        tolerance = float(
-            config.get("skip_if_within_rad", 0.005)
-            if tolerance_rad is None
-            else tolerance_rad
-        )
-        if tolerance <= 0:
-            tolerance = 0.005
-        current_q = self._current_joint_positions()
-        return float(np.max(np.abs(target_q - current_q))) <= tolerance
-
     @staticmethod
     def _validate_joint_target(values, label="joint_target"):
         q = np.asarray(values, dtype=float).reshape(-1)
@@ -548,161 +591,12 @@ class RTDECommander:
     def move_to_coordinate(self, coordinate):
         self.move_to_cartesian(*coordinate)
 
-    def move_in_x(self, dx):
-        """Move in X direction by dx mm"""
-        p = self.robot_state.get_pose()
-        p[0] += dx
-        pose = self.build_pose(p)
-        self._rtde_c.moveL(pose, self.acc, self.vel, asynchronous=False)
-        self.wait_until_motion_complete()
-
-    def move_in_y(self, dy):
-        """Move in Y direction by dy mm"""
-        p = self.robot_state.get_pose()
-        p[1] += dy
-        pose = self.build_pose(p)
-        self._rtde_c.moveL(pose, self.acc, self.vel, asynchronous=False)
-        self.wait_until_motion_complete()
-
     def move_in_z(self, dz):
-        """Move in Z direction by dz mm"""
         p = self.robot_state.get_pose()
-        p[2] += dz
+        p[2] += float(dz)
         pose = self.build_pose(p)
         self._rtde_c.moveL(pose, self.acc, self.vel, asynchronous=False)
         self.wait_until_motion_complete()
-
-    def move_in_cartesian(self, dx, dy, dz, d_roll, d_pitch, d_yaw):
-        p = self.robot_state.get_pose()
-        p[0] += dx
-        p[1] += dy
-        p[2] += dz
-        p[3] += d_roll
-        p[4] += d_pitch
-        p[5] += d_yaw
-
-        pose = self.build_pose(p)
-        self._rtde_c.moveL(pose, self.acc, self.vel, asynchronous=False)
-        self.wait_until_motion_complete()
-
-    def orthogonal_regrasp_alignment(
-            self,
-            slide_open_width=70.0,
-            final_close_width=10.0,
-            yaw_delta_deg=90.0,
-            approach_lift_mm=50.0,
-            rotation_clearance_lift_mm=30.0,
-            gentle_force=5.0,
-            final_force=20.0,
-            settle_s=0.8,
-    ):
-        """
-        Table-supported orthogonal regrasp alignment.
-
-        Preconditions:
-        - The part is already grasped.
-        - The robot can lift the part before rotating yaw.
-        - A support/alignment surface is below the part.
-
-        Sequence:
-        1. Lift the grasped part to the approach height.
-        2. Rotate TCP yaw by 90 degrees.
-        3. Move down until contact so the part is supported.
-        4. Open the gripper so the table-supported part can settle.
-        5. Lift the gripper above the supported part.
-        6. Rotate yaw back.
-        7. Return to the supported grasp height.
-        8. Close to the final grasp width.
-        """
-        params = self._validate_orthogonal_regrasp_params(
-            slide_open_width=slide_open_width,
-            final_close_width=final_close_width,
-            yaw_delta_deg=yaw_delta_deg,
-            approach_lift_mm=approach_lift_mm,
-            rotation_clearance_lift_mm=rotation_clearance_lift_mm,
-            gentle_force=gentle_force,
-            final_force=final_force,
-            settle_s=settle_s,
-        )
-
-        self.move_in_cartesian(0.0, 0.0, params["approach_lift_mm"], 0.0, 0.0, 0.0)
-        self.move_in_cartesian(0.0, 0.0, 0.0, 0.0, 0.0, params["yaw_delta_deg"])
-
-        contact_ok = self.move_down_until_contact()
-        if not contact_ok:
-            raise RuntimeError("orthogonal_regrasp_alignment failed before regrasp: no support contact detected.")
-
-        self.gripper_set(
-            params["slide_open_width"],
-            params["gentle_force"],
-            blocking=True,
-            settle_s=params["settle_s"],
-        )
-        self.move_in_cartesian(
-            0.0,
-            0.0,
-            params["rotation_clearance_lift_mm"],
-            0.0,
-            0.0,
-            0.0,
-        )
-        self.move_in_cartesian(0.0, 0.0, 0.0, 0.0, 0.0, -params["yaw_delta_deg"])
-        self.move_in_cartesian(
-            0.0,
-            0.0,
-            -params["rotation_clearance_lift_mm"],
-            0.0,
-            0.0,
-            0.0,
-        )
-        self.gripper_set(
-            params["final_close_width"],
-            params["final_force"],
-            blocking=True,
-            settle_s=params["settle_s"],
-        )
-
-        return True
-
-    @staticmethod
-    def _validate_orthogonal_regrasp_params(
-            slide_open_width,
-            final_close_width,
-            yaw_delta_deg,
-            approach_lift_mm,
-            rotation_clearance_lift_mm,
-            gentle_force,
-            final_force,
-            settle_s,
-    ):
-        params = {
-            "slide_open_width": float(slide_open_width),
-            "final_close_width": float(final_close_width),
-            "yaw_delta_deg": float(yaw_delta_deg),
-            "approach_lift_mm": float(approach_lift_mm),
-            "rotation_clearance_lift_mm": float(rotation_clearance_lift_mm),
-            "gentle_force": float(gentle_force),
-            "final_force": float(final_force),
-            "settle_s": float(settle_s),
-        }
-
-        if not 0.0 < params["slide_open_width"] <= 110.0:
-            raise ValueError("slide_open_width must be in (0, 110] mm.")
-        if not 0.0 < params["final_close_width"] <= params["slide_open_width"]:
-            raise ValueError("final_close_width must be positive and no larger than slide_open_width.")
-        if abs(params["yaw_delta_deg"]) < 45.0 or abs(params["yaw_delta_deg"]) > 135.0:
-            raise ValueError("yaw_delta_deg should be near 90 degrees for orthogonal alignment.")
-        if params["approach_lift_mm"] < 0.0:
-            raise ValueError("approach_lift_mm must be non-negative.")
-        if params["rotation_clearance_lift_mm"] < 0.0:
-            raise ValueError("rotation_clearance_lift_mm must be non-negative.")
-        if params["gentle_force"] <= 0.0 or params["final_force"] <= 0.0:
-            raise ValueError("gentle_force and final_force must be positive.")
-        if params["gentle_force"] > params["final_force"]:
-            raise ValueError("gentle_force should not exceed final_force.")
-        if params["settle_s"] < 0.0:
-            raise ValueError("settle_s must be non-negative.")
-        return params
 
     def move_to_cartesian(self, x, y, z, roll, pitch, yaw):
         p = [x, y, z, roll, pitch, yaw]
@@ -710,9 +604,10 @@ class RTDECommander:
         self._rtde_c.moveL(pose, self.acc, self.vel, asynchronous=False)
         self.wait_until_motion_complete()
 
-    def pick_known_camera_point(
+    def pick_object(
             self,
             point_camera_mm,
+            object_rpy_base_deg=None,
             grasp_width_mm=None,
             object_height_mm=None,
             clearance_z_mm=RG2_PICK_CLEARANCE_Z_MM,
@@ -720,13 +615,6 @@ class RTDECommander:
             close_force=RG2_PICK_CLOSE_FORCE,
             go_home_after=True,
     ):
-        """
-        Execute a top-down RG2 pick for a known camera-frame object point.
-
-        point_camera_mm is [x, y, z] in the wrist-mounted camera frame. If that
-        z is the detected top surface, pass object_height_mm so the closed grasp
-        target uses z - object_height_mm / 2.
-        """
         T_base_ee = self.camera_mount_pose_matrix_mm()
         x, y, z = self.camera_point_to_base_mm(point_camera_mm, T_base_ee)
 
@@ -737,7 +625,13 @@ class RTDECommander:
         plan = rg2_gripper_plan(grasp_width_mm)
         pick_z = closed_grasp_z + plan["tcp_reference_z_offset_mm"]
         clearance_z_mm = float(clearance_z_mm)
-        approach_pose = [float(x), float(y), pick_z + clearance_z_mm, -180.0, 0.0, 0.0]
+        object_rpy_base_deg = (
+            [180.0, 0.0, 0.0]
+            if object_rpy_base_deg is None
+            else list(np.asarray(object_rpy_base_deg, dtype=float).reshape(3))
+        )
+        pick_rpy = [180.0, 0.0, float(object_rpy_base_deg[2])]
+        approach_pose = [float(x), float(y), pick_z + clearance_z_mm, *pick_rpy]
 
         self.gripper_set(plan["open_width_mm"], open_force)
         self.move_to_cartesian(*approach_pose)
@@ -752,75 +646,48 @@ class RTDECommander:
             "point_base_mm": [float(x), float(y), float(z)],
             "closed_grasp_z_mm": float(closed_grasp_z),
             "pick_z_mm": float(pick_z),
+            "object_rpy_base_deg": object_rpy_base_deg,
+            "pick_rpy_base_deg": pick_rpy,
             "approach_pose_xyz_rpy": approach_pose,
             "gripper_plan": plan,
             "T_base_ee_zero_tcp_mm": T_base_ee.tolist(),
         }
 
-    def rotate_single_joint(self, joint_index, delta_deg):
-        current_q = self.robot_state.get_q()
-        target_q = current_q.copy()
-        target_q[joint_index] += math.radians(delta_deg)
-        self._rtde_c.moveJ(target_q, self.vel, self.acc, asynchronous=False)
+    def place_object(
+            self,
+            place_pose_xyz_rpy,
+            open_width_mm=RG2_DEFAULT_OPEN_WIDTH_MM,
+            open_force=RG2_PICK_OPEN_FORCE,
+            clearance_z_mm=RG2_PICK_CLEARANCE_Z_MM,
+            go_home_after=True,
+    ):
+        place_pose = list(np.asarray(place_pose_xyz_rpy, dtype=float).reshape(6))
+        clearance_z_mm = float(clearance_z_mm)
+        approach_pose = place_pose.copy()
+        approach_pose[2] += clearance_z_mm
 
-    def send_velocity(self, vel):
-        self._rtde_c.speedL(vel.tolist(), self.acc, time=0.1)
+        self.move_to_cartesian(*approach_pose)
+        self.move_in_z(-clearance_z_mm)
+        self.gripper_set(open_width_mm, open_force)
+        self.move_in_z(clearance_z_mm)
+        if go_home_after:
+            self.go_home(open_gripper=False)
 
-    def stopL(self):
-        self._rtde_c.stopL(2)
+        return {
+            "place_pose_xyz_rpy": place_pose,
+            "approach_pose_xyz_rpy": approach_pose,
+            "open_width_mm": float(open_width_mm),
+            "open_force": float(open_force),
+            "clearance_z_mm": clearance_z_mm,
+        }
 
-    def soft_stop_motion(self):
-        """Best-effort stop for active RTDE motion modes."""
-        stopped = False
-        for stop_call in (
-                lambda: self._rtde_c.speedStop(self.stop_acc),
-                lambda: self._rtde_c.servoStop(),
-                lambda: self._rtde_c.stopL(2),
-        ):
-            try:
-                stop_call()
-                stopped = True
-            except Exception:
-                pass
-        return stopped
-
-    def move_until_contact(self):
-        self.zero_ft_sensor()
-        t0 = time.time()
-        over = 0
-
-        try:
-            self._rtde_c.speedL([0.0, 0.0, self.vz, 0.0, 0.0, 0.0], 0.3, 0.1)
-
-            while True:
-                if (time.time() - t0) > self.timeout_s:
-                    self._rtde_c.speedStop(self.stop_acc)
-                    print("[move_until_contact] Timeout - no contact detected")
-                    return False
-
-                wrench = self.robot_state.get_wrench()
-                fz = wrench[2]
-
-                if abs(fz) >= self.fz_threshold:
-                    over += 1
-                    if over >= self.stable_samples:
-                        self._rtde_c.speedStop(self.stop_acc)
-                        print(f"[move_until_contact] Contact detected! Fz={fz:.2f}N")
-                        return True
-                else:
-                    over = 0
-                time.sleep(self.dt)
-        finally:
-            try:
-                self._rtde_c.speedStop(self.stop_acc)
-            except Exception:
-                pass
-
-    def move_until_down_until(self):
-        return self.move_until_contact()
-
-    def move_down_until_contact(self):
-        return self.move_until_contact()
+    def report_pose(self, object_id=None, object_type=None, pose=None):
+        return {
+            "object_id": object_id,
+            "object_type": object_type,
+            "pose": pose,
+        }
+    
 
     def _reconnect_control(self):
         try:
