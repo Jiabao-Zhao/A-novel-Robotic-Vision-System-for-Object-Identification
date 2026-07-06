@@ -13,6 +13,7 @@ OPEN_3D_VISUALIZATION = False
 USE_SAVED_RAW_CAPTURE = False
 OUTPUT_ROBOT_BASE_POSE = True
 RUN_LLM_PLANNER = False
+INTERACTIVE_CLARIFICATION = False
 USER_TEXT = "find the big white gear"
 SAVED_RGB_PATH = Path("output/raw/RGB.png")
 SAVED_DEPTH_PATH = Path("output/raw/depth_data.npz")
@@ -50,9 +51,48 @@ def build_local_embedding_function(texts):
 
 def selected_object_from_vlm(vlm_path):
     payload = json.loads(Path(vlm_path).read_text(encoding="utf-8"))
-    result = payload["result"]
-    object_id = result["object_id"]
-    object_type = result["object_type"]
+    result = payload["normalized_result"]
+
+    if result["needs_human_clarification"]:
+        print("VLM requires human clarification.")
+        print(f"Clarification reason: {result.get('clarification_reason')}")
+        print(f"Clarification question: {result.get('clarification_question')}")
+        print("Object evaluations:")
+        for evaluation in result.get("object_evaluations", []):
+            print(
+                "  "
+                f"{evaluation.get('object_id')}: "
+                f"target_match={evaluation.get('target_match')}, "
+                f"predicted_type={evaluation.get('predicted_type')}, "
+                f"spatial_description={evaluation.get('spatial_description')}"
+            )
+            print(f"    visual_evidence: {evaluation.get('visual_evidence')}")
+            print(
+                "    missing_or_uncertain_cues: "
+                f"{evaluation.get('missing_or_uncertain_cues')}"
+            )
+
+        if not INTERACTIVE_CLARIFICATION:
+            raise SystemExit(0)
+
+        valid_object_ids = {
+            evaluation.get("object_id")
+            for evaluation in result.get("object_evaluations", [])
+        }
+        chosen_object_id = input("Type the object_id to use, or press Enter to stop: ").strip()
+        if not chosen_object_id:
+            raise SystemExit(0)
+        if chosen_object_id not in valid_object_ids:
+            raise ValueError(f"Invalid object_id from clarification: {chosen_object_id}")
+        chosen_evaluation = next(
+            evaluation
+            for evaluation in result.get("object_evaluations", [])
+            if evaluation.get("object_id") == chosen_object_id
+        )
+        return chosen_object_id, chosen_evaluation.get("predicted_type") or USER_TEXT
+
+    object_id = result["selected_object_id"]
+    object_type = result["selected_object_type"]
     if object_id is None or object_type is None:
         raise ValueError("VLM did not select a visible object for CAD registration.")
     return object_id, object_type

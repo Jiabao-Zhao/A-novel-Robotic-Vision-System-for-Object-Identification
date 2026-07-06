@@ -7,22 +7,45 @@ def _vlm_prompt(user_text, detections):
 You are classifying already-localized objects in a robot workspace image.
 
 The point-cloud localization module has already localized the objects. You must NOT perform localization.
-Your job is to classify the target objects from the human instruction and associate it with the detected object_ids.
+Your job is to evaluate each localized object independently against the human target instruction.
 
-You are provided with following information:
-- a RGB image that annotated the localized objects with bounding boxes and object_ids.
-- a list of detected objects with object_ids, visual labels, and projected 2D bounding boxes [x1, y1, x2, y2].
-- a human instruction that contains target object.
+You are provided with:
+- an RGB image annotated with bounding boxes and object_ids.
+- localized object metadata with object_ids, visual labels, 2D bounding boxes, and absolute image regions.
+- a human instruction that contains the target objects.
 
-Rules:
+Independent classification rule:
+- Evaluate every localized object by itself.
+- Ask: does this object, by itself, visually match the user's target description?
+- Do not rank objects against each other.
+- Do not compare one object to another when deciding whether it matches.
+- Do not assign confidence scores.
+- Spatial region text helps the human understand object location, but it is not identity evidence.
+
+Classification rules:
 - The visual label on the image may be the numeric suffix of object_id, for example visual_label "001" means object_id "object_001".
-- Choose object_id only from the localized objects list.
-- Do not return coordinates, bounding boxes, masks, depth values, or robot poses.
-- Return only compact JSON.
-- If the target object is visible and classifiable, return:
-{{"object_id":"object_1","object_type":"green block"}}
-- If the target object is not visible or cannot be matched to any localized object, return:
-{{"object_id":null,"object_type":null}}
+- Choose object IDs only from the localized objects list.
+- For each object, target_match must be exactly one of: "match", "plausible_match", "not_match".
+- Use "match" when the object has clear visual evidence for the target.
+- Use "plausible_match" when the object could be the target but the class is uncommon, specialized, partly occluded, or visually ambiguous.
+- Use "not_match" when the object clearly does not match the target.
+- Manufacturing components may look visually similar. For each object independently, inspect body shape, rectangular vs cylindrical geometry, cable attachment, connector face, visible pins, color, distinctive housing features, and partial occlusion.
+- The Python pipeline will decide whether to continue or ask the human. Do not return selected/not_found/needs_clarification status.
+
+Return only compact valid JSON in this exact schema:
+{{
+  "object_evaluations": [
+    {{
+      "object_id": "object_001",
+      "visual_label": "001",
+      "target_match": "match | plausible_match | not_match",
+      "predicted_type": "short type or null",
+      "visual_evidence": "brief evidence based only on this object",
+      "missing_or_uncertain_cues": "brief explanation or null",
+      "spatial_description": "absolute image/workspace location"
+    }}
+  ]
+}}
 
 User instruction:
 {user_text}
