@@ -105,6 +105,8 @@ class CADPointCloudRegistration:
         )
 
         T_observed_from_cad = np.asarray(selected["final_transform"], dtype=float)
+        cad_cloud.paint_uniform_color([0.0, 0.45, 1.0])
+        observed_cloud.paint_uniform_color([1.0, 0.0, 0.0])
         aligned_cad_cloud = o3d.geometry.PointCloud(cad_cloud)
         aligned_cad_cloud.transform(T_observed_from_cad)
         augmented_cloud = self.build_augmented_cloud(observed_cloud, aligned_cad_cloud)

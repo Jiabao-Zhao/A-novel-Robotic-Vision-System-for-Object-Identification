@@ -8,7 +8,10 @@ from prompt import _vlm_prompt
 
 TARGET_MATCH_VALUES = ("match", "plausible_match", "not_match")
 CANDIDATE_MATCH_VALUES = ("match", "plausible_match")
-DECISION_RULE = "continue only when exactly one object is match or plausible_match"
+DECISION_RULE = (
+    "continue when matched localized objects map one-to-one to object classes; "
+    "ask only when no candidate exists or multiple candidates share the same class"
+)
 
 
 class GeminiVLM:
@@ -221,24 +224,37 @@ def normalize_vlm_result(result, detections, user_text=None):
         and evaluation["object_id"] in detection_by_id
     ]
 
-    if len(candidates) == 1:
-        selected = candidates[0]
-        selected_object_id = selected["object_id"]
-        selected_object_type = (
-            selected["predicted_type"]
-            or result.get("selected_object_type")
-            or str(user_text)
-        )
+    candidate_groups = group_candidates_by_class(candidates)
+    ambiguous_groups = [
+        group
+        for group in candidate_groups
+        if len(group["candidates"]) > 1
+    ]
+
+    if candidates and not ambiguous_groups:
+        selected_objects = [
+            selected_object_from_evaluation(candidate, result, user_text)
+            for candidate in candidates
+        ]
+        selected_object_id = selected_objects[0]["object_id"]
+        selected_object_type = selected_objects[0]["object_type"]
         needs_human_clarification = False
         clarification_reason = None
         clarification_question = None
-    elif len(candidates) > 1:
+    elif ambiguous_groups:
+        selected_objects = []
         selected_object_id = None
         selected_object_type = None
         needs_human_clarification = True
-        clarification_reason = "multiple localized objects are possible matches for the target"
-        clarification_question = build_clarification_question(candidates, object_evaluations)
+        clarification_reason = (
+            "multiple localized objects are possible matches for the same target class"
+        )
+        clarification_question = build_ambiguous_class_question(
+            ambiguous_groups,
+            object_evaluations,
+        )
     else:
+        selected_objects = []
         selected_object_id = None
         selected_object_type = None
         needs_human_clarification = True
@@ -247,6 +263,7 @@ def normalize_vlm_result(result, detections, user_text=None):
 
     return {
         "object_evaluations": object_evaluations,
+        "selected_objects": selected_objects,
         "selected_object_id": selected_object_id,
         "selected_object_type": selected_object_type,
         "needs_human_clarification": needs_human_clarification,
@@ -254,6 +271,16 @@ def normalize_vlm_result(result, detections, user_text=None):
         "clarification_question": clarification_question,
         "candidate_count": len(candidates),
         "candidate_object_ids": [candidate["object_id"] for candidate in candidates],
+        "candidate_groups": [
+            {
+                "object_class": group["object_class"],
+                "object_ids": [
+                    candidate["object_id"]
+                    for candidate in group["candidates"]
+                ],
+            }
+            for group in candidate_groups
+        ],
         "decision_rule": DECISION_RULE,
     }
 
@@ -270,6 +297,7 @@ def old_format_to_evaluations(result, detections):
                 "visual_label": detection.get("visual_label"),
                 "target_match": "plausible_match" if is_old_selection else "not_match",
                 "predicted_type": object_type if is_old_selection else None,
+                "instruction_role": None,
                 "visual_evidence": (
                     "Old VLM response selected this object without per-object evidence."
                     if is_old_selection
@@ -298,6 +326,7 @@ def normalize_object_evaluation(source, detection):
         "visual_label": str(source.get("visual_label") or detection.get("visual_label") or ""),
         "target_match": target_match,
         "predicted_type": none_if_empty(source.get("predicted_type")),
+        "instruction_role": normalize_instruction_role(source.get("instruction_role")),
         "bbox_2d_xyxy": detection.get("bbox_2d_xyxy"),
         "visual_evidence": none_if_empty(source.get("visual_evidence"))
         or "No independent visual evidence was provided for this object.",
@@ -308,6 +337,62 @@ def normalize_object_evaluation(source, detection):
     }
 
 
+def selected_object_from_evaluation(evaluation, result, user_text):
+    object_type = (
+        evaluation.get("predicted_type")
+        or result.get("selected_object_type")
+        or str(user_text)
+    )
+    return {
+        "object_id": evaluation["object_id"],
+        "object_type": object_type,
+        "object_class": candidate_object_class(evaluation),
+        "target_match": evaluation["target_match"],
+        "instruction_role": evaluation.get("instruction_role"),
+        "spatial_description": evaluation.get("spatial_description"),
+    }
+
+
+def group_candidates_by_class(candidates):
+    groups_by_class = {}
+    for candidate in candidates:
+        object_class = candidate_object_class(candidate)
+        if object_class not in groups_by_class:
+            groups_by_class[object_class] = {
+                "object_class": object_class,
+                "candidates": [],
+            }
+        groups_by_class[object_class]["candidates"].append(candidate)
+    return list(groups_by_class.values())
+
+
+def candidate_object_class(evaluation):
+    predicted_type = none_if_empty(evaluation.get("predicted_type"))
+    if predicted_type is None:
+        return "unknown target"
+
+    tokens = re.findall(r"[a-z0-9]+", predicted_type.lower())
+    articles = {"a", "an", "the"}
+    normalized = [
+        token
+        for token in tokens
+        if token not in articles
+    ]
+    if not normalized:
+        normalized = tokens
+    return " ".join(normalized) or "unknown target"
+
+
+def normalize_instruction_role(value):
+    role = none_if_empty(value)
+    if role is None:
+        return None
+    role = role.lower().replace("-", "_").replace(" ", "_")
+    if role in {"moved_object", "reference_object", "other_target"}:
+        return role
+    return "other_target"
+
+
 def none_if_empty(value):
     if value is None:
         return None
@@ -315,6 +400,23 @@ def none_if_empty(value):
     if not text or text.lower() == "null":
         return None
     return text
+
+
+def build_ambiguous_class_question(ambiguous_groups, object_evaluations):
+    group_descriptions = []
+    for group in ambiguous_groups:
+        choices = " or ".join(
+            describe_candidate(candidate, object_evaluations)
+            for candidate in group["candidates"][:4]
+        )
+        group_descriptions.append(
+            f"{group['object_class']}: {choices}"
+        )
+    return (
+        "Multiple localized objects could match the same requested object class. "
+        "Which one should I use for each class: "
+        f"{'; '.join(group_descriptions)}?"
+    )
 
 
 def build_clarification_question(candidates, object_evaluations):

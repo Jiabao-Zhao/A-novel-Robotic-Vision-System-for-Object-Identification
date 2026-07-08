@@ -17,6 +17,7 @@ You are provided with:
 Independent classification rule:
 - Evaluate every localized object by itself.
 - Ask: does this object, by itself, visually match the user's target description?
+- If the instruction mentions multiple physical objects, mark each mentioned object that is visible.
 - Do not rank objects against each other.
 - Do not compare one object to another when deciding whether it matches.
 - Do not assign confidence scores.
@@ -26,6 +27,10 @@ Classification rules:
 - The visual label on the image may be the numeric suffix of object_id, for example visual_label "001" means object_id "object_001".
 - Choose object IDs only from the localized objects list.
 - For each object, target_match must be exactly one of: "match", "plausible_match", "not_match".
+- Use instruction_role "moved_object" for the object being moved, picked, placed, or inspected.
+- Use instruction_role "reference_object" for a support, destination, fixture, or relation object.
+- Use instruction_role "other_target" for a mentioned target object that is not clearly moved or reference.
+- Use null when the object is not mentioned by the instruction.
 - Use "match" when the object has clear visual evidence for the target.
 - Use "plausible_match" when the object could be the target but the class is uncommon, specialized, partly occluded, or visually ambiguous.
 - Use "not_match" when the object clearly does not match the target.
@@ -40,6 +45,7 @@ Return only compact valid JSON in this exact schema:
       "visual_label": "001",
       "target_match": "match | plausible_match | not_match",
       "predicted_type": "short type or null",
+      "instruction_role": "moved_object | reference_object | other_target | null",
       "visual_evidence": "brief evidence based only on this object",
       "missing_or_uncertain_cues": "brief explanation or null",
       "spatial_description": "absolute image/workspace location"
