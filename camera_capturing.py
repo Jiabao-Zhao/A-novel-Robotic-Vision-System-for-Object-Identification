@@ -46,7 +46,8 @@ class CameraCapture:
                     self.filter_depth_frame(depth_frame, depth_filters)
 
             rgb = None
-            depth_frames = []
+            unfiltered_depth_frames = []
+            filtered_depth_frames = []
             filtered_depth_frame = None
             for _ in range(self.capture_frames):
                 frames = align.process(pipeline.wait_for_frames())
@@ -55,26 +56,41 @@ class CameraCapture:
                 if not color_frame or not depth_frame:
                     raise RuntimeError("RealSense did not return both color and depth frames.")
 
+                unfiltered_depth_frames.append(np.asanyarray(depth_frame.get_data()).copy())
                 filtered_depth_frame = self.filter_depth_frame(depth_frame, depth_filters)
                 rgb = np.asanyarray(color_frame.get_data()).copy()
-                depth_frames.append(np.asanyarray(filtered_depth_frame.get_data()).copy())
+                filtered_depth_frames.append(np.asanyarray(filtered_depth_frame.get_data()).copy())
 
-            depth = self.average_depth_frames(depth_frames)
+            unfiltered_depth = self.average_depth_frames(unfiltered_depth_frames)
+            depth = self.average_depth_frames(filtered_depth_frames)
             depth_scale_m = profile.get_device().first_depth_sensor().get_depth_scale()
             intrinsics = self.intrinsics_to_dict(
                 filtered_depth_frame.profile.as_video_stream_profile().intrinsics
             )
-            return rgb, depth, depth_scale_m, intrinsics
+            return rgb, depth, depth_scale_m, intrinsics, unfiltered_depth
         finally:
             pipeline.stop()
 
-    def save_raw_capture(self, rgb, depth, depth_scale_m, intrinsics=None):
+    def save_raw_capture(self, rgb, depth, depth_scale_m, intrinsics=None, unfiltered_depth=None):
         self.raw_dir.mkdir(parents=True, exist_ok=True)
 
         rgb_path = self.raw_dir / "RGB.png"
         depth_path = self.raw_dir / "depth_data.npz"
+        unfiltered_depth_path = self.raw_dir / "depth_unfiltered_data.npz"
 
         o3d.io.write_image(str(rgb_path), o3d.geometry.Image(np.ascontiguousarray(rgb)))
+        if unfiltered_depth is not None:
+            np.savez(
+                unfiltered_depth_path,
+                depth_data=np.ascontiguousarray(unfiltered_depth),
+                depth_scale_m=float(depth_scale_m),
+                camera_intrinsics=np.asarray(
+                    self.intrinsics_to_array(intrinsics), dtype=float
+                ),
+                depth_frame_count=int(self.capture_frames),
+                processing_stage="before_depth_filtering",
+            )
+
         np.savez(
             depth_path,
             depth_data=np.ascontiguousarray(depth),
@@ -87,13 +103,20 @@ class CameraCapture:
             temporal_filter_enabled=bool(self.use_temporal_filter),
             disparity_filter_enabled=bool(self.use_disparity_filter),
             hole_filling_filter_enabled=bool(self.use_hole_filling_filter),
+            processing_stage="after_depth_filtering",
         )
 
-        return rgb_path, depth_path
+        return rgb_path, depth_path, unfiltered_depth_path
 
     def run(self):
-        rgb, depth, depth_scale_m, intrinsics = self.capture_rgbd()
-        return self.save_raw_capture(rgb, depth, depth_scale_m, intrinsics)
+        rgb, depth, depth_scale_m, intrinsics, unfiltered_depth = self.capture_rgbd()
+        return self.save_raw_capture(
+            rgb,
+            depth,
+            depth_scale_m,
+            intrinsics,
+            unfiltered_depth,
+        )
 
     @staticmethod
     def intrinsics_to_dict(intrinsics):
@@ -209,6 +232,7 @@ class CameraCapture:
 
 if __name__ == "__main__":
     camera = CameraCapture()
-    rgb_path, depth_path = camera.run()
+    rgb_path, depth_path, unfiltered_depth_path = camera.run()
     print(f"Saved RGB image: {rgb_path}")
+    print(f"Saved unfiltered depth data: {unfiltered_depth_path}")
     print(f"Saved depth data: {depth_path}")
