@@ -251,6 +251,8 @@ def main():
     paths = run_pipeline()
 
     print(f"Saved raw RGB image: {paths['rgb']}")
+    if paths.get("unfiltered_depth") is not None:
+        print(f"Saved unfiltered depth data: {paths['unfiltered_depth']}")
     print(f"Saved raw depth data: {paths['depth']}")
     print(f"Detected object count: {paths['object_count']}")
     print(f"Saved localization JSON: {paths['localization']}")

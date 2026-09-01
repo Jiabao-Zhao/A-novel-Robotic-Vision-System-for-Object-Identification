@@ -69,12 +69,13 @@ class PointCloudLocalization:
         ]
 
     def run(self, visualize=False):
-        rgb, depth, depth_scale_m, camera_intrinsics = self.camera.capture_rgbd()
-        rgb_path, depth_path = self.camera.save_raw_capture(
+        rgb, depth, depth_scale_m, camera_intrinsics, unfiltered_depth = self.camera.capture_rgbd()
+        rgb_path, depth_path, unfiltered_depth_path = self.camera.save_raw_capture(
             rgb,
             depth,
             depth_scale_m,
             camera_intrinsics,
+            unfiltered_depth,
         )
         return self.run_from_arrays(
             rgb=rgb,
@@ -83,6 +84,7 @@ class PointCloudLocalization:
             camera_intrinsics=camera_intrinsics,
             rgb_path=rgb_path,
             depth_path=depth_path,
+            unfiltered_depth_path=unfiltered_depth_path,
             visualize=visualize,
         )
 
@@ -104,6 +106,7 @@ class PointCloudLocalization:
             camera_intrinsics=camera_intrinsics,
             rgb_path=Path(rgb_path),
             depth_path=Path(depth_path),
+            unfiltered_depth_path=None,
             visualize=visualize,
         )
 
@@ -115,6 +118,7 @@ class PointCloudLocalization:
         camera_intrinsics,
         rgb_path,
         depth_path,
+        unfiltered_depth_path=None,
         visualize=False,
     ):
         workspace_cloud = self.rgbd_to_pointcloud(
@@ -130,6 +134,11 @@ class PointCloudLocalization:
         paths = self.save_outputs(
             rgb_path=Path(rgb_path),
             depth_path=Path(depth_path),
+            unfiltered_depth_path=(
+                Path(unfiltered_depth_path)
+                if unfiltered_depth_path is not None
+                else None
+            ),
             workspace_cloud=workspace_cloud,
             downsampled_cloud=downsampled_cloud,
             table_cloud=table_cloud,
@@ -263,6 +272,7 @@ class PointCloudLocalization:
         self,
         rgb_path,
         depth_path,
+        unfiltered_depth_path,
         workspace_cloud,
         downsampled_cloud,
         table_cloud,
@@ -311,6 +321,11 @@ class PointCloudLocalization:
             "frame": "camera",
             "rgb_path": str(rgb_path),
             "depth_path": str(depth_path),
+            "unfiltered_depth_path": (
+                str(unfiltered_depth_path)
+                if unfiltered_depth_path is not None
+                else None
+            ),
             "camera_intrinsics": {
                 name: float(value) if name not in ("width", "height") else int(value)
                 for name, value in camera_intrinsics.items()
@@ -324,6 +339,7 @@ class PointCloudLocalization:
         return {
             "rgb": Path(rgb_path),
             "depth": Path(depth_path),
+            "unfiltered_depth": unfiltered_depth_path,
             "localization": self.localization_path,
             "annotated_rgb": annotated_path,
             "workspace_cloud": workspace_path,
