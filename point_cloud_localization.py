@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import open3d as o3d
 
-from camera_capturing import CameraCapture
 from helper_function import RBGAnnotation
 
 
@@ -48,13 +47,17 @@ class PointCloudConfig:
 class LocalizedObject:
     object_id: str
     roi: dict
+    centroid_3d_m: list
+    size_3d_m: list
+    point_count: int
+    saved_point_count: int = 0
     pointcloud_path: str = ""
 
 
 class PointCloudLocalization:
-    def __init__(self, config=None):
+    def __init__(self, config=None, camera=None):
         self.config = PointCloudConfig() if config is None else config
-        self.camera = CameraCapture()
+        self.camera = camera
         self.localization_path = self.config.output_dir / "point_cloud_localization.json"
         self.annotated_rgb_path = self.config.annotation_dir / "RGB_point_cloud_roi_annotation.png"
         self.cluster_colors = [
@@ -69,6 +72,10 @@ class PointCloudLocalization:
         ]
 
     def run(self, visualize=False):
+        if self.camera is None:
+            from camera_capturing import CameraCapture
+
+            self.camera = CameraCapture()
         rgb, depth, depth_scale_m, camera_intrinsics, unfiltered_depth = self.camera.capture_rgbd()
         rgb_path, depth_path, unfiltered_depth_path = self.camera.save_raw_capture(
             rgb,
@@ -247,6 +254,12 @@ class PointCloudLocalization:
                 LocalizedObject(
                     object_id=f"object_{index:03d}",
                     roi=self.project_points_to_roi(points, camera_intrinsics),
+                    centroid_3d_m=[float(value) for value in points.mean(axis=0)],
+                    size_3d_m=[
+                        float(value)
+                        for value in cluster.get_axis_aligned_bounding_box().get_extent()
+                    ],
+                    point_count=int(points.shape[0]),
                 )
             )
         return objects
@@ -313,6 +326,7 @@ class PointCloudLocalization:
             o3d.io.write_point_cloud(str(downsampled_object_path), cluster_vis)
             segmented_cloud += cluster_vis
             if index <= len(objects):
+                objects[index - 1].saved_point_count = len(raw_cluster.points)
                 objects[index - 1].pointcloud_path = str(object_path)
 
         o3d.io.write_point_cloud(str(segmented_path), segmented_cloud)

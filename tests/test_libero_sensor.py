@@ -8,7 +8,7 @@ import numpy as np
 from simulation.libero_env import LiberoIntegrationError
 from simulation.libero_io import save_libero_observation
 from simulation.libero_sensor import LiberoRGBDSensor
-from simulation.perception_adapter import pointcloud_localization_inputs
+from simulation.perception_adapter import mask_depth_to_world_workspace, pointcloud_localization_inputs
 
 
 class _FakeEnvironment:
@@ -82,6 +82,22 @@ class LiberoSensorTests(unittest.TestCase):
         self.assertEqual(inputs["camera_intrinsics"]["height"], 2)
         self.assertIs(inputs["rgb"], observation.rgb)
         self.assertIs(inputs["depth"], observation.depth_m)
+
+    def test_world_workspace_mask_uses_calibrated_depth(self):
+        sensor = LiberoRGBDSensor(
+            _FakeEnvironment(),
+            camera_name="agentview",
+            camera_utils=_FakeCameraUtils,
+        )
+        observation = sensor.capture(self.raw_observation)
+        masked_depth, mask = mask_depth_to_world_workspace(
+            observation,
+            minimum_xyz_m=(0.9, 1.9, 3.5),
+            maximum_xyz_m=(1.1, 2.1, 4.0),
+        )
+
+        self.assertTrue(mask.all())
+        np.testing.assert_array_equal(masked_depth, observation.depth_m)
 
     def test_invalid_normalized_depth_fails(self):
         invalid = dict(self.raw_observation)

@@ -92,8 +92,7 @@ def _save_visualizations(rgb, depth_m, depth_visualization_path, rgb_depth_figur
     valid_mask = np.isfinite(depth_m) & (depth_m > 0.0)
     valid = depth_m[valid_mask]
     masked_depth = np.ma.masked_where(~valid_mask, depth_m)
-    color_map = plt.get_cmap("viridis").copy()
-    color_map.set_bad("black")
+    color_map = plt.get_cmap("viridis").with_extremes(bad="black")
     plt.imsave(
         depth_visualization_path,
         masked_depth,

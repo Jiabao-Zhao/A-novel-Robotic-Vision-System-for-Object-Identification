@@ -123,6 +123,12 @@ class LiberoTaskEnvironment:
         try:
             from libero.libero import benchmark, get_libero_path
             from libero.libero.envs import OffScreenRenderEnv
+        except EOFError as error:
+            raise LiberoIntegrationError(
+                "LIBERO needs its one-time path configuration. Run "
+                "`printf \"n\\n\" | python -c \"import libero.libero\"` inside "
+                "the WSL environment to use the packaged default paths."
+            ) from error
         except ModuleNotFoundError as error:
             raise LiberoIntegrationError(
                 f"LIBERO import failed ({error}). {LIBERO_INSTALL_HINT}"
@@ -199,6 +205,24 @@ class LiberoTaskEnvironment:
                 f"{type(self.last_observation).__name__}"
             )
         return self.last_observation
+
+    @property
+    def action_dim(self):
+        return int(self.env.env.action_dim)
+
+    @property
+    def robots(self):
+        return self.env.robots
+
+    def step(self, action):
+        try:
+            self.last_observation, reward, done, info = self.env.step(action)
+        except Exception as error:
+            raise LiberoIntegrationError(f"LIBERO action step failed: {error}") from error
+        return self.last_observation, reward, done, info
+
+    def check_success(self):
+        return bool(self.env.check_success())
 
     def close(self):
         if getattr(self, "env", None) is not None:
