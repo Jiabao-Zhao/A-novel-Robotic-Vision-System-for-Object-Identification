@@ -79,9 +79,11 @@ class OpenAIVLM:
 
 def classify_from_localization(
     user_text,
-    image_path=Path("output/annotation/RGB_point_cloud_roi_annotation.png"),
-    localization_path=Path("output/point_cloud_localization/point_cloud_localization.json"),
-    output_path=Path("output/vlm/vlm_result.json"),
+    image_path=Path("outputs/physical/annotation/RGB_point_cloud_roi_annotation.png"),
+    localization_path=Path(
+        "outputs/physical/point_cloud_localization/point_cloud_localization.json"
+    ),
+    output_path=Path("outputs/physical/vlm/vlm_result.json"),
 ):
     detections = load_localized_objects(localization_path)
     raw_response, provider = classify_with_gemini_then_openai(

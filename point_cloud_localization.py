@@ -20,8 +20,8 @@ DEFAULT_INTRINSICS = {
 
 @dataclass
 class PointCloudConfig:
-    output_dir: Path = Path("output/point_cloud_localization")
-    annotation_dir: Path = Path("output/annotation")
+    output_dir: Path = Path("outputs/physical/point_cloud_localization")
+    annotation_dir: Path = Path("outputs/physical/annotation")
     voxel_size_m: float = 0.003
     plane_distance_threshold_m: float = 0.005
     dbscan_eps_m: float = 0.02
@@ -97,8 +97,8 @@ class PointCloudLocalization:
 
     def run_from_saved_raw(
         self,
-        rgb_path=Path("output/raw/RGB.png"),
-        depth_path=Path("output/raw/depth_data.npz"),
+        rgb_path=Path("outputs/physical/raw/RGB.png"),
+        depth_path=Path("outputs/physical/raw/depth_data.npz"),
         visualize=False,
     ):
         rgb = np.asarray(o3d.io.read_image(str(rgb_path)))[:, :, :3]

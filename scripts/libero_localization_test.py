@@ -17,7 +17,7 @@ TASK_INDEX = 0
 CAMERA_NAME = "agentview"
 IMAGE_WIDTH = 256
 IMAGE_HEIGHT = 256
-OUTPUT_ROOT = Path("outputs/libero_localization")
+OUTPUT_ROOT = Path("outputs/simulation/libero_localization")
 
 
 def main():

@@ -97,6 +97,13 @@ datasets and from this repository.
 
 ## Run from the repository root
 
+Generated artifacts are separated by backend:
+
+```text
+outputs/physical/     RealSense and physical-robot pipeline results
+outputs/simulation/   LIBERO captures, localization, point clouds, and episodes
+```
+
 ```bash
 cd /mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification
 export MUJOCO_GL=egl
@@ -160,7 +167,7 @@ test uses a 2 mm voxel and plane tolerance plus smaller cluster, ROI, and raw
 point-cloud cleanup cutoffs appropriate for its clean 256 x 256 rendered
 depth. RealSense defaults remain unchanged.
 
-Outputs are saved beneath `outputs/libero_localization/`. The localization JSON
+Outputs are saved beneath `outputs/simulation/libero_localization/`. The localization JSON
 contains camera-frame ROI, centroid, axis-aligned size, accepted downsampled
 cluster point count, cleaned saved PLY point count, and cluster path for each
 candidate. The test also prints each centroid transformed into the MuJoCo world
@@ -179,12 +186,10 @@ not method inputs. LIBERO's task success predicate is read only after execution
 as the evaluation result.
 
 Set `GEMINI_API_KEY` and/or `OPENAI_API_KEY` in the WSL process environment
-before running the task. `simulation.libero_clip_baseline` remains available as
-an explicitly labeled local comparison, but the primary task runner does not
-use it.
+before running the task.
 
 The episode saves its perception inputs, localization JSON, enlarged VLM visual
 prompt, complete VLM result, normalized action log, final agent and wrist RGB-D
 observations, success value, and MP4 video beneath
-`outputs/libero_task_execution/episode/`. This is a task-specific top-grasp
+`outputs/simulation/libero_task_execution/episode/`. This is a task-specific top-grasp
 execution baseline, not yet a general grasp planner or VLA policy.

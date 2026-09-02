@@ -15,8 +15,8 @@ OUTPUT_ROBOT_BASE_POSE = True
 RUN_LLM_PLANNER = False
 INTERACTIVE_CLARIFICATION = False
 USER_TEXT = "put the white gear on top of the red block"
-SAVED_RGB_PATH = Path("output/raw/RGB.png")
-SAVED_DEPTH_PATH = Path("output/raw/depth_data.npz")
+SAVED_RGB_PATH = Path("outputs/physical/raw/RGB.png")
+SAVED_DEPTH_PATH = Path("outputs/physical/raw/depth_data.npz")
 CAD_LIBRARY_PATH = Path("CAD/cad_library.json")
 
 
@@ -165,7 +165,7 @@ def retrieve_cad_model(classification_text):
 
 def register_selected_objects(selected_objects, localization_payload, plane_model):
     registration_records = []
-    registration_root = Path("output/registered_point_cloud")
+    registration_root = Path("outputs/physical/registered_point_cloud")
     multi_object = len(selected_objects) > 1
     registrar = CADPointCloudRegistration()
 
@@ -237,7 +237,7 @@ def output_robot_base_pose():
         "Top-down UR pick orientation: "
         f"rx={rx:.6f} rad, ry={ry:.6f} rad, rz={rz:.6f} rad"
     )
-    print("Saved robot-base pose JSON: output/robot_pose/object_pose_base.json")
+    print("Saved robot-base pose JSON: outputs/physical/robot_pose/object_pose_base.json")
     return pose_result
 
 

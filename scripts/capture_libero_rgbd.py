@@ -11,7 +11,7 @@ TASK_INDEX = 0
 CAMERA_NAME = "agentview"
 IMAGE_WIDTH = 256
 IMAGE_HEIGHT = 256
-OUTPUT_DIR = Path("outputs/libero_sample")
+OUTPUT_DIR = Path("outputs/simulation/libero_sample")
 
 
 def main():

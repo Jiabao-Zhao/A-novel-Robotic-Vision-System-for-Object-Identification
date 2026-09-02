@@ -6,7 +6,7 @@ import numpy as np
 from simulation.pointcloud import create_open3d_pointcloud, save_pointcloud
 
 
-OUTPUT_DIR = Path("outputs/libero_sample")
+OUTPUT_DIR = Path("outputs/simulation/libero_sample")
 RGB_PATH = OUTPUT_DIR / "rgb.png"
 DEPTH_PATH = OUTPUT_DIR / "depth.npy"
 INTRINSICS_PATH = OUTPUT_DIR / "intrinsics.npy"

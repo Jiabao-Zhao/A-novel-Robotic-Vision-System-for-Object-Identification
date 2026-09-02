@@ -9,8 +9,12 @@ from robot_controller import RTDECommander, RTDEStateFeedback, rg2_gripper_plan
 
 
 ROOT = Path(__file__).resolve().parent
-REGISTRATION_SUMMARY_PATH = ROOT / "output" / "registered_point_cloud" / "cad_registration_summary.json"
-ROBOT_BASE_POSE_PATH = ROOT / "output" / "robot_pose" / "object_pose_base.json"
+REGISTRATION_SUMMARY_PATH = (
+    ROOT / "outputs" / "physical" / "registered_point_cloud" / "cad_registration_summary.json"
+)
+ROBOT_BASE_POSE_PATH = (
+    ROOT / "outputs" / "physical" / "robot_pose" / "object_pose_base.json"
+)
 
 APPROACH_CLEARANCE_MM = 80.0
 PLACE_Z_MARGIN_MM = 2.0

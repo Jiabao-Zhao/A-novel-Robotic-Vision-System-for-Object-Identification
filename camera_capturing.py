@@ -8,7 +8,7 @@ import pyrealsense2 as rs
 class CameraCapture:
     def __init__(self):
         self.camera_serial = None
-        self.output_dir = Path("output")
+        self.output_dir = Path("outputs/physical")
         self.raw_dir = self.output_dir / "raw"
         self.width = 1280
         self.height = 720

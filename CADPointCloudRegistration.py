@@ -89,7 +89,7 @@ class CADPointCloudRegistration:
         observed_cloud_path,
         plane_model=None,
         cad_metadata=None,
-        output_dir="output/registered_point_cloud",
+        output_dir="outputs/physical/registered_point_cloud",
     ):
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -463,5 +463,5 @@ class CADPointCloudRegistration:
 if __name__ == "__main__":
     CADPointCloudRegistration().run(
         cad_path="path/to/cad_model.stl",
-        observed_cloud_path="output/point_cloud_localization/object_cluster_1.ply",
+        observed_cloud_path="outputs/physical/point_cloud_localization/object_cluster_1.ply",
     )

@@ -8,9 +8,9 @@ import open3d as o3d
 
 class PointCloudPlot:
     def __init__(self):
-        self.result_dir = Path("Output/pointcloud_pose")
-        self.visualization_dir = Path("Output/visualization")
-        self.current_registration_dir = Path("output/registered_point_cloud")
+        self.result_dir = Path("outputs/physical/pointcloud_pose")
+        self.visualization_dir = Path("outputs/physical/visualization")
+        self.current_registration_dir = Path("outputs/physical/registered_point_cloud")
         self.axis_length_m = 0.08
 
     def orient_normal_to_points(self, plane_model, points) -> np.ndarray:
@@ -188,11 +188,13 @@ class PointCloudPlot:
     def show_current_object_clusters(self):
         cluster_paths = sorted(
             path
-            for path in Path("output/point_cloud_localization").glob("object_cluster_*.ply")
+            for path in Path("outputs/physical/point_cloud_localization").glob("object_cluster_*.ply")
             if not path.stem.endswith("_downsampled")
         )
         if not cluster_paths:
-            raise FileNotFoundError("Missing raw object clusters in output/point_cloud_localization")
+            raise FileNotFoundError(
+                "Missing raw object clusters in outputs/physical/point_cloud_localization"
+            )
 
         geometries = []
         colors = [
@@ -217,7 +219,9 @@ class PointCloudPlot:
         )
 
     def show_segmented_table_and_objects(self):
-        segmented_path = Path("output/point_cloud_localization/segmented_table_and_objects.ply")
+        segmented_path = Path(
+            "outputs/physical/point_cloud_localization/segmented_table_and_objects.ply"
+        )
         if not segmented_path.exists():
             raise FileNotFoundError(f"Missing segmented table/object cloud: {segmented_path}")
 
@@ -232,9 +236,9 @@ class PointCloudPlot:
 
 class RBGAnnotation:
     def __init__(self):
-        self.rgb_path = Path("output/raw/RGB.png")
-        self.roi_path = Path("output/roi/roi_candidates.json")
-        self.output_dir = Path("output/annotation")
+        self.rgb_path = Path("outputs/physical/raw/RGB.png")
+        self.roi_path = Path("outputs/physical/roi/roi_candidates.json")
+        self.output_dir = Path("outputs/physical/annotation")
         self.output_path = self.output_dir / "RGB_roi_annotation.png"
         self.box_color = np.array([255, 40, 40], dtype=np.uint8)
         self.label_background_color = np.array([255, 255, 255], dtype=np.uint8)
@@ -346,9 +350,13 @@ class RBGAnnotation:
 
 class AugmentedPointCloudProjection:
     def __init__(self):
-        self.localization_path = Path("output/point_cloud_localization/point_cloud_localization.json")
-        self.registration_path = Path("output/registered_point_cloud/cad_registration_result.json")
-        self.output_dir = Path("output/projection")
+        self.localization_path = Path(
+            "outputs/physical/point_cloud_localization/point_cloud_localization.json"
+        )
+        self.registration_path = Path(
+            "outputs/physical/registered_point_cloud/cad_registration_result.json"
+        )
+        self.output_dir = Path("outputs/physical/projection")
         self.rgb_projection_path = self.output_dir / "RGB_augmented_point_cloud_projection.png"
         self.depth_projection_path = self.output_dir / "depth_augmented_point_cloud_projection.png"
         self.metadata_path = self.output_dir / "augmented_point_cloud_projection.json"

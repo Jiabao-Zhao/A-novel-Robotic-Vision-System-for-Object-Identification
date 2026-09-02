@@ -23,7 +23,11 @@ def main():
     parser.add_argument("--cad", required=True, help="CAD mesh or point-cloud path.")
     parser.add_argument("--observed", required=True, help="Observed object cluster PLY path.")
     parser.add_argument("--localization", help="Optional localization JSON containing plane_model.")
-    parser.add_argument("--output", default="output/debug_alignment", help="Output directory.")
+    parser.add_argument(
+        "--output",
+        default="outputs/physical/debug_alignment",
+        help="Output directory.",
+    )
     args = parser.parse_args()
 
     result = CADPointCloudRegistration().run(

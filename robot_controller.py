@@ -394,8 +394,8 @@ class RTDECommander:
 
     def output_object_pose_base(
             self,
-            registration_path="output/registered_point_cloud/cad_registration_result.json",
-            output_path="output/robot_pose/object_pose_base.json",
+            registration_path="outputs/physical/registered_point_cloud/cad_registration_result.json",
+            output_path="outputs/physical/robot_pose/object_pose_base.json",
     ):
         result = self.object_pose_base_from_registration(registration_path)
         output_path = Path(output_path)

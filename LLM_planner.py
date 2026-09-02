@@ -103,10 +103,12 @@ class OpenAIPlanner:
 
 def plan_from_outputs(
     user_text,
-    vlm_path=Path("output/vlm/vlm_result.json"),
-    registration_path=Path("output/registered_point_cloud/cad_registration_result.json"),
-    robot_pose_path=Path("output/robot_pose/object_pose_base.json"),
-    output_path=Path("output/planner/llm_plan.json"),
+    vlm_path=Path("outputs/physical/vlm/vlm_result.json"),
+    registration_path=Path(
+        "outputs/physical/registered_point_cloud/cad_registration_result.json"
+    ),
+    robot_pose_path=Path("outputs/physical/robot_pose/object_pose_base.json"),
+    output_path=Path("outputs/physical/planner/llm_plan.json"),
 ):
     context = load_perception_context(vlm_path, registration_path, robot_pose_path)
     prompt = _llm_planner_prompt(user_text, context, APPROVED_ACTION_SCHEMA)

@@ -17,7 +17,7 @@ TASK_INDEX = 7
 CAMERA_NAME = "agentview"
 IMAGE_WIDTH = 256
 IMAGE_HEIGHT = 256
-OUTPUT_ROOT = Path("outputs/libero_task_execution/episode")
+OUTPUT_ROOT = Path("outputs/simulation/libero_task_execution/episode")
 VIDEO_FRAME_STRIDE = 2
 
 
