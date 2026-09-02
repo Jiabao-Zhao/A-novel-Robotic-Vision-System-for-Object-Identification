@@ -6,10 +6,10 @@ import numpy as np
 
 from simulation.libero_control import execute_top_grasp_and_place
 from simulation.libero_env import LiberoIntegrationError, LiberoTaskEnvironment
-from simulation.libero_grounding import ground_milk_and_basket
 from simulation.libero_io import save_libero_observation
 from simulation.libero_sensor import LiberoRGBDSensor
 from simulation.perception_adapter import run_libero_localization
+from vlm_module import classify_from_localization, create_roi_contact_sheet
 
 
 SUITE_NAME = "libero_object"
@@ -47,7 +47,18 @@ def main():
             rgb_path=capture_paths["rgb"],
             output_root=perception_root,
         )
-        grounding = ground_milk_and_basket(observation.rgb, localization["objects"])
+        vlm_visual_prompt_path = create_roi_contact_sheet(
+            capture_paths["rgb"],
+            localization_paths["localization"],
+            OUTPUT_ROOT / "vlm_roi_contact_sheet.png",
+        )
+        vlm_result_path = classify_from_localization(
+            observation.instruction,
+            image_path=vlm_visual_prompt_path,
+            localization_path=localization_paths["localization"],
+            output_path=OUTPUT_ROOT / "vlm_result.json",
+        )
+        grounding = task_roles_from_vlm_result(vlm_result_path)
         objects_by_id = {
             item["object_id"]: item for item in localization["objects"]
         }
@@ -144,6 +155,8 @@ def main():
                     "localization": str(localization_paths["localization"]),
                     "annotation": str(localization_paths["annotated_rgb"]),
                     "grounding": str(grounding_path),
+                    "vlm_visual_prompt": str(vlm_visual_prompt_path),
+                    "vlm_result": str(vlm_result_path),
                     "video": str(video_path),
                     "final_agentview_rgb": str(final_agentview_paths["rgb"]),
                     "final_wrist_rgb": str(final_wrist_paths["rgb"]),
@@ -156,14 +169,9 @@ def main():
 
     print(f"Instruction: {observation.instruction}")
     print(f"Localized candidates: {localization['object_count']}")
-    print(
-        f"Grounded milk: {grounding['milk_object_id']} "
-        f"(margin={grounding['milk_similarity_margin']:.4f})"
-    )
-    print(
-        f"Grounded basket: {grounding['basket_object_id']} "
-        f"(margin={grounding['basket_similarity_margin']:.4f})"
-    )
+    print(f"VLM provider: {grounding['provider']}")
+    print(f"Grounded milk: {grounding['milk_object_id']}")
+    print(f"Grounded basket: {grounding['basket_object_id']}")
     print(f"Milk centroid in world frame (m): {np.round(milk_world_m, 4).tolist()}")
     print(f"Basket centroid in world frame (m): {np.round(basket_world_m, 4).tolist()}")
     print(f"Action steps: {step_count}")
@@ -180,6 +188,44 @@ def main():
 def camera_point_to_world(point_camera_m, world_T_camera):
     point = np.asarray([*point_camera_m, 1.0], dtype=float)
     return (np.asarray(world_T_camera, dtype=float) @ point)[:3]
+
+
+def task_roles_from_vlm_result(result_path):
+    payload = json.loads(Path(result_path).read_text(encoding="utf-8"))
+    normalized = payload.get("normalized_result", {})
+    if normalized.get("needs_human_clarification"):
+        raise RuntimeError(
+            "VLM grounding requires clarification: "
+            f"{normalized.get('clarification_reason')}"
+        )
+    selected = list(normalized.get("selected_objects", []))
+    milk = [
+        item
+        for item in selected
+        if item.get("instruction_role") == "moved_object"
+        and "milk" in str(item.get("object_type", "")).lower()
+    ]
+    basket = [
+        item
+        for item in selected
+        if item.get("instruction_role") == "reference_object"
+        and "basket" in str(item.get("object_type", "")).lower()
+    ]
+    if len(milk) != 1 or len(basket) != 1:
+        raise RuntimeError(
+            "VLM must select exactly one milk moved_object and one basket "
+            f"reference_object; received selected objects: {selected}"
+        )
+    if milk[0]["object_id"] == basket[0]["object_id"]:
+        raise RuntimeError("VLM assigned milk and basket to the same localized object.")
+    return {
+        "provider": payload.get("provider"),
+        "method": "existing VLM module over enlarged depth-localized RGB crops",
+        "milk_object_id": milk[0]["object_id"],
+        "basket_object_id": basket[0]["object_id"],
+        "selected_objects": selected,
+        "object_evaluations": normalized.get("object_evaluations", []),
+    }
 
 
 def save_video(frames, output_path, fps):

@@ -1,3 +1,5 @@
+"""Optional local CLIP grounding baseline; not used by the primary task runner."""
+
 import numpy as np
 from PIL import Image
 

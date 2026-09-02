@@ -1,8 +1,12 @@
 import base64
 import json
+import math
 import os
 import re
 from pathlib import Path
+
+import cv2
+import numpy as np
 
 from prompt import _vlm_prompt
 
@@ -104,6 +108,91 @@ def classify_from_localization(
         encoding="utf-8",
     )
     return output_path
+
+
+def create_roi_contact_sheet(
+    rgb_path,
+    localization_path,
+    output_path,
+    tile_size_px=224,
+    columns=4,
+):
+    """Create a full-scene plus enlarged-candidate visual prompt for the VLM."""
+    image = cv2.imread(str(rgb_path), cv2.IMREAD_COLOR)
+    if image is None:
+        raise FileNotFoundError(f"Could not read RGB image for VLM prompt: {rgb_path}")
+    payload = json.loads(Path(localization_path).read_text(encoding="utf-8"))
+    objects = list(payload.get("objects", []))
+    if not objects:
+        raise RuntimeError("Cannot create a VLM contact sheet without localized objects.")
+
+    tile_count = 1 + len(objects)
+    row_count = math.ceil(tile_count / columns)
+    canvas = np.full(
+        (row_count * tile_size_px, columns * tile_size_px, 3),
+        245,
+        dtype=np.uint8,
+    )
+    _place_contact_sheet_tile(canvas, image, "full scene", 0, tile_size_px, columns)
+    image_height, image_width = image.shape[:2]
+    for tile_index, item in enumerate(objects, start=1):
+        roi = item.get("roi", {})
+        padding = 8
+        x1 = max(0, int(roi.get("x1", 0)) - padding)
+        y1 = max(0, int(roi.get("y1", 0)) - padding)
+        x2 = min(image_width, int(roi.get("x2", 0)) + padding)
+        y2 = min(image_height, int(roi.get("y2", 0)) + padding)
+        if x2 <= x1 or y2 <= y1:
+            raise RuntimeError(f"Invalid ROI for {item.get('object_id')}: {roi}")
+        _place_contact_sheet_tile(
+            canvas,
+            image[y1:y2, x1:x2],
+            str(item.get("object_id", "unknown")),
+            tile_index,
+            tile_size_px,
+            columns,
+        )
+
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    if not cv2.imwrite(str(output_path), canvas):
+        raise RuntimeError(f"Could not save VLM contact sheet: {output_path}")
+    return output_path
+
+
+def _place_contact_sheet_tile(canvas, image, label, index, tile_size, columns):
+    header_height = 34
+    margin = 8
+    row = index // columns
+    column = index % columns
+    tile_y = row * tile_size
+    tile_x = column * tile_size
+    available_width = tile_size - 2 * margin
+    available_height = tile_size - header_height - margin
+    scale = min(
+        available_width / image.shape[1],
+        available_height / image.shape[0],
+    )
+    resized_width = max(1, int(round(image.shape[1] * scale)))
+    resized_height = max(1, int(round(image.shape[0] * scale)))
+    resized = cv2.resize(
+        image,
+        (resized_width, resized_height),
+        interpolation=cv2.INTER_CUBIC,
+    )
+    image_x = tile_x + (tile_size - resized_width) // 2
+    image_y = tile_y + header_height + (available_height - resized_height) // 2
+    canvas[image_y:image_y + resized_height, image_x:image_x + resized_width] = resized
+    cv2.putText(
+        canvas,
+        label,
+        (tile_x + margin, tile_y + 24),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.62,
+        (0, 0, 0),
+        2,
+        cv2.LINE_AA,
+    )
 
 
 def classify_with_gemini_then_openai(image_path, user_text, detections):

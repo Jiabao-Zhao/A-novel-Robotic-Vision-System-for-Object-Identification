@@ -5,6 +5,26 @@ This bridge targets Ubuntu 22.04 under WSL2. It uses the current LeRobot
 environment API because the LeRobot Gym wrapper currently does not expose depth
 observations.
 
+## Where the simulation runs
+
+LIBERO, MuJoCo, robosuite, Open3D, and the repository's Python pipeline all run
+inside Ubuntu under WSL2. The Windows repository path is mounted into that
+Linux environment:
+
+```text
+Windows: D:\GitHub\A-novel-Robotic-Vision-System-for-Object-Identification
+WSL:     /mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification
+```
+
+MuJoCo renders through WSL GPU passthrough and EGL. `environment.reset()` and
+`environment.step(action)` return Python dictionaries directly in the same WSL
+process; there is no image-transfer service between Windows and WSL. The sensor
+adapter selects the allowed camera and robot fields, converts depth, and passes
+NumPy arrays to the local perception pipeline. For the VLM stage only, the
+generated contact-sheet image, instruction, and localized candidate metadata
+are sent from WSL to the configured cloud API; the returned JSON association is
+then consumed locally by the controller.
+
 ## WSL and Python environment
 
 Run the Windows command from an Administrator PowerShell, then restart Windows
@@ -37,7 +57,7 @@ python -m pip install --no-build-isolation "egl-probe==1.0.2" "hf-egl-probe==1.0
 unset CMAKE_POLICY_VERSION_MINIMUM
 
 python -m pip install -e ".[libero]"
-python -m pip install open3d
+python -m pip install open3d google-genai openai
 python -m pip check
 ```
 
@@ -150,20 +170,21 @@ frame for calibration verification.
 
 `scripts.libero_task_execution` runs LIBERO-Object task 7, "pick up the milk
 and place it in the basket." It uses the rendered agent-view RGB-D observation,
-the calibration bridge, the existing depth localizer, RGB-crop CLIP grounding,
-robot proprioception, and normalized OSC pose actions. Simulator segmentation,
-object IDs, and ground-truth object poses are not method inputs. LIBERO's task
-success predicate is read only after execution as the evaluation result.
+the calibration bridge, the existing depth localizer, the repository's
+Gemini-first/OpenAI-fallback VLM association, robot proprioception, and
+normalized OSC pose actions. The VLM receives a full-scene plus enlarged-crop
+contact sheet labeled only with localized `object_id` values. Simulator
+segmentation, simulator object identities, and ground-truth object poses are
+not method inputs. LIBERO's task success predicate is read only after execution
+as the evaluation result.
 
-The LeRobot environment already supplies `torch` and `transformers`. Cache the
-grounding checkpoint once before the first episode:
+Set `GEMINI_API_KEY` and/or `OPENAI_API_KEY` in the WSL process environment
+before running the task. `simulation.libero_clip_baseline` remains available as
+an explicitly labeled local comparison, but the primary task runner does not
+use it.
 
-```bash
-python -c "from transformers import CLIPModel, AutoProcessor; CLIPModel.from_pretrained('openai/clip-vit-base-patch32'); AutoProcessor.from_pretrained('openai/clip-vit-base-patch32')"
-```
-
-The episode saves its perception inputs, localization JSON, grounding scores,
-normalized action log, final agent and wrist RGB-D observations, success value,
-and MP4 video beneath `outputs/libero_task_execution/episode/`. This is a
-task-specific top-grasp execution baseline, not yet a general grasp planner or
-VLA policy.
+The episode saves its perception inputs, localization JSON, enlarged VLM visual
+prompt, complete VLM result, normalized action log, final agent and wrist RGB-D
+observations, success value, and MP4 video beneath
+`outputs/libero_task_execution/episode/`. This is a task-specific top-grasp
+execution baseline, not yet a general grasp planner or VLA policy.

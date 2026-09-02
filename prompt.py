@@ -10,7 +10,7 @@ The point-cloud localization module has already localized the objects. You must 
 Your job is to evaluate each localized object independently against the human target instruction.
 
 You are provided with:
-- an RGB image annotated with bounding boxes and object_ids.
+- an RGB visual prompt containing the full scene and/or enlarged localized-object crops labeled with object_ids.
 - localized object metadata with object_ids, visual labels, 2D bounding boxes, and absolute image regions.
 - a human instruction that contains the target objects.
 
