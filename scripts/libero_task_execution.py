@@ -4,8 +4,14 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from simulation.libero_control import execute_top_grasp_and_place
+from simulation.libero_cad import register_libero_cad_to_observation
+from simulation.libero_control import (
+    OPEN_GRIPPER,
+    execute_top_grasp_and_place,
+    hold_gripper,
+)
 from simulation.libero_env import LiberoIntegrationError, LiberoTaskEnvironment
+from simulation.libero_experiment import PROPOSED_METHOD_FOLDER, episode_result_dir
 from simulation.libero_io import save_libero_observation
 from simulation.libero_sensor import LiberoRGBDSensor
 from simulation.perception_adapter import run_libero_localization
@@ -17,8 +23,27 @@ TASK_INDEX = 7
 CAMERA_NAME = "agentview"
 IMAGE_WIDTH = 256
 IMAGE_HEIGHT = 256
-OUTPUT_ROOT = Path("outputs/simulation/libero_task_execution/episode")
+CONTROL_FREQUENCY_HZ = 20
+EPISODE_HORIZON_STEPS = 280
+CONTROL_MODE = "relative"
+RANDOM_SEED = 1000
+INITIAL_STATE_INDEX = 0
+INITIAL_PHYSICS_SETTLE_STEPS = 10
+OUTPUT_ROOT = episode_result_dir(PROPOSED_METHOD_FOLDER, TASK_INDEX, INITIAL_STATE_INDEX)
 VIDEO_FRAME_STRIDE = 2
+METHOD_NAME = "rgbd_vlm_cad_scripted_controller"
+
+
+class _EpisodeSucceeded(RuntimeError):
+    pass
+
+
+class _EpisodeHorizonReached(RuntimeError):
+    pass
+
+
+class _EnvironmentTerminated(RuntimeError):
+    pass
 
 
 def main():
@@ -26,6 +51,8 @@ def main():
     action_log = []
     video_frames = []
     step_count = 0
+    first_success_step = None
+    termination_reason = "controller_completed"
     execution_error = None
 
     with LiberoTaskEnvironment(
@@ -34,7 +61,20 @@ def main():
         image_width=IMAGE_WIDTH,
         image_height=IMAGE_HEIGHT,
     ) as environment:
-        raw_observation = environment.reset()
+        raw_observation = environment.reset(
+            seed=RANDOM_SEED,
+            init_state_index=INITIAL_STATE_INDEX,
+        )
+        initial_state_sha256 = environment.last_init_state_sha256
+        initial_state_count = environment.initial_state_count
+        raw_observation = hold_gripper(
+            environment,
+            raw_observation,
+            OPEN_GRIPPER,
+            "initial_physics_settle",
+            INITIAL_PHYSICS_SETTLE_STEPS,
+        )
+        environment.set_control_mode(CONTROL_MODE)
         sensor = LiberoRGBDSensor(environment, CAMERA_NAME)
         observation = sensor.capture(raw_observation)
         capture_paths = save_libero_observation(
@@ -64,11 +104,22 @@ def main():
         }
         milk = objects_by_id[grounding["milk_object_id"]]
         basket = objects_by_id[grounding["basket_object_id"]]
-        milk_world_m = camera_point_to_world(
+        milk_depth_centroid_world_m = camera_point_to_world(
             milk["centroid_3d_m"], observation.world_T_camera
         )
         basket_world_m = camera_point_to_world(
             basket["centroid_3d_m"], observation.world_T_camera
+        )
+        milk_cad_registration = register_libero_cad_to_observation(
+            object_type=grounding["milk_object_type"],
+            object_id=grounding["milk_object_id"],
+            localization=localization,
+            world_T_camera=observation.world_T_camera,
+            output_dir=OUTPUT_ROOT / "cad_registration" / "milk",
+        )
+        milk_world_m = np.asarray(
+            milk_cad_registration["registered_center_world_m"],
+            dtype=float,
         )
 
         OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
@@ -77,8 +128,9 @@ def main():
         video_frames.append(_agentview_rgb(raw_observation))
 
         def record_step(phase, phase_step, raw, action, reward, done, info):
-            nonlocal step_count
+            nonlocal first_success_step, step_count
             step_count += 1
+            is_success = environment.check_success()
             action_log.append(
                 {
                     "step": step_count,
@@ -90,10 +142,18 @@ def main():
                     ],
                     "reward": float(reward),
                     "done": bool(done),
+                    "is_success": is_success,
                 }
             )
             if step_count % VIDEO_FRAME_STRIDE == 0:
                 video_frames.append(_agentview_rgb(raw))
+            if is_success:
+                first_success_step = step_count
+                raise _EpisodeSucceeded
+            if done:
+                raise _EnvironmentTerminated
+            if step_count >= EPISODE_HORIZON_STEPS:
+                raise _EpisodeHorizonReached
 
         try:
             final_raw_observation = execute_top_grasp_and_place(
@@ -103,11 +163,25 @@ def main():
                 basket_world_m,
                 callback=record_step,
             )
+        except _EpisodeSucceeded:
+            termination_reason = "success"
+            final_raw_observation = environment.last_observation
+        except _EpisodeHorizonReached:
+            termination_reason = "episode_horizon"
+            final_raw_observation = environment.last_observation
+        except _EnvironmentTerminated:
+            termination_reason = "environment_terminated_without_success"
+            final_raw_observation = environment.last_observation
         except Exception as error:
+            termination_reason = "execution_error"
             execution_error = str(error)
             final_raw_observation = environment.last_observation
 
         success = environment.check_success()
+        if success and first_success_step is None:
+            first_success_step = step_count
+        if not success and termination_reason == "controller_completed":
+            termination_reason = "controller_completed_without_success"
         video_frames.append(_agentview_rgb(final_raw_observation))
         final_agentview = sensor.capture(final_raw_observation)
         final_wrist = LiberoRGBDSensor(
@@ -130,10 +204,15 @@ def main():
     episode_path.write_text(
         json.dumps(
             {
+                "schema_version": 1,
+                "method": METHOD_NAME,
                 "suite": SUITE_NAME,
                 "task_index": TASK_INDEX,
                 "instruction": observation.instruction,
                 "success": success,
+                "success_predicate": "LIBERO task environment check_success()",
+                "first_success_step": first_success_step,
+                "termination_reason": termination_reason,
                 "execution_error": execution_error,
                 "method_inputs": [
                     "rendered agentview RGB",
@@ -142,13 +221,33 @@ def main():
                     "world_T_camera",
                     "robot proprioception",
                     "language instruction",
+                    "known milk CAD prior selected from the VLM classification",
                 ],
-                "simulator_ground_truth_used_by_method": False,
+                "simulator_object_identity_or_pose_used_by_method": False,
+                "seed": RANDOM_SEED,
+                "initial_state_index": INITIAL_STATE_INDEX,
+                "initial_state_sha256": initial_state_sha256,
+                "available_initial_state_count": initial_state_count,
+                "episode_horizon_steps": EPISODE_HORIZON_STEPS,
+                "control_frequency_hz": CONTROL_FREQUENCY_HZ,
+                "control_mode": environment.control_mode,
+                "observation_resolution_hw": [IMAGE_HEIGHT, IMAGE_WIDTH],
+                "initial_physics_settle_steps": INITIAL_PHYSICS_SETTLE_STEPS,
+                "initial_physics_settle_duration_s": (
+                    INITIAL_PHYSICS_SETTLE_STEPS / CONTROL_FREQUENCY_HZ
+                ),
+                "exact_rendering_cad_prior_used": milk_cad_registration[
+                    "exact_rendering_cad_prior_used"
+                ],
                 "workspace_rgbd_pixels": int(workspace_mask.sum()),
                 "localized_object_count": int(localization["object_count"]),
                 "grounding": grounding,
-                "milk_centroid_world_m": milk_world_m.tolist(),
+                "milk_depth_centroid_world_m": milk_depth_centroid_world_m.tolist(),
+                "milk_registered_center_world_m": milk_world_m.tolist(),
+                "pick_position_source": "registered milk CAD axis-aligned-box center",
+                "place_position_source": "depth-localized basket centroid",
                 "basket_centroid_world_m": basket_world_m.tolist(),
+                "milk_cad_registration": milk_cad_registration,
                 "action_steps": step_count,
                 "actions": action_log,
                 "artifacts": {
@@ -157,6 +256,11 @@ def main():
                     "grounding": str(grounding_path),
                     "vlm_visual_prompt": str(vlm_visual_prompt_path),
                     "vlm_result": str(vlm_result_path),
+                    "milk_cad_registration": milk_cad_registration["result_path"],
+                    "milk_aligned_cad_cloud": milk_cad_registration[
+                        "aligned_cad_cloud_path"
+                    ],
+                    "milk_augmented_cloud": milk_cad_registration["augmented_cloud_path"],
                     "video": str(video_path),
                     "final_agentview_rgb": str(final_agentview_paths["rgb"]),
                     "final_wrist_rgb": str(final_wrist_paths["rgb"]),
@@ -172,13 +276,29 @@ def main():
     print(f"VLM provider: {grounding['provider']}")
     print(f"Grounded milk: {grounding['milk_object_id']}")
     print(f"Grounded basket: {grounding['basket_object_id']}")
-    print(f"Milk centroid in world frame (m): {np.round(milk_world_m, 4).tolist()}")
+    print(
+        "Milk depth centroid in world frame (m): "
+        f"{np.round(milk_depth_centroid_world_m, 4).tolist()}"
+    )
+    print(
+        "Milk CAD-registered center in world frame (m): "
+        f"{np.round(milk_world_m, 4).tolist()}"
+    )
+    print(
+        "Milk CAD registration RMSE (m): "
+        f"{milk_cad_registration['constrained_rmse_m']:.6f}"
+    )
     print(f"Basket centroid in world frame (m): {np.round(basket_world_m, 4).tolist()}")
     print(f"Action steps: {step_count}")
+    print(f"Initial state: {INITIAL_STATE_INDEX} ({initial_state_sha256[:12]}...)")
+    print(f"Termination: {termination_reason}")
     print(f"LIBERO task success: {success}")
     print(f"Episode video: {video_path}")
     print(f"Episode report: {episode_path}")
-    print("Simulator ground-truth object poses were not used by the method")
+    print(
+        "MuJoCo instance identity, segmentation, and ground-truth object pose "
+        "were not used by the method"
+    )
     if execution_error is not None:
         raise SystemExit(f"Task execution failed: {execution_error}")
     if not success:
@@ -222,6 +342,7 @@ def task_roles_from_vlm_result(result_path):
         "provider": payload.get("provider"),
         "method": "existing VLM module over enlarged depth-localized RGB crops",
         "milk_object_id": milk[0]["object_id"],
+        "milk_object_type": milk[0]["object_type"],
         "basket_object_id": basket[0]["object_id"],
         "selected_objects": selected,
         "object_evaluations": normalized.get("object_evaluations", []),

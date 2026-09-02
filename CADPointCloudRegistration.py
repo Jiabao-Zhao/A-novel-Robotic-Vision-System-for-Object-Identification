@@ -27,8 +27,8 @@ class CADPointCloudRegistration:
 
     This estimates only the tabletop degrees of freedom: translation along the
     table plane and yaw around the table normal. The selected transform is named
-    T_observed_from_cad and maps CAD-frame points into the observed RealSense
-    camera frame.
+    T_observed_from_cad and maps CAD-frame points into the observed camera
+    frame.
     """
 
     def __init__(self, config=None):
@@ -41,7 +41,7 @@ class CADPointCloudRegistration:
             raise ValueError(f"Observed point cloud is empty or unreadable: {path}")
         return cloud
 
-    def load_cad_as_point_cloud(self, cad_path):
+    def load_cad_as_point_cloud(self, cad_path, scale_to_m=None):
         path = Path(cad_path)
         suffix = path.suffix.lower()
         point_cloud_suffixes = {".ply", ".pcd", ".xyz", ".xyzn", ".xyzrgb"}
@@ -50,14 +50,14 @@ class CADPointCloudRegistration:
         if suffix in point_cloud_suffixes:
             cloud = o3d.io.read_point_cloud(str(path))
             if not cloud.is_empty():
-                self.normalize_cad_units(cloud)
+                self.normalize_cad_units(cloud, scale_to_m)
                 return cloud
 
         if suffix in mesh_suffixes or suffix == ".ply":
             mesh = o3d.io.read_triangle_mesh(str(path))
             if mesh.is_empty() or len(mesh.triangles) == 0:
                 raise ValueError(f"CAD file is not a readable triangle mesh: {path}")
-            self.normalize_cad_units(mesh)
+            self.normalize_cad_units(mesh, scale_to_m)
             mesh.compute_vertex_normals()
             o3d.utility.random.seed(int(self.config.random_seed))
             return mesh.sample_points_uniformly(self.config.cad_sample_points)
@@ -68,17 +68,30 @@ class CADPointCloudRegistration:
             f"Use one of: {supported}."
         )
 
-    def normalize_cad_units(self, geometry):
+    def normalize_cad_units(self, geometry, scale_to_m=None):
         """
         Open3D reads CAD/STL coordinates without unit metadata.
 
-        The perception pipeline works in meters. If a CAD file has an extent
-        larger than a plausible tabletop object in meters, treat it as
-        millimeters and scale it by 0.001.
+        The perception pipeline works in meters. A declared scale overrides
+        inference. Otherwise, if a CAD file has an extent larger than a
+        plausible tabletop object in meters, treat it as millimeters and scale
+        it by 0.001.
         """
+        if scale_to_m is not None:
+            scale = float(scale_to_m)
+            if not np.isfinite(scale) or scale <= 0.0:
+                raise ValueError(
+                    "scale_to_m must be finite and positive; "
+                    f"received {scale_to_m!r}."
+                )
+            geometry.scale(scale, center=(0.0, 0.0, 0.0))
+            return geometry
         if not self.config.auto_scale_cad_to_meters:
             return geometry
-        extent = np.asarray(geometry.get_axis_aligned_bounding_box().get_extent(), dtype=float)
+        extent = np.asarray(
+            geometry.get_axis_aligned_bounding_box().get_extent(),
+            dtype=float,
+        )
         if extent.size and float(np.max(extent)) > self.config.cad_mm_extent_threshold_m:
             geometry.scale(0.001, center=(0.0, 0.0, 0.0))
         return geometry
@@ -93,8 +106,12 @@ class CADPointCloudRegistration:
     ):
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
+        cad_metadata = cad_metadata or {}
 
-        cad_cloud = self.load_cad_as_point_cloud(cad_path)
+        cad_cloud = self.load_cad_as_point_cloud(
+            cad_path,
+            scale_to_m=cad_metadata.get("scale_to_m"),
+        )
         observed_cloud = self.load_observed_cloud(observed_cloud_path)
         diagnostics = self.cloud_diagnostics(cad_cloud, observed_cloud)
         selected, candidate_records, warnings = self.find_best_tabletop_alignment(
@@ -126,6 +143,7 @@ class CADPointCloudRegistration:
 
         result = {
             "cad_path": str(cad_path),
+            "cad_scale_to_m": cad_metadata.get("scale_to_m"),
             "observed_cloud_path": str(observed_cloud_path),
             "cad_sampled_cloud_path": str(cad_sampled_path),
             "aligned_cad_cloud_path": str(aligned_path),
@@ -253,6 +271,10 @@ class CADPointCloudRegistration:
         to drift during refinement.
         """
         transform = np.asarray(initial_transform, dtype=float).copy()
+        cad_center = np.asarray(
+            cad_cloud.get_axis_aligned_bounding_box().get_center(),
+            dtype=float,
+        )
         xy_step = float(self.config.xy_step_m)
         yaw_step = np.deg2rad(float(self.config.yaw_step_refine_deg))
         best_rmse = self.observed_to_cad_rmse(cad_cloud, observed_cloud, transform)
@@ -261,15 +283,28 @@ class CADPointCloudRegistration:
         while iterations < int(self.config.constrained_iterations):
             iterations += 1
             improved = False
-            proposals = [
+            translation_proposals = [
                 self.delta_transform(table["x_axis"] * xy_step, np.eye(3)),
                 self.delta_transform(-table["x_axis"] * xy_step, np.eye(3)),
                 self.delta_transform(table["y_axis"] * xy_step, np.eye(3)),
                 self.delta_transform(-table["y_axis"] * xy_step, np.eye(3)),
-                self.delta_transform(np.zeros(3), self.rotation_about_axis(table["normal"], yaw_step)),
-                self.delta_transform(np.zeros(3), self.rotation_about_axis(table["normal"], -yaw_step)),
             ]
-            for delta in proposals:
+            for delta in translation_proposals:
+                candidate = delta @ transform
+                rmse = self.observed_to_cad_rmse(cad_cloud, observed_cloud, candidate)
+                if rmse < best_rmse:
+                    transform = candidate
+                    best_rmse = rmse
+                    improved = True
+
+            for angle in (yaw_step, -yaw_step):
+                pivot = self.transform_points(
+                    cad_center.reshape(1, 3),
+                    transform[:3, :3],
+                    transform[:3, 3],
+                )[0]
+                rotation = self.rotation_about_axis(table["normal"], angle)
+                delta = self.rotation_about_point_transform(rotation, pivot)
                 candidate = delta @ transform
                 rmse = self.observed_to_cad_rmse(cad_cloud, observed_cloud, candidate)
                 if rmse < best_rmse:
@@ -388,6 +423,16 @@ class CADPointCloudRegistration:
         transform[:3, :3] = rotation
         transform[:3, 3] = np.asarray(translation, dtype=float)
         return transform
+
+    @staticmethod
+    def rotation_about_point_transform(rotation, point):
+        """Return a rigid transform that rotates around a fixed frame point."""
+        rotation = np.asarray(rotation, dtype=float)
+        point = np.asarray(point, dtype=float)
+        return CADPointCloudRegistration.delta_transform(
+            point - rotation @ point,
+            rotation,
+        )
 
     @staticmethod
     def transform_points(points, rotation, translation):

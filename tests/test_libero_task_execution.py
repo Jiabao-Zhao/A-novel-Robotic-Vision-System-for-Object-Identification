@@ -34,6 +34,7 @@ class LiberoTaskExecutionTests(unittest.TestCase):
 
         self.assertEqual(grounding["provider"], "gemini")
         self.assertEqual(grounding["milk_object_id"], "object_003")
+        self.assertEqual(grounding["milk_object_type"], "milk carton")
         self.assertEqual(grounding["basket_object_id"], "object_001")
 
     def test_task_roles_reject_missing_moved_object(self):

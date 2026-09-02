@@ -3,7 +3,7 @@ from types import SimpleNamespace
 
 import numpy as np
 
-from simulation.libero_control import OPEN_GRIPPER, move_eef_to
+from simulation.libero_control import OPEN_GRIPPER, hold_gripper, move_eef_to
 
 
 class _FakeEnvironment:
@@ -13,8 +13,10 @@ class _FakeEnvironment:
         controller = SimpleNamespace(output_max=np.full(6, 0.05))
         self.robots = [SimpleNamespace(controller=controller)]
         self.position = np.array([0.0, 0.0, 0.2], dtype=float)
+        self.actions = []
 
     def step(self, action):
+        self.actions.append(np.asarray(action, dtype=float).copy())
         self.position += np.asarray(action[:3], dtype=float) * 0.05
         observation = {"robot0_eef_pos": self.position.copy()}
         return observation, 0.0, False, {}
@@ -47,6 +49,24 @@ class LiberoControlTests(unittest.TestCase):
                 gripper_action=OPEN_GRIPPER,
                 phase="unsafe_move",
             )
+
+    def test_hold_gripper_can_settle_scene_before_capture(self):
+        environment = _FakeEnvironment()
+        observation = {"robot0_eef_pos": environment.position.copy()}
+
+        result = hold_gripper(
+            environment,
+            observation,
+            OPEN_GRIPPER,
+            phase="initial_physics_settle",
+            steps=10,
+        )
+
+        self.assertEqual(len(environment.actions), 10)
+        for action in environment.actions:
+            np.testing.assert_array_equal(action[:6], np.zeros(6))
+            self.assertEqual(action[-1], OPEN_GRIPPER)
+        np.testing.assert_allclose(result["robot0_eef_pos"], environment.position)
 
 
 if __name__ == "__main__":
