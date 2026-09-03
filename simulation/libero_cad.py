@@ -13,8 +13,8 @@ LIBERO_CAD_LIBRARY_PATH = (
 )
 
 
-def retrieve_libero_cad(object_type, catalog_path=LIBERO_CAD_LIBRARY_PATH, assets_root=None):
-    """Resolve a semantic VLM class to a declared LIBERO CAD prior."""
+def resolve_libero_cad_record(object_type, catalog_path=LIBERO_CAD_LIBRARY_PATH):
+    """Resolve a semantic object description to one canonical catalog record."""
     records = json.loads(Path(catalog_path).read_text(encoding="utf-8"))
     normalized_type = _normalize_name(object_type)
     matches = []
@@ -28,8 +28,13 @@ def retrieve_libero_cad(object_type, catalog_path=LIBERO_CAD_LIBRARY_PATH, asset
             f"Expected exactly one CAD match for {object_type!r}; found {len(matches)}. "
             f"Available CAD models: {available or 'none'}."
         )
+    return dict(matches[0])
 
-    result = dict(matches[0])
+
+def retrieve_libero_cad(object_type, catalog_path=LIBERO_CAD_LIBRARY_PATH, assets_root=None):
+    """Resolve a semantic VLM class and verify its installed LIBERO CAD prior."""
+    result = resolve_libero_cad_record(object_type, catalog_path=catalog_path)
+
     candidate_roots = _asset_roots(assets_root)
     candidate_paths = [root / result["asset_relative_path"] for root in candidate_roots]
     cad_path = next((path for path in candidate_paths if path.is_file()), None)
@@ -113,7 +118,7 @@ def register_libero_cad_to_observation(
     warnings = list(registration.get("warnings", []))
     if not np.isfinite(rmse_m) or rmse_m > max_rmse_m or warnings:
         raise RuntimeError(
-            "Milk CAD registration was rejected before task execution: "
+            f"CAD registration for {cad['cad_name']!r} was rejected before task execution: "
             f"RMSE={rmse_m:.6f} m (maximum {max_rmse_m:.6f} m), "
             f"warnings={warnings}."
         )

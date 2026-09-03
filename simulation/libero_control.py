@@ -91,25 +91,25 @@ def execute_top_grasp_and_place(
     retreat = np.array([place[0], place[1], 0.35])
 
     observation = move_eef_to(
-        environment, observation, pregrasp, OPEN_GRIPPER, "move_above_milk", callback
+        environment, observation, pregrasp, OPEN_GRIPPER, "move_above_target", callback
     )
     observation = hold_gripper(
         environment, observation, OPEN_GRIPPER, "open_gripper", 12, callback
     )
     observation = move_eef_to(
-        environment, observation, grasp, OPEN_GRIPPER, "descend_to_milk", callback
+        environment, observation, grasp, OPEN_GRIPPER, "descend_to_target", callback
     )
     observation = hold_gripper(
         environment, observation, CLOSE_GRIPPER, "close_gripper", 30, callback
     )
     observation = move_eef_to(
-        environment, observation, lift, CLOSE_GRIPPER, "lift_milk", callback
+        environment, observation, lift, CLOSE_GRIPPER, "lift_target", callback
     )
     observation = move_eef_to(
         environment, observation, preplace, CLOSE_GRIPPER, "move_above_basket", callback
     )
     observation = hold_gripper(
-        environment, observation, OPEN_GRIPPER, "release_milk", 35, callback
+        environment, observation, OPEN_GRIPPER, "release_target", 35, callback
     )
     observation = move_eef_to(
         environment, observation, retreat, OPEN_GRIPPER, "retreat", callback

@@ -54,8 +54,11 @@ class OpenAIVLM:
                 {
                     "role": "system",
                     "content": (
-                        "You classify user-described objects from an annotated "
-                        "robot workspace image. Return only JSON."
+                        "Perform instruction-conditioned object grounding from an "
+                        "annotated robot workspace image. Use only localized object "
+                        "IDs and exact semantic object names from the user's "
+                        "instruction; do not invent, generalize, or paraphrase "
+                        "classification labels. Return only JSON."
                     ),
                 },
                 {
@@ -213,6 +216,7 @@ def classify_with_gemini_then_openai(image_path, user_text, detections):
 def load_localized_objects(localization_path):
     payload = json.loads(Path(localization_path).read_text(encoding="utf-8"))
     image_width, image_height = image_size_from_localization(payload)
+    coordinate_frame = str(payload.get("frame") or "camera")
     detections = []
     for item in payload.get("objects", []):
         roi = item.get("roi", {})
@@ -233,6 +237,10 @@ def load_localized_objects(localization_path):
                     "horizontal": region["horizontal"],
                     "vertical": region["vertical"],
                 },
+                "centroid_3d_m": item.get("centroid_3d_m"),
+                "size_3d_m": item.get("size_3d_m"),
+                "point_count": item.get("point_count"),
+                "geometry_frame": coordinate_frame,
             }
         )
     return detections

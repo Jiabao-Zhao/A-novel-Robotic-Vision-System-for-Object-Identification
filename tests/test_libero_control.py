@@ -3,7 +3,12 @@ from types import SimpleNamespace
 
 import numpy as np
 
-from simulation.libero_control import OPEN_GRIPPER, hold_gripper, move_eef_to
+from simulation.libero_control import (
+    OPEN_GRIPPER,
+    execute_top_grasp_and_place,
+    hold_gripper,
+    move_eef_to,
+)
 
 
 class _FakeEnvironment:
@@ -67,6 +72,25 @@ class LiberoControlTests(unittest.TestCase):
             np.testing.assert_array_equal(action[:6], np.zeros(6))
             self.assertEqual(action[-1], OPEN_GRIPPER)
         np.testing.assert_allclose(result["robot0_eef_pos"], environment.position)
+
+    def test_pick_and_place_phase_names_are_product_generic(self):
+        environment = _FakeEnvironment()
+        observation = {"robot0_eef_pos": environment.position.copy()}
+        phases = []
+
+        execute_top_grasp_and_place(
+            environment,
+            observation,
+            pick_xyz_m=(0.05, -0.1, 0.04),
+            place_xyz_m=(0.05, 0.2, 0.08),
+            callback=lambda phase, *_: phases.append(phase),
+        )
+
+        self.assertIn("move_above_target", phases)
+        self.assertIn("descend_to_target", phases)
+        self.assertIn("lift_target", phases)
+        self.assertIn("release_target", phases)
+        self.assertFalse(any("milk" in phase for phase in phases))
 
 
 if __name__ == "__main__":

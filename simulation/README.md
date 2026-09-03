@@ -205,13 +205,13 @@ milk asset, no registration warnings, and constrained RMSE at or below 15 mm.
 Failure aborts the task instead of silently reverting to the partial-cloud
 centroid.
 
-The experiment intentionally uses LIBERO's exact HOPE milk visual mesh as a
-known CAD prior, with LIBERO's declared scale of `0.0075` and source `Y` up
-axis. The mesh is not copied into this repository. It is resolved at runtime
-from the installed `~/.cache/libero/assets` directory and verified against the
-cataloged SHA-256. The result is labeled `exact simulator CAD prior` rather
-than being presented as an independently retrieved real-world model. See
-`CAD/LIBERO_ASSET_NOTICE.md` for provenance and license information.
+The experiment intentionally uses LIBERO's exact HOPE visual mesh for each of
+the ten target products as a known CAD prior. Every product has its own
+cataloged source scale, support axis, and SHA-256. The meshes are not copied
+into this repository; they are resolved from the installed
+`~/.cache/libero/assets` directory. Results are labeled `exact simulator CAD
+prior` rather than being presented as independently retrieved real-world
+models. See `CAD/LIBERO_ASSET_NOTICE.md` for provenance and license information.
 
 Neither the isolated registration test nor the full task pipeline reads a
 MuJoCo object name, object ID, segmentation mask, or ground-truth object pose.
@@ -221,36 +221,34 @@ prior, just as a physical deployment would obtain a model from its CAD library.
 
 ## Perception-driven task execution
 
-`scripts.libero_task_execution` runs LIBERO-Object task 7, "pick up the milk
-and place it in the basket." It uses the rendered agent-view RGB-D observation,
-the calibration bridge, the existing depth localizer, the repository's
-Gemini-first/OpenAI-fallback VLM association, milk CAD-to-observation alignment,
-robot proprioception, and normalized OSC pose actions. The VLM receives a
-full-scene plus enlarged-crop contact sheet labeled only with localized
-`object_id` values. The milk pick position is the registered CAD bounding-box
-center; the basket place position remains its depth-localized centroid.
+`scripts.libero_task_execution [task_index]` runs one LIBERO-Object basket task;
+omitting the index retains task 7 (milk) as the backward-compatible default. It
+uses the rendered agent-view RGB-D observation, the calibration bridge, the
+existing depth localizer, the repository's Gemini-first/OpenAI-fallback VLM
+association, target CAD-to-observation alignment, robot proprioception, and
+normalized OSC pose actions. The VLM receives a full-scene plus enlarged-crop
+contact sheet labeled only with localized `object_id` values. The target pick
+position is the registered CAD bounding-box center; the basket place position
+remains its depth-localized centroid.
 Simulator segmentation, simulator object identities, and ground-truth object
 poses are not method inputs. LIBERO's task success predicate is read only after
 execution as the evaluation result.
 
-Before the task-7 RGB-D frame is captured, the environment advances ten
-zero-pose, open-gripper physics steps (0.5 seconds at 20 Hz). This is necessary
-because LIBERO's rotated milk placement initially intersects the support
-surface; MuJoCo resolves that contact during the first few steps. The CAD pose
-still treats the segmented table plane as a hard support constraint and
-optimizes only translation along the plane plus yaw.
+Before each RGB-D frame is captured, the environment advances ten zero-pose,
+open-gripper physics steps (0.5 seconds at 20 Hz). This matches LeRobot's
+settling sequence and lets MuJoCo resolve initial support contacts. The CAD pose
+treats the segmented table plane as a hard support constraint and optimizes
+only translation along the plane plus yaw.
 
 Set `GEMINI_API_KEY` and/or `OPENAI_API_KEY` in the WSL process environment
 before running the task.
 
-The episode saves its perception inputs, localization JSON, enlarged VLM visual
-prompt, complete VLM result, CAD transforms and aligned/augmented point clouds,
-normalized action log, final agent and wrist RGB-D observations, success value,
-and MP4 video beneath
-`outputs/simulation/experiments/put_all_objects_into_basket/proposed_framework/task_07_milk/init_state_00/`.
-This is a
-task-specific top-grasp execution baseline, not yet a general grasp planner or
-VLA policy.
+Each episode saves its perception inputs, localization JSON, enlarged VLM
+visual prompt, complete VLM result, CAD transforms and aligned/augmented point
+clouds, normalized action log, final agent and wrist RGB-D observations,
+success value, and MP4 video beneath its corresponding
+`proposed_framework/task_XX_product/init_state_00/` folder. This remains a
+top-grasp execution baseline, not a general grasp planner or VLA policy.
 
 ## SmolVLA baseline and matched comparison
 
@@ -262,9 +260,13 @@ outputs/simulation/experiments/put_all_objects_into_basket/
 ├── comparison_summary.json             # after both matched methods run
 ├── per_episode.csv                      # after both matched methods run
 ├── VLA/
-│   └── task_07_milk/init_state_00/...
+│   ├── task_00_alphabet_soup/init_state_00/...
+│   ├── ...
+│   └── task_09_orange_juice/init_state_00/...
 └── proposed_framework/
-    └── task_07_milk/init_state_00/...
+    ├── task_00_alphabet_soup/init_state_00/...
+    ├── ...
+    └── task_09_orange_juice/init_state_00/...
 ```
 
 Run `python -m scripts.setup_libero_experiment` once to create the two method
@@ -272,9 +274,9 @@ folders and the ten actual LIBERO-Object task folders. Generated artifacts stay
 under `outputs/` and are intentionally ignored by Git.
 
 ```text
-Same LIBERO task + same official fixed initial state
+Same LIBERO task + same official fixed state 0
 ├── Proposed method
-│   agent RGB-D -> depth localization -> VLM association -> milk CAD alignment
+│   agent RGB-D -> depth localization -> VLM association -> target CAD alignment
 │   -> task-specific scripted OSC controller -> 7D actions
 └── VLA baseline
     agent RGB + wrist RGB + 8D robot state + instruction
@@ -293,11 +295,17 @@ local fine-tuning is needed for this benchmark baseline. The exact tested
 checkpoint revision is
 `6721902bc4d61e50a3bfdb11dfb4cb626f05d102`.
 
-The current task-7 pilot fixes all of the following for both branches:
+The all-product breadth test evaluates task indices 0 through 9 once per method.
+A **task index** selects the product instruction: task 0 is alphabet soup, task
+7 is milk, and task 9 is orange juice. An **initial-state index** selects one of
+the 50 saved simulator arrangements inside that task. These are independent
+indices. The completed VLA baseline remains at its official 256 x 256 input
+setting. The proposed branch is currently rerun at 512 x 512 as a resolution
+ablation, so those results are not a matched cross-method comparison. Both
+branches still use:
 
 - official `.pruned_init` state index 0, including a byte hash check
 - seed 1000
-- 256 x 256 observations
 - relative OSC control at 20 Hz
 - 10 pre-policy physics-settling actions
 - a 280-action episode horizon
@@ -312,20 +320,28 @@ export PYOPENGL_PLATFORM=egl
 python -m scripts.libero_vla_eval
 ```
 
-The runner refuses to overwrite an existing evaluation. Move the old
-`outputs/simulation/experiments/put_all_objects_into_basket/VLA/task_07_milk/init_state_00/`
-directory aside or change the single `OUTPUT_ROOT` constant before deliberately
-starting another run.
+The VLA runner preserves every complete task package, including the existing
+milk pilot, and evaluates all missing task indices in one official LeRobot
+batch. It preserves the combined batch under `VLA/_batch_runs/` and writes a
+separate manifest, `eval_info.json`, and copied video beneath each task's
+`init_state_00/` directory. A nonempty but incomplete task directory is treated
+as an error and is never overwritten silently.
 
-Run the proposed branch from the same repository and WSL environment:
+Run the proposed branch for each task index from the same repository and WSL
+environment. The default remains task 7 for backward compatibility:
 
 ```bash
-python -m scripts.libero_task_execution
+python -m scripts.libero_task_execution 0
+python -m scripts.libero_task_execution 1
+# continue through task index 9
 ```
 
 This branch sends the generated contact-sheet image and localized candidate
 metadata to the configured Gemini or OpenAI VLM. The VLA branch makes no cloud
-API call. After both episodes exist, validate and summarize them:
+API call. Each new proposed-method image payload requires explicit approval
+before it is sent to an external VLM; do not treat the ten-task proposed sweep
+as an unattended cloud job. Only run the cross-method comparator when both
+branches use the same image resolution:
 
 ```bash
 python -m scripts.compare_libero_results
@@ -334,7 +350,10 @@ python -m scripts.compare_libero_results
 The comparison script writes `comparison_summary.json` and `per_episode.csv`
 beneath
 `outputs/simulation/experiments/put_all_objects_into_basket/`, but only after
-task, seed, exact initial state, settling, horizon, control mode/frequency,
-resolution, and success predicate all match. One shared episode is an
-integration pilot, not a performance claim; the next experiment should use at
-least the first ten matched initial states for task 7.
+both methods contain exactly tasks 0 through 9 and each pair matches on the
+instruction, seed, byte-hashed state 0, settling, horizon, control
+mode/frequency, resolution, and success predicate. The primary metric is binary
+task success rate across the ten products. Action count and execution speed are
+not used to rank the methods. Because there is only one arrangement per product,
+this is a breadth test rather than a within-task robustness benchmark; a later
+study should repeat every product over multiple matched fixed states.

@@ -1,17 +1,28 @@
+"""Run one RGB-D/VLM/CAD LIBERO-Object episode."""
+
+import hashlib
 import json
+import sys
 from pathlib import Path
 
 import cv2
 import numpy as np
 
-from simulation.libero_cad import register_libero_cad_to_observation
+from simulation.libero_cad import (
+    register_libero_cad_to_observation,
+    resolve_libero_cad_record,
+)
 from simulation.libero_control import (
     OPEN_GRIPPER,
     execute_top_grasp_and_place,
     hold_gripper,
 )
 from simulation.libero_env import LiberoIntegrationError, LiberoTaskEnvironment
-from simulation.libero_experiment import PROPOSED_METHOD_FOLDER, episode_result_dir
+from simulation.libero_experiment import (
+    PROPOSED_METHOD_FOLDER,
+    episode_result_dir,
+    libero_object_task,
+)
 from simulation.libero_io import save_libero_observation
 from simulation.libero_sensor import LiberoRGBDSensor
 from simulation.perception_adapter import run_libero_localization
@@ -19,17 +30,17 @@ from vlm_module import classify_from_localization, create_roi_contact_sheet
 
 
 SUITE_NAME = "libero_object"
-TASK_INDEX = 7
+DEFAULT_TASK_INDEX = 7
 CAMERA_NAME = "agentview"
-IMAGE_WIDTH = 256
-IMAGE_HEIGHT = 256
+IMAGE_WIDTH = 512
+IMAGE_HEIGHT = 512
+VLM_CONTACT_SHEET_TILE_SIZE_PX = 320
 CONTROL_FREQUENCY_HZ = 20
 EPISODE_HORIZON_STEPS = 280
 CONTROL_MODE = "relative"
 RANDOM_SEED = 1000
 INITIAL_STATE_INDEX = 0
 INITIAL_PHYSICS_SETTLE_STEPS = 10
-OUTPUT_ROOT = episode_result_dir(PROPOSED_METHOD_FOLDER, TASK_INDEX, INITIAL_STATE_INDEX)
 VIDEO_FRAME_STRIDE = 2
 METHOD_NAME = "rgbd_vlm_cad_scripted_controller"
 
@@ -46,8 +57,42 @@ class _EnvironmentTerminated(RuntimeError):
     pass
 
 
-def main():
-    perception_root = OUTPUT_ROOT / "perception"
+def main(task_index=DEFAULT_TASK_INDEX):
+    task_index, target_slug, instruction = libero_object_task(task_index)
+    output_root = episode_result_dir(
+        PROPOSED_METHOD_FOLDER,
+        task_index,
+        INITIAL_STATE_INDEX,
+    )
+    if output_root.exists() and (
+        not output_root.is_dir() or any(output_root.iterdir())
+    ):
+        raise SystemExit(
+            f"Refusing to overwrite the existing proposed-method result: {output_root}. "
+            "Move the directory aside before deliberately rerunning this task."
+        )
+    try:
+        return _run_task(task_index)
+    except Exception as error:
+        _write_pipeline_failure(
+            output_root,
+            task_index,
+            target_slug,
+            instruction,
+            error,
+        )
+        raise
+
+
+def _run_task(task_index):
+    task_index, target_slug, expected_instruction = libero_object_task(task_index)
+    target_name = target_slug.replace("_", " ")
+    output_root = episode_result_dir(
+        PROPOSED_METHOD_FOLDER,
+        task_index,
+        INITIAL_STATE_INDEX,
+    )
+    perception_root = output_root / "perception"
     action_log = []
     video_frames = []
     step_count = 0
@@ -57,7 +102,7 @@ def main():
 
     with LiberoTaskEnvironment(
         suite_name=SUITE_NAME,
-        task_index=TASK_INDEX,
+        task_index=task_index,
         image_width=IMAGE_WIDTH,
         image_height=IMAGE_HEIGHT,
     ) as environment:
@@ -77,6 +122,11 @@ def main():
         environment.set_control_mode(CONTROL_MODE)
         sensor = LiberoRGBDSensor(environment, CAMERA_NAME)
         observation = sensor.capture(raw_observation)
+        if observation.instruction != expected_instruction:
+            raise RuntimeError(
+                "LIBERO instruction does not match the experiment catalog: "
+                f"expected {expected_instruction!r}, received {observation.instruction!r}."
+            )
         capture_paths = save_libero_observation(
             observation,
             environment,
@@ -90,40 +140,41 @@ def main():
         vlm_visual_prompt_path = create_roi_contact_sheet(
             capture_paths["rgb"],
             localization_paths["localization"],
-            OUTPUT_ROOT / "vlm_roi_contact_sheet.png",
+            output_root / "vlm_roi_contact_sheet.png",
+            tile_size_px=VLM_CONTACT_SHEET_TILE_SIZE_PX,
         )
         vlm_result_path = classify_from_localization(
             observation.instruction,
             image_path=vlm_visual_prompt_path,
             localization_path=localization_paths["localization"],
-            output_path=OUTPUT_ROOT / "vlm_result.json",
+            output_path=output_root / "vlm_result.json",
         )
-        grounding = task_roles_from_vlm_result(vlm_result_path)
+        grounding = task_roles_from_vlm_result(vlm_result_path, target_name)
         objects_by_id = {
             item["object_id"]: item for item in localization["objects"]
         }
-        milk = objects_by_id[grounding["milk_object_id"]]
+        target_object = objects_by_id[grounding["target_object_id"]]
         basket = objects_by_id[grounding["basket_object_id"]]
-        milk_depth_centroid_world_m = camera_point_to_world(
-            milk["centroid_3d_m"], observation.world_T_camera
+        target_depth_centroid_world_m = camera_point_to_world(
+            target_object["centroid_3d_m"], observation.world_T_camera
         )
         basket_world_m = camera_point_to_world(
             basket["centroid_3d_m"], observation.world_T_camera
         )
-        milk_cad_registration = register_libero_cad_to_observation(
-            object_type=grounding["milk_object_type"],
-            object_id=grounding["milk_object_id"],
+        target_cad_registration = register_libero_cad_to_observation(
+            object_type=grounding["target_object_type"],
+            object_id=grounding["target_object_id"],
             localization=localization,
             world_T_camera=observation.world_T_camera,
-            output_dir=OUTPUT_ROOT / "cad_registration" / "milk",
+            output_dir=output_root / "cad_registration" / target_slug,
         )
-        milk_world_m = np.asarray(
-            milk_cad_registration["registered_center_world_m"],
+        target_world_m = np.asarray(
+            target_cad_registration["registered_center_world_m"],
             dtype=float,
         )
 
-        OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
-        grounding_path = OUTPUT_ROOT / "grounding.json"
+        output_root.mkdir(parents=True, exist_ok=True)
+        grounding_path = output_root / "grounding.json"
         grounding_path.write_text(json.dumps(grounding, indent=2), encoding="utf-8")
         video_frames.append(_agentview_rgb(raw_observation))
 
@@ -159,7 +210,7 @@ def main():
             final_raw_observation = execute_top_grasp_and_place(
                 environment,
                 raw_observation,
-                milk_world_m,
+                target_world_m,
                 basket_world_m,
                 callback=record_step,
             )
@@ -190,25 +241,29 @@ def main():
         final_agentview_paths = save_libero_observation(
             final_agentview,
             environment,
-            OUTPUT_ROOT / "final_agentview",
+            output_root / "final_agentview",
         )
         final_wrist_paths = save_libero_observation(
             final_wrist,
             environment,
-            OUTPUT_ROOT / "final_wrist",
+            output_root / "final_wrist",
         )
 
-    video_path = OUTPUT_ROOT / "episode.mp4"
+    video_path = output_root / "episode.mp4"
     save_video(video_frames, video_path, fps=10.0)
-    episode_path = OUTPUT_ROOT / "episode.json"
+    episode_path = output_root / "episode.json"
     episode_path.write_text(
         json.dumps(
             {
                 "schema_version": 1,
                 "method": METHOD_NAME,
+                "run_status": "completed",
                 "suite": SUITE_NAME,
-                "task_index": TASK_INDEX,
+                "task_index": task_index,
+                "target_object": target_name,
                 "instruction": observation.instruction,
+                "instruction_matches_catalog": observation.instruction
+                == expected_instruction,
                 "success": success,
                 "success_predicate": "LIBERO task environment check_success()",
                 "first_success_step": first_success_step,
@@ -221,7 +276,7 @@ def main():
                     "world_T_camera",
                     "robot proprioception",
                     "language instruction",
-                    "known milk CAD prior selected from the VLM classification",
+                    "known target CAD prior selected from the VLM classification",
                 ],
                 "simulator_object_identity_or_pose_used_by_method": False,
                 "seed": RANDOM_SEED,
@@ -236,18 +291,18 @@ def main():
                 "initial_physics_settle_duration_s": (
                     INITIAL_PHYSICS_SETTLE_STEPS / CONTROL_FREQUENCY_HZ
                 ),
-                "exact_rendering_cad_prior_used": milk_cad_registration[
+                "exact_rendering_cad_prior_used": target_cad_registration[
                     "exact_rendering_cad_prior_used"
                 ],
                 "workspace_rgbd_pixels": int(workspace_mask.sum()),
                 "localized_object_count": int(localization["object_count"]),
                 "grounding": grounding,
-                "milk_depth_centroid_world_m": milk_depth_centroid_world_m.tolist(),
-                "milk_registered_center_world_m": milk_world_m.tolist(),
-                "pick_position_source": "registered milk CAD axis-aligned-box center",
+                "target_depth_centroid_world_m": target_depth_centroid_world_m.tolist(),
+                "target_registered_center_world_m": target_world_m.tolist(),
+                "pick_position_source": "registered target CAD axis-aligned-box center",
                 "place_position_source": "depth-localized basket centroid",
                 "basket_centroid_world_m": basket_world_m.tolist(),
-                "milk_cad_registration": milk_cad_registration,
+                "target_cad_registration": target_cad_registration,
                 "action_steps": step_count,
                 "actions": action_log,
                 "artifacts": {
@@ -256,11 +311,13 @@ def main():
                     "grounding": str(grounding_path),
                     "vlm_visual_prompt": str(vlm_visual_prompt_path),
                     "vlm_result": str(vlm_result_path),
-                    "milk_cad_registration": milk_cad_registration["result_path"],
-                    "milk_aligned_cad_cloud": milk_cad_registration[
+                    "target_cad_registration": target_cad_registration["result_path"],
+                    "target_aligned_cad_cloud": target_cad_registration[
                         "aligned_cad_cloud_path"
                     ],
-                    "milk_augmented_cloud": milk_cad_registration["augmented_cloud_path"],
+                    "target_augmented_cloud": target_cad_registration[
+                        "augmented_cloud_path"
+                    ],
                     "video": str(video_path),
                     "final_agentview_rgb": str(final_agentview_paths["rgb"]),
                     "final_wrist_rgb": str(final_wrist_paths["rgb"]),
@@ -274,19 +331,19 @@ def main():
     print(f"Instruction: {observation.instruction}")
     print(f"Localized candidates: {localization['object_count']}")
     print(f"VLM provider: {grounding['provider']}")
-    print(f"Grounded milk: {grounding['milk_object_id']}")
+    print(f"Grounded target ({target_name}): {grounding['target_object_id']}")
     print(f"Grounded basket: {grounding['basket_object_id']}")
     print(
-        "Milk depth centroid in world frame (m): "
-        f"{np.round(milk_depth_centroid_world_m, 4).tolist()}"
+        "Target depth centroid in world frame (m): "
+        f"{np.round(target_depth_centroid_world_m, 4).tolist()}"
     )
     print(
-        "Milk CAD-registered center in world frame (m): "
-        f"{np.round(milk_world_m, 4).tolist()}"
+        "Target CAD-registered center in world frame (m): "
+        f"{np.round(target_world_m, 4).tolist()}"
     )
     print(
-        "Milk CAD registration RMSE (m): "
-        f"{milk_cad_registration['constrained_rmse_m']:.6f}"
+        "Target CAD registration RMSE (m): "
+        f"{target_cad_registration['constrained_rmse_m']:.6f}"
     )
     print(f"Basket centroid in world frame (m): {np.round(basket_world_m, 4).tolist()}")
     print(f"Action steps: {step_count}")
@@ -305,12 +362,79 @@ def main():
         raise SystemExit("Task execution finished, but LIBERO reported failure.")
 
 
+def _write_pipeline_failure(
+    output_root,
+    task_index,
+    target_slug,
+    instruction,
+    error,
+):
+    """Preserve a pre-control pipeline failure without hiding the exception."""
+    output_root = Path(output_root)
+    output_root.mkdir(parents=True, exist_ok=True)
+    episode_path = output_root / "episode.json"
+    if episode_path.is_file():
+        failure_path = output_root / "latest_pipeline_failure.json"
+    else:
+        failure_path = episode_path
+
+    state_hash = None
+    state_hash_error = None
+    try:
+        state_hash = _official_initial_state_sha256(task_index, INITIAL_STATE_INDEX)
+    except Exception as hash_error:
+        state_hash_error = str(hash_error)
+
+    failure_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "method": METHOD_NAME,
+                "run_status": "pipeline_error",
+                "suite": SUITE_NAME,
+                "task_index": task_index,
+                "target_object": target_slug.replace("_", " "),
+                "instruction": instruction,
+                "success": False,
+                "success_predicate": "LIBERO task environment check_success()",
+                "termination_reason": "pipeline_error",
+                "execution_error": f"{type(error).__name__}: {error}",
+                "simulator_object_identity_or_pose_used_by_method": False,
+                "seed": RANDOM_SEED,
+                "initial_state_index": INITIAL_STATE_INDEX,
+                "initial_state_sha256": state_hash,
+                "initial_state_hash_error": state_hash_error,
+                "episode_horizon_steps": EPISODE_HORIZON_STEPS,
+                "control_frequency_hz": CONTROL_FREQUENCY_HZ,
+                "control_mode": CONTROL_MODE,
+                "observation_resolution_hw": [IMAGE_HEIGHT, IMAGE_WIDTH],
+                "initial_physics_settle_steps": INITIAL_PHYSICS_SETTLE_STEPS,
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+
+def _official_initial_state_sha256(task_index, initial_state_index):
+    from libero.libero import benchmark
+
+    suite = benchmark.get_benchmark_dict()[SUITE_NAME]()
+    states = np.asarray(suite.get_task_init_states(task_index))
+    value = np.ascontiguousarray(states[int(initial_state_index)])
+    digest = hashlib.sha256()
+    digest.update(str(value.dtype).encode("ascii"))
+    digest.update(str(value.shape).encode("ascii"))
+    digest.update(value.tobytes())
+    return digest.hexdigest()
+
+
 def camera_point_to_world(point_camera_m, world_T_camera):
     point = np.asarray([*point_camera_m, 1.0], dtype=float)
     return (np.asarray(world_T_camera, dtype=float) @ point)[:3]
 
 
-def task_roles_from_vlm_result(result_path):
+def task_roles_from_vlm_result(result_path, target_name="milk"):
     payload = json.loads(Path(result_path).read_text(encoding="utf-8"))
     normalized = payload.get("normalized_result", {})
     if normalized.get("needs_human_clarification"):
@@ -319,11 +443,10 @@ def task_roles_from_vlm_result(result_path):
             f"{normalized.get('clarification_reason')}"
         )
     selected = list(normalized.get("selected_objects", []))
-    milk = [
+    moved_objects = [
         item
         for item in selected
         if item.get("instruction_role") == "moved_object"
-        and "milk" in str(item.get("object_type", "")).lower()
     ]
     basket = [
         item
@@ -331,18 +454,36 @@ def task_roles_from_vlm_result(result_path):
         if item.get("instruction_role") == "reference_object"
         and "basket" in str(item.get("object_type", "")).lower()
     ]
-    if len(milk) != 1 or len(basket) != 1:
+    if len(moved_objects) != 1 or len(basket) != 1:
         raise RuntimeError(
-            "VLM must select exactly one milk moved_object and one basket "
+            f"VLM must select exactly one {target_name} moved_object and one basket "
             f"reference_object; received selected objects: {selected}"
         )
-    if milk[0]["object_id"] == basket[0]["object_id"]:
-        raise RuntimeError("VLM assigned milk and basket to the same localized object.")
+    if moved_objects[0]["object_id"] == basket[0]["object_id"]:
+        raise RuntimeError(
+            f"VLM assigned {target_name} and basket to the same localized object."
+        )
+    selected_type = moved_objects[0].get("object_type")
+    try:
+        expected_cad = resolve_libero_cad_record(target_name)
+        selected_cad = resolve_libero_cad_record(selected_type)
+    except LookupError as error:
+        raise RuntimeError(
+            f"VLM moved_object type {selected_type!r} could not be matched to the "
+            f"configured target {target_name!r}: {error}"
+        ) from error
+    if selected_cad["cad_id"] != expected_cad["cad_id"]:
+        raise RuntimeError(
+            f"VLM moved_object type {selected_type!r} does not match the configured "
+            f"target {target_name!r}; resolved CAD entries are "
+            f"{selected_cad['cad_id']!r} and {expected_cad['cad_id']!r}."
+        )
     return {
         "provider": payload.get("provider"),
         "method": "existing VLM module over enlarged depth-localized RGB crops",
-        "milk_object_id": milk[0]["object_id"],
-        "milk_object_type": milk[0]["object_type"],
+        "target_name": target_name,
+        "target_object_id": moved_objects[0]["object_id"],
+        "target_object_type": moved_objects[0]["object_type"],
         "basket_object_id": basket[0]["object_id"],
         "selected_objects": selected,
         "object_evaluations": normalized.get("object_evaluations", []),
@@ -379,6 +520,9 @@ def _agentview_rgb(raw_observation):
 
 if __name__ == "__main__":
     try:
-        main()
+        arguments = sys.argv[1:]
+        if len(arguments) > 1:
+            raise SystemExit("Usage: python -m scripts.libero_task_execution [task_index]")
+        main(DEFAULT_TASK_INDEX if not arguments else int(arguments[0]))
     except LiberoIntegrationError as error:
         raise SystemExit(f"LIBERO task execution failed: {error}") from error

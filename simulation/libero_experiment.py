@@ -21,18 +21,21 @@ LIBERO_OBJECT_TASKS = (
 )
 
 
+def libero_object_task(task_index):
+    task_index = int(task_index)
+    task = next((item for item in LIBERO_OBJECT_TASKS if item[0] == task_index), None)
+    if task is None:
+        raise ValueError(f"Unknown LIBERO-Object task index: {task_index}")
+    return task
+
+
 def episode_result_dir(method_folder, task_index, initial_state_index):
     if method_folder not in METHOD_FOLDERS:
         raise ValueError(
             f"Unknown experiment method folder {method_folder!r}; "
             f"expected one of {METHOD_FOLDERS}."
         )
-    task = next(
-        (item for item in LIBERO_OBJECT_TASKS if item[0] == int(task_index)),
-        None,
-    )
-    if task is None:
-        raise ValueError(f"Unknown LIBERO-Object task index: {task_index}")
+    task = libero_object_task(task_index)
     if int(initial_state_index) < 0:
         raise ValueError("Initial-state index must be non-negative.")
     return (

@@ -4,14 +4,17 @@ def _vlm_prompt(user_text, detections):
     detections_json = json.dumps(detections, separators=(",", ":"))
 
     return f"""
-You are classifying already-localized objects in a robot workspace image.
+You are performing instruction-conditioned classification and object grounding for
+already-localized objects in a robot workspace image. This is not open-ended image
+captioning.
 
 The point-cloud localization module has already localized the objects. You must NOT perform localization.
 Your job is to evaluate each localized object independently against the human target instruction.
 
 You are provided with:
 - an RGB visual prompt containing the full scene and/or enlarged localized-object crops labeled with object_ids.
-- localized object metadata with object_ids, visual labels, 2D bounding boxes, and absolute image regions.
+- localized object metadata with object_ids, visual labels, 2D bounding boxes, absolute image regions,
+  and depth-derived 3D centroid, size, and point count in the stated coordinate frame.
 - a human instruction that contains the target objects.
 
 Independent classification rule:
@@ -22,6 +25,21 @@ Independent classification rule:
 - Do not compare one object to another when deciding whether it matches.
 - Do not assign confidence scores.
 - Spatial region text helps the human understand object location, but it is not identity evidence.
+- 3D geometry can support broad shape or size reasoning, but it must not override visible semantic evidence.
+
+Instruction-bound identity-label rule (strict):
+- First identify the object names or noun phrases explicitly present in the human instruction.
+- For every match or plausible_match, predicted_type must copy the corresponding semantic
+  object name from the instruction, omitting only a leading determiner such as "a", "an", or "the".
+- Do not replace an instruction name with a broader category, narrower category, synonym,
+  paraphrase, brand guess, or newly invented class. For example, when the instruction says
+  "alphabet soup", predicted_type must be "alphabet soup", never "canned soup", "soup can",
+  or "canned food".
+- For an object that does not correspond to anything named in the instruction, return
+  predicted_type=null and instruction_role=null. Do not classify unmentioned scene objects.
+- The instruction supplies the permitted identity labels, but the RGB image and geometric
+  prompt must still determine which localized object matches each label. Never mark an object
+  as a match merely because the instruction contains that label.
 
 Classification rules:
 - The visual label on the image may be the numeric suffix of object_id, for example visual_label "001" means object_id "object_001".
@@ -44,7 +62,7 @@ Return only compact valid JSON in this exact schema:
       "object_id": "object_001",
       "visual_label": "001",
       "target_match": "match | plausible_match | not_match",
-      "predicted_type": "short type or null",
+      "predicted_type": "exact object name from the instruction or null",
       "instruction_role": "moved_object | reference_object | other_target | null",
       "visual_evidence": "brief evidence based only on this object",
       "missing_or_uncertain_cues": "brief explanation or null",

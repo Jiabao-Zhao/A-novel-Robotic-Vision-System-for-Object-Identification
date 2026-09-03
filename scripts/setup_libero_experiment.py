@@ -25,10 +25,19 @@ def main():
         "experiment_name": EXPERIMENT_NAME,
         "suite": "libero_object",
         "objective": "Compare two methods for placing every LIBERO-Object target into the basket.",
-        "status": "state-0 integration pilot",
+        "status": "all-product state-0 breadth evaluation",
+        "primary_metric": {
+            "name": "binary_task_success_rate",
+            "definition": (
+                "Number of episodes satisfying LIBERO check_success() divided by "
+                "ten completed task episodes"
+            ),
+            "speed_or_action_count_used": False,
+        },
         "methods": {
             VLA_METHOD_FOLDER: {
                 "description": "SmolVLA through the official LeRobot evaluator",
+                "observation_resolution_hw": [256, 256],
                 "inputs": [
                     "agent-view RGB",
                     "wrist RGB",
@@ -38,6 +47,7 @@ def main():
             },
             PROPOSED_METHOD_FOLDER: {
                 "description": "RGB-D/VLM/CAD perception with task-specific scripted control",
+                "observation_resolution_hw": [512, 512],
                 "inputs": [
                     "agent-view RGB",
                     "metric depth",
@@ -49,16 +59,25 @@ def main():
             },
         },
         "shared_protocol": {
-            "pilot_initial_state_indices": [0],
-            "planned_initial_state_indices": list(range(10)),
-            "start_seed": 1000,
+            "task_indices": [task[0] for task in LIBERO_OBJECT_TASKS],
+            "initial_state_indices_per_task": [0],
+            "index_definition": (
+                "task_index selects one of the ten product instructions; "
+                "initial_state_index selects a fixed simulator state within that task"
+            ),
+            "episode_seed_per_task": 1000,
             "episode_horizon_steps": 280,
             "control_frequency_hz": 20,
             "control_mode": "relative",
-            "observation_resolution_hw": [256, 256],
             "settle_steps_before_policy": 10,
             "success_predicate": "LIBERO task environment check_success()",
         },
+        "interpretation": (
+            "The proposed branch is currently a 512 x 512 resolution ablation. The existing "
+            "VLA baseline remains at its official 256 x 256 setting, so the two branches are "
+            "not a matched method comparison. This sweep tests product breadth with one fixed "
+            "state per task and does not measure within-task robustness."
+        ),
         "task_catalog": [
             {
                 "task_index": task_index,
