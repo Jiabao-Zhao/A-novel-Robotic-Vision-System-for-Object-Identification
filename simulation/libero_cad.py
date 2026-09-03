@@ -160,7 +160,7 @@ def register_libero_cad_to_observation(
         "aligned_cad_cloud_path": registration["aligned_cad_cloud_path"],
         "augmented_cloud_path": registration["augmented_cloud_path"],
         "simulator_object_identity_or_pose_used": False,
-        "pick_position_source": "registered CAD axis-aligned-box center",
+        "registered_center_source": "transformed CAD axis-aligned-box center",
         "transform_convention": {
             "camera_T_cad": (
                 "maps CAD-local points after scale_to_m into the agent camera frame"

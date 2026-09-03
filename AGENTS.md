@@ -8,14 +8,14 @@ The full research pipeline is:
 
 1. Capture RGB image and depth information from an Intel RealSense RGB-D camera.
 2. Use depth-based processing to localize tabletop objects and produce ROI (region-of-interest) using the boundary box (x1, y2, x2, yx) in the pixel coordinates. 
-3. Send the annotated RGB image with boundary box, human task instruction, and localized object information to a Vision-Language Model (VLM) for object classification and object-to-instruction association.
-4. Retrieve the most relevant CAD model from the CAD library using the VLM classification result, expanded semantic query alternatives, CAD metadata/aliases, and optional geometry reranking from the observed point-cloud dimensions.
+3. Send the annotated RGB image, one explicit semantic target description, and localized object information to a Vision-Language Model (VLM) for object association.
+4. Resolve the VLM association through a confidence-guided human-deferral gate, then retrieve the most relevant CAD model using the semantic target description while selecting the observed point cloud using the resolved object ID.
 5. Compare the observed partial 3D point cloud with the CAD model or CAD-derived geometry.
 6. Estimate object pose information, including x, y, z, roll, pitch, yaw, rotation matrix.
 7. Send the object identity, pose, and task context to an LLM-based task planner.
 8. Convert the task plan into robot-executable actions through a low-level robot controller.
 
-The proposed framework uses VLM with depth-localization for semantic classification, CAD/point-cloud comparison for geometry-aware pose estimation, and LLM planning for downstream assembly execution.
+The proposed framework uses VLM with depth-localization for semantic object association, CAD/point-cloud comparison for geometry-aware pose estimation, and LLM planning for downstream assembly execution.
 
 ## Current Repository Scope
 
@@ -23,7 +23,7 @@ This repository is currently the compact perception front end of the full framew
 
 Current milestone:
 
-Intel RealSense RGB-D data -> segmented object point cloud -> object localization summary -> VLM classification prompt -> target object association -> saved numeric and visual results.
+Intel RealSense RGB-D data -> segmented object point cloud -> object localization summary -> one-target VLM association prompt -> confidence-guided resolution -> saved numeric and visual results.
 
 The code should remain focused on:
 
@@ -35,7 +35,7 @@ The code should remain focused on:
 - 3D centroid and size reporting
 - approximate roll, pitch, yaw estimation when geometrically meaningful
 - ROI or bounding-box visual prompting for VLM input
-- compact VLM classification using the user instruction plus localized object metadata
+- compact VLM association using one semantic target description plus localized object metadata
 - saving JSON/PNG/PLY outputs needed for testing, paper figures, or demo inspection
 
 Do not expand this repository into the complete downstream system unless the user explicitly asks for that exact feature.
@@ -60,7 +60,8 @@ Use consistent terminology when writing code comments, prompts, README text, or 
 
 | Input or Signal | Preferred Term | Meaning |
 | --- | --- | --- |
-| Human instruction such as "put the green block on the base" | task text prompt or language instruction | Provides task intent and semantic context for classification |
+| Human instruction such as "put the green block on the base" | task text prompt or language instruction | Provides task intent to the downstream LLM planner |
+| Object phrase such as "green block" | semantic target description | Names one object for an independent VLM association query |
 | RGB image sent to the VLM | visual input | Provides appearance information |
 | Bounding boxes, highlighted regions, masks, or ROI images | visual prompt or region prompt | Guides the VLM toward already-localized objects |
 | Object centroid, 2D box, 3D size, height, point count, or spatial relation | geometric prompt or spatial prompt | Gives the VLM structured localization evidence |
@@ -74,30 +75,36 @@ Depth information is not the same thing as a point cloud. The depth image is the
 
 ## VLM Classification Policy
 
-The VLM should classify and associate objects, not perform primary localization.
+The VLM should associate one semantic target description with an already-localized object, not perform primary localization or task-role reasoning.
 
 Preferred VLM input:
 
 - RGB image
 - optional ROI-optimized or bounding-box-annotated image
-- user task instruction
+- one semantic target description
 - localized object list with object_id, bbox_2d_xyxy, centroid_3d, 3D size, height, and related geometry
 
-The VLM should return a compact structured result such as:
+Internally map deterministic candidate labels to object IDs and ask the VLM to return one compact label. The public result should map that label back to an object ID and preserve output-token log probabilities, for example:
 
 ```json
 {
-  "object_id": "object_001",
-  "object_type": "green block"
+  "target_description": "green block",
+  "vlm_object_id": "object_001",
+  "association_score": 0.91,
+  "final_object_id": "object_001",
+  "resolution": "vlm_accepted"
 }
 ```
+
+The association score must be computed from provider-returned output-token log probabilities. It is a raw response likelihood, not a calibrated probability of correct identity. If usable log probabilities are unavailable, keep the score null and defer to a human. The VLM and human paths must both produce the same `final_object_id` interface.
 
 The VLM prompt should make clear:
 
 - localization has already been performed by the depth pipeline
 - object_id must be selected only from the provided localized candidates
 - the model should not invent coordinates, bounding boxes, or objects
-- uncertain or invisible targets should return null fields
+- a NONE choice is valid when the target is absent
+- manipulation, destination, source, and reference roles belong to the downstream LLM planner
 
 Use bounding boxes, masks, ROI highlighting, or geometric metadata to improve classification accuracy when helpful. These are guidance signals for semantic reasoning, not a replacement for the depth localization module.
 

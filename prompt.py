@@ -1,81 +1,26 @@
 import json
 
-def _vlm_prompt(user_text, detections):
-    detections_json = json.dumps(detections, separators=(",", ":"))
+
+def _vlm_prompt(target_description, candidates):
+    """Build one compact semantic-to-localized-object association query."""
+    target_description = str(target_description).strip()
+    if not target_description:
+        raise ValueError("target_description must be a nonempty semantic description.")
+    candidates_json = json.dumps(candidates, separators=(",", ":"))
+    labels = [str(candidate["choice"]) for candidate in candidates] + ["N"]
 
     return f"""
-You are performing instruction-conditioned classification and object grounding for
-already-localized objects in a robot workspace image. This is not open-ended image
-captioning.
+The image contains objects already localized by an RGB-D point-cloud pipeline.
+Associate exactly one semantic target with exactly one labeled candidate.
+Do not estimate coordinates, add objects, or interpret the surrounding robot task.
 
-The point-cloud localization module has already localized the objects. You must NOT perform localization.
-Your job is to evaluate each localized object independently against the human target instruction.
+Target: {target_description}
 
-You are provided with:
-- an RGB visual prompt containing the full scene and/or enlarged localized-object crops labeled with object_ids.
-- localized object metadata with object_ids, visual labels, 2D bounding boxes, absolute image regions,
-  and depth-derived 3D centroid, size, and point count in the stated coordinate frame.
-- a human instruction that contains the target objects.
+Candidate map and depth-derived metadata:
+{candidates_json}
 
-Independent classification rule:
-- Evaluate every localized object by itself.
-- Ask: does this object, by itself, visually match the user's target description?
-- If the instruction mentions multiple physical objects, mark each mentioned object that is visible.
-- Do not rank objects against each other.
-- Do not compare one object to another when deciding whether it matches.
-- Do not assign confidence scores.
-- Spatial region text helps the human understand object location, but it is not identity evidence.
-- 3D geometry can support broad shape or size reasoning, but it must not override visible semantic evidence.
-
-Instruction-bound identity-label rule (strict):
-- First identify the object names or noun phrases explicitly present in the human instruction.
-- For every match or plausible_match, predicted_type must copy the corresponding semantic
-  object name from the instruction, omitting only a leading determiner such as "a", "an", or "the".
-- Do not replace an instruction name with a broader category, narrower category, synonym,
-  paraphrase, brand guess, or newly invented class. For example, when the instruction says
-  "alphabet soup", predicted_type must be "alphabet soup", never "canned soup", "soup can",
-  or "canned food".
-- For an object that does not correspond to anything named in the instruction, return
-  predicted_type=null and instruction_role=null. Do not classify unmentioned scene objects.
-- The instruction supplies the permitted identity labels, but the RGB image and geometric
-  prompt must still determine which localized object matches each label. Never mark an object
-  as a match merely because the instruction contains that label.
-
-Classification rules:
-- The visual label on the image may be the numeric suffix of object_id, for example visual_label "001" means object_id "object_001".
-- Choose object IDs only from the localized objects list.
-- For each object, target_match must be exactly one of: "match", "plausible_match", "not_match".
-- Use instruction_role "moved_object" for the object being moved, picked, placed, or inspected.
-- Use instruction_role "reference_object" for a support, destination, fixture, or relation object.
-- Use instruction_role "other_target" for a mentioned target object that is not clearly moved or reference.
-- Use null when the object is not mentioned by the instruction.
-- Use "match" when the object has clear visual evidence for the target.
-- Use "plausible_match" when the object could be the target but the class is uncommon, specialized, partly occluded, or visually ambiguous.
-- Use "not_match" when the object clearly does not match the target.
-- Manufacturing components may look visually similar. For each object independently, inspect body shape, rectangular vs cylindrical geometry, cable attachment, connector face, visible pins, color, distinctive housing features, and partial occlusion.
-- The Python pipeline will decide whether to continue or ask the human. Do not return selected/not_found/needs_clarification status.
-
-Return only compact valid JSON in this exact schema:
-{{
-  "object_evaluations": [
-    {{
-      "object_id": "object_001",
-      "visual_label": "001",
-      "target_match": "match | plausible_match | not_match",
-      "predicted_type": "exact object name from the instruction or null",
-      "instruction_role": "moved_object | reference_object | other_target | null",
-      "visual_evidence": "brief evidence based only on this object",
-      "missing_or_uncertain_cues": "brief explanation or null",
-      "spatial_description": "absolute image/workspace location"
-    }}
-  ]
-}}
-
-User instruction:
-{user_text}
-
-Localized objects:
-{detections_json}
+N means none of the localized candidates corresponds to the target.
+Return only one label from: {", ".join(labels)}
 """.strip()
 
 
@@ -87,8 +32,11 @@ def _llm_planner_prompt(user_text, perception_context, action_schema):
 You are a high-level robotic task planner. Your job is to choose a compact
 sequence actions from the provided action schema to complete the user request.
 
-The perception system has already selected the target object. 
-You must not write robot code or invent low-level motion commands
+The perception system has independently associated semantic target descriptions
+with localized object IDs. Infer manipulation, destination, and reference
+relationships only from the original user instruction. Do not change the
+provided object identities.
+You must not write robot code or invent low-level motion commands.
 
 
 Rules:

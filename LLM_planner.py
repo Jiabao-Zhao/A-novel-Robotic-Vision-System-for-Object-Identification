@@ -103,7 +103,7 @@ class OpenAIPlanner:
 
 def plan_from_outputs(
     user_text,
-    vlm_path=Path("outputs/physical/vlm/vlm_result.json"),
+    vlm_path=Path("outputs/physical/vlm/semantic_associations.json"),
     registration_path=Path(
         "outputs/physical/registered_point_cloud/cad_registration_result.json"
     ),
@@ -133,10 +133,16 @@ def plan_from_outputs(
 
 def load_perception_context(vlm_path, registration_path, robot_pose_path):
     vlm = json.loads(Path(vlm_path).read_text(encoding="utf-8"))
-    selected = vlm.get("result", {})
+    associations = vlm.get("associations", [])
     context = {
-        "selected_object_id": selected.get("object_id"),
-        "selected_object_type": selected.get("object_type"),
+        "resolved_objects": [
+            {
+                "target_description": item.get("target_description"),
+                "object_id": item.get("final_object_id"),
+                "resolution": item.get("resolution"),
+            }
+            for item in associations
+        ],
     }
     context["pose_available"] = Path(registration_path).exists() and Path(robot_pose_path).exists()
     return context

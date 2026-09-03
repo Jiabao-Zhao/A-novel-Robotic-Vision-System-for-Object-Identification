@@ -2,7 +2,7 @@ import base64
 import json
 import math
 import os
-import re
+import string
 from pathlib import Path
 
 import cv2
@@ -10,12 +10,18 @@ import numpy as np
 
 from prompt import _vlm_prompt
 
-TARGET_MATCH_VALUES = ("match", "plausible_match", "not_match")
-CANDIDATE_MATCH_VALUES = ("match", "plausible_match")
-DECISION_RULE = (
-    "continue when matched localized objects map one-to-one to object classes; "
-    "ask only when no candidate exists or multiple candidates share the same class"
+
+NONE_CHOICE = "N"
+PROVISIONAL_ASSOCIATION_THRESHOLD = 0.75
+SCORE_SEMANTICS = (
+    "The association score is the likelihood of the generated decision-label "
+    "sequence under the provider model and prompt. It is not a calibrated "
+    "probability that the object identity is correct."
 )
+
+
+class HumanClarificationRequired(RuntimeError):
+    """Raised when a low-score association has no human resolver."""
 
 
 class GeminiVLM:
@@ -24,19 +30,48 @@ class GeminiVLM:
 
         self.client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
         self.model_name = os.environ.get("GEMINI_VLM_MODEL", "gemini-2.5-flash")
+        self._logprobs_supported = None
+        self._logprob_error = None
 
-    def analyze_image(self, image_path, user_text, detections):
+    def associate(self, image_path, prompt):
         from google.genai import types
 
         image_bytes = Path(image_path).read_bytes()
+        contents = [
+            types.Part.from_bytes(data=image_bytes, mime_type="image/png"),
+            prompt,
+        ]
+        common_config = {"temperature": 0, "max_output_tokens": 64}
+
+        if self._logprobs_supported is not False:
+            try:
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=contents,
+                    config=types.GenerateContentConfig(
+                        response_logprobs=True,
+                        **common_config,
+                    ),
+                )
+                self._logprobs_supported = True
+                return _gemini_provider_result(response, self.model_name)
+            except Exception as error:
+                if not _logprobs_unavailable(error):
+                    raise
+                self._logprobs_supported = False
+                self._logprob_error = str(error)
+
         response = self.client.models.generate_content(
             model=self.model_name,
-            contents=[
-                types.Part.from_bytes(data=image_bytes, mime_type="image/png"),
-                _vlm_prompt(user_text, detections),
-            ],
+            contents=contents,
+            config=types.GenerateContentConfig(**common_config),
         )
-        return response.text or "{}"
+        return _gemini_provider_result(
+            response,
+            self.model_name,
+            logprob_error=self._logprob_error
+            or "The Gemini response did not include output token log probabilities.",
+        )
 
 
 class OpenAIVLM:
@@ -45,26 +80,25 @@ class OpenAIVLM:
 
         self.client = OpenAI()
         self.model_name = os.environ.get("OPENAI_VLM_MODEL", "gpt-4.1-mini")
+        self._logprobs_supported = None
+        self._logprob_error = None
 
-    def analyze_image(self, image_path, user_text, detections):
+    def associate(self, image_path, prompt):
         image_b64 = base64.b64encode(Path(image_path).read_bytes()).decode("ascii")
-        response = self.client.chat.completions.create(
-            model=self.model_name,
-            messages=[
+        request = {
+            "model": self.model_name,
+            "messages": [
                 {
                     "role": "system",
                     "content": (
-                        "Perform instruction-conditioned object grounding from an "
-                        "annotated robot workspace image. Use only localized object "
-                        "IDs and exact semantic object names from the user's "
-                        "instruction; do not invent, generalize, or paraphrase "
-                        "classification labels. Return only JSON."
+                        "Associate one semantic target with an already-localized "
+                        "candidate. Return only the requested choice label."
                     ),
                 },
                 {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": _vlm_prompt(user_text, detections)},
+                        {"type": "text", "text": prompt},
                         {
                             "type": "image_url",
                             "image_url": {
@@ -75,44 +109,333 @@ class OpenAIVLM:
                     ],
                 },
             ],
-            temperature=0,
+            "temperature": 0,
+            "max_completion_tokens": 8,
+        }
+
+        if self._logprobs_supported is not False:
+            try:
+                response = self.client.chat.completions.create(
+                    logprobs=True,
+                    **request,
+                )
+                self._logprobs_supported = True
+                return _openai_provider_result(response, self.model_name)
+            except Exception as error:
+                if not _logprobs_unavailable(error):
+                    raise
+                self._logprobs_supported = False
+                self._logprob_error = str(error)
+
+        response = self.client.chat.completions.create(**request)
+        return _openai_provider_result(
+            response,
+            self.model_name,
+            logprob_error=self._logprob_error
+            or "The OpenAI response did not include output token log probabilities.",
         )
-        return response.choices[0].message.content or "{}"
 
 
-def classify_from_localization(
-    user_text,
+class GeminiThenOpenAI:
+    """Use Gemini first and instantiate OpenAI only after a Gemini call failure."""
+
+    def __init__(self):
+        self.gemini = None
+        self.gemini_initialization_error = None
+        try:
+            self.gemini = GeminiVLM()
+        except Exception as error:
+            self.gemini_initialization_error = error
+        self.openai = None
+
+    def associate(self, image_path, prompt):
+        gemini_error = self.gemini_initialization_error
+        if self.gemini is not None:
+            try:
+                return self.gemini.associate(image_path, prompt)
+            except Exception as error:
+                gemini_error = error
+        try:
+            if self.openai is None:
+                self.openai = OpenAIVLM()
+            return self.openai.associate(image_path, prompt)
+        except Exception as openai_error:
+            raise RuntimeError(
+                "Gemini VLM failed, then OpenAI VLM failed. "
+                f"Gemini: {gemini_error} | OpenAI: {openai_error}"
+            ) from openai_error
+
+
+def associate_targets_from_localization(
+    target_descriptions,
     image_path=Path("outputs/physical/annotation/RGB_point_cloud_roi_annotation.png"),
     localization_path=Path(
         "outputs/physical/point_cloud_localization/point_cloud_localization.json"
     ),
-    output_path=Path("outputs/physical/vlm/vlm_result.json"),
+    output_path=Path("outputs/physical/vlm/semantic_associations.json"),
+    threshold=PROVISIONAL_ASSOCIATION_THRESHOLD,
+    human_resolver=None,
+    provider=None,
 ):
     detections = load_localized_objects(localization_path)
-    raw_response, provider = classify_with_gemini_then_openai(
+    results = associate_targets(
+        target_descriptions=target_descriptions,
         image_path=image_path,
-        user_text=user_text,
         detections=detections,
+        threshold=threshold,
+        human_resolver=human_resolver,
+        provider=provider,
     )
-    result = parse_json_response(raw_response)
-    normalized_result = normalize_vlm_result(result, detections, user_text=user_text)
 
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
         json.dumps(
             {
-                "provider": provider,
-                "user_instruction": str(user_text),
-                "raw_result": result,
-                "normalized_result": normalized_result,
-                "decision_rule": DECISION_RULE,
+                "schema_version": 2,
+                "visual_prompt_path": str(image_path),
+                "score_semantics": SCORE_SEMANTICS,
+                "associations": results,
             },
             indent=2,
         ),
         encoding="utf-8",
     )
     return output_path
+
+
+def associate_targets(
+    target_descriptions,
+    image_path,
+    detections,
+    threshold=PROVISIONAL_ASSOCIATION_THRESHOLD,
+    human_resolver=None,
+    provider=None,
+):
+    descriptions = [str(value).strip() for value in target_descriptions]
+    if not descriptions or any(not value for value in descriptions):
+        raise ValueError("target_descriptions must contain nonempty semantic descriptions.")
+
+    active_provider = GeminiThenOpenAI() if provider is None else provider
+    return [
+        associate_target(
+            target_description=description,
+            image_path=image_path,
+            detections=detections,
+            threshold=threshold,
+            human_resolver=human_resolver,
+            provider=active_provider,
+        )
+        for description in descriptions
+    ]
+
+
+def associate_target(
+    target_description,
+    image_path,
+    detections,
+    threshold=PROVISIONAL_ASSOCIATION_THRESHOLD,
+    human_resolver=None,
+    provider=None,
+):
+    inference = infer_target_association(
+        target_description=target_description,
+        image_path=image_path,
+        detections=detections,
+        provider=provider,
+    )
+    inference["visual_prompt_path"] = str(image_path)
+    return resolve_association(inference, threshold, human_resolver)
+
+
+def infer_target_association(target_description, image_path, detections, provider=None):
+    choice_map = candidate_choice_map(detections)
+    prompt_candidates = candidate_prompt_records(detections, choice_map)
+    prompt = _vlm_prompt(target_description, prompt_candidates)
+    active_provider = GeminiThenOpenAI() if provider is None else provider
+    provider_result = active_provider.associate(image_path, prompt)
+    generated_text = str(provider_result.get("generated_text") or "")
+    model_choice = parse_model_choice(generated_text, choice_map)
+    decision_tokens, raw_log_probability = decision_sequence_log_probability(
+        model_choice,
+        provider_result.get("token_logprobs") or [],
+    )
+    association_score = (
+        math.exp(raw_log_probability)
+        if raw_log_probability is not None
+        else None
+    )
+
+    return {
+        "target_description": str(target_description).strip(),
+        "provider": provider_result.get("provider"),
+        "model": provider_result.get("model"),
+        "model_output": generated_text,
+        "model_choice": model_choice,
+        "vlm_object_id": object_id_for_choice(choice_map, model_choice),
+        "raw_log_probability": raw_log_probability,
+        "association_score": association_score,
+        "decision_token_logprobs": decision_tokens,
+        "logprob_error": provider_result.get("logprob_error"),
+        "candidate_map": choice_map,
+    }
+
+
+def resolve_association(vlm_result, threshold, human_resolver=None):
+    threshold = float(threshold)
+    if not 0.0 <= threshold <= 1.0:
+        raise ValueError("The provisional association threshold must be between 0 and 1.")
+
+    result = dict(vlm_result)
+    result.update(
+        {
+            "threshold": threshold,
+            "final_object_id": None,
+            "resolution": None,
+            "requires_human_clarification": False,
+            "human_intervention": False,
+            "human_selected_object_id": None,
+        }
+    )
+    score = result.get("association_score")
+    model_choice = result.get("model_choice")
+    vlm_object_id = result.get("vlm_object_id")
+
+    if model_choice is not None and score is not None and score >= threshold:
+        result["final_object_id"] = vlm_object_id
+        result["resolution"] = (
+            "target_not_present" if model_choice == NONE_CHOICE else "vlm_accepted"
+        )
+        return result
+
+    result["requires_human_clarification"] = True
+    if human_resolver is None:
+        if score is None:
+            result["resolution"] = "confidence_unavailable"
+            return result
+        raise HumanClarificationRequired(
+            f"Association score {score:.6f} is below the provisional threshold "
+            f"{threshold:.6f} for target {result.get('target_description')!r}."
+        )
+
+    human_selection = human_resolver(dict(result))
+    valid_object_ids = set(result.get("candidate_map", {}).values())
+    if human_selection is None or str(human_selection).strip().lower() == "none":
+        human_object_id = None
+    else:
+        human_object_id = str(human_selection).strip()
+        if human_object_id not in valid_object_ids:
+            raise ValueError(
+                "Human resolver selected an invalid localized object ID: "
+                f"{human_object_id}. Valid choices: {sorted(valid_object_ids)} or none."
+            )
+
+    result["final_object_id"] = human_object_id
+    result["human_selected_object_id"] = human_object_id
+    result["human_intervention"] = True
+    result["requires_human_clarification"] = False
+    if human_object_id is None:
+        result["resolution"] = "target_not_present"
+    elif human_object_id == vlm_object_id:
+        result["resolution"] = "human_confirmed"
+    else:
+        result["resolution"] = "human_corrected"
+    return result
+
+
+def console_human_resolver(association):
+    candidate_ids = list(association.get("candidate_map", {}).values())
+    print(f"Visual prompt: {association.get('visual_prompt_path')}")
+    print(f"Target: {association.get('target_description')}")
+    print("VLM prediction:")
+    print(f"  object_id = {association.get('vlm_object_id')}")
+    print(f"  association_score = {association.get('association_score')}")
+    print(f"  provisional threshold = {association.get('threshold')}")
+    print("Select the correct localized object:")
+    for object_id in candidate_ids:
+        print(f"  {object_id}")
+    print("  none")
+    return input("Selection: ").strip()
+
+
+def candidate_choice_map(detections):
+    object_ids = sorted(
+        str(item["object_id"])
+        for item in detections
+        if item.get("object_id") is not None
+    )
+    if not object_ids:
+        raise ValueError("No localized candidates are available for VLM association.")
+    if len(set(object_ids)) != len(object_ids):
+        raise ValueError("Localized candidate object IDs must be unique.")
+
+    labels = [label for label in string.ascii_uppercase if label != NONE_CHOICE]
+    if len(object_ids) > len(labels):
+        raise ValueError(f"At most {len(labels)} localized candidates are supported.")
+    return dict(zip(labels, object_ids))
+
+
+def object_id_for_choice(choice_map, choice):
+    if choice is None or choice == NONE_CHOICE:
+        return None
+    if choice not in choice_map:
+        raise ValueError(f"Unknown candidate choice label: {choice}")
+    return choice_map[choice]
+
+
+def choice_for_object_id(choice_map, object_id):
+    for choice, candidate_object_id in choice_map.items():
+        if candidate_object_id == object_id:
+            return choice
+    raise ValueError(f"Unknown localized object ID: {object_id}")
+
+
+def candidate_prompt_records(detections, choice_map):
+    detections_by_id = {str(item["object_id"]): item for item in detections}
+    return [
+        {
+            "choice": choice,
+            "object_id": object_id,
+            "bbox_2d_xyxy": detections_by_id[object_id].get("bbox_2d_xyxy"),
+            "centroid_3d_m": detections_by_id[object_id].get("centroid_3d_m"),
+            "size_3d_m": detections_by_id[object_id].get("size_3d_m"),
+        }
+        for choice, object_id in choice_map.items()
+    ]
+
+
+def parse_model_choice(generated_text, choice_map):
+    choice = str(generated_text or "").strip().upper()
+    valid_choices = set(choice_map) | {NONE_CHOICE}
+    return choice if choice in valid_choices else None
+
+
+def decision_sequence_log_probability(model_choice, token_logprobs):
+    if model_choice is None:
+        return [], None
+
+    consumed = []
+    generated = ""
+    raw_log_probability = 0.0
+    for record in token_logprobs:
+        token = str(record.get("token") or "")
+        log_probability = record.get("log_probability")
+        if log_probability is None or not math.isfinite(float(log_probability)):
+            return [], None
+        consumed.append(
+            {
+                "token": token,
+                "log_probability": float(log_probability),
+            }
+        )
+        generated += token
+        raw_log_probability += float(log_probability)
+        stripped = generated.strip().upper()
+        if stripped == model_choice:
+            return consumed, raw_log_probability
+        if stripped and not model_choice.startswith(stripped):
+            return [], None
+    return [], None
 
 
 def create_roi_contact_sheet(
@@ -200,43 +523,21 @@ def _place_contact_sheet_tile(canvas, image, label, index, tile_size, columns):
     )
 
 
-def classify_with_gemini_then_openai(image_path, user_text, detections):
-    try:
-        return GeminiVLM().analyze_image(image_path, user_text, detections), "gemini"
-    except Exception as gemini_error:
-        try:
-            return OpenAIVLM().analyze_image(image_path, user_text, detections), "openai"
-        except Exception as openai_error:
-            raise RuntimeError(
-                "Gemini VLM failed, then OpenAI VLM failed. "
-                f"Gemini: {gemini_error} | OpenAI: {openai_error}"
-            ) from openai_error
-
-
 def load_localized_objects(localization_path):
     payload = json.loads(Path(localization_path).read_text(encoding="utf-8"))
-    image_width, image_height = image_size_from_localization(payload)
     coordinate_frame = str(payload.get("frame") or "camera")
     detections = []
     for item in payload.get("objects", []):
         roi = item.get("roi", {})
-        bbox = [
-            int(roi.get("x1", 0)),
-            int(roi.get("y1", 0)),
-            int(roi.get("x2", 0)),
-            int(roi.get("y2", 0)),
-        ]
-        region = absolute_image_region(bbox, image_width, image_height)
         detections.append(
             {
                 "object_id": item.get("object_id"),
-                "visual_label": str(item.get("object_id", "")).removeprefix("object_"),
-                "bbox_2d_xyxy": bbox,
-                "spatial_description": region["spatial_description"],
-                "image_region": {
-                    "horizontal": region["horizontal"],
-                    "vertical": region["vertical"],
-                },
+                "bbox_2d_xyxy": [
+                    int(roi.get("x1", 0)),
+                    int(roi.get("y1", 0)),
+                    int(roi.get("x2", 0)),
+                    int(roi.get("y2", 0)),
+                ],
                 "centroid_3d_m": item.get("centroid_3d_m"),
                 "size_3d_m": item.get("size_3d_m"),
                 "point_count": item.get("point_count"),
@@ -246,354 +547,46 @@ def load_localized_objects(localization_path):
     return detections
 
 
-def image_size_from_localization(payload):
-    intrinsics = payload.get("camera_intrinsics", {})
-    width = int(intrinsics.get("width", 0) or payload.get("image_width", 0) or 0)
-    height = int(intrinsics.get("height", 0) or payload.get("image_height", 0) or 0)
-
-    if width > 0 and height > 0:
-        return width, height
-
-    max_x = 0
-    max_y = 0
-    for item in payload.get("objects", []):
-        roi = item.get("roi", {})
-        max_x = max(max_x, int(roi.get("x2", 0) or 0))
-        max_y = max(max_y, int(roi.get("y2", 0) or 0))
-    return max_x, max_y
-
-
-def absolute_image_region(bbox, image_width, image_height):
-    x1, y1, x2, y2 = bbox
-    center_x = 0.5 * (x1 + x2)
-    center_y = 0.5 * (y1 + y2)
-    horizontal = region_name(center_x, image_width, ("left", "center", "right"))
-    vertical = region_name(center_y, image_height, ("top", "middle", "bottom"))
-
-    if horizontal == "center" and vertical == "middle":
-        description = "center region"
-    else:
-        description = f"{horizontal}-{vertical} region"
-
-    return {
-        "horizontal": horizontal,
-        "vertical": vertical,
-        "spatial_description": description,
-    }
-
-
-def region_name(value, extent, names):
-    if extent <= 0:
-        return names[1]
-    if value < extent / 3.0:
-        return names[0]
-    if value < 2.0 * extent / 3.0:
-        return names[1]
-    return names[2]
-
-
-def normalize_vlm_result(result, detections, user_text=None):
-    result = result if isinstance(result, dict) else {}
-    detection_by_id = {
-        str(detection["object_id"]): detection
-        for detection in detections
-        if detection.get("object_id") is not None
-    }
-
-    if "object_evaluations" not in result and "object_id" in result:
-        result = old_format_to_evaluations(result, detections)
-
-    returned_evaluations = {
-        str(evaluation.get("object_id")): evaluation
-        for evaluation in result.get("object_evaluations", [])
-        if isinstance(evaluation, dict)
-        and str(evaluation.get("object_id")) in detection_by_id
-    }
-
-    object_evaluations = []
-    for detection in detections:
-        object_id = str(detection.get("object_id"))
-        source = returned_evaluations.get(object_id, {})
-        object_evaluations.append(normalize_object_evaluation(source, detection))
-
-    candidates = [
-        evaluation
-        for evaluation in object_evaluations
-        if evaluation["target_match"] in CANDIDATE_MATCH_VALUES
-        and evaluation["object_id"] in detection_by_id
+def _gemini_provider_result(response, model_name, logprob_error=None):
+    candidate = response.candidates[0] if response.candidates else None
+    logprobs_result = candidate.logprobs_result if candidate is not None else None
+    chosen = logprobs_result.chosen_candidates if logprobs_result is not None else []
+    token_logprobs = [
+        {"token": item.token, "log_probability": item.log_probability}
+        for item in (chosen or [])
     ]
+    if not token_logprobs and logprob_error is None:
+        logprob_error = "The Gemini response did not include chosen-token log probabilities."
+    return {
+        "provider": "gemini",
+        "model": model_name,
+        "generated_text": response.text or "",
+        "token_logprobs": token_logprobs,
+        "logprob_error": logprob_error,
+    }
 
-    candidate_groups = group_candidates_by_class(candidates)
-    ambiguous_groups = [
-        group
-        for group in candidate_groups
-        if len(group["candidates"]) > 1
+
+def _openai_provider_result(response, requested_model, logprob_error=None):
+    choice = response.choices[0]
+    content_logprobs = choice.logprobs.content if choice.logprobs is not None else []
+    token_logprobs = [
+        {"token": item.token, "log_probability": item.logprob}
+        for item in (content_logprobs or [])
     ]
-
-    if candidates and not ambiguous_groups:
-        selected_objects = [
-            selected_object_from_evaluation(candidate, result, user_text)
-            for candidate in candidates
-        ]
-        selected_object_id = selected_objects[0]["object_id"]
-        selected_object_type = selected_objects[0]["object_type"]
-        needs_human_clarification = False
-        clarification_reason = None
-        clarification_question = None
-    elif ambiguous_groups:
-        selected_objects = []
-        selected_object_id = None
-        selected_object_type = None
-        needs_human_clarification = True
-        clarification_reason = (
-            "multiple localized objects are possible matches for the same target class"
-        )
-        clarification_question = build_ambiguous_class_question(
-            ambiguous_groups,
-            object_evaluations,
-        )
-    else:
-        selected_objects = []
-        selected_object_id = None
-        selected_object_type = None
-        needs_human_clarification = True
-        clarification_reason = "no localized object was labeled as a match or plausible match"
-        clarification_question = build_no_candidate_question(object_evaluations)
-
+    if not token_logprobs and logprob_error is None:
+        logprob_error = "The OpenAI response did not include output token log probabilities."
     return {
-        "object_evaluations": object_evaluations,
-        "selected_objects": selected_objects,
-        "selected_object_id": selected_object_id,
-        "selected_object_type": selected_object_type,
-        "needs_human_clarification": needs_human_clarification,
-        "clarification_reason": clarification_reason,
-        "clarification_question": clarification_question,
-        "candidate_count": len(candidates),
-        "candidate_object_ids": [candidate["object_id"] for candidate in candidates],
-        "candidate_groups": [
-            {
-                "object_class": group["object_class"],
-                "object_ids": [
-                    candidate["object_id"]
-                    for candidate in group["candidates"]
-                ],
-            }
-            for group in candidate_groups
-        ],
-        "decision_rule": DECISION_RULE,
+        "provider": "openai",
+        "model": response.model or requested_model,
+        "generated_text": choice.message.content or "",
+        "token_logprobs": token_logprobs,
+        "logprob_error": logprob_error,
     }
 
 
-def old_format_to_evaluations(result, detections):
-    object_id = result.get("object_id")
-    object_type = result.get("object_type")
-    evaluations = []
-    for detection in detections:
-        is_old_selection = detection.get("object_id") == object_id
-        evaluations.append(
-            {
-                "object_id": detection.get("object_id"),
-                "visual_label": detection.get("visual_label"),
-                "target_match": "plausible_match" if is_old_selection else "not_match",
-                "predicted_type": object_type if is_old_selection else None,
-                "instruction_role": None,
-                "visual_evidence": (
-                    "Old VLM response selected this object without per-object evidence."
-                    if is_old_selection
-                    else "Old VLM response did not evaluate this object independently."
-                ),
-                "missing_or_uncertain_cues": (
-                    "Old response format did not provide the simplified object_evaluations schema."
-                ),
-                "spatial_description": detection.get("spatial_description"),
-            }
-        )
-    return {
-        "object_evaluations": evaluations,
-    }
-
-
-def normalize_object_evaluation(source, detection):
-    target_match = str(source.get("target_match", "not_match")).strip().lower()
-    if target_match == "uncertain":
-        target_match = "plausible_match"
-    if target_match not in TARGET_MATCH_VALUES:
-        target_match = "not_match"
-
-    return {
-        "object_id": detection.get("object_id"),
-        "visual_label": str(source.get("visual_label") or detection.get("visual_label") or ""),
-        "target_match": target_match,
-        "predicted_type": none_if_empty(source.get("predicted_type")),
-        "instruction_role": normalize_instruction_role(source.get("instruction_role")),
-        "bbox_2d_xyxy": detection.get("bbox_2d_xyxy"),
-        "visual_evidence": none_if_empty(source.get("visual_evidence"))
-        or "No independent visual evidence was provided for this object.",
-        "missing_or_uncertain_cues": none_if_empty(source.get("missing_or_uncertain_cues")),
-        "spatial_description": none_if_empty(source.get("spatial_description"))
-        or detection.get("spatial_description")
-        or "center region",
-    }
-
-
-def selected_object_from_evaluation(evaluation, result, user_text):
-    object_type = (
-        evaluation.get("predicted_type")
-        or result.get("selected_object_type")
-        or str(user_text)
+def _logprobs_unavailable(error):
+    message = str(error).lower()
+    return "logprob" in message and any(
+        phrase in message
+        for phrase in ("not enabled", "not supported", "unsupported", "invalid argument")
     )
-    return {
-        "object_id": evaluation["object_id"],
-        "object_type": object_type,
-        "object_class": candidate_object_class(evaluation),
-        "target_match": evaluation["target_match"],
-        "instruction_role": evaluation.get("instruction_role"),
-        "spatial_description": evaluation.get("spatial_description"),
-    }
-
-
-def group_candidates_by_class(candidates):
-    groups_by_class = {}
-    for candidate in candidates:
-        object_class = candidate_object_class(candidate)
-        if object_class not in groups_by_class:
-            groups_by_class[object_class] = {
-                "object_class": object_class,
-                "candidates": [],
-            }
-        groups_by_class[object_class]["candidates"].append(candidate)
-    return list(groups_by_class.values())
-
-
-def candidate_object_class(evaluation):
-    predicted_type = none_if_empty(evaluation.get("predicted_type"))
-    if predicted_type is None:
-        return "unknown target"
-
-    tokens = re.findall(r"[a-z0-9]+", predicted_type.lower())
-    articles = {"a", "an", "the"}
-    normalized = [
-        token
-        for token in tokens
-        if token not in articles
-    ]
-    if not normalized:
-        normalized = tokens
-    return " ".join(normalized) or "unknown target"
-
-
-def normalize_instruction_role(value):
-    role = none_if_empty(value)
-    if role is None:
-        return None
-    role = role.lower().replace("-", "_").replace(" ", "_")
-    if role in {"moved_object", "reference_object", "other_target"}:
-        return role
-    return "other_target"
-
-
-def none_if_empty(value):
-    if value is None:
-        return None
-    text = str(value).strip()
-    if not text or text.lower() == "null":
-        return None
-    return text
-
-
-def build_ambiguous_class_question(ambiguous_groups, object_evaluations):
-    group_descriptions = []
-    for group in ambiguous_groups:
-        choices = " or ".join(
-            describe_candidate(candidate, object_evaluations)
-            for candidate in group["candidates"][:4]
-        )
-        group_descriptions.append(
-            f"{group['object_class']}: {choices}"
-        )
-    return (
-        "Multiple localized objects could match the same requested object class. "
-        "Which one should I use for each class: "
-        f"{'; '.join(group_descriptions)}?"
-    )
-
-
-def build_clarification_question(candidates, object_evaluations):
-    choices = " or ".join(
-        describe_candidate(candidate, object_evaluations)
-        for candidate in candidates[:4]
-    )
-    return (
-        "Multiple localized objects could match the requested target. "
-        f"Which one should I use: {choices}?"
-    )
-
-
-def build_no_candidate_question(object_evaluations):
-    if not object_evaluations:
-        return "No localized objects were available for classification."
-    choices = ", ".join(
-        describe_candidate(evaluation, object_evaluations)
-        for evaluation in object_evaluations[:4]
-    )
-    return (
-        "None of the localized objects clearly matches the requested target. "
-        f"Which labeled object should I use: {choices}?"
-    )
-
-
-def describe_candidate(candidate, object_evaluations):
-    description = f"{candidate['object_id']} in the {candidate['spatial_description']}"
-    reference = nearest_known_reference(candidate, object_evaluations)
-    if reference:
-        description += f", near {reference['object_id']} ({reference['predicted_type']})"
-    return description
-
-
-def nearest_known_reference(candidate, object_evaluations):
-    candidate_center = bbox_center(candidate.get("bbox_2d_xyxy"))
-    if candidate_center is None:
-        return None
-
-    best = None
-    best_distance_sq = None
-    for evaluation in object_evaluations:
-        if evaluation["object_id"] == candidate["object_id"]:
-            continue
-        reference_center = bbox_center(evaluation.get("bbox_2d_xyxy"))
-        if (
-            evaluation["target_match"] == "not_match"
-            and evaluation.get("predicted_type")
-            and reference_center is not None
-        ):
-            distance_sq = (
-                (candidate_center[0] - reference_center[0]) ** 2
-                + (candidate_center[1] - reference_center[1]) ** 2
-            )
-            if best_distance_sq is None or distance_sq < best_distance_sq:
-                best = evaluation
-                best_distance_sq = distance_sq
-    return best
-
-
-def bbox_center(bbox):
-    if not bbox or len(bbox) != 4:
-        return None
-    return ((float(bbox[0]) + float(bbox[2])) / 2.0, (float(bbox[1]) + float(bbox[3])) / 2.0)
-
-
-def parse_json_response(raw_response):
-    text = str(raw_response or "").strip()
-    if text.startswith("```"):
-        text = "\n".join(
-            line
-            for line in text.splitlines()
-            if not line.strip().startswith("```")
-        ).strip()
-    try:
-        return json.loads(text)
-    except json.JSONDecodeError:
-        match = re.search(r"\{.*\}", text, flags=re.DOTALL)
-        if match:
-            return json.loads(match.group(0))
-        raise

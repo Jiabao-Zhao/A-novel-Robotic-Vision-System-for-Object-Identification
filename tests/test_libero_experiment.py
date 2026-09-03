@@ -56,6 +56,24 @@ class LiberoExperimentTests(unittest.TestCase):
         self.assertIn("init_state_00", str(task_nine_state_zero))
         self.assertNotEqual(task_zero_state_nine, task_nine_state_zero)
 
+    def test_resolution_trial_path_preserves_the_completed_method_results(self):
+        trial = episode_result_dir(
+            PROPOSED_METHOD_FOLDER,
+            0,
+            0,
+            run_variant="768x768_instruction_bound_prompt",
+        )
+
+        self.assertEqual(
+            trial,
+            EXPERIMENT_ROOT
+            / "proposed_framework"
+            / "_resolution_trials"
+            / "768x768_instruction_bound_prompt"
+            / "task_00_alphabet_soup"
+            / "init_state_00",
+        )
+
     def test_episode_path_rejects_unknown_method(self):
         with self.assertRaisesRegex(ValueError, "Unknown experiment method"):
             episode_result_dir("hybrid", 7, 0)

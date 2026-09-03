@@ -8,14 +8,12 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from simulation.libero_cad import (
-    register_libero_cad_to_observation,
-    resolve_libero_cad_record,
-)
+from simulation.libero_cad import register_libero_cad_to_observation
 from simulation.libero_control import (
     OPEN_GRIPPER,
     execute_top_grasp_and_place,
     hold_gripper,
+    top_down_grasp_pose,
 )
 from simulation.libero_env import LiberoIntegrationError, LiberoTaskEnvironment
 from simulation.libero_experiment import (
@@ -26,15 +24,21 @@ from simulation.libero_experiment import (
 from simulation.libero_io import save_libero_observation
 from simulation.libero_sensor import LiberoRGBDSensor
 from simulation.perception_adapter import run_libero_localization
-from vlm_module import classify_from_localization, create_roi_contact_sheet
+from vlm_module import (
+    PROVISIONAL_ASSOCIATION_THRESHOLD,
+    associate_targets_from_localization,
+    console_human_resolver,
+    create_roi_contact_sheet,
+)
 
 
 SUITE_NAME = "libero_object"
 DEFAULT_TASK_INDEX = 7
 CAMERA_NAME = "agentview"
-IMAGE_WIDTH = 512
-IMAGE_HEIGHT = 512
-VLM_CONTACT_SHEET_TILE_SIZE_PX = 320
+IMAGE_WIDTH = 768
+IMAGE_HEIGHT = 768
+VLM_CONTACT_SHEET_TILE_SIZE_PX = 448
+RUN_VARIANT = "768x768_semantic_association_grasp_pose_v5"
 CONTROL_FREQUENCY_HZ = 20
 EPISODE_HORIZON_STEPS = 280
 CONTROL_MODE = "relative"
@@ -63,6 +67,7 @@ def main(task_index=DEFAULT_TASK_INDEX):
         PROPOSED_METHOD_FOLDER,
         task_index,
         INITIAL_STATE_INDEX,
+        run_variant=RUN_VARIANT,
     )
     if output_root.exists() and (
         not output_root.is_dir() or any(output_root.iterdir())
@@ -91,6 +96,7 @@ def _run_task(task_index):
         PROPOSED_METHOD_FOLDER,
         task_index,
         INITIAL_STATE_INDEX,
+        run_variant=RUN_VARIANT,
     )
     perception_root = output_root / "perception"
     action_log = []
@@ -143,18 +149,23 @@ def _run_task(task_index):
             output_root / "vlm_roi_contact_sheet.png",
             tile_size_px=VLM_CONTACT_SHEET_TILE_SIZE_PX,
         )
-        vlm_result_path = classify_from_localization(
-            observation.instruction,
+        vlm_result_path = associate_targets_from_localization(
+            [target_name, "basket"],
             image_path=vlm_visual_prompt_path,
             localization_path=localization_paths["localization"],
             output_path=output_root / "vlm_result.json",
+            threshold=PROVISIONAL_ASSOCIATION_THRESHOLD,
+            human_resolver=console_human_resolver,
         )
-        grounding = task_roles_from_vlm_result(vlm_result_path, target_name)
+        task_associations = task_associations_from_vlm_result(
+            vlm_result_path,
+            target_name,
+        )
         objects_by_id = {
             item["object_id"]: item for item in localization["objects"]
         }
-        target_object = objects_by_id[grounding["target_object_id"]]
-        basket = objects_by_id[grounding["basket_object_id"]]
+        target_object = objects_by_id[task_associations["target_object_id"]]
+        basket = objects_by_id[task_associations["basket_object_id"]]
         target_depth_centroid_world_m = camera_point_to_world(
             target_object["centroid_3d_m"], observation.world_T_camera
         )
@@ -162,8 +173,8 @@ def _run_task(task_index):
             basket["centroid_3d_m"], observation.world_T_camera
         )
         target_cad_registration = register_libero_cad_to_observation(
-            object_type=grounding["target_object_type"],
-            object_id=grounding["target_object_id"],
+            object_type=target_name,
+            object_id=task_associations["target_object_id"],
             localization=localization,
             world_T_camera=observation.world_T_camera,
             output_dir=output_root / "cad_registration" / target_slug,
@@ -172,10 +183,24 @@ def _run_task(task_index):
             target_cad_registration["registered_center_world_m"],
             dtype=float,
         )
+        from robosuite.utils.transform_utils import quat2mat
+
+        world_T_grasp = top_down_grasp_pose(
+            target_cad_registration["world_T_cad"],
+            target_cad_registration["cad_center_cad_m"],
+            target_cad_registration["cad_extent_m"],
+            target_cad_registration["cad_up_axis"],
+            quat2mat(np.asarray(raw_observation["robot0_eef_quat"], dtype=float)),
+        )
+        if not np.allclose(world_T_grasp[:3, 2], [0.0, 0.0, -1.0], atol=2e-3):
+            raise RuntimeError("CAD-derived grasp pose is not top-down in the world frame.")
 
         output_root.mkdir(parents=True, exist_ok=True)
-        grounding_path = output_root / "grounding.json"
-        grounding_path.write_text(json.dumps(grounding, indent=2), encoding="utf-8")
+        task_associations_path = output_root / "task_associations.json"
+        task_associations_path.write_text(
+            json.dumps(task_associations, indent=2),
+            encoding="utf-8",
+        )
         video_frames.append(_agentview_rgb(raw_observation))
 
         def record_step(phase, phase_step, raw, action, reward, done, info):
@@ -190,6 +215,9 @@ def _run_task(task_index):
                     "action": [float(value) for value in action],
                     "eef_position_m": [
                         float(value) for value in raw["robot0_eef_pos"]
+                    ],
+                    "eef_quaternion_xyzw": [
+                        float(value) for value in raw["robot0_eef_quat"]
                     ],
                     "reward": float(reward),
                     "done": bool(done),
@@ -210,7 +238,7 @@ def _run_task(task_index):
             final_raw_observation = execute_top_grasp_and_place(
                 environment,
                 raw_observation,
-                target_world_m,
+                world_T_grasp,
                 basket_world_m,
                 callback=record_step,
             )
@@ -276,7 +304,7 @@ def _run_task(task_index):
                     "world_T_camera",
                     "robot proprioception",
                     "language instruction",
-                    "known target CAD prior selected from the VLM classification",
+                    "known target CAD prior retrieved from the semantic target description",
                 ],
                 "simulator_object_identity_or_pose_used_by_method": False,
                 "seed": RANDOM_SEED,
@@ -296,10 +324,26 @@ def _run_task(task_index):
                 ],
                 "workspace_rgbd_pixels": int(workspace_mask.sum()),
                 "localized_object_count": int(localization["object_count"]),
-                "grounding": grounding,
+                "semantic_associations": task_associations,
                 "target_depth_centroid_world_m": target_depth_centroid_world_m.tolist(),
                 "target_registered_center_world_m": target_world_m.tolist(),
-                "pick_position_source": "registered target CAD axis-aligned-box center",
+                "pick_position_source": (
+                    "registered CAD center shifted toward the object top to maintain "
+                    "Panda hand clearance"
+                ),
+                "target_grasp_point_world_m": world_T_grasp[:3, 3].tolist(),
+                "center_to_grasp_height_offset_m": float(
+                    world_T_grasp[2, 3] - target_world_m[2]
+                ),
+                "world_T_grasp": world_T_grasp.tolist(),
+                "world_T_grasp_convention": (
+                    "Desired robosuite grip-site pose in the MuJoCo world frame; "
+                    "CAD Y-up/Z-up is handled explicitly, tool Z points down, and "
+                    "the closest 180-degree-equivalent wrist yaw is used."
+                ),
+                "simulation_controller": (
+                    "robosuite OSC_POSE using robot0_eef_pos and robot0_eef_quat"
+                ),
                 "place_position_source": "depth-localized basket centroid",
                 "basket_centroid_world_m": basket_world_m.tolist(),
                 "target_cad_registration": target_cad_registration,
@@ -308,7 +352,7 @@ def _run_task(task_index):
                 "artifacts": {
                     "localization": str(localization_paths["localization"]),
                     "annotation": str(localization_paths["annotated_rgb"]),
-                    "grounding": str(grounding_path),
+                    "task_associations": str(task_associations_path),
                     "vlm_visual_prompt": str(vlm_visual_prompt_path),
                     "vlm_result": str(vlm_result_path),
                     "target_cad_registration": target_cad_registration["result_path"],
@@ -330,9 +374,12 @@ def _run_task(task_index):
 
     print(f"Instruction: {observation.instruction}")
     print(f"Localized candidates: {localization['object_count']}")
-    print(f"VLM provider: {grounding['provider']}")
-    print(f"Grounded target ({target_name}): {grounding['target_object_id']}")
-    print(f"Grounded basket: {grounding['basket_object_id']}")
+    print(f"VLM providers: {', '.join(task_associations['providers'])}")
+    print(
+        f"Associated target ({target_name}): "
+        f"{task_associations['target_object_id']}"
+    )
+    print(f"Associated basket: {task_associations['basket_object_id']}")
     print(
         "Target depth centroid in world frame (m): "
         f"{np.round(target_depth_centroid_world_m, 4).tolist()}"
@@ -434,59 +481,56 @@ def camera_point_to_world(point_camera_m, world_T_camera):
     return (np.asarray(world_T_camera, dtype=float) @ point)[:3]
 
 
-def task_roles_from_vlm_result(result_path, target_name="milk"):
+def task_associations_from_vlm_result(result_path, target_name="milk"):
     payload = json.loads(Path(result_path).read_text(encoding="utf-8"))
-    normalized = payload.get("normalized_result", {})
-    if normalized.get("needs_human_clarification"):
+    associations = list(payload.get("associations", []))
+    by_description = {
+        str(item.get("target_description", "")).strip().lower(): item
+        for item in associations
+    }
+    required = (target_name.lower(), "basket")
+    if any(description not in by_description for description in required):
         raise RuntimeError(
-            "VLM grounding requires clarification: "
-            f"{normalized.get('clarification_reason')}"
+            f"VLM result must contain independent associations for {target_name!r} "
+            f"and 'basket'; received {sorted(by_description)}."
         )
-    selected = list(normalized.get("selected_objects", []))
-    moved_objects = [
+    target_association = by_description[target_name.lower()]
+    basket_association = by_description["basket"]
+    unresolved = [
         item
-        for item in selected
-        if item.get("instruction_role") == "moved_object"
+        for item in (target_association, basket_association)
+        if item.get("requires_human_clarification")
     ]
-    basket = [
-        item
-        for item in selected
-        if item.get("instruction_role") == "reference_object"
-        and "basket" in str(item.get("object_type", "")).lower()
-    ]
-    if len(moved_objects) != 1 or len(basket) != 1:
-        raise RuntimeError(
-            f"VLM must select exactly one {target_name} moved_object and one basket "
-            f"reference_object; received selected objects: {selected}"
+    if unresolved:
+        descriptions = ", ".join(
+            str(item.get("target_description")) for item in unresolved
         )
-    if moved_objects[0]["object_id"] == basket[0]["object_id"]:
         raise RuntimeError(
-            f"VLM assigned {target_name} and basket to the same localized object."
+            f"Semantic association requires human clarification for: {descriptions}."
         )
-    selected_type = moved_objects[0].get("object_type")
-    try:
-        expected_cad = resolve_libero_cad_record(target_name)
-        selected_cad = resolve_libero_cad_record(selected_type)
-    except LookupError as error:
+    target_object_id = target_association.get("final_object_id")
+    basket_object_id = basket_association.get("final_object_id")
+    if target_object_id is None or basket_object_id is None:
+        missing = target_name if target_object_id is None else "basket"
+        raise RuntimeError(f"Target not present: {missing!r}; task execution stopped.")
+    if target_object_id == basket_object_id:
         raise RuntimeError(
-            f"VLM moved_object type {selected_type!r} could not be matched to the "
-            f"configured target {target_name!r}: {error}"
-        ) from error
-    if selected_cad["cad_id"] != expected_cad["cad_id"]:
-        raise RuntimeError(
-            f"VLM moved_object type {selected_type!r} does not match the configured "
-            f"target {target_name!r}; resolved CAD entries are "
-            f"{selected_cad['cad_id']!r} and {expected_cad['cad_id']!r}."
+            f"Semantic associations assigned {target_name} and basket to the same "
+            "localized object."
         )
     return {
-        "provider": payload.get("provider"),
-        "method": "existing VLM module over enlarged depth-localized RGB crops",
-        "target_name": target_name,
-        "target_object_id": moved_objects[0]["object_id"],
-        "target_object_type": moved_objects[0]["object_type"],
-        "basket_object_id": basket[0]["object_id"],
-        "selected_objects": selected,
-        "object_evaluations": normalized.get("object_evaluations", []),
+        "method": "independent semantic association over localized RGB-D candidates",
+        "target_description": target_name,
+        "target_object_id": target_object_id,
+        "basket_description": "basket",
+        "basket_object_id": basket_object_id,
+        "providers": sorted(
+            {
+                str(item.get("provider"))
+                for item in (target_association, basket_association)
+            }
+        ),
+        "associations": [target_association, basket_association],
     }
 
 

@@ -34,18 +34,13 @@ def _resolve_output_path(path_text):
     return ROOT / path
 
 
-def _selected_record(records, role, fallback_words):
+def _selected_record(records, target_description):
     for record in records:
-        if record.get("instruction_role") == role:
+        if record.get("target_description") == target_description:
             return record
-
-    words = tuple(word.lower() for word in fallback_words)
-    for record in records:
-        text = f"{record.get('object_type', '')} {record.get('object_class', '')}".lower()
-        if all(word in text for word in words):
-            return record
-
-    raise ValueError(f"Could not find object record for role={role!r}, words={fallback_words!r}.")
+    raise ValueError(
+        f"Could not find registration for target_description={target_description!r}."
+    )
 
 
 def _cloud_points_base_mm(cloud_path, T_base_from_camera_mm):
@@ -80,8 +75,7 @@ def _pose_from_registration(record, T_base_from_camera_mm):
 
     return {
         "object_id": record["object_id"],
-        "object_type": record["object_type"],
-        "instruction_role": record.get("instruction_role"),
+        "target_description": record["target_description"],
         "center_base_mm": center_base_mm,
         "bottom_z_mm": bottom_z_mm,
         "top_z_mm": top_z_mm,
@@ -96,8 +90,8 @@ def _load_scene_poses():
     robot_pose = _read_json(ROBOT_BASE_POSE_PATH)
     T_base_from_camera_mm = np.asarray(robot_pose["T_base_from_camera_mm"], dtype=float)
 
-    white_record = _selected_record(records, "moved_object", ("white", "gear"))
-    red_record = _selected_record(records, "reference_object", ("red", "block"))
+    white_record = _selected_record(records, "white gear")
+    red_record = _selected_record(records, "red block")
 
     return (
         _pose_from_registration(white_record, T_base_from_camera_mm),
@@ -150,8 +144,8 @@ def sequence():
     red_approach_pose[2] += APPROACH_CLEARANCE_MM
 
     print("Figure sequence loaded from current CAD registration output.")
-    print(f"Moved object: {white['object_type']} ({white['object_id']})")
-    print(f"Reference object: {red['object_type']} ({red['object_id']})")
+    print(f"Moved object: {white['target_description']} ({white['object_id']})")
+    print(f"Reference object: {red['target_description']} ({red['object_id']})")
     _print_pose("White approach", white_approach_pose)
     _print_pose("White pick", white_pick_pose)
     _print_pose("Red approach", red_approach_pose)

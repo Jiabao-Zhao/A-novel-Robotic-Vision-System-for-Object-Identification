@@ -181,10 +181,10 @@ frame for calibration verification.
 
 `scripts.libero_milk_cad_test` isolates the first CAD experiment from robot
 motion. It reads the saved initial observation, depth-localization result, VLM
-grounding result, and `world_T_camera` from task 7. It then:
+semantic association result, and `world_T_camera` from task 7. It then:
 
 ```text
-VLM milk object_id
+VLM association: "milk" -> final_object_id
   -> that candidate's RGB-D-derived partial point cloud
   -> semantic lookup in CAD/libero_object_library.json
   -> tabletop-constrained CAD-to-observation registration
@@ -227,9 +227,17 @@ uses the rendered agent-view RGB-D observation, the calibration bridge, the
 existing depth localizer, the repository's Gemini-first/OpenAI-fallback VLM
 association, target CAD-to-observation alignment, robot proprioception, and
 normalized OSC pose actions. The VLM receives a full-scene plus enlarged-crop
-contact sheet labeled only with localized `object_id` values. The target pick
-position is the registered CAD bounding-box center; the basket place position
-remains its depth-localized centroid.
+contact sheet labeled only with localized `object_id` values. It independently
+associates the semantic descriptions for the product and basket; it does not
+infer which one is moved or used as a destination. The task-execution layer
+retains those relationships from the LIBERO task definition. The target object
+pose comes from CAD registration. A simulation-only grasp conversion then
+handles the CAD's declared Y-up or Z-up convention, keeps the gripper tool axis
+vertical, selects the closer 180-degree-equivalent wrist yaw, and chooses a
+grasp height from the registered CAD extent. Flat packages use their center,
+medium-height products use a small upward offset, and tall products are grasped
+40 mm below the top. The basket place position remains its depth-localized
+centroid.
 Simulator segmentation, simulator object identities, and ground-truth object
 poses are not method inputs. LIBERO's task success predicate is read only after
 execution as the evaluation result.
@@ -244,11 +252,35 @@ Set `GEMINI_API_KEY` and/or `OPENAI_API_KEY` in the WSL process environment
 before running the task.
 
 Each episode saves its perception inputs, localization JSON, enlarged VLM
-visual prompt, complete VLM result, CAD transforms and aligned/augmented point
+visual prompt, independent semantic association results, CAD transforms and aligned/augmented point
 clouds, normalized action log, final agent and wrist RGB-D observations,
 success value, and MP4 video beneath its corresponding
 `proposed_framework/task_XX_product/init_state_00/` folder. This remains a
 top-grasp execution baseline, not a general grasp planner or VLA policy.
+
+The current higher-resolution trial renders the proposed method at 768 x 768,
+uses 448-pixel VLM contact-sheet tiles, and queries one explicit semantic target
+description at a time. Its artifacts are isolated under
+`proposed_framework/_resolution_trials/768x768_semantic_association_grasp_pose_v5/`
+so the completed 512 x 512 breadth sweep and the earlier XYZ-controller trial
+are not overwritten. This simulation-only controller maps the registered
+`world_T_cad` pose to a collision-aware robosuite grip-site target and uses its
+OSC pose controller; it does not alter the physical RealSense/UR5e path.
+
+The VLM response is a compact choice label mapped deterministically back to an
+`object_id`. Its association score is `exp(sum(decision token logprobs))`; this
+is a raw response likelihood, not a calibrated correctness probability. A
+provisional threshold of 0.75 controls autonomous acceptance versus human
+clarification and must be calibrated in later experiments. Both paths produce
+the same `final_object_id` field before CAD retrieval. A `none` decision leaves
+`final_object_id` null and stops CAD retrieval for that target.
+
+With the locally tested Google Gen AI 2.21.0 Developer API,
+`gemini-2.5-flash` rejects `response_logprobs` as not enabled. The Gemini
+provider therefore preserves its label with a null score and defers to a human;
+it never fabricates confidence. The locally tested OpenAI 3.7.0 Chat
+Completions client returned chosen-token log probabilities for
+`gpt-4.1-mini-2025-04-14` with image input.
 
 ## SmolVLA baseline and matched comparison
 
@@ -300,9 +332,10 @@ A **task index** selects the product instruction: task 0 is alphabet soup, task
 7 is milk, and task 9 is orange juice. An **initial-state index** selects one of
 the 50 saved simulator arrangements inside that task. These are independent
 indices. The completed VLA baseline remains at its official 256 x 256 input
-setting. The proposed branch is currently rerun at 512 x 512 as a resolution
-ablation, so those results are not a matched cross-method comparison. Both
-branches still use:
+setting. The completed proposed-method breadth sweep uses 512 x 512, while the
+current Alphabet Soup resolution trial uses 768 x 768. Neither proposed result
+is a resolution-matched cross-method comparison with the VLA baseline. All runs
+still use:
 
 - official `.pruned_init` state index 0, including a byte hash check
 - seed 1000

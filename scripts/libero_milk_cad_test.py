@@ -8,12 +8,21 @@ import matplotlib.pyplot as plt
 import numpy as np
 import open3d as o3d
 
-from scripts.libero_task_execution import camera_point_to_world, task_roles_from_vlm_result
+from scripts.libero_task_execution import (
+    RUN_VARIANT,
+    camera_point_to_world,
+    task_associations_from_vlm_result,
+)
 from simulation.libero_cad import register_libero_cad_to_observation
 from simulation.libero_experiment import PROPOSED_METHOD_FOLDER, episode_result_dir
 
 
-EPISODE_ROOT = episode_result_dir(PROPOSED_METHOD_FOLDER, 7, 0)
+EPISODE_ROOT = episode_result_dir(
+    PROPOSED_METHOD_FOLDER,
+    7,
+    0,
+    run_variant=RUN_VARIANT,
+)
 LOCALIZATION_PATH = (
     EPISODE_ROOT / "perception" / "point_cloud" / "point_cloud_localization.json"
 )
@@ -32,11 +41,11 @@ def main():
             )
 
     localization = json.loads(LOCALIZATION_PATH.read_text(encoding="utf-8"))
-    grounding = task_roles_from_vlm_result(VLM_RESULT_PATH)
+    associations = task_associations_from_vlm_result(VLM_RESULT_PATH)
     world_T_camera = np.load(WORLD_T_CAMERA_PATH)
     result = register_libero_cad_to_observation(
-        object_type=grounding["milk_object_type"],
-        object_id=grounding["milk_object_id"],
+        object_type="milk",
+        object_id=associations["target_object_id"],
         localization=localization,
         world_T_camera=world_T_camera,
         output_dir=OUTPUT_DIR,
@@ -44,7 +53,7 @@ def main():
     milk = next(
         item
         for item in localization["objects"]
-        if item["object_id"] == grounding["milk_object_id"]
+        if item["object_id"] == associations["target_object_id"]
     )
     depth_center_world_m = camera_point_to_world(
         milk["centroid_3d_m"],
