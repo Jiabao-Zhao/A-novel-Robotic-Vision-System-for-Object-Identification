@@ -16,7 +16,9 @@ from vlm_module import OpenAIVLM
 
 
 MANIFEST_PATH = OUTPUT_ROOT / "manifest.json"
-RESULTS_ROOT = OUTPUT_ROOT / "results"
+# Keep new raw-likelihood runs separate from the historical
+# candidate-normalized checkpoint/results directory.
+RESULTS_ROOT = OUTPUT_ROOT / "raw_label_likelihood_results"
 CHECKPOINT_PATH = RESULTS_ROOT / "association_checkpoint.json"
 MAX_PROVIDER_ATTEMPTS = 6
 
@@ -42,7 +44,7 @@ def run_experiment(
             "model_name",
             os.environ.get("OPENAI_VLM_MODEL", "gpt-4.1-mini"),
         ),
-        "score_type": "candidate_normalized",
+        "score_type": "raw_label_likelihood",
     }
     results_root.mkdir(parents=True, exist_ok=True)
     records = _load_checkpoint(results_root / CHECKPOINT_PATH.name, signature)
@@ -115,7 +117,7 @@ def run_task_worker(
             "model_name",
             os.environ.get("OPENAI_VLM_MODEL", "gpt-4.1-mini"),
         ),
-        "score_type": "candidate_normalized",
+        "score_type": "raw_label_likelihood",
         "task_indices": list(task_indices),
     }
     worker_root = Path(worker_root)
@@ -187,7 +189,7 @@ def finalize_worker_checkpoints(
         {
             "manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
             "requested_model": signatures[0]["requested_model"],
-            "score_type": "candidate_normalized",
+            "score_type": "raw_label_likelihood",
         },
     )
     summary_path = results_root / "summary.json"
@@ -263,7 +265,7 @@ def _experiment_summary(records, signature):
         "schema_version": 1,
         "signature": signature,
         "total_associations": len(records),
-        "candidate_normalized_score_available": len(scored),
+        "raw_label_likelihood_available": len(scored),
         "score_unavailable": len(records) - len(scored),
         "ungated_association_accuracy": correct / len(records) if records else None,
         "scored_association_accuracy": (

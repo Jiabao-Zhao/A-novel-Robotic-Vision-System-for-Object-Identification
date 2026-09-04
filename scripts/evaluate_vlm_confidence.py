@@ -1,4 +1,4 @@
-"""Evaluate candidate-normalized VLM association scores on saved scenes.
+"""Evaluate raw generated-label VLM likelihoods on saved scenes.
 
 Input is a JSON manifest containing a ``split`` name and a ``samples`` list.
 Threshold selection is deliberately not performed here: use calibration or
@@ -142,20 +142,21 @@ def evaluate_samples(samples, provider):
         score = result["association_score"]
         candidate_scores = diagnostics.get("candidate_scores")
         if score is not None:
-            if diagnostics.get("score_type") != "candidate_normalized":
-                raise RuntimeError("association_score must be candidate-normalized.")
-            if not isinstance(candidate_scores, dict) or not candidate_scores:
+            if diagnostics.get("score_type") != "raw_label_likelihood":
+                raise RuntimeError("association_score must be raw label likelihood.")
+            raw_likelihood = diagnostics.get("raw_association_likelihood")
+            if raw_likelihood is None:
                 raise RuntimeError(
-                    "A numeric association_score requires complete candidate scores."
+                    "A numeric association_score requires raw label likelihood."
                 )
             if not math.isclose(
                 score,
-                max(candidate_scores.values()),
+                raw_likelihood,
                 rel_tol=1e-12,
                 abs_tol=1e-12,
             ):
                 raise RuntimeError(
-                    "association_score must equal the highest candidate-normalized score."
+                    "association_score must equal raw generated-label likelihood."
                 )
 
         unavailable_reason = None
@@ -332,7 +333,7 @@ def _safe_ratio(numerator, denominator):
 def main():
     parser = argparse.ArgumentParser(
         description=(
-            "Evaluate candidate-normalized VLM association scores on saved "
+            "Evaluate raw generated-label VLM association likelihoods on saved "
             "RGB-D scenes."
         )
     )
@@ -351,7 +352,7 @@ def main():
     )
     scored_count = sum(record["association_score"] is not None for record in records)
     print(f"Evaluated associations: {len(records)}")
-    print(f"Associations with numeric candidate-normalized score: {scored_count}")
+    print(f"Associations with numeric raw label likelihood: {scored_count}")
     print(f"Saved association JSON: {records_path}")
     print(f"Saved association CSV: {csv_path}")
     print(f"Saved threshold sweep: {sweep_path}")

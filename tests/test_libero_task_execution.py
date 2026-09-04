@@ -7,6 +7,7 @@ from unittest.mock import patch
 from scripts.libero_task_execution import (
     IMAGE_HEIGHT,
     IMAGE_WIDTH,
+    LIBERO_RAW_ASSOCIATION_THRESHOLD,
     RUN_VARIANT,
     VLM_CONTACT_SHEET_TILE_SIZE_PX,
     _write_pipeline_failure,
@@ -31,7 +32,11 @@ class LiberoTaskExecutionTests(unittest.TestCase):
         self.assertEqual(VLM_CONTACT_SHEET_TILE_SIZE_PX, 448)
         self.assertEqual(
             RUN_VARIANT,
-            "768x768_semantic_association_grasp_pose_v5",
+            "768x768_raw_likelihood_gate_grasp_pose_v6",
+        )
+        self.assertAlmostEqual(
+            LIBERO_RAW_ASSOCIATION_THRESHOLD,
+            0.9999832372181827,
         )
 
     def test_task_uses_two_independent_semantic_associations(self):

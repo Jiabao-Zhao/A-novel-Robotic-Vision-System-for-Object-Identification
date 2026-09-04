@@ -25,7 +25,6 @@ from simulation.libero_io import save_libero_observation
 from simulation.libero_sensor import LiberoRGBDSensor
 from simulation.perception_adapter import run_libero_localization
 from vlm_module import (
-    PROVISIONAL_ASSOCIATION_THRESHOLD,
     associate_targets_from_localization,
     contact_sheet_candidate_bbox_map,
     create_roi_contact_sheet,
@@ -39,7 +38,11 @@ CAMERA_NAME = "agentview"
 IMAGE_WIDTH = 768
 IMAGE_HEIGHT = 768
 VLM_CONTACT_SHEET_TILE_SIZE_PX = 448
-RUN_VARIANT = "768x768_semantic_association_grasp_pose_v5"
+RUN_VARIANT = "768x768_raw_likelihood_gate_grasp_pose_v6"
+# Development operating point selected on the 500-trial LIBERO
+# calibration/validation partitions. It is specific to this simulation
+# experiment and is not a calibrated probability of correctness.
+LIBERO_RAW_ASSOCIATION_THRESHOLD = 0.9999832372181827
 CONTROL_FREQUENCY_HZ = 20
 EPISODE_HORIZON_STEPS = 280
 CONTROL_MODE = "relative"
@@ -155,7 +158,7 @@ def _run_task(task_index):
             image_path=vlm_visual_prompt_path,
             localization_path=localization_paths["localization"],
             output_path=output_root / "vlm_result.json",
-            threshold=PROVISIONAL_ASSOCIATION_THRESHOLD,
+            threshold=LIBERO_RAW_ASSOCIATION_THRESHOLD,
             human_resolver=opencv_human_resolver,
             clarification_bboxes=contact_sheet_candidate_bbox_map(
                 localization_paths["localization"],

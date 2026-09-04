@@ -96,7 +96,7 @@ Internally map deterministic candidate labels to object IDs and ask the VLM to r
 }
 ```
 
-The association score must be computed by normalizing provider-returned output-token log probabilities over every valid localized-candidate label plus `NONE`. The highest candidate-normalized score is used by the provisional threshold gate. Raw generated-label likelihood remains diagnostic provenance, not the gate score. If any valid-choice log probability is unavailable, keep the association score null and defer to a human. The score is not a calibrated probability of correct identity. The VLM and human paths must both produce the same `final_object_id` interface.
+The association score must be the raw provider likelihood of the model-generated decision label: `exp(sum(decision-token log probabilities))`. That raw likelihood is the only input to the provisional threshold gate, and the generated label determines the predicted object. Candidate-normalized scores and margin may be retained as diagnostics when all valid-choice log probabilities are available, but they must not alter either the prediction or the gate score. If the generated decision-token log probabilities are unavailable, keep the association score null and defer to a human. The score is not a calibrated probability of correct identity. The VLM and human paths must both produce the same `final_object_id` interface.
 
 The VLM prompt should make clear:
 

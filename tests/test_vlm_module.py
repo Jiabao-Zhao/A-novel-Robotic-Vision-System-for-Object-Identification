@@ -114,7 +114,7 @@ def inference(score=0.9, vlm_object_id="object_002", choice_label="B"):
         "model": "test-vlm",
         "candidate_map": {"A": "object_001", "B": "object_002"},
         "candidate_distribution_complete": score is not None,
-        "score_type": "candidate_normalized",
+        "score_type": "raw_label_likelihood",
     }
     if choice_label is not None:
         diagnostics["choice_label"] = choice_label
@@ -352,11 +352,11 @@ class VLMModuleTests(unittest.TestCase):
         self.assertEqual(result["final_object_id"], "object_002")
         self.assertEqual(result["resolution"], "vlm_accepted")
 
-    def test_gate_rejects_score_that_differs_from_selected_candidate_score(self):
+    def test_gate_rejects_score_that_differs_from_raw_label_likelihood(self):
         result = inference(score=0.9)
         result["association_score"] = 0.8
 
-        with self.assertRaisesRegex(ValueError, "candidate-normalized"):
+        with self.assertRaisesRegex(ValueError, "raw generated-label likelihood"):
             resolve_association(result, threshold=0.75)
 
     def test_invalid_human_object_id_is_rejected(self):
@@ -619,7 +619,7 @@ class VLMModuleTests(unittest.TestCase):
         self.assertIsNone(scores)
         self.assertIsNone(margin)
 
-    def test_complete_distribution_controls_score_and_selection(self):
+    def test_complete_distribution_is_diagnostic_only(self):
         provider = FakeProvider(
             provider_result(
                 "A",
@@ -639,9 +639,9 @@ class VLMModuleTests(unittest.TestCase):
             provider=provider,
         )
 
-        self.assertAlmostEqual(result["association_score"], 2 / 3)
+        self.assertAlmostEqual(result["association_score"], 0.4)
         diagnostics = result["diagnostics"]
-        self.assertEqual(diagnostics["score_type"], "candidate_normalized")
+        self.assertEqual(diagnostics["score_type"], "raw_label_likelihood")
         self.assertAlmostEqual(diagnostics["raw_association_likelihood"], 0.4)
         self.assertAlmostEqual(
             diagnostics["candidate_scores"]["object_001"],
@@ -649,10 +649,10 @@ class VLMModuleTests(unittest.TestCase):
         )
         self.assertAlmostEqual(diagnostics["association_margin"], 0.5)
         gated = resolve_association(result, threshold=0.5)
-        self.assertEqual(gated["resolution"], "vlm_accepted")
-        self.assertEqual(gated["final_object_id"], "object_001")
+        self.assertEqual(gated["resolution"], "deferred")
+        self.assertIsNone(gated["final_object_id"])
 
-    def test_incomplete_distribution_makes_score_unavailable(self):
+    def test_incomplete_distribution_does_not_remove_raw_score(self):
         provider = FakeProvider(
             provider_result(
                 "A",
@@ -671,14 +671,16 @@ class VLMModuleTests(unittest.TestCase):
             provider=provider,
         )
 
-        self.assertIsNone(result["association_score"])
+        self.assertAlmostEqual(result["association_score"], 0.7)
         diagnostics = result["diagnostics"]
         self.assertFalse(diagnostics["candidate_distribution_complete"])
         self.assertNotIn("candidate_scores", diagnostics)
-        self.assertEqual(diagnostics["score_type"], "candidate_normalized")
+        self.assertEqual(diagnostics["score_type"], "raw_label_likelihood")
         self.assertAlmostEqual(diagnostics["raw_association_likelihood"], 0.7)
+        self.assertIn("candidate_distribution_unavailable_reason", diagnostics)
+        self.assertNotIn("score_unavailable_reason", diagnostics)
 
-    def test_score_is_unavailable_without_complete_top_logprobs(self):
+    def test_top_logprob_completeness_does_not_change_raw_score(self):
         complete = FakeProvider(
             provider_result(
                 "A",
@@ -701,18 +703,18 @@ class VLMModuleTests(unittest.TestCase):
             "white gear", "annotated.png", DETECTIONS, provider=chosen_only
         )
 
-        self.assertAlmostEqual(complete_result["association_score"], 2 / 3)
-        self.assertIsNone(chosen_only_result["association_score"])
+        self.assertAlmostEqual(complete_result["association_score"], 0.4)
+        self.assertAlmostEqual(chosen_only_result["association_score"], 0.4)
         self.assertEqual(
             complete_result["diagnostics"]["score_type"],
-            "candidate_normalized",
+            "raw_label_likelihood",
         )
         self.assertEqual(
             chosen_only_result["diagnostics"]["score_type"],
-            "candidate_normalized",
+            "raw_label_likelihood",
         )
 
-    def test_candidate_argmax_overrides_nonmaximal_generated_label(self):
+    def test_generated_label_remains_prediction_when_candidate_argmax_differs(self):
         provider = FakeProvider(
             provider_result(
                 "B",
@@ -729,10 +731,14 @@ class VLMModuleTests(unittest.TestCase):
             "white gear", "annotated.png", DETECTIONS, provider=provider
         )
 
-        self.assertEqual(result["vlm_object_id"], "object_001")
-        self.assertAlmostEqual(result["association_score"], 0.6)
-        self.assertEqual(result["diagnostics"]["choice_label"], "A")
-        self.assertEqual(result["diagnostics"]["generated_choice_label"], "B")
+        self.assertEqual(result["vlm_object_id"], "object_002")
+        self.assertAlmostEqual(result["association_score"], 0.3)
+        self.assertEqual(result["diagnostics"]["choice_label"], "B")
+        self.assertNotIn("generated_choice_label", result["diagnostics"])
+        self.assertAlmostEqual(
+            result["diagnostics"]["candidate_scores"]["object_001"],
+            0.6,
+        )
         self.assertAlmostEqual(
             result["diagnostics"]["raw_association_likelihood"],
             0.3,
@@ -844,7 +850,7 @@ class VLMModuleTests(unittest.TestCase):
         diagnostics = result["diagnostics"]
         self.assertIsNone(diagnostics["raw_log_probability"])
         self.assertIsNone(diagnostics["raw_association_likelihood"])
-        self.assertEqual(diagnostics["score_type"], "candidate_normalized")
+        self.assertEqual(diagnostics["score_type"], "raw_label_likelihood")
         self.assertEqual(diagnostics["logprob_error"], "unsupported")
 
     def test_provider_failure_never_creates_association_result(self):
@@ -885,7 +891,7 @@ class VLMModuleTests(unittest.TestCase):
             saved = json.loads(output_path.read_text(encoding="utf-8"))
             result = saved["associations"][0]
 
-        self.assertEqual(saved["schema_version"], 5)
+        self.assertEqual(saved["schema_version"], 6)
         self.assertEqual(
             set(result),
             {
@@ -902,7 +908,7 @@ class VLMModuleTests(unittest.TestCase):
         self.assertEqual(diagnostics["provider"], "test")
         self.assertEqual(diagnostics["model"], "test-vlm")
         self.assertAlmostEqual(diagnostics["raw_log_probability"], math.log(0.9))
-        self.assertEqual(diagnostics["score_type"], "candidate_normalized")
+        self.assertEqual(diagnostics["score_type"], "raw_label_likelihood")
         self.assertNotIn("model_output", diagnostics)
         self.assertNotIn("model_choice", diagnostics)
         self.assertNotIn("decision_token_logprobs", diagnostics)

@@ -20,12 +20,12 @@ TOP_LOGPROBS_LIMIT = 20
 CLARIFICATION_MAX_IMAGE_WIDTH_PX = 1280
 CLARIFICATION_MAX_IMAGE_HEIGHT_PX = 720
 SCORE_SEMANTICS = (
-    "The association score is the selected label's probability after "
-    "normalizing provider-returned log probabilities over every valid localized "
-    "candidate label plus NONE. The selected label is the highest-scoring valid "
-    "choice. If any valid-choice log probability is unavailable, the association "
-    "score is unavailable and the decision is deferred. This score is not a "
-    "calibrated probability of correct object identity."
+    "The association score is the raw likelihood assigned by the provider model "
+    "to the generated decision-bearing label token sequence: exp(sum(token "
+    "log probabilities)). The generated label determines the predicted object. "
+    "Candidate-normalized scores and margin are diagnostics only and never alter "
+    "the prediction or threshold gate. This score is not a calibrated probability "
+    "of correct object identity."
 )
 THRESHOLD_NOTE = (
     "The threshold is provisional. Select it on held-out calibration or "
@@ -164,7 +164,7 @@ def associate_targets_from_localization(
     output_path.write_text(
         json.dumps(
             {
-                "schema_version": 5,
+                "schema_version": 6,
                 "visual_prompt_path": str(image_path),
                 "score_semantics": SCORE_SEMANTICS,
                 "threshold_note": THRESHOLD_NOTE,
@@ -254,32 +254,21 @@ def infer_target_association(target_description, image_path, detections, provide
     choice_log_probabilities, candidate_scores, association_margin = (
         candidate_relative_scores(choice_map, decision_tokens)
     )
-    # Preserve an unscored generated proposal for human clarification, but only
-    # a complete valid-choice distribution can produce the scored selection.
     choice_label = generated_choice_label
-    association_score = None
-    if candidate_scores is not None:
-        choice_label = max(
-            [*choice_map, NONE_CHOICE],
-            key=choice_log_probabilities.__getitem__,
-        )
-        score_key = "none" if choice_label == NONE_CHOICE else choice_map[choice_label]
-        association_score = candidate_scores[score_key]
+    association_score = raw_association_likelihood
 
     diagnostics = {
         "candidate_map": choice_map,
         "candidate_distribution_complete": candidate_scores is not None,
         "raw_log_probability": raw_log_probability,
         "raw_association_likelihood": raw_association_likelihood,
-        "score_type": "candidate_normalized",
+        "score_type": "raw_label_likelihood",
     }
     for key in ("provider", "model"):
         value = provider_result.get(key)
         if value:
             diagnostics[key] = value
-    if generated_choice_label is not None:
-        diagnostics["generated_choice_label"] = generated_choice_label
-    elif generated_text:
+    if generated_choice_label is None and generated_text:
         diagnostics["unparsed_output"] = generated_text
     if choice_label is not None:
         diagnostics["choice_label"] = choice_label
@@ -289,9 +278,14 @@ def infer_target_association(target_description, image_path, detections, provide
         diagnostics["candidate_scores"] = candidate_scores
         diagnostics["association_margin"] = association_margin
     else:
-        diagnostics["score_unavailable_reason"] = (
-            "Candidate-normalized score requires returned log probabilities for "
+        diagnostics["candidate_distribution_unavailable_reason"] = (
+            "Candidate-normalized diagnostics require returned log probabilities for "
             "every valid candidate label and NONE."
+        )
+    if association_score is None:
+        diagnostics["score_unavailable_reason"] = (
+            "Raw association likelihood requires provider log probabilities for "
+            "the generated decision-bearing label token sequence."
         )
     for key in ("logprob_error", "top_logprob_error"):
         value = provider_result.get(key)
@@ -329,15 +323,7 @@ def resolve_association(
     score = result.get("association_score")
     choice_label = diagnostics.get("choice_label")
     vlm_object_id = result.get("vlm_object_id")
-    candidate_scores = diagnostics.get("candidate_scores")
-    selected_score_key = (
-        "none" if choice_label == NONE_CHOICE else vlm_object_id
-    )
-    expected_score = (
-        candidate_scores.get(selected_score_key)
-        if isinstance(candidate_scores, dict) and selected_score_key is not None
-        else None
-    )
+    expected_score = diagnostics.get("raw_association_likelihood")
     scores_match = score is None and expected_score is None
     if score is not None and expected_score is not None:
         scores_match = math.isclose(
@@ -346,22 +332,14 @@ def resolve_association(
             rel_tol=1e-12,
             abs_tol=1e-12,
         )
-    selected_is_highest = expected_score is None
-    if expected_score is not None:
-        selected_is_highest = math.isclose(
-            float(expected_score),
-            max(float(value) for value in candidate_scores.values()),
-            rel_tol=1e-12,
-            abs_tol=1e-12,
-        )
-    if (
-        diagnostics.get("score_type") != "candidate_normalized"
-        or not scores_match
-        or not selected_is_highest
-    ):
+    candidate_map = diagnostics.get("candidate_map") or {}
+    expected_object_id = object_id_for_choice(candidate_map, choice_label)
+    if diagnostics.get("score_type") != "raw_label_likelihood" or not scores_match:
         raise ValueError(
-            "association_score must equal the highest candidate-normalized score."
+            "association_score must equal the raw generated-label likelihood."
         )
+    if choice_label is not None and vlm_object_id != expected_object_id:
+        raise ValueError("vlm_object_id must match the model-generated choice label.")
 
     if choice_label is not None and score is not None and score >= threshold:
         result["final_object_id"] = vlm_object_id
@@ -379,7 +357,6 @@ def resolve_association(
         result["resolution"] = "deferred"
         return result
 
-    candidate_map = diagnostics.get("candidate_map") or {}
     valid_object_ids = set(candidate_map.values())
     clarification = dict(result)
     clarification["candidate_object_ids"] = list(candidate_map.values())

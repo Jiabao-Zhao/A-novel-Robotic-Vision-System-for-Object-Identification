@@ -70,7 +70,7 @@ class VLMConfidenceEvaluationTests(unittest.TestCase):
         self.assertEqual(samples[0]["sample_id"], "trial_001")
         self.assertEqual(samples[0]["image_path"], expected_image_path)
 
-    def test_evaluation_runs_one_candidate_normalized_association_without_human(self):
+    def test_evaluation_runs_one_raw_likelihood_association_without_human(self):
         localization = {
             "frame": "camera",
             "objects": [
@@ -106,7 +106,7 @@ class VLMConfidenceEvaluationTests(unittest.TestCase):
         self.assertTrue(records[0]["correct"])
         self.assertAlmostEqual(records[0]["association_score"], 0.8)
         self.assertAlmostEqual(records[0]["raw_log_probability"], math.log(0.8))
-        self.assertEqual(records[0]["score_type"], "candidate_normalized")
+        self.assertEqual(records[0]["score_type"], "raw_label_likelihood")
 
     def test_threshold_metrics_use_only_records_with_numeric_scores(self):
         records = [
@@ -170,7 +170,7 @@ class VLMConfidenceEvaluationTests(unittest.TestCase):
                 "raw_log_probability": math.log(0.9),
                 "raw_association_likelihood": 0.9,
                 "association_score": 0.9,
-                "score_type": "candidate_normalized",
+                "score_type": "raw_label_likelihood",
                 "candidate_scores": None,
                 "association_margin": None,
                 "score_unavailable_reason": None,
