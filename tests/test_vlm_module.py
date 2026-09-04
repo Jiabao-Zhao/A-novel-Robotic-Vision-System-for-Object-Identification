@@ -11,7 +11,6 @@ from unittest.mock import patch
 from main import register_resolved_associations
 from prompt import _vlm_prompt
 from vlm_module import (
-    HumanClarificationRequired,
     OpenAIVLM,
     TOP_LOGPROBS_LIMIT,
     associate_targets,
@@ -222,9 +221,30 @@ class VLMModuleTests(unittest.TestCase):
         self.assertIsNone(result["final_object_id"])
         self.assertEqual(result["resolution"], "confidence_unavailable")
 
-    def test_low_confidence_without_human_resolver_fails_clearly(self):
-        with self.assertRaises(HumanClarificationRequired):
-            resolve_association(inference(score=0.2), threshold=0.75)
+    def test_low_confidence_without_human_resolver_is_deferred(self):
+        result = resolve_association(inference(score=0.2), threshold=0.75)
+
+        self.assertIsNone(result["final_object_id"])
+        self.assertEqual(result["resolution"], "deferred")
+
+    def test_score_equal_to_threshold_is_accepted(self):
+        result = resolve_association(inference(score=0.75), threshold=0.75)
+
+        self.assertEqual(result["final_object_id"], "object_002")
+        self.assertEqual(result["resolution"], "vlm_accepted")
+
+    def test_score_above_threshold_is_accepted(self):
+        result = resolve_association(inference(score=0.750001), threshold=0.75)
+
+        self.assertEqual(result["final_object_id"], "object_002")
+        self.assertEqual(result["resolution"], "vlm_accepted")
+
+    def test_gate_rejects_score_that_differs_from_raw_likelihood(self):
+        result = inference(score=0.9)
+        result["association_score"] = 0.8
+
+        with self.assertRaisesRegex(ValueError, "raw_association_likelihood"):
+            resolve_association(result, threshold=0.75)
 
     def test_invalid_human_object_id_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "invalid localized object ID"):
@@ -469,14 +489,14 @@ class VLMModuleTests(unittest.TestCase):
         self.assertIsNone(scores)
         self.assertIsNone(margin)
 
-    def test_complete_distribution_drives_score_and_records_score_type(self):
+    def test_complete_distribution_is_diagnostic_and_never_replaces_raw_score(self):
         provider = FakeProvider(
             provider_result(
                 "A",
-                math.log(0.7),
+                math.log(0.4),
                 top_logprobs=[
-                    {"token": "A", "log_probability": math.log(0.7)},
-                    {"token": "B", "log_probability": math.log(0.2)},
+                    {"token": "A", "log_probability": math.log(0.4)},
+                    {"token": "B", "log_probability": math.log(0.1)},
                     {"token": "N", "log_probability": math.log(0.1)},
                 ],
             )
@@ -489,10 +509,18 @@ class VLMModuleTests(unittest.TestCase):
             provider=provider,
         )
 
-        self.assertAlmostEqual(result["association_score"], 0.7)
+        self.assertAlmostEqual(result["association_score"], 0.4)
         diagnostics = result["diagnostics"]
-        self.assertEqual(diagnostics["score_type"], "candidate_normalized")
+        self.assertEqual(diagnostics["score_type"], "raw_label_likelihood")
+        self.assertAlmostEqual(diagnostics["raw_association_likelihood"], 0.4)
+        self.assertAlmostEqual(
+            diagnostics["candidate_scores"]["object_001"],
+            2 / 3,
+        )
         self.assertAlmostEqual(diagnostics["association_margin"], 0.5)
+        gated = resolve_association(result, threshold=0.5)
+        self.assertEqual(gated["resolution"], "deferred")
+        self.assertIsNone(gated["final_object_id"])
 
     def test_incomplete_distribution_falls_back_to_raw_label_likelihood(self):
         provider = FakeProvider(
@@ -518,6 +546,38 @@ class VLMModuleTests(unittest.TestCase):
         self.assertFalse(diagnostics["candidate_distribution_complete"])
         self.assertNotIn("candidate_scores", diagnostics)
         self.assertEqual(diagnostics["score_type"], "raw_label_likelihood")
+
+    def test_top_logprob_availability_never_changes_score_definition(self):
+        complete = FakeProvider(
+            provider_result(
+                "A",
+                math.log(0.4),
+                top_logprobs=[
+                    {"token": "A", "log_probability": math.log(0.4)},
+                    {"token": "B", "log_probability": math.log(0.1)},
+                    {"token": "N", "log_probability": math.log(0.1)},
+                ],
+            )
+        )
+        chosen_only = FakeProvider(provider_result("A", math.log(0.4)))
+
+        complete_result = infer_target_association(
+            "white gear", "annotated.png", DETECTIONS, provider=complete
+        )
+        chosen_only_result = infer_target_association(
+            "white gear", "annotated.png", DETECTIONS, provider=chosen_only
+        )
+
+        self.assertAlmostEqual(complete_result["association_score"], 0.4)
+        self.assertAlmostEqual(chosen_only_result["association_score"], 0.4)
+        self.assertEqual(
+            complete_result["diagnostics"]["score_type"],
+            "raw_label_likelihood",
+        )
+        self.assertEqual(
+            chosen_only_result["diagnostics"]["score_type"],
+            "raw_label_likelihood",
+        )
 
     def test_openai_parser_reads_actual_top_logprob_shape(self):
         response = SimpleNamespace(
@@ -646,8 +706,9 @@ class VLMModuleTests(unittest.TestCase):
         self.assertEqual(result["vlm_object_id"], "object_001")
         self.assertIsNone(result["association_score"])
         diagnostics = result["diagnostics"]
-        self.assertNotIn("raw_log_probability", diagnostics)
-        self.assertNotIn("score_type", diagnostics)
+        self.assertIsNone(diagnostics["raw_log_probability"])
+        self.assertIsNone(diagnostics["raw_association_likelihood"])
+        self.assertEqual(diagnostics["score_type"], "raw_label_likelihood")
         self.assertEqual(diagnostics["logprob_error"], "unsupported")
 
     def test_provider_failure_never_creates_association_result(self):
@@ -688,7 +749,7 @@ class VLMModuleTests(unittest.TestCase):
             saved = json.loads(output_path.read_text(encoding="utf-8"))
             result = saved["associations"][0]
 
-        self.assertEqual(saved["schema_version"], 3)
+        self.assertEqual(saved["schema_version"], 4)
         self.assertEqual(
             set(result),
             {

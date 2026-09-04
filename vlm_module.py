@@ -17,21 +17,19 @@ NONE_CHOICE = "N"
 PROVISIONAL_ASSOCIATION_THRESHOLD = 0.75
 TOP_LOGPROBS_LIMIT = 20
 SCORE_SEMANTICS = (
-    "The association score is candidate-normalized only when every valid "
-    "choice label is available in provider top-logprob data; otherwise it is "
-    "the likelihood of the generated decision-label sequence over the model's "
-    "full vocabulary. Neither score is a calibrated probability of correct "
-    "object identity."
+    "The association score is always exp(sum(log probabilities)) over the "
+    "decision-bearing generated label tokens. It is the provider model's raw "
+    "label likelihood over its full output vocabulary, not a calibrated "
+    "probability of correct object identity. Candidate-normalized scores and "
+    "their margin are diagnostics only and never control the threshold gate."
 )
 THRESHOLD_NOTE = (
-    "The threshold is provisional. Calibrate it on held-out data using "
+    "The threshold is provisional. Select it on held-out calibration or "
+    "validation data, then evaluate the fixed threshold on independent test "
+    "data using "
     "autonomous coverage, autonomous accuracy, human intervention rate, and "
     "false autonomous acceptance rate."
 )
-
-
-class HumanClarificationRequired(RuntimeError):
-    """Raised when a low-score association has no human resolver."""
 
 
 class GeminiVLM:
@@ -274,7 +272,7 @@ def associate_targets_from_localization(
     output_path.write_text(
         json.dumps(
             {
-                "schema_version": 3,
+                "schema_version": 4,
                 "visual_prompt_path": str(image_path),
                 "score_semantics": SCORE_SEMANTICS,
                 "threshold_note": THRESHOLD_NOTE,
@@ -355,25 +353,14 @@ def infer_target_association(target_description, image_path, detections, provide
     choice_log_probabilities, candidate_scores, association_margin = (
         candidate_relative_scores(choice_map, decision_tokens)
     )
-    selected_score_key = (
-        "none"
-        if choice_label == NONE_CHOICE
-        else object_id_for_choice(choice_map, choice_label)
-    )
-    if candidate_scores is not None and selected_score_key in candidate_scores:
-        association_score = candidate_scores[selected_score_key]
-        score_type = "candidate_normalized"
-    else:
-        association_score = raw_association_likelihood
-        score_type = (
-            "raw_label_likelihood"
-            if raw_association_likelihood is not None
-            else None
-        )
+    association_score = raw_association_likelihood
 
     diagnostics = {
         "candidate_map": choice_map,
         "candidate_distribution_complete": candidate_scores is not None,
+        "raw_log_probability": raw_log_probability,
+        "raw_association_likelihood": raw_association_likelihood,
+        "score_type": "raw_label_likelihood",
     }
     for key in ("provider", "model"):
         value = provider_result.get(key)
@@ -383,11 +370,6 @@ def infer_target_association(target_description, image_path, detections, provide
         diagnostics["choice_label"] = choice_label
     elif generated_text:
         diagnostics["unparsed_output"] = generated_text
-    if raw_log_probability is not None:
-        diagnostics["raw_log_probability"] = raw_log_probability
-        diagnostics["raw_association_likelihood"] = raw_association_likelihood
-    if score_type is not None:
-        diagnostics["score_type"] = score_type
     if choice_log_probabilities:
         diagnostics["available_choice_log_probabilities"] = choice_log_probabilities
     if candidate_scores is not None:
@@ -426,6 +408,19 @@ def resolve_association(
         "diagnostics": diagnostics,
     }
     score = result.get("association_score")
+    raw_likelihood = diagnostics.get("raw_association_likelihood")
+    scores_match = score is None and raw_likelihood is None
+    if score is not None and raw_likelihood is not None:
+        scores_match = math.isclose(
+            float(score),
+            float(raw_likelihood),
+            rel_tol=1e-12,
+            abs_tol=1e-12,
+        )
+    if not scores_match:
+        raise ValueError(
+            "association_score must equal diagnostics.raw_association_likelihood."
+        )
     choice_label = diagnostics.get("choice_label")
     vlm_object_id = result.get("vlm_object_id")
 
@@ -442,10 +437,8 @@ def resolve_association(
         if score is None:
             result["resolution"] = "confidence_unavailable"
             return result
-        raise HumanClarificationRequired(
-            f"Association score {score:.6f} is below the provisional threshold "
-            f"{threshold:.6f} for target {result.get('target_description')!r}."
-        )
+        result["resolution"] = "deferred"
+        return result
 
     candidate_map = diagnostics.get("candidate_map") or {}
     valid_object_ids = set(candidate_map.values())
