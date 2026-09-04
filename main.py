@@ -9,7 +9,7 @@ from point_cloud_localization import PointCloudLocalization
 from vlm_module import (
     PROVISIONAL_ASSOCIATION_THRESHOLD,
     associate_targets_from_localization,
-    console_human_resolver,
+    opencv_human_resolver,
 )
 
 
@@ -236,7 +236,7 @@ def main():
         localization_path=paths["localization"],
         threshold=PROVISIONAL_ASSOCIATION_THRESHOLD,
         human_resolver=(
-            console_human_resolver if INTERACTIVE_CLARIFICATION else None
+            opencv_human_resolver if INTERACTIVE_CLARIFICATION else None
         ),
     )
     print(f"Saved VLM result: {vlm_path}")

@@ -6,6 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from scripts.evaluate_vlm_confidence import (
+    DEFAULT_THRESHOLDS,
     evaluate_samples,
     load_evaluation_manifest,
     save_evaluation,
@@ -27,7 +28,11 @@ class FakeProvider:
                 {
                     "token": "B",
                     "log_probability": math.log(0.8),
-                    "top_logprobs": [],
+                    "top_logprobs": [
+                        {"token": "A", "log_probability": math.log(0.1)},
+                        {"token": "B", "log_probability": math.log(0.8)},
+                        {"token": "N", "log_probability": math.log(0.1)},
+                    ],
                 }
             ],
             "logprob_error": None,
@@ -65,7 +70,7 @@ class VLMConfidenceEvaluationTests(unittest.TestCase):
         self.assertEqual(samples[0]["sample_id"], "trial_001")
         self.assertEqual(samples[0]["image_path"], expected_image_path)
 
-    def test_evaluation_runs_one_raw_association_without_human_correction(self):
+    def test_evaluation_runs_one_candidate_normalized_association_without_human(self):
         localization = {
             "frame": "camera",
             "objects": [
@@ -101,6 +106,7 @@ class VLMConfidenceEvaluationTests(unittest.TestCase):
         self.assertTrue(records[0]["correct"])
         self.assertAlmostEqual(records[0]["association_score"], 0.8)
         self.assertAlmostEqual(records[0]["raw_log_probability"], math.log(0.8))
+        self.assertEqual(records[0]["score_type"], "candidate_normalized")
 
     def test_threshold_metrics_use_only_records_with_numeric_scores(self):
         records = [
@@ -116,11 +122,20 @@ class VLMConfidenceEvaluationTests(unittest.TestCase):
         self.assertEqual(metrics["scored_trials"], 3)
         self.assertEqual(metrics["score_unavailable_trials"], 1)
         self.assertEqual(metrics["autonomous_decisions"], 2)
-        self.assertEqual(metrics["deferred_decisions"], 1)
-        self.assertAlmostEqual(metrics["autonomous_coverage"], 2 / 3)
-        self.assertAlmostEqual(metrics["deferral_rate"], 1 / 3)
+        self.assertEqual(metrics["threshold_deferred_scored_decisions"], 1)
+        self.assertEqual(metrics["total_deferred_decisions"], 2)
+        self.assertAlmostEqual(metrics["autonomous_coverage"], 2 / 4)
+        self.assertAlmostEqual(metrics["deferral_rate"], 2 / 4)
+        self.assertAlmostEqual(metrics["autonomous_coverage_scored_trials"], 2 / 3)
+        self.assertAlmostEqual(
+            metrics["threshold_deferral_rate_scored_trials"], 1 / 3
+        )
         self.assertAlmostEqual(metrics["autonomous_accuracy"], 0.5)
         self.assertEqual(metrics["false_autonomous_acceptance_count"], 1)
+        self.assertAlmostEqual(
+            metrics["false_autonomous_acceptance_rate_all_trials"],
+            1 / 4,
+        )
         self.assertAlmostEqual(
             metrics["false_autonomous_acceptance_rate_all_scored_trials"],
             1 / 3,
@@ -140,7 +155,7 @@ class VLMConfidenceEvaluationTests(unittest.TestCase):
 
         inference.assert_not_called()
         self.assertEqual(metrics[0]["autonomous_decisions"], 1)
-        self.assertEqual(metrics[1]["deferred_decisions"], 1)
+        self.assertEqual(metrics[1]["total_deferred_decisions"], 1)
 
     def test_saved_evaluation_keeps_split_separate_from_threshold_selection(self):
         records = [
@@ -153,7 +168,9 @@ class VLMConfidenceEvaluationTests(unittest.TestCase):
                 "ground_truth_object_id": "object_002",
                 "correct": True,
                 "raw_log_probability": math.log(0.9),
+                "raw_association_likelihood": 0.9,
                 "association_score": 0.9,
+                "score_type": "candidate_normalized",
                 "candidate_scores": None,
                 "association_margin": None,
                 "score_unavailable_reason": None,
@@ -167,7 +184,7 @@ class VLMConfidenceEvaluationTests(unittest.TestCase):
 
         self.assertEqual(sweep["dataset_split"], "calibration")
         self.assertFalse(sweep["threshold_selection_performed"])
-        self.assertEqual(len(sweep["metrics"]), 10)
+        self.assertEqual(len(sweep["metrics"]), len(DEFAULT_THRESHOLDS))
 
 
 if __name__ == "__main__":

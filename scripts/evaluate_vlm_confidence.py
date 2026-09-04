@@ -1,4 +1,4 @@
-"""Evaluate raw VLM association likelihoods on reproducible saved scenes.
+"""Evaluate candidate-normalized VLM association scores on saved scenes.
 
 Input is a JSON manifest containing a ``split`` name and a ``samples`` list.
 Threshold selection is deliberately not performed here: use calibration or
@@ -19,7 +19,20 @@ from vlm_module import (
 )
 
 
-DEFAULT_THRESHOLDS = tuple(value / 100 for value in range(50, 100, 5))
+DEFAULT_THRESHOLDS = tuple(value / 100 for value in range(50, 100, 5)) + (
+    0.975,
+    0.99,
+    0.995,
+    0.999,
+    0.9995,
+    0.9999,
+    0.99995,
+    0.99999,
+    0.999995,
+    0.999999,
+    0.9999995,
+    0.9999999,
+)
 REQUIRED_SAMPLE_FIELDS = (
     "sample_id",
     "image_path",
@@ -29,6 +42,9 @@ REQUIRED_SAMPLE_FIELDS = (
 )
 CSV_FIELDS = (
     "sample_id",
+    "partition",
+    "task_index",
+    "initial_state_index",
     "target_description",
     "provider",
     "model",
@@ -36,7 +52,9 @@ CSV_FIELDS = (
     "ground_truth_object_id",
     "correct",
     "raw_log_probability",
+    "raw_association_likelihood",
     "association_score",
+    "score_type",
     "candidate_scores",
     "association_margin",
     "score_unavailable_reason",
@@ -74,19 +92,26 @@ def load_evaluation_manifest(manifest_path):
                 raise ValueError(
                     f"ground_truth_object_id is empty for sample {sample_id!r}."
                 )
-        samples.append(
-            {
-                "sample_id": sample_id,
-                "image_path": _manifest_relative_path(
-                    manifest_path.parent, raw_sample["image_path"]
-                ),
-                "localization_path": _manifest_relative_path(
-                    manifest_path.parent, raw_sample["localization_path"]
-                ),
-                "target_description": target_description,
-                "ground_truth_object_id": ground_truth,
-            }
-        )
+        sample = {
+            "sample_id": sample_id,
+            "image_path": _manifest_relative_path(
+                manifest_path.parent, raw_sample["image_path"]
+            ),
+            "localization_path": _manifest_relative_path(
+                manifest_path.parent, raw_sample["localization_path"]
+            ),
+            "target_description": target_description,
+            "ground_truth_object_id": ground_truth,
+        }
+        for optional_field in (
+            "partition",
+            "task_index",
+            "initial_state_index",
+            "target_localized",
+        ):
+            if optional_field in raw_sample:
+                sample[optional_field] = raw_sample[optional_field]
+        samples.append(sample)
 
     if not samples:
         raise ValueError("Evaluation manifest contains no samples.")
@@ -94,7 +119,7 @@ def load_evaluation_manifest(manifest_path):
 
 
 def evaluate_samples(samples, provider):
-    """Run one raw VLM association per sample without human correction."""
+    """Run one VLM association per sample without human correction."""
     records = []
     for sample in samples:
         detections = load_localized_objects(sample["localization_path"])
@@ -115,19 +140,29 @@ def evaluate_samples(samples, provider):
         diagnostics = result["diagnostics"]
         prediction_available = diagnostics.get("choice_label") is not None
         score = result["association_score"]
-        if score is not None and not math.isclose(
-            score,
-            diagnostics["raw_association_likelihood"],
-            rel_tol=1e-12,
-            abs_tol=1e-12,
-        ):
-            raise RuntimeError(
-                "association_score must equal raw_association_likelihood."
-            )
+        candidate_scores = diagnostics.get("candidate_scores")
+        if score is not None:
+            if diagnostics.get("score_type") != "candidate_normalized":
+                raise RuntimeError("association_score must be candidate-normalized.")
+            if not isinstance(candidate_scores, dict) or not candidate_scores:
+                raise RuntimeError(
+                    "A numeric association_score requires complete candidate scores."
+                )
+            if not math.isclose(
+                score,
+                max(candidate_scores.values()),
+                rel_tol=1e-12,
+                abs_tol=1e-12,
+            ):
+                raise RuntimeError(
+                    "association_score must equal the highest candidate-normalized score."
+                )
 
         unavailable_reason = None
         if score is None:
-            unavailable_reason = diagnostics.get("logprob_error")
+            unavailable_reason = diagnostics.get("score_unavailable_reason")
+            if unavailable_reason is None:
+                unavailable_reason = diagnostics.get("logprob_error")
             if unavailable_reason is None and not prediction_available:
                 unavailable_reason = "The provider output was not a valid choice label."
             if unavailable_reason is None:
@@ -136,6 +171,10 @@ def evaluate_samples(samples, provider):
         records.append(
             {
                 "sample_id": sample["sample_id"],
+                "partition": sample.get("partition"),
+                "task_index": sample.get("task_index"),
+                "initial_state_index": sample.get("initial_state_index"),
+                "target_localized": sample.get("target_localized"),
                 "image_path": str(sample["image_path"]),
                 "localization_path": str(sample["localization_path"]),
                 "target_description": sample["target_description"],
@@ -147,8 +186,12 @@ def evaluate_samples(samples, provider):
                     prediction_available and result["vlm_object_id"] == ground_truth
                 ),
                 "raw_log_probability": diagnostics["raw_log_probability"],
+                "raw_association_likelihood": diagnostics[
+                    "raw_association_likelihood"
+                ],
                 "association_score": score,
-                "candidate_scores": diagnostics.get("candidate_scores"),
+                "score_type": diagnostics.get("score_type"),
+                "candidate_scores": candidate_scores,
                 "association_margin": diagnostics.get("association_margin"),
                 "score_unavailable_reason": unavailable_reason,
             }
@@ -180,7 +223,9 @@ def threshold_sweep(records, thresholds=DEFAULT_THRESHOLDS):
             for record in scored_records
             if record["association_score"] >= threshold
         ]
-        deferred_count = scored_trials - len(autonomous)
+        threshold_deferred_count = scored_trials - len(autonomous)
+        unavailable_count = total_trials - scored_trials
+        total_deferred_count = threshold_deferred_count + unavailable_count
         correct_autonomous = sum(bool(record["correct"]) for record in autonomous)
         false_acceptances = len(autonomous) - correct_autonomous
         rows.append(
@@ -188,15 +233,25 @@ def threshold_sweep(records, thresholds=DEFAULT_THRESHOLDS):
                 "threshold": threshold,
                 "total_trials": total_trials,
                 "scored_trials": scored_trials,
-                "score_unavailable_trials": total_trials - scored_trials,
+                "score_unavailable_trials": unavailable_count,
                 "autonomous_decisions": len(autonomous),
-                "deferred_decisions": deferred_count,
-                "autonomous_coverage": _safe_ratio(len(autonomous), scored_trials),
-                "deferral_rate": _safe_ratio(deferred_count, scored_trials),
+                "threshold_deferred_scored_decisions": threshold_deferred_count,
+                "total_deferred_decisions": total_deferred_count,
+                "autonomous_coverage": _safe_ratio(len(autonomous), total_trials),
+                "deferral_rate": _safe_ratio(total_deferred_count, total_trials),
+                "autonomous_coverage_scored_trials": _safe_ratio(
+                    len(autonomous), scored_trials
+                ),
+                "threshold_deferral_rate_scored_trials": _safe_ratio(
+                    threshold_deferred_count, scored_trials
+                ),
                 "autonomous_accuracy": _safe_ratio(
                     correct_autonomous, len(autonomous)
                 ),
                 "false_autonomous_acceptance_count": false_acceptances,
+                "false_autonomous_acceptance_rate_all_trials": _safe_ratio(
+                    false_acceptances, total_trials
+                ),
                 "false_autonomous_acceptance_rate_all_scored_trials": _safe_ratio(
                     false_acceptances, scored_trials
                 ),
@@ -215,11 +270,12 @@ def save_evaluation(records, dataset_split, output_dir):
     records_path.write_text(
         json.dumps(
             {
-                "schema_version": 1,
+                "schema_version": 2,
                 "dataset_split": dataset_split,
                 "score_definition": (
-                    "association_score = exp(sum(log probabilities of "
-                    "decision-bearing output tokens))"
+                    "association_score is the highest probability after "
+                    "normalizing returned log probabilities over every valid "
+                    "candidate label plus NONE"
                 ),
                 "records": records,
             },
@@ -250,7 +306,10 @@ def save_evaluation(records, dataset_split, output_dir):
             {
                 "schema_version": 1,
                 "dataset_split": dataset_split,
-                "analysis_population": "samples_with_numeric_association_score",
+                "analysis_population": (
+                    "all samples; only numeric-score samples are threshold-eligible, "
+                    "and score-unavailable samples are counted as deferred"
+                ),
                 "threshold_selection_performed": False,
                 "metrics": sweep,
             },
@@ -272,7 +331,10 @@ def _safe_ratio(numerator, denominator):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Evaluate raw VLM association likelihood on saved RGB-D scenes."
+        description=(
+            "Evaluate candidate-normalized VLM association scores on saved "
+            "RGB-D scenes."
+        )
     )
     parser.add_argument("manifest", type=Path)
     parser.add_argument(
@@ -289,7 +351,7 @@ def main():
     )
     scored_count = sum(record["association_score"] is not None for record in records)
     print(f"Evaluated associations: {len(records)}")
-    print(f"Associations with numeric raw likelihood: {scored_count}")
+    print(f"Associations with numeric candidate-normalized score: {scored_count}")
     print(f"Saved association JSON: {records_path}")
     print(f"Saved association CSV: {csv_path}")
     print(f"Saved threshold sweep: {sweep_path}")

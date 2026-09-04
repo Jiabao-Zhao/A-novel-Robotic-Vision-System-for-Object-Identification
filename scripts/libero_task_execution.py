@@ -27,8 +27,9 @@ from simulation.perception_adapter import run_libero_localization
 from vlm_module import (
     PROVISIONAL_ASSOCIATION_THRESHOLD,
     associate_targets_from_localization,
-    console_human_resolver,
+    contact_sheet_candidate_bbox_map,
     create_roi_contact_sheet,
+    opencv_human_resolver,
 )
 
 
@@ -155,7 +156,11 @@ def _run_task(task_index):
             localization_path=localization_paths["localization"],
             output_path=output_root / "vlm_result.json",
             threshold=PROVISIONAL_ASSOCIATION_THRESHOLD,
-            human_resolver=console_human_resolver,
+            human_resolver=opencv_human_resolver,
+            clarification_bboxes=contact_sheet_candidate_bbox_map(
+                localization_paths["localization"],
+                tile_size_px=VLM_CONTACT_SHEET_TILE_SIZE_PX,
+            ),
         )
         task_associations = task_associations_from_vlm_result(
             vlm_result_path,

@@ -3,6 +3,7 @@ import json
 import math
 import os
 import string
+import time
 from pathlib import Path
 
 import cv2
@@ -16,12 +17,15 @@ NONE_CHOICE = "N"
 # provider-specific threshold without changing the association implementation.
 PROVISIONAL_ASSOCIATION_THRESHOLD = 0.75
 TOP_LOGPROBS_LIMIT = 20
+CLARIFICATION_MAX_IMAGE_WIDTH_PX = 1280
+CLARIFICATION_MAX_IMAGE_HEIGHT_PX = 720
 SCORE_SEMANTICS = (
-    "The association score is always exp(sum(log probabilities)) over the "
-    "decision-bearing generated label tokens. It is the provider model's raw "
-    "label likelihood over its full output vocabulary, not a calibrated "
-    "probability of correct object identity. Candidate-normalized scores and "
-    "their margin are diagnostics only and never control the threshold gate."
+    "The association score is the selected label's probability after "
+    "normalizing provider-returned log probabilities over every valid localized "
+    "candidate label plus NONE. The selected label is the highest-scoring valid "
+    "choice. If any valid-choice log probability is unavailable, the association "
+    "score is unavailable and the decision is deferred. This score is not a "
+    "calibrated probability of correct object identity."
 )
 THRESHOLD_NOTE = (
     "The threshold is provisional. Select it on held-out calibration or "
@@ -30,6 +34,10 @@ THRESHOLD_NOTE = (
     "autonomous coverage, autonomous accuracy, human intervention rate, and "
     "false autonomous acceptance rate."
 )
+
+
+class ClarificationCancelled(RuntimeError):
+    """Raised when the operator cancels instead of resolving an association."""
 
 
 class OpenAIVLM:
@@ -138,6 +146,7 @@ def associate_targets_from_localization(
     threshold=PROVISIONAL_ASSOCIATION_THRESHOLD,
     human_resolver=None,
     provider=None,
+    clarification_bboxes=None,
 ):
     detections = load_localized_objects(localization_path)
     results = associate_targets(
@@ -147,6 +156,7 @@ def associate_targets_from_localization(
         threshold=threshold,
         human_resolver=human_resolver,
         provider=provider,
+        clarification_bboxes=clarification_bboxes,
     )
 
     output_path = Path(output_path)
@@ -154,7 +164,7 @@ def associate_targets_from_localization(
     output_path.write_text(
         json.dumps(
             {
-                "schema_version": 4,
+                "schema_version": 5,
                 "visual_prompt_path": str(image_path),
                 "score_semantics": SCORE_SEMANTICS,
                 "threshold_note": THRESHOLD_NOTE,
@@ -174,6 +184,7 @@ def associate_targets(
     threshold=PROVISIONAL_ASSOCIATION_THRESHOLD,
     human_resolver=None,
     provider=None,
+    clarification_bboxes=None,
 ):
     descriptions = [str(value).strip() for value in target_descriptions]
     if not descriptions or any(not value for value in descriptions):
@@ -188,6 +199,7 @@ def associate_targets(
             threshold=threshold,
             human_resolver=human_resolver,
             provider=active_provider,
+            clarification_bboxes=clarification_bboxes,
         )
         for description in descriptions
     ]
@@ -200,6 +212,7 @@ def associate_target(
     threshold=PROVISIONAL_ASSOCIATION_THRESHOLD,
     human_resolver=None,
     provider=None,
+    clarification_bboxes=None,
 ):
     inference = infer_target_association(
         target_description=target_description,
@@ -207,11 +220,17 @@ def associate_target(
         detections=detections,
         provider=provider,
     )
+    candidate_bboxes = (
+        candidate_bbox_map(detections)
+        if clarification_bboxes is None
+        else validated_candidate_bbox_map(detections, clarification_bboxes)
+    )
     return resolve_association(
         inference,
         threshold,
         human_resolver,
         visual_prompt_path=str(image_path),
+        candidate_bboxes=candidate_bboxes,
     )
 
 
@@ -222,9 +241,9 @@ def infer_target_association(target_description, image_path, detections, provide
     active_provider = OpenAIVLM() if provider is None else provider
     provider_result = active_provider.associate(image_path, prompt)
     generated_text = str(provider_result.get("generated_text") or "")
-    choice_label = parse_model_choice(generated_text, choice_map)
+    generated_choice_label = parse_model_choice(generated_text, choice_map)
     decision_tokens, raw_log_probability = decision_sequence_log_probability(
-        choice_label,
+        generated_choice_label,
         provider_result.get("token_logprobs") or [],
     )
     raw_association_likelihood = (
@@ -235,28 +254,45 @@ def infer_target_association(target_description, image_path, detections, provide
     choice_log_probabilities, candidate_scores, association_margin = (
         candidate_relative_scores(choice_map, decision_tokens)
     )
-    association_score = raw_association_likelihood
+    # Preserve an unscored generated proposal for human clarification, but only
+    # a complete valid-choice distribution can produce the scored selection.
+    choice_label = generated_choice_label
+    association_score = None
+    if candidate_scores is not None:
+        choice_label = max(
+            [*choice_map, NONE_CHOICE],
+            key=choice_log_probabilities.__getitem__,
+        )
+        score_key = "none" if choice_label == NONE_CHOICE else choice_map[choice_label]
+        association_score = candidate_scores[score_key]
 
     diagnostics = {
         "candidate_map": choice_map,
         "candidate_distribution_complete": candidate_scores is not None,
         "raw_log_probability": raw_log_probability,
         "raw_association_likelihood": raw_association_likelihood,
-        "score_type": "raw_label_likelihood",
+        "score_type": "candidate_normalized",
     }
     for key in ("provider", "model"):
         value = provider_result.get(key)
         if value:
             diagnostics[key] = value
-    if choice_label is not None:
-        diagnostics["choice_label"] = choice_label
+    if generated_choice_label is not None:
+        diagnostics["generated_choice_label"] = generated_choice_label
     elif generated_text:
         diagnostics["unparsed_output"] = generated_text
+    if choice_label is not None:
+        diagnostics["choice_label"] = choice_label
     if choice_log_probabilities:
         diagnostics["available_choice_log_probabilities"] = choice_log_probabilities
     if candidate_scores is not None:
         diagnostics["candidate_scores"] = candidate_scores
         diagnostics["association_margin"] = association_margin
+    else:
+        diagnostics["score_unavailable_reason"] = (
+            "Candidate-normalized score requires returned log probabilities for "
+            "every valid candidate label and NONE."
+        )
     for key in ("logprob_error", "top_logprob_error"):
         value = provider_result.get(key)
         if value:
@@ -275,6 +311,7 @@ def resolve_association(
     threshold,
     human_resolver=None,
     visual_prompt_path=None,
+    candidate_bboxes=None,
 ):
     threshold = float(threshold)
     if not 0.0 <= threshold <= 1.0:
@@ -290,21 +327,41 @@ def resolve_association(
         "diagnostics": diagnostics,
     }
     score = result.get("association_score")
-    raw_likelihood = diagnostics.get("raw_association_likelihood")
-    scores_match = score is None and raw_likelihood is None
-    if score is not None and raw_likelihood is not None:
+    choice_label = diagnostics.get("choice_label")
+    vlm_object_id = result.get("vlm_object_id")
+    candidate_scores = diagnostics.get("candidate_scores")
+    selected_score_key = (
+        "none" if choice_label == NONE_CHOICE else vlm_object_id
+    )
+    expected_score = (
+        candidate_scores.get(selected_score_key)
+        if isinstance(candidate_scores, dict) and selected_score_key is not None
+        else None
+    )
+    scores_match = score is None and expected_score is None
+    if score is not None and expected_score is not None:
         scores_match = math.isclose(
             float(score),
-            float(raw_likelihood),
+            float(expected_score),
             rel_tol=1e-12,
             abs_tol=1e-12,
         )
-    if not scores_match:
-        raise ValueError(
-            "association_score must equal diagnostics.raw_association_likelihood."
+    selected_is_highest = expected_score is None
+    if expected_score is not None:
+        selected_is_highest = math.isclose(
+            float(expected_score),
+            max(float(value) for value in candidate_scores.values()),
+            rel_tol=1e-12,
+            abs_tol=1e-12,
         )
-    choice_label = diagnostics.get("choice_label")
-    vlm_object_id = result.get("vlm_object_id")
+    if (
+        diagnostics.get("score_type") != "candidate_normalized"
+        or not scores_match
+        or not selected_is_highest
+    ):
+        raise ValueError(
+            "association_score must equal the highest candidate-normalized score."
+        )
 
     if choice_label is not None and score is not None and score >= threshold:
         result["final_object_id"] = vlm_object_id
@@ -326,9 +383,19 @@ def resolve_association(
     valid_object_ids = set(candidate_map.values())
     clarification = dict(result)
     clarification["candidate_object_ids"] = list(candidate_map.values())
+    clarification["candidate_bboxes"] = dict(candidate_bboxes or {})
     if visual_prompt_path is not None:
         clarification["visual_prompt_path"] = str(visual_prompt_path)
+        diagnostics["visual_prompt_path"] = str(visual_prompt_path)
+    diagnostics["clarification_trigger"] = (
+        "confidence_unavailable" if score is None else "score_below_threshold"
+    )
+    clarification_started = time.monotonic()
     human_selection = human_resolver(clarification)
+    diagnostics["human_response_time_s"] = max(
+        0.0,
+        time.monotonic() - clarification_started,
+    )
     if human_selection is None or str(human_selection).strip().lower() == "none":
         human_object_id = None
     else:
@@ -350,19 +417,202 @@ def resolve_association(
     return result
 
 
-def console_human_resolver(association):
-    candidate_ids = association.get("candidate_object_ids") or []
-    print(f"Visual prompt: {association.get('visual_prompt_path')}")
-    print(f"Target: {association.get('target_description')}")
-    print("VLM prediction:")
-    print(f"  object_id = {association.get('vlm_object_id')}")
-    print(f"  association_score = {association.get('association_score')}")
-    print(f"  provisional threshold = {association.get('threshold')}")
-    print("Select the correct localized object:")
-    for object_id in candidate_ids:
-        print(f"  {object_id}")
-    print("  none")
-    return input("Selection: ").strip()
+def opencv_human_resolver(association):
+    """Resolve one deferred semantic association with a single visual click."""
+    image_path = Path(str(association.get("visual_prompt_path") or ""))
+    if not image_path.is_file():
+        raise FileNotFoundError(
+            f"Could not read clarification visual prompt: {image_path}"
+        )
+    candidate_bboxes = association.get("candidate_bboxes") or {}
+    if not candidate_bboxes:
+        raise ValueError("Clarification requires localized candidate bounding boxes.")
+
+    image = cv2.imread(str(image_path), cv2.IMREAD_COLOR)
+    if image is None:
+        raise RuntimeError(f"OpenCV could not decode clarification image: {image_path}")
+    canvas, display_bboxes, absent_bbox = _clarification_view(
+        image=image,
+        target_description=association.get("target_description"),
+        candidate_bboxes=candidate_bboxes,
+        vlm_object_id=association.get("vlm_object_id"),
+    )
+    state = {
+        "candidate_bboxes": display_bboxes,
+        "target_not_present_bbox": absent_bbox,
+        "done": False,
+        "selection": None,
+    }
+    window_name = "Semantic association clarification"
+    window_created = False
+    try:
+        cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
+        window_created = True
+        cv2.setMouseCallback(window_name, _clarification_mouse_callback, state)
+        while not state["done"]:
+            cv2.imshow(window_name, canvas)
+            key = cv2.waitKey(20) & 0xFF
+            if key in (27, ord("q"), ord("Q")):
+                raise ClarificationCancelled("Operator cancelled semantic clarification.")
+            if cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE) < 1:
+                raise ClarificationCancelled("Operator closed semantic clarification.")
+        return state["selection"]
+    except cv2.error as error:
+        raise RuntimeError(
+            "OpenCV could not open the clarification window. Run the interactive "
+            "pipeline in a desktop session with GUI support."
+        ) from error
+    finally:
+        if window_created:
+            cv2.destroyWindow(window_name)
+
+
+def object_id_at_point(x, y, candidate_bboxes):
+    """Return the smallest candidate box containing a display-space click."""
+    hits = []
+    for object_id, bbox in candidate_bboxes.items():
+        if len(bbox) != 4:
+            raise ValueError(f"Invalid bounding box for {object_id}: {bbox}")
+        x1, y1, x2, y2 = (int(value) for value in bbox)
+        if x2 <= x1 or y2 <= y1:
+            raise ValueError(f"Invalid bounding box for {object_id}: {bbox}")
+        if x1 <= x <= x2 and y1 <= y <= y2:
+            hits.append(((x2 - x1) * (y2 - y1), str(object_id)))
+    return min(hits)[1] if hits else None
+
+
+def _clarification_mouse_callback(event, x, y, _flags, state):
+    if event != cv2.EVENT_LBUTTONDOWN or state.get("done"):
+        return
+    absent_bbox = state["target_not_present_bbox"]
+    if object_id_at_point(x, y, {"__target_not_present__": absent_bbox}) is not None:
+        state["selection"] = None
+        state["done"] = True
+        return
+    object_id = object_id_at_point(x, y, state["candidate_bboxes"])
+    if object_id is not None:
+        state["selection"] = object_id
+        state["done"] = True
+
+
+def _clarification_view(image, target_description, candidate_bboxes, vlm_object_id):
+    image_height, image_width = image.shape[:2]
+    scale = min(
+        1.0,
+        CLARIFICATION_MAX_IMAGE_WIDTH_PX / image_width,
+        CLARIFICATION_MAX_IMAGE_HEIGHT_PX / image_height,
+    )
+    display_width = max(1, int(round(image_width * scale)))
+    display_height = max(1, int(round(image_height * scale)))
+    resized = cv2.resize(
+        image,
+        (display_width, display_height),
+        interpolation=cv2.INTER_AREA if scale < 1.0 else cv2.INTER_LINEAR,
+    )
+
+    header_height = 86
+    footer_height = 82
+    canvas_width = max(display_width, 480)
+    image_x = (canvas_width - display_width) // 2
+    canvas = np.full(
+        (header_height + display_height + footer_height, canvas_width, 3),
+        245,
+        dtype=np.uint8,
+    )
+    canvas[
+        header_height:header_height + display_height,
+        image_x:image_x + display_width,
+    ] = resized
+    cv2.putText(
+        canvas,
+        f"Target object: {str(target_description or '').upper()}",
+        (18, 31),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.72,
+        (20, 20, 20),
+        2,
+        cv2.LINE_AA,
+    )
+    cv2.putText(
+        canvas,
+        "System requires clarification - click the correct object",
+        (18, 66),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.58,
+        (20, 20, 20),
+        1,
+        cv2.LINE_AA,
+    )
+
+    display_bboxes = {}
+    for object_id in sorted(candidate_bboxes):
+        bbox = candidate_bboxes[object_id]
+        if len(bbox) != 4:
+            raise ValueError(f"Invalid bounding box for {object_id}: {bbox}")
+        x1, y1, x2, y2 = (int(value) for value in bbox)
+        x1 = image_x + int(round(x1 * scale))
+        x2 = image_x + int(round(x2 * scale))
+        y1 = header_height + int(round(y1 * scale))
+        y2 = header_height + int(round(y2 * scale))
+        display_bbox = [x1, y1, x2, y2]
+        display_bboxes[str(object_id)] = display_bbox
+        color = (0, 165, 255) if object_id == vlm_object_id else (255, 200, 0)
+        thickness = 3 if object_id == vlm_object_id else 2
+        cv2.rectangle(canvas, (x1, y1), (x2, y2), color, thickness)
+        label = str(object_id)
+        label_size, baseline = cv2.getTextSize(
+            label,
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.52,
+            1,
+        )
+        label_y = max(header_height, y1 - label_size[1] - baseline - 4)
+        cv2.rectangle(
+            canvas,
+            (x1, label_y),
+            (x1 + label_size[0] + 8, label_y + label_size[1] + baseline + 4),
+            color,
+            cv2.FILLED,
+        )
+        cv2.putText(
+            canvas,
+            label,
+            (x1 + 4, label_y + label_size[1] + 1),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.52,
+            (0, 0, 0),
+            1,
+            cv2.LINE_AA,
+        )
+
+    button_width = min(260, canvas_width - 36)
+    button_height = 44
+    button_x1 = (canvas_width - button_width) // 2
+    button_y1 = header_height + display_height + 19
+    absent_bbox = [
+        button_x1,
+        button_y1,
+        button_x1 + button_width,
+        button_y1 + button_height,
+    ]
+    cv2.rectangle(
+        canvas,
+        (absent_bbox[0], absent_bbox[1]),
+        (absent_bbox[2], absent_bbox[3]),
+        (80, 80, 80),
+        cv2.FILLED,
+    )
+    cv2.putText(
+        canvas,
+        "Target not present",
+        (absent_bbox[0] + 26, absent_bbox[1] + 29),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.58,
+        (255, 255, 255),
+        1,
+        cv2.LINE_AA,
+    )
+    return canvas, display_bboxes, absent_bbox
 
 
 def candidate_choice_map(detections):
@@ -380,6 +630,34 @@ def candidate_choice_map(detections):
     if len(object_ids) > len(labels):
         raise ValueError(f"At most {len(labels)} localized candidates are supported.")
     return dict(zip(labels, object_ids))
+
+
+def candidate_bbox_map(detections):
+    choice_map = candidate_choice_map(detections)
+    detections_by_id = {str(item["object_id"]): item for item in detections}
+    bboxes = {}
+    for object_id in choice_map.values():
+        bbox = detections_by_id[object_id].get("bbox_2d_xyxy")
+        if bbox is None or len(bbox) != 4:
+            raise ValueError(f"Missing bounding box for localized object: {object_id}")
+        bboxes[object_id] = [int(value) for value in bbox]
+    return bboxes
+
+
+def validated_candidate_bbox_map(detections, candidate_bboxes):
+    expected_ids = set(candidate_choice_map(detections).values())
+    bboxes = {
+        str(object_id): [int(value) for value in bbox]
+        for object_id, bbox in candidate_bboxes.items()
+    }
+    if set(bboxes) != expected_ids:
+        raise ValueError(
+            "Clarification bounding boxes must match all localized object IDs."
+        )
+    for object_id, bbox in bboxes.items():
+        if len(bbox) != 4 or bbox[2] <= bbox[0] or bbox[3] <= bbox[1]:
+            raise ValueError(f"Invalid clarification bounding box for {object_id}: {bbox}")
+    return bboxes
 
 
 def object_id_for_choice(choice_map, choice):
@@ -558,6 +836,29 @@ def create_roi_contact_sheet(
     if not cv2.imwrite(str(output_path), canvas):
         raise RuntimeError(f"Could not save VLM contact sheet: {output_path}")
     return output_path
+
+
+def contact_sheet_candidate_bbox_map(
+    localization_path,
+    tile_size_px=224,
+    columns=4,
+):
+    """Map object IDs to their clickable candidate tiles in a contact sheet."""
+    if tile_size_px <= 0 or columns <= 0:
+        raise ValueError("Contact-sheet tile size and column count must be positive.")
+    payload = json.loads(Path(localization_path).read_text(encoding="utf-8"))
+    objects = list(payload.get("objects", []))
+    if not objects:
+        raise RuntimeError("Cannot map contact-sheet tiles without localized objects.")
+    return {
+        str(item["object_id"]): [
+            (tile_index % columns) * tile_size_px,
+            (tile_index // columns) * tile_size_px,
+            (tile_index % columns + 1) * tile_size_px - 1,
+            (tile_index // columns + 1) * tile_size_px - 1,
+        ]
+        for tile_index, item in enumerate(objects, start=1)
+    }
 
 
 def _place_contact_sheet_tile(canvas, image, label, index, tile_size, columns):

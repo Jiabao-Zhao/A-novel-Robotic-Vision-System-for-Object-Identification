@@ -1,27 +1,31 @@
-import io
 import json
 import math
 import tempfile
 import unittest
-from contextlib import redirect_stdout
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from main import register_resolved_associations
+import cv2
+
+from main import cad_request_from_association, register_resolved_associations
 from prompt import _vlm_prompt
 from vlm_module import (
+    ClarificationCancelled,
     OpenAIVLM,
     TOP_LOGPROBS_LIMIT,
+    _clarification_mouse_callback,
     associate_targets,
     associate_targets_from_localization,
+    candidate_bbox_map,
     candidate_relative_scores,
     candidate_choice_map,
     choice_for_object_id,
-    console_human_resolver,
+    contact_sheet_candidate_bbox_map,
     decision_sequence_log_probability,
     infer_target_association,
     load_localized_objects,
+    object_id_at_point,
     object_id_for_choice,
     resolve_association,
     _openai_provider_result,
@@ -43,6 +47,11 @@ DETECTIONS = [
     },
 ]
 
+CLICK_BBOXES = {
+    "object_001": [10, 20, 30, 40],
+    "object_002": [50, 20, 80, 50],
+}
+
 
 def provider_result(
     choice="A",
@@ -50,6 +59,24 @@ def provider_result(
     top_logprobs=None,
     token_logprobs=None,
 ):
+    if token_logprobs is None and top_logprobs is None:
+        selected_label = str(choice).strip().upper()
+        selected_probability = math.exp(log_probability)
+        remaining_labels = [
+            label for label in ("A", "B", "N") if label != selected_label
+        ]
+        remaining_probability = (1.0 - selected_probability) / len(remaining_labels)
+        top_logprobs = [
+            {
+                "token": label,
+                "log_probability": (
+                    log_probability
+                    if label == selected_label
+                    else math.log(remaining_probability)
+                ),
+            }
+            for label in ("A", "B", "N")
+        ]
     return {
         "provider": "test",
         "model": "test-vlm",
@@ -86,16 +113,28 @@ def inference(score=0.9, vlm_object_id="object_002", choice_label="B"):
         "provider": "test",
         "model": "test-vlm",
         "candidate_map": {"A": "object_001", "B": "object_002"},
-        "candidate_distribution_complete": False,
+        "candidate_distribution_complete": score is not None,
+        "score_type": "candidate_normalized",
     }
     if choice_label is not None:
         diagnostics["choice_label"] = choice_label
     if score is not None:
+        selected_key = "none" if choice_label == "N" else vlm_object_id
+        other_keys = [
+            key
+            for key in ("object_001", "object_002", "none")
+            if key != selected_key
+        ]
+        candidate_scores = {
+            key: (1.0 - score) / len(other_keys)
+            for key in other_keys
+        }
+        candidate_scores[selected_key] = score
         diagnostics.update(
             {
                 "raw_log_probability": math.log(score),
                 "raw_association_likelihood": score,
-                "score_type": "raw_label_likelihood",
+                "candidate_scores": candidate_scores,
             }
         )
     else:
@@ -109,6 +148,52 @@ def inference(score=0.9, vlm_object_id="object_002", choice_label="B"):
 
 
 class VLMModuleTests(unittest.TestCase):
+    def test_click_inside_object_001_returns_object_001(self):
+        self.assertEqual(
+            object_id_at_point(20, 30, CLICK_BBOXES),
+            "object_001",
+        )
+
+    def test_click_inside_object_002_returns_object_002(self):
+        self.assertEqual(
+            object_id_at_point(60, 30, CLICK_BBOXES),
+            "object_002",
+        )
+
+    def test_click_outside_all_candidates_makes_no_selection(self):
+        state = {
+            "candidate_bboxes": CLICK_BBOXES,
+            "target_not_present_bbox": [10, 70, 180, 100],
+            "done": False,
+            "selection": None,
+        }
+
+        _clarification_mouse_callback(cv2.EVENT_LBUTTONDOWN, 150, 10, None, state)
+
+        self.assertFalse(state["done"])
+        self.assertIsNone(state["selection"])
+
+    def test_target_not_present_button_returns_none(self):
+        state = {
+            "candidate_bboxes": CLICK_BBOXES,
+            "target_not_present_bbox": [10, 70, 180, 100],
+            "done": False,
+            "selection": "unchanged",
+        }
+
+        _clarification_mouse_callback(cv2.EVENT_LBUTTONDOWN, 50, 80, None, state)
+
+        self.assertTrue(state["done"])
+        self.assertIsNone(state["selection"])
+
+    def test_overlapping_boxes_select_smallest_clicked_candidate(self):
+        overlapping = {
+            "object_001": [0, 0, 100, 100],
+            "object_002": [25, 25, 75, 75],
+        }
+
+        self.assertEqual(object_id_at_point(50, 50, overlapping), "object_002")
+
     def test_candidate_choice_maps_to_object_id_deterministically(self):
         choice_map = candidate_choice_map(DETECTIONS)
 
@@ -137,10 +222,16 @@ class VLMModuleTests(unittest.TestCase):
         self.assertNotIn("put the white gear", prompt)
 
     def test_high_confidence_association_is_automatically_accepted(self):
-        result = resolve_association(inference(score=0.91), threshold=0.75)
+        resolver_calls = []
+        result = resolve_association(
+            inference(score=0.91),
+            threshold=0.75,
+            human_resolver=lambda request: resolver_calls.append(request),
+        )
 
         self.assertEqual(result["final_object_id"], "object_002")
         self.assertEqual(result["resolution"], "vlm_accepted")
+        self.assertEqual(resolver_calls, [])
         self.assertEqual(
             set(result),
             {
@@ -165,10 +256,33 @@ class VLMModuleTests(unittest.TestCase):
             inference(score=0.61),
             threshold=0.75,
             human_resolver=resolver,
+            candidate_bboxes=candidate_bbox_map(DETECTIONS),
         )
 
         self.assertEqual(len(calls), 1)
+        self.assertEqual(
+            calls[0]["candidate_bboxes"],
+            {
+                "object_001": [10, 20, 30, 40],
+                "object_002": [30, 40, 50, 60],
+            },
+        )
         self.assertEqual(result["resolution"], "human_confirmed")
+
+    @patch("vlm_module.time.monotonic", side_effect=[10.0, 12.5])
+    def test_clarification_logs_trigger_visual_prompt_and_response_time(self, _clock):
+        result = resolve_association(
+            inference(score=0.61),
+            threshold=0.75,
+            human_resolver=lambda _: "object_001",
+            visual_prompt_path="annotated.png",
+            candidate_bboxes=CLICK_BBOXES,
+        )
+
+        diagnostics = result["diagnostics"]
+        self.assertEqual(diagnostics["clarification_trigger"], "score_below_threshold")
+        self.assertEqual(diagnostics["visual_prompt_path"], "annotated.png")
+        self.assertEqual(diagnostics["human_response_time_s"], 2.5)
 
     def test_human_can_confirm_vlm_selection(self):
         result = resolve_association(
@@ -221,7 +335,7 @@ class VLMModuleTests(unittest.TestCase):
         self.assertEqual(result["resolution"], "confidence_unavailable")
 
     def test_low_confidence_without_human_resolver_is_deferred(self):
-        result = resolve_association(inference(score=0.2), threshold=0.75)
+        result = resolve_association(inference(score=0.4), threshold=0.75)
 
         self.assertIsNone(result["final_object_id"])
         self.assertEqual(result["resolution"], "deferred")
@@ -238,11 +352,11 @@ class VLMModuleTests(unittest.TestCase):
         self.assertEqual(result["final_object_id"], "object_002")
         self.assertEqual(result["resolution"], "vlm_accepted")
 
-    def test_gate_rejects_score_that_differs_from_raw_likelihood(self):
+    def test_gate_rejects_score_that_differs_from_selected_candidate_score(self):
         result = inference(score=0.9)
         result["association_score"] = 0.8
 
-        with self.assertRaisesRegex(ValueError, "raw_association_likelihood"):
+        with self.assertRaisesRegex(ValueError, "candidate-normalized"):
             resolve_association(result, threshold=0.75)
 
     def test_invalid_human_object_id_is_rejected(self):
@@ -253,26 +367,16 @@ class VLMModuleTests(unittest.TestCase):
                 human_resolver=lambda _: "object_999",
             )
 
-    def test_console_clarification_shows_same_visual_prompt_and_candidates(self):
-        request = inference(score=0.4)
-        request.update(
-            {
-                "visual_prompt_path": "annotated.png",
-                "threshold": 0.75,
-                "candidate_object_ids": ["object_001", "object_002"],
-            }
-        )
-        output = io.StringIO()
-        with patch("builtins.input", return_value="object_001"), redirect_stdout(output):
-            selection = console_human_resolver(request)
+    def test_cancelled_clarification_does_not_resolve_association(self):
+        def cancel(_request):
+            raise ClarificationCancelled("cancelled")
 
-        displayed = output.getvalue()
-        self.assertEqual(selection, "object_001")
-        self.assertIn("annotated.png", displayed)
-        self.assertIn("Target: white gear", displayed)
-        self.assertIn("object_002", displayed)
-        self.assertIn("object_001", displayed)
-        self.assertIn("none", displayed)
+        with self.assertRaisesRegex(ClarificationCancelled, "cancelled"):
+            resolve_association(
+                inference(score=0.4),
+                threshold=0.75,
+                human_resolver=cancel,
+            )
 
     def test_high_confidence_none_choice_reports_target_not_present(self):
         result = resolve_association(
@@ -347,6 +451,25 @@ class VLMModuleTests(unittest.TestCase):
         self.assertEqual(queries, ["white gear"])
         self.assertNotIn("put the white gear", queries)
 
+    def test_cad_handoff_uses_only_final_object_id_for_vlm_or_human_result(self):
+        autonomous = {
+            "target_description": "white gear",
+            "vlm_object_id": "object_002",
+            "final_object_id": "object_002",
+            "resolution": "vlm_accepted",
+        }
+        human_corrected = {
+            "target_description": "white gear",
+            "vlm_object_id": "object_999",
+            "final_object_id": "object_002",
+            "resolution": "human_corrected",
+        }
+
+        self.assertEqual(
+            cad_request_from_association(autonomous),
+            cad_request_from_association(human_corrected),
+        )
+
     def test_vlm_result_contains_no_task_role_reasoning(self):
         provider = FakeProvider(provider_result("B"))
         result = associate_targets(
@@ -409,7 +532,15 @@ class VLMModuleTests(unittest.TestCase):
             provider_result(
                 "A.",
                 token_logprobs=[
-                    {"token": "A", "log_probability": -0.2},
+                    {
+                        "token": "A",
+                        "log_probability": math.log(0.7),
+                        "top_logprobs": [
+                            {"token": "A", "log_probability": math.log(0.7)},
+                            {"token": "B", "log_probability": math.log(0.2)},
+                            {"token": "N", "log_probability": math.log(0.1)},
+                        ],
+                    },
                     {"token": ".", "log_probability": -3.0},
                 ],
             )
@@ -423,10 +554,10 @@ class VLMModuleTests(unittest.TestCase):
         )
 
         self.assertEqual(result["vlm_object_id"], "object_001")
-        self.assertAlmostEqual(result["association_score"], math.exp(-0.2))
+        self.assertAlmostEqual(result["association_score"], 0.7)
         self.assertAlmostEqual(
             result["diagnostics"]["raw_log_probability"],
-            -0.2,
+            math.log(0.7),
         )
 
     def test_multi_token_decision_likelihood_uses_only_decision_tokens(self):
@@ -488,7 +619,7 @@ class VLMModuleTests(unittest.TestCase):
         self.assertIsNone(scores)
         self.assertIsNone(margin)
 
-    def test_complete_distribution_is_diagnostic_and_never_replaces_raw_score(self):
+    def test_complete_distribution_controls_score_and_selection(self):
         provider = FakeProvider(
             provider_result(
                 "A",
@@ -508,9 +639,9 @@ class VLMModuleTests(unittest.TestCase):
             provider=provider,
         )
 
-        self.assertAlmostEqual(result["association_score"], 0.4)
+        self.assertAlmostEqual(result["association_score"], 2 / 3)
         diagnostics = result["diagnostics"]
-        self.assertEqual(diagnostics["score_type"], "raw_label_likelihood")
+        self.assertEqual(diagnostics["score_type"], "candidate_normalized")
         self.assertAlmostEqual(diagnostics["raw_association_likelihood"], 0.4)
         self.assertAlmostEqual(
             diagnostics["candidate_scores"]["object_001"],
@@ -518,10 +649,10 @@ class VLMModuleTests(unittest.TestCase):
         )
         self.assertAlmostEqual(diagnostics["association_margin"], 0.5)
         gated = resolve_association(result, threshold=0.5)
-        self.assertEqual(gated["resolution"], "deferred")
-        self.assertIsNone(gated["final_object_id"])
+        self.assertEqual(gated["resolution"], "vlm_accepted")
+        self.assertEqual(gated["final_object_id"], "object_001")
 
-    def test_incomplete_distribution_falls_back_to_raw_label_likelihood(self):
+    def test_incomplete_distribution_makes_score_unavailable(self):
         provider = FakeProvider(
             provider_result(
                 "A",
@@ -540,13 +671,14 @@ class VLMModuleTests(unittest.TestCase):
             provider=provider,
         )
 
-        self.assertAlmostEqual(result["association_score"], 0.7)
+        self.assertIsNone(result["association_score"])
         diagnostics = result["diagnostics"]
         self.assertFalse(diagnostics["candidate_distribution_complete"])
         self.assertNotIn("candidate_scores", diagnostics)
-        self.assertEqual(diagnostics["score_type"], "raw_label_likelihood")
+        self.assertEqual(diagnostics["score_type"], "candidate_normalized")
+        self.assertAlmostEqual(diagnostics["raw_association_likelihood"], 0.7)
 
-    def test_top_logprob_availability_never_changes_score_definition(self):
+    def test_score_is_unavailable_without_complete_top_logprobs(self):
         complete = FakeProvider(
             provider_result(
                 "A",
@@ -558,7 +690,9 @@ class VLMModuleTests(unittest.TestCase):
                 ],
             )
         )
-        chosen_only = FakeProvider(provider_result("A", math.log(0.4)))
+        chosen_only = FakeProvider(
+            provider_result("A", math.log(0.4), top_logprobs=[])
+        )
 
         complete_result = infer_target_association(
             "white gear", "annotated.png", DETECTIONS, provider=complete
@@ -567,15 +701,41 @@ class VLMModuleTests(unittest.TestCase):
             "white gear", "annotated.png", DETECTIONS, provider=chosen_only
         )
 
-        self.assertAlmostEqual(complete_result["association_score"], 0.4)
-        self.assertAlmostEqual(chosen_only_result["association_score"], 0.4)
+        self.assertAlmostEqual(complete_result["association_score"], 2 / 3)
+        self.assertIsNone(chosen_only_result["association_score"])
         self.assertEqual(
             complete_result["diagnostics"]["score_type"],
-            "raw_label_likelihood",
+            "candidate_normalized",
         )
         self.assertEqual(
             chosen_only_result["diagnostics"]["score_type"],
-            "raw_label_likelihood",
+            "candidate_normalized",
+        )
+
+    def test_candidate_argmax_overrides_nonmaximal_generated_label(self):
+        provider = FakeProvider(
+            provider_result(
+                "B",
+                math.log(0.3),
+                top_logprobs=[
+                    {"token": "A", "log_probability": math.log(0.6)},
+                    {"token": "B", "log_probability": math.log(0.3)},
+                    {"token": "N", "log_probability": math.log(0.1)},
+                ],
+            )
+        )
+
+        result = infer_target_association(
+            "white gear", "annotated.png", DETECTIONS, provider=provider
+        )
+
+        self.assertEqual(result["vlm_object_id"], "object_001")
+        self.assertAlmostEqual(result["association_score"], 0.6)
+        self.assertEqual(result["diagnostics"]["choice_label"], "A")
+        self.assertEqual(result["diagnostics"]["generated_choice_label"], "B")
+        self.assertAlmostEqual(
+            result["diagnostics"]["raw_association_likelihood"],
+            0.3,
         )
 
     def test_openai_parser_reads_actual_top_logprob_shape(self):
@@ -684,7 +844,7 @@ class VLMModuleTests(unittest.TestCase):
         diagnostics = result["diagnostics"]
         self.assertIsNone(diagnostics["raw_log_probability"])
         self.assertIsNone(diagnostics["raw_association_likelihood"])
-        self.assertEqual(diagnostics["score_type"], "raw_label_likelihood")
+        self.assertEqual(diagnostics["score_type"], "candidate_normalized")
         self.assertEqual(diagnostics["logprob_error"], "unsupported")
 
     def test_provider_failure_never_creates_association_result(self):
@@ -725,7 +885,7 @@ class VLMModuleTests(unittest.TestCase):
             saved = json.loads(output_path.read_text(encoding="utf-8"))
             result = saved["associations"][0]
 
-        self.assertEqual(saved["schema_version"], 4)
+        self.assertEqual(saved["schema_version"], 5)
         self.assertEqual(
             set(result),
             {
@@ -742,7 +902,7 @@ class VLMModuleTests(unittest.TestCase):
         self.assertEqual(diagnostics["provider"], "test")
         self.assertEqual(diagnostics["model"], "test-vlm")
         self.assertAlmostEqual(diagnostics["raw_log_probability"], math.log(0.9))
-        self.assertEqual(diagnostics["score_type"], "raw_label_likelihood")
+        self.assertEqual(diagnostics["score_type"], "candidate_normalized")
         self.assertNotIn("model_output", diagnostics)
         self.assertNotIn("model_choice", diagnostics)
         self.assertNotIn("decision_token_logprobs", diagnostics)
@@ -769,6 +929,39 @@ class VLMModuleTests(unittest.TestCase):
         self.assertEqual(detections[0]["size_3d_m"], [0.05, 0.08, 0.12])
         self.assertEqual(detections[0]["point_count"], 420)
         self.assertEqual(detections[0]["geometry_frame"], "camera")
+
+    def test_candidate_bbox_map_preserves_persistent_object_ids(self):
+        self.assertEqual(
+            candidate_bbox_map(DETECTIONS),
+            {
+                "object_001": [10, 20, 30, 40],
+                "object_002": [30, 40, 50, 60],
+            },
+        )
+
+    def test_contact_sheet_click_regions_follow_candidate_tile_order(self):
+        payload = {
+            "objects": [
+                {"object_id": "object_002"},
+                {"object_id": "object_001"},
+            ]
+        }
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            path = Path(temporary_directory) / "localization.json"
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            bboxes = contact_sheet_candidate_bbox_map(
+                path,
+                tile_size_px=100,
+                columns=2,
+            )
+
+        self.assertEqual(
+            bboxes,
+            {
+                "object_002": [100, 0, 199, 99],
+                "object_001": [0, 100, 99, 199],
+            },
+        )
 
 
 if __name__ == "__main__":
