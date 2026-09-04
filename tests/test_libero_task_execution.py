@@ -18,9 +18,7 @@ from scripts.libero_task_execution import (
 def association(target_description, object_id, **updates):
     result = {
         "target_description": target_description,
-        "provider": "openai",
         "final_object_id": object_id,
-        "requires_human_clarification": False,
         "resolution": "vlm_accepted",
     }
     result.update(updates)
@@ -66,7 +64,6 @@ class LiberoTaskExecutionTests(unittest.TestCase):
                 association(
                     "milk",
                     None,
-                    requires_human_clarification=True,
                     resolution="confidence_unavailable",
                 ),
                 association("basket", "object_001"),

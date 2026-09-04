@@ -19,6 +19,8 @@ OUTPUT_ROBOT_BASE_POSE = True
 RUN_LLM_PLANNER = False
 INTERACTIVE_CLARIFICATION = True
 USER_TEXT = "put the white gear on top of the red block"
+# Semantic target descriptions are currently supplied by the experiment caller.
+# Extracting them from USER_TEXT is outside the VLM association stage.
 TARGET_DESCRIPTIONS = ("white gear", "red block")
 SAVED_RGB_PATH = Path("outputs/physical/raw/RGB.png")
 SAVED_DEPTH_PATH = Path("outputs/physical/raw/depth_data.npz")
@@ -59,10 +61,16 @@ def resolved_associations_from_vlm(vlm_path):
     associations = payload.get("associations")
     if not isinstance(associations, list) or not associations:
         raise ValueError("VLM output does not contain semantic association results.")
+    resolved_states = {
+        "vlm_accepted",
+        "human_confirmed",
+        "human_corrected",
+        "target_not_present",
+    }
     unresolved = [
         item
         for item in associations
-        if item.get("requires_human_clarification")
+        if item.get("resolution") not in resolved_states
     ]
     if unresolved:
         for item in unresolved:
@@ -72,7 +80,7 @@ def resolved_associations_from_vlm(vlm_path):
                 f"score={item.get('association_score')}, "
                 f"threshold={item.get('threshold')}."
             )
-            print(f"Visual prompt: {item.get('visual_prompt_path')}")
+            print(f"Visual prompt: {payload.get('visual_prompt_path')}")
         raise SystemExit("CAD retrieval stopped until semantic association is resolved.")
     return associations
 

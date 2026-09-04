@@ -496,10 +496,16 @@ def task_associations_from_vlm_result(result_path, target_name="milk"):
         )
     target_association = by_description[target_name.lower()]
     basket_association = by_description["basket"]
+    resolved_states = {
+        "vlm_accepted",
+        "human_confirmed",
+        "human_corrected",
+        "target_not_present",
+    }
     unresolved = [
         item
         for item in (target_association, basket_association)
-        if item.get("requires_human_clarification")
+        if item.get("resolution") not in resolved_states
     ]
     if unresolved:
         descriptions = ", ".join(
@@ -524,12 +530,6 @@ def task_associations_from_vlm_result(result_path, target_name="milk"):
         "target_object_id": target_object_id,
         "basket_description": "basket",
         "basket_object_id": basket_object_id,
-        "providers": sorted(
-            {
-                str(item.get("provider"))
-                for item in (target_association, basket_association)
-            }
-        ),
         "associations": [target_association, basket_association],
     }
 

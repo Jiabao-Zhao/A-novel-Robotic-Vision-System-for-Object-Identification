@@ -20,7 +20,7 @@ Candidate map and depth-derived metadata:
 {candidates_json}
 
 N means none of the localized candidates corresponds to the target.
-Return only one label from: {", ".join(labels)}
+Return only one label, without punctuation or explanation, from: {", ".join(labels)}
 """.strip()
 
 

@@ -12,8 +12,11 @@ from main import register_resolved_associations
 from prompt import _vlm_prompt
 from vlm_module import (
     HumanClarificationRequired,
+    OpenAIVLM,
+    TOP_LOGPROBS_LIMIT,
     associate_targets,
     associate_targets_from_localization,
+    candidate_relative_scores,
     candidate_choice_map,
     choice_for_object_id,
     console_human_resolver,
@@ -22,6 +25,8 @@ from vlm_module import (
     load_localized_objects,
     object_id_for_choice,
     resolve_association,
+    _gemini_provider_result,
+    _openai_provider_result,
 )
 
 
@@ -41,15 +46,27 @@ DETECTIONS = [
 ]
 
 
-def provider_result(choice="A", log_probability=math.log(0.9)):
+def provider_result(
+    choice="A",
+    log_probability=math.log(0.9),
+    top_logprobs=None,
+    token_logprobs=None,
+):
     return {
         "provider": "test",
         "model": "test-vlm",
         "generated_text": choice,
-        "token_logprobs": [
-            {"token": choice, "log_probability": log_probability}
+        "token_logprobs": token_logprobs
+        if token_logprobs is not None
+        else [
+            {
+                "token": choice,
+                "log_probability": log_probability,
+                "top_logprobs": top_logprobs or [],
+            }
         ],
         "logprob_error": None,
+        "top_logprob_error": None,
     }
 
 
@@ -66,18 +83,30 @@ class FakeProvider:
         return response
 
 
-def inference(score=0.9, vlm_object_id="object_002", model_choice="B"):
-    return {
-        "target_description": "white gear",
+def inference(score=0.9, vlm_object_id="object_002", choice_label="B"):
+    diagnostics = {
         "provider": "test",
         "model": "test-vlm",
-        "model_choice": model_choice,
-        "vlm_object_id": vlm_object_id,
-        "raw_log_probability": math.log(score) if score is not None else None,
-        "association_score": score,
         "candidate_map": {"A": "object_001", "B": "object_002"},
-        "decision_token_logprobs": [],
-        "logprob_error": None if score is not None else "unavailable",
+        "candidate_distribution_complete": False,
+    }
+    if choice_label is not None:
+        diagnostics["choice_label"] = choice_label
+    if score is not None:
+        diagnostics.update(
+            {
+                "raw_log_probability": math.log(score),
+                "raw_association_likelihood": score,
+                "score_type": "raw_label_likelihood",
+            }
+        )
+    else:
+        diagnostics["logprob_error"] = "unavailable"
+    return {
+        "target_description": "white gear",
+        "vlm_object_id": vlm_object_id,
+        "association_score": score,
+        "diagnostics": diagnostics,
     }
 
 
@@ -114,7 +143,18 @@ class VLMModuleTests(unittest.TestCase):
 
         self.assertEqual(result["final_object_id"], "object_002")
         self.assertEqual(result["resolution"], "vlm_accepted")
-        self.assertFalse(result["human_intervention"])
+        self.assertEqual(
+            set(result),
+            {
+                "target_description",
+                "vlm_object_id",
+                "association_score",
+                "threshold",
+                "final_object_id",
+                "resolution",
+                "diagnostics",
+            },
+        )
 
     def test_low_confidence_association_invokes_human_resolver(self):
         calls = []
@@ -130,7 +170,7 @@ class VLMModuleTests(unittest.TestCase):
         )
 
         self.assertEqual(len(calls), 1)
-        self.assertTrue(result["human_intervention"])
+        self.assertEqual(result["resolution"], "human_confirmed")
 
     def test_human_can_confirm_vlm_selection(self):
         result = resolve_association(
@@ -163,7 +203,7 @@ class VLMModuleTests(unittest.TestCase):
 
         self.assertIsNone(result["final_object_id"])
         self.assertEqual(result["resolution"], "target_not_present")
-        self.assertTrue(result["human_intervention"])
+        self.assertEqual(result["diagnostics"]["target_absence_source"], "human")
 
     def test_confidence_unavailable_defers_to_human(self):
         result = resolve_association(
@@ -181,7 +221,6 @@ class VLMModuleTests(unittest.TestCase):
 
         self.assertIsNone(result["final_object_id"])
         self.assertEqual(result["resolution"], "confidence_unavailable")
-        self.assertTrue(result["requires_human_clarification"])
 
     def test_low_confidence_without_human_resolver_fails_clearly(self):
         with self.assertRaises(HumanClarificationRequired):
@@ -201,6 +240,7 @@ class VLMModuleTests(unittest.TestCase):
             {
                 "visual_prompt_path": "annotated.png",
                 "threshold": 0.75,
+                "candidate_object_ids": ["object_001", "object_002"],
             }
         )
         output = io.StringIO()
@@ -217,13 +257,13 @@ class VLMModuleTests(unittest.TestCase):
 
     def test_high_confidence_none_choice_reports_target_not_present(self):
         result = resolve_association(
-            inference(score=0.9, vlm_object_id=None, model_choice="N"),
+            inference(score=0.9, vlm_object_id=None, choice_label="N"),
             threshold=0.75,
         )
 
         self.assertIsNone(result["final_object_id"])
         self.assertEqual(result["resolution"], "target_not_present")
-        self.assertFalse(result["requires_human_clarification"])
+        self.assertEqual(result["diagnostics"]["target_absence_source"], "vlm")
 
     def test_cad_retrieval_does_not_run_for_null_final_object_id(self):
         calls = []
@@ -265,6 +305,10 @@ class VLMModuleTests(unittest.TestCase):
                     {
                         "target_description": "white gear",
                         "final_object_id": "object_002",
+                        "diagnostics": {
+                            "provider": "ignored-by-cad",
+                            "choice_label": "B",
+                        },
                     }
                 ],
                 localization_payload={
@@ -316,7 +360,7 @@ class VLMModuleTests(unittest.TestCase):
         )
         self.assertEqual(len(provider.prompts), 2)
 
-    def test_multi_token_decision_likelihood_uses_logprobability_sum(self):
+    def test_pure_leading_whitespace_does_not_affect_decision_likelihood(self):
         tokens, raw_log_probability = decision_sequence_log_probability(
             "A",
             [
@@ -326,9 +370,261 @@ class VLMModuleTests(unittest.TestCase):
             ],
         )
 
-        self.assertEqual([item["token"] for item in tokens], ["\n", "A"])
-        self.assertAlmostEqual(raw_log_probability, -0.3)
-        self.assertAlmostEqual(math.exp(raw_log_probability), math.exp(-0.3))
+        self.assertEqual([item["token"] for item in tokens], ["A"])
+        self.assertAlmostEqual(raw_log_probability, -0.2)
+
+    def test_selected_label_logprob_is_extracted_without_trailing_text(self):
+        tokens, raw_log_probability = decision_sequence_log_probability(
+            "B",
+            [
+                {"token": " B", "log_probability": -0.25},
+                {"token": ".", "log_probability": -3.0},
+            ],
+        )
+
+        self.assertEqual([item["token"] for item in tokens], [" B"])
+        self.assertAlmostEqual(raw_log_probability, -0.25)
+
+    def test_inference_ignores_punctuation_after_identified_label(self):
+        provider = FakeProvider(
+            provider_result(
+                "A.",
+                token_logprobs=[
+                    {"token": "A", "log_probability": -0.2},
+                    {"token": ".", "log_probability": -3.0},
+                ],
+            )
+        )
+
+        result = infer_target_association(
+            "white gear",
+            "annotated.png",
+            DETECTIONS,
+            provider=provider,
+        )
+
+        self.assertEqual(result["vlm_object_id"], "object_001")
+        self.assertAlmostEqual(result["association_score"], math.exp(-0.2))
+        self.assertAlmostEqual(
+            result["diagnostics"]["raw_log_probability"],
+            -0.2,
+        )
+
+    def test_multi_token_decision_likelihood_uses_only_decision_tokens(self):
+        tokens, raw_log_probability = decision_sequence_log_probability(
+            "AB",
+            [
+                {"token": "\n", "log_probability": -0.1},
+                {"token": "A", "log_probability": -0.2},
+                {"token": "B", "log_probability": -0.3},
+                {"token": "!", "log_probability": -4.0},
+            ],
+        )
+
+        self.assertEqual([item["token"] for item in tokens], ["A", "B"])
+        self.assertAlmostEqual(raw_log_probability, -0.5)
+
+    def test_candidate_relative_distribution_requires_every_valid_label(self):
+        choice_map = {"A": "object_001", "B": "object_002"}
+        decision_tokens = [
+            {
+                "token": "A",
+                "log_probability": math.log(0.7),
+                "top_logprobs": [
+                    {"token": "A", "log_probability": math.log(0.7)},
+                    {"token": " B", "log_probability": math.log(0.2)},
+                    {"token": "N", "log_probability": math.log(0.1)},
+                ],
+            }
+        ]
+
+        available, scores, margin = candidate_relative_scores(
+            choice_map,
+            decision_tokens,
+        )
+
+        self.assertEqual(set(available), {"A", "B", "N"})
+        self.assertAlmostEqual(scores["object_001"], 0.7)
+        self.assertAlmostEqual(scores["object_002"], 0.2)
+        self.assertAlmostEqual(scores["none"], 0.1)
+        self.assertAlmostEqual(margin, 0.5)
+
+    def test_incomplete_top_logprobs_do_not_fabricate_distribution(self):
+        choice_map = {"A": "object_001", "B": "object_002"}
+        available, scores, margin = candidate_relative_scores(
+            choice_map,
+            [
+                {
+                    "token": "A",
+                    "log_probability": math.log(0.7),
+                    "top_logprobs": [
+                        {"token": "A", "log_probability": math.log(0.7)},
+                        {"token": "B", "log_probability": math.log(0.2)},
+                    ],
+                }
+            ],
+        )
+
+        self.assertEqual(set(available), {"A", "B"})
+        self.assertIsNone(scores)
+        self.assertIsNone(margin)
+
+    def test_complete_distribution_drives_score_and_records_score_type(self):
+        provider = FakeProvider(
+            provider_result(
+                "A",
+                math.log(0.7),
+                top_logprobs=[
+                    {"token": "A", "log_probability": math.log(0.7)},
+                    {"token": "B", "log_probability": math.log(0.2)},
+                    {"token": "N", "log_probability": math.log(0.1)},
+                ],
+            )
+        )
+
+        result = infer_target_association(
+            "white gear",
+            "annotated.png",
+            DETECTIONS,
+            provider=provider,
+        )
+
+        self.assertAlmostEqual(result["association_score"], 0.7)
+        diagnostics = result["diagnostics"]
+        self.assertEqual(diagnostics["score_type"], "candidate_normalized")
+        self.assertAlmostEqual(diagnostics["association_margin"], 0.5)
+
+    def test_incomplete_distribution_falls_back_to_raw_label_likelihood(self):
+        provider = FakeProvider(
+            provider_result(
+                "A",
+                math.log(0.7),
+                top_logprobs=[
+                    {"token": "A", "log_probability": math.log(0.7)},
+                    {"token": "B", "log_probability": math.log(0.2)},
+                ],
+            )
+        )
+
+        result = infer_target_association(
+            "white gear",
+            "annotated.png",
+            DETECTIONS,
+            provider=provider,
+        )
+
+        self.assertAlmostEqual(result["association_score"], 0.7)
+        diagnostics = result["diagnostics"]
+        self.assertFalse(diagnostics["candidate_distribution_complete"])
+        self.assertNotIn("candidate_scores", diagnostics)
+        self.assertEqual(diagnostics["score_type"], "raw_label_likelihood")
+
+    def test_openai_parser_reads_actual_top_logprob_shape(self):
+        response = SimpleNamespace(
+            model="gpt-4.1-mini-2025-04-14",
+            choices=[
+                SimpleNamespace(
+                    message=SimpleNamespace(content="A"),
+                    logprobs=SimpleNamespace(
+                        content=[
+                            SimpleNamespace(
+                                token="A",
+                                logprob=-0.1,
+                                top_logprobs=[
+                                    SimpleNamespace(token="A", logprob=-0.1),
+                                    SimpleNamespace(token="B", logprob=-1.2),
+                                ],
+                            )
+                        ]
+                    ),
+                )
+            ],
+        )
+
+        parsed = _openai_provider_result(response, "gpt-4.1-mini")
+
+        self.assertEqual(parsed["token_logprobs"][0]["token"], "A")
+        self.assertEqual(
+            parsed["token_logprobs"][0]["top_logprobs"][1],
+            {"token": "B", "log_probability": -1.2},
+        )
+
+    def test_openai_provider_requests_maximum_top_logprobs(self):
+        calls = []
+        response = SimpleNamespace(
+            model="gpt-4.1-mini-2025-04-14",
+            choices=[
+                SimpleNamespace(
+                    message=SimpleNamespace(content="A"),
+                    logprobs=SimpleNamespace(
+                        content=[
+                            SimpleNamespace(
+                                token="A",
+                                logprob=-0.1,
+                                top_logprobs=[],
+                            )
+                        ]
+                    ),
+                )
+            ],
+        )
+
+        def create(**kwargs):
+            calls.append(kwargs)
+            return response
+
+        provider = object.__new__(OpenAIVLM)
+        provider.client = SimpleNamespace(
+            chat=SimpleNamespace(completions=SimpleNamespace(create=create))
+        )
+        provider.model_name = "gpt-4.1-mini"
+        provider._logprobs_supported = None
+        provider._top_logprobs_supported = None
+        provider._logprob_error = None
+        provider._top_logprob_error = None
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            image_path = Path(temporary_directory) / "image.png"
+            image_path.write_bytes(b"test-image")
+            provider.associate(image_path, "Choose A or N")
+
+        self.assertTrue(calls[0]["logprobs"])
+        self.assertEqual(calls[0]["top_logprobs"], TOP_LOGPROBS_LIMIT)
+
+    def test_gemini_parser_reads_actual_top_candidate_shape(self):
+        response = SimpleNamespace(
+            text="A",
+            candidates=[
+                SimpleNamespace(
+                    logprobs_result=SimpleNamespace(
+                        chosen_candidates=[
+                            SimpleNamespace(token="A", log_probability=-0.1)
+                        ],
+                        top_candidates=[
+                            SimpleNamespace(
+                                candidates=[
+                                    SimpleNamespace(
+                                        token="A",
+                                        log_probability=-0.1,
+                                    ),
+                                    SimpleNamespace(
+                                        token="N",
+                                        log_probability=-2.0,
+                                    ),
+                                ]
+                            )
+                        ],
+                    )
+                )
+            ],
+        )
+
+        parsed = _gemini_provider_result(response, "gemini-test")
+
+        self.assertEqual(parsed["token_logprobs"][0]["token"], "A")
+        self.assertEqual(
+            parsed["token_logprobs"][0]["top_logprobs"][1],
+            {"token": "N", "log_probability": -2.0},
+        )
 
     def test_provider_without_logprobs_never_gets_fake_confidence(self):
         provider = FakeProvider(
@@ -348,8 +644,11 @@ class VLMModuleTests(unittest.TestCase):
         )
 
         self.assertEqual(result["vlm_object_id"], "object_001")
-        self.assertIsNone(result["raw_log_probability"])
         self.assertIsNone(result["association_score"])
+        diagnostics = result["diagnostics"]
+        self.assertNotIn("raw_log_probability", diagnostics)
+        self.assertNotIn("score_type", diagnostics)
+        self.assertEqual(diagnostics["logprob_error"], "unsupported")
 
     def test_provider_failure_never_creates_association_result(self):
         provider = FakeProvider(RuntimeError("provider unavailable"))
@@ -386,21 +685,30 @@ class VLMModuleTests(unittest.TestCase):
                 threshold=0.75,
                 provider=FakeProvider(provider_result("A")),
             )
-            result = json.loads(output_path.read_text(encoding="utf-8"))["associations"][0]
+            saved = json.loads(output_path.read_text(encoding="utf-8"))
+            result = saved["associations"][0]
 
-        expected = {
-            "target_description",
-            "provider",
-            "model",
-            "vlm_object_id",
-            "raw_log_probability",
-            "association_score",
-            "threshold",
-            "final_object_id",
-            "resolution",
-            "human_intervention",
-        }
-        self.assertTrue(expected.issubset(result))
+        self.assertEqual(saved["schema_version"], 3)
+        self.assertEqual(
+            set(result),
+            {
+                "target_description",
+                "vlm_object_id",
+                "association_score",
+                "threshold",
+                "final_object_id",
+                "resolution",
+                "diagnostics",
+            },
+        )
+        diagnostics = result["diagnostics"]
+        self.assertEqual(diagnostics["provider"], "test")
+        self.assertEqual(diagnostics["model"], "test-vlm")
+        self.assertAlmostEqual(diagnostics["raw_log_probability"], math.log(0.9))
+        self.assertEqual(diagnostics["score_type"], "raw_label_likelihood")
+        self.assertNotIn("model_output", diagnostics)
+        self.assertNotIn("model_choice", diagnostics)
+        self.assertNotIn("decision_token_logprobs", diagnostics)
 
     def test_localized_prompt_keeps_depth_derived_geometry(self):
         localization = {

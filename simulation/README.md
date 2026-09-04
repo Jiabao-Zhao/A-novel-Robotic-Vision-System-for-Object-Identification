@@ -268,19 +268,23 @@ are not overwritten. This simulation-only controller maps the registered
 OSC pose controller; it does not alter the physical RealSense/UR5e path.
 
 The VLM response is a compact choice label mapped deterministically back to an
-`object_id`. Its association score is `exp(sum(decision token logprobs))`; this
-is a raw response likelihood, not a calibrated correctness probability. A
-provisional threshold of 0.75 controls autonomous acceptance versus human
-clarification and must be calibrated in later experiments. Both paths produce
-the same `final_object_id` field before CAD retrieval. A `none` decision leaves
-`final_object_id` null and stops CAD retrieval for that target.
+`object_id`. When provider top-logprob data contains every valid choice label,
+the association score is normalized over those labels. Otherwise it falls back
+to `exp(sum(decision-bearing token logprobs))`, without counting standalone
+formatting tokens. The saved diagnostics identify the score type. Neither score
+is a calibrated correctness probability. The provisional threshold of 0.75
+controls autonomous acceptance versus human clarification and must be calibrated
+on held-out experiments. Both paths produce the same `final_object_id` field
+before CAD retrieval. A `none` decision leaves `final_object_id` null and stops
+CAD retrieval for that target.
 
 With the locally tested Google Gen AI 2.21.0 Developer API,
 `gemini-2.5-flash` rejects `response_logprobs` as not enabled. The Gemini
 provider therefore preserves its label with a null score and defers to a human;
 it never fabricates confidence. The locally tested OpenAI 3.7.0 Chat
-Completions client returned chosen-token log probabilities for
-`gpt-4.1-mini-2025-04-14` with image input.
+Completions client and official API schema expose up to 20 top-token alternatives
+per output position. Candidate-normalized scores are emitted only when those
+alternatives cover every valid localized-object label plus `N`.
 
 ## SmolVLA baseline and matched comparison
 

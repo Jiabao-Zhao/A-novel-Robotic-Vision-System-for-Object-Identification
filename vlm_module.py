@@ -12,11 +12,21 @@ from prompt import _vlm_prompt
 
 
 NONE_CHOICE = "N"
+# Development-only gate. Calibrate later on held-out data; callers may supply a
+# provider-specific threshold without changing the association implementation.
 PROVISIONAL_ASSOCIATION_THRESHOLD = 0.75
+TOP_LOGPROBS_LIMIT = 20
 SCORE_SEMANTICS = (
-    "The association score is the likelihood of the generated decision-label "
-    "sequence under the provider model and prompt. It is not a calibrated "
-    "probability that the object identity is correct."
+    "The association score is candidate-normalized only when every valid "
+    "choice label is available in provider top-logprob data; otherwise it is "
+    "the likelihood of the generated decision-label sequence over the model's "
+    "full vocabulary. Neither score is a calibrated probability of correct "
+    "object identity."
+)
+THRESHOLD_NOTE = (
+    "The threshold is provisional. Calibrate it on held-out data using "
+    "autonomous coverage, autonomous accuracy, human intervention rate, and "
+    "false autonomous acceptance rate."
 )
 
 
@@ -31,7 +41,9 @@ class GeminiVLM:
         self.client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
         self.model_name = os.environ.get("GEMINI_VLM_MODEL", "gemini-2.5-flash")
         self._logprobs_supported = None
+        self._top_logprobs_supported = None
         self._logprob_error = None
+        self._top_logprob_error = None
 
     def associate(self, image_path, prompt):
         from google.genai import types
@@ -44,22 +56,58 @@ class GeminiVLM:
         common_config = {"temperature": 0, "max_output_tokens": 64}
 
         if self._logprobs_supported is not False:
+            request_top_logprobs = self._top_logprobs_supported is not False
+            logprob_config = {
+                "response_logprobs": True,
+                **common_config,
+            }
+            if request_top_logprobs:
+                logprob_config["logprobs"] = TOP_LOGPROBS_LIMIT
             try:
                 response = self.client.models.generate_content(
                     model=self.model_name,
                     contents=contents,
-                    config=types.GenerateContentConfig(
-                        response_logprobs=True,
-                        **common_config,
-                    ),
+                    config=types.GenerateContentConfig(**logprob_config),
                 )
-                self._logprobs_supported = True
-                return _gemini_provider_result(response, self.model_name)
             except Exception as error:
                 if not _logprobs_unavailable(error):
                     raise
-                self._logprobs_supported = False
-                self._logprob_error = str(error)
+                if request_top_logprobs:
+                    self._top_logprobs_supported = False
+                    self._top_logprob_error = str(error)
+                    try:
+                        response = self.client.models.generate_content(
+                            model=self.model_name,
+                            contents=contents,
+                            config=types.GenerateContentConfig(
+                                response_logprobs=True,
+                                **common_config,
+                            ),
+                        )
+                    except Exception as chosen_error:
+                        if not _logprobs_unavailable(chosen_error):
+                            raise
+                        self._logprobs_supported = False
+                        self._logprob_error = str(chosen_error)
+                    else:
+                        self._logprobs_supported = True
+                        return _gemini_provider_result(
+                            response,
+                            self.model_name,
+                            top_logprob_error=self._top_logprob_error,
+                        )
+                else:
+                    self._logprobs_supported = False
+                    self._logprob_error = str(error)
+            else:
+                self._logprobs_supported = True
+                if request_top_logprobs:
+                    self._top_logprobs_supported = True
+                return _gemini_provider_result(
+                    response,
+                    self.model_name,
+                    top_logprob_error=self._top_logprob_error,
+                )
 
         response = self.client.models.generate_content(
             model=self.model_name,
@@ -81,7 +129,9 @@ class OpenAIVLM:
         self.client = OpenAI()
         self.model_name = os.environ.get("OPENAI_VLM_MODEL", "gpt-4.1-mini")
         self._logprobs_supported = None
+        self._top_logprobs_supported = None
         self._logprob_error = None
+        self._top_logprob_error = None
 
     def associate(self, image_path, prompt):
         image_b64 = base64.b64encode(Path(image_path).read_bytes()).decode("ascii")
@@ -114,18 +164,50 @@ class OpenAIVLM:
         }
 
         if self._logprobs_supported is not False:
+            request_top_logprobs = self._top_logprobs_supported is not False
+            logprob_request = {"logprobs": True}
+            if request_top_logprobs:
+                logprob_request["top_logprobs"] = TOP_LOGPROBS_LIMIT
             try:
                 response = self.client.chat.completions.create(
-                    logprobs=True,
+                    **logprob_request,
                     **request,
                 )
-                self._logprobs_supported = True
-                return _openai_provider_result(response, self.model_name)
             except Exception as error:
                 if not _logprobs_unavailable(error):
                     raise
-                self._logprobs_supported = False
-                self._logprob_error = str(error)
+                if request_top_logprobs:
+                    self._top_logprobs_supported = False
+                    self._top_logprob_error = str(error)
+                    try:
+                        response = self.client.chat.completions.create(
+                            logprobs=True,
+                            **request,
+                        )
+                    except Exception as chosen_error:
+                        if not _logprobs_unavailable(chosen_error):
+                            raise
+                        self._logprobs_supported = False
+                        self._logprob_error = str(chosen_error)
+                    else:
+                        self._logprobs_supported = True
+                        return _openai_provider_result(
+                            response,
+                            self.model_name,
+                            top_logprob_error=self._top_logprob_error,
+                        )
+                else:
+                    self._logprobs_supported = False
+                    self._logprob_error = str(error)
+            else:
+                self._logprobs_supported = True
+                if request_top_logprobs:
+                    self._top_logprobs_supported = True
+                return _openai_provider_result(
+                    response,
+                    self.model_name,
+                    top_logprob_error=self._top_logprob_error,
+                )
 
         response = self.client.chat.completions.create(**request)
         return _openai_provider_result(
@@ -192,9 +274,10 @@ def associate_targets_from_localization(
     output_path.write_text(
         json.dumps(
             {
-                "schema_version": 2,
+                "schema_version": 3,
                 "visual_prompt_path": str(image_path),
                 "score_semantics": SCORE_SEMANTICS,
+                "threshold_note": THRESHOLD_NOTE,
                 "associations": results,
             },
             indent=2,
@@ -244,8 +327,12 @@ def associate_target(
         detections=detections,
         provider=provider,
     )
-    inference["visual_prompt_path"] = str(image_path)
-    return resolve_association(inference, threshold, human_resolver)
+    return resolve_association(
+        inference,
+        threshold,
+        human_resolver,
+        visual_prompt_path=str(image_path),
+    )
 
 
 def infer_target_association(target_description, image_path, detections, provider=None):
@@ -255,60 +342,102 @@ def infer_target_association(target_description, image_path, detections, provide
     active_provider = GeminiThenOpenAI() if provider is None else provider
     provider_result = active_provider.associate(image_path, prompt)
     generated_text = str(provider_result.get("generated_text") or "")
-    model_choice = parse_model_choice(generated_text, choice_map)
+    choice_label = parse_model_choice(generated_text, choice_map)
     decision_tokens, raw_log_probability = decision_sequence_log_probability(
-        model_choice,
+        choice_label,
         provider_result.get("token_logprobs") or [],
     )
-    association_score = (
+    raw_association_likelihood = (
         math.exp(raw_log_probability)
         if raw_log_probability is not None
         else None
     )
+    choice_log_probabilities, candidate_scores, association_margin = (
+        candidate_relative_scores(choice_map, decision_tokens)
+    )
+    selected_score_key = (
+        "none"
+        if choice_label == NONE_CHOICE
+        else object_id_for_choice(choice_map, choice_label)
+    )
+    if candidate_scores is not None and selected_score_key in candidate_scores:
+        association_score = candidate_scores[selected_score_key]
+        score_type = "candidate_normalized"
+    else:
+        association_score = raw_association_likelihood
+        score_type = (
+            "raw_label_likelihood"
+            if raw_association_likelihood is not None
+            else None
+        )
+
+    diagnostics = {
+        "candidate_map": choice_map,
+        "candidate_distribution_complete": candidate_scores is not None,
+    }
+    for key in ("provider", "model"):
+        value = provider_result.get(key)
+        if value:
+            diagnostics[key] = value
+    if choice_label is not None:
+        diagnostics["choice_label"] = choice_label
+    elif generated_text:
+        diagnostics["unparsed_output"] = generated_text
+    if raw_log_probability is not None:
+        diagnostics["raw_log_probability"] = raw_log_probability
+        diagnostics["raw_association_likelihood"] = raw_association_likelihood
+    if score_type is not None:
+        diagnostics["score_type"] = score_type
+    if choice_log_probabilities:
+        diagnostics["available_choice_log_probabilities"] = choice_log_probabilities
+    if candidate_scores is not None:
+        diagnostics["candidate_scores"] = candidate_scores
+        diagnostics["association_margin"] = association_margin
+    for key in ("logprob_error", "top_logprob_error"):
+        value = provider_result.get(key)
+        if value:
+            diagnostics[key] = value
 
     return {
         "target_description": str(target_description).strip(),
-        "provider": provider_result.get("provider"),
-        "model": provider_result.get("model"),
-        "model_output": generated_text,
-        "model_choice": model_choice,
-        "vlm_object_id": object_id_for_choice(choice_map, model_choice),
-        "raw_log_probability": raw_log_probability,
+        "vlm_object_id": object_id_for_choice(choice_map, choice_label),
         "association_score": association_score,
-        "decision_token_logprobs": decision_tokens,
-        "logprob_error": provider_result.get("logprob_error"),
-        "candidate_map": choice_map,
+        "diagnostics": diagnostics,
     }
 
 
-def resolve_association(vlm_result, threshold, human_resolver=None):
+def resolve_association(
+    vlm_result,
+    threshold,
+    human_resolver=None,
+    visual_prompt_path=None,
+):
     threshold = float(threshold)
     if not 0.0 <= threshold <= 1.0:
         raise ValueError("The provisional association threshold must be between 0 and 1.")
 
-    result = dict(vlm_result)
-    result.update(
-        {
-            "threshold": threshold,
-            "final_object_id": None,
-            "resolution": None,
-            "requires_human_clarification": False,
-            "human_intervention": False,
-            "human_selected_object_id": None,
-        }
-    )
+    diagnostics = dict(vlm_result.get("diagnostics") or {})
+    result = {
+        "target_description": vlm_result.get("target_description"),
+        "vlm_object_id": vlm_result.get("vlm_object_id"),
+        "association_score": vlm_result.get("association_score"),
+        "threshold": threshold,
+        "final_object_id": None,
+        "diagnostics": diagnostics,
+    }
     score = result.get("association_score")
-    model_choice = result.get("model_choice")
+    choice_label = diagnostics.get("choice_label")
     vlm_object_id = result.get("vlm_object_id")
 
-    if model_choice is not None and score is not None and score >= threshold:
+    if choice_label is not None and score is not None and score >= threshold:
         result["final_object_id"] = vlm_object_id
         result["resolution"] = (
-            "target_not_present" if model_choice == NONE_CHOICE else "vlm_accepted"
+            "target_not_present" if choice_label == NONE_CHOICE else "vlm_accepted"
         )
+        if choice_label == NONE_CHOICE:
+            diagnostics["target_absence_source"] = "vlm"
         return result
 
-    result["requires_human_clarification"] = True
     if human_resolver is None:
         if score is None:
             result["resolution"] = "confidence_unavailable"
@@ -318,8 +447,13 @@ def resolve_association(vlm_result, threshold, human_resolver=None):
             f"{threshold:.6f} for target {result.get('target_description')!r}."
         )
 
-    human_selection = human_resolver(dict(result))
-    valid_object_ids = set(result.get("candidate_map", {}).values())
+    candidate_map = diagnostics.get("candidate_map") or {}
+    valid_object_ids = set(candidate_map.values())
+    clarification = dict(result)
+    clarification["candidate_object_ids"] = list(candidate_map.values())
+    if visual_prompt_path is not None:
+        clarification["visual_prompt_path"] = str(visual_prompt_path)
+    human_selection = human_resolver(clarification)
     if human_selection is None or str(human_selection).strip().lower() == "none":
         human_object_id = None
     else:
@@ -331,11 +465,9 @@ def resolve_association(vlm_result, threshold, human_resolver=None):
             )
 
     result["final_object_id"] = human_object_id
-    result["human_selected_object_id"] = human_object_id
-    result["human_intervention"] = True
-    result["requires_human_clarification"] = False
     if human_object_id is None:
         result["resolution"] = "target_not_present"
+        diagnostics["target_absence_source"] = "human"
     elif human_object_id == vlm_object_id:
         result["resolution"] = "human_confirmed"
     else:
@@ -344,7 +476,7 @@ def resolve_association(vlm_result, threshold, human_resolver=None):
 
 
 def console_human_resolver(association):
-    candidate_ids = list(association.get("candidate_map", {}).values())
+    candidate_ids = association.get("candidate_object_ids") or []
     print(f"Visual prompt: {association.get('visual_prompt_path')}")
     print(f"Target: {association.get('target_description')}")
     print("VLM prediction:")
@@ -405,13 +537,20 @@ def candidate_prompt_records(detections, choice_map):
 
 
 def parse_model_choice(generated_text, choice_map):
-    choice = str(generated_text or "").strip().upper()
+    output = str(generated_text or "").strip().upper()
     valid_choices = set(choice_map) | {NONE_CHOICE}
-    return choice if choice in valid_choices else None
+    if output in valid_choices:
+        return output
+    for choice in sorted(valid_choices, key=len, reverse=True):
+        if output.startswith(choice) and len(output) > len(choice):
+            next_character = output[len(choice)]
+            if next_character.isspace() or next_character in string.punctuation:
+                return choice
+    return None
 
 
-def decision_sequence_log_probability(model_choice, token_logprobs):
-    if model_choice is None:
+def decision_sequence_log_probability(choice_label, token_logprobs):
+    if choice_label is None:
         return [], None
 
     consumed = []
@@ -419,23 +558,81 @@ def decision_sequence_log_probability(model_choice, token_logprobs):
     raw_log_probability = 0.0
     for record in token_logprobs:
         token = str(record.get("token") or "")
+        if not consumed and not token.strip():
+            continue
         log_probability = record.get("log_probability")
         if log_probability is None or not math.isfinite(float(log_probability)):
             return [], None
-        consumed.append(
-            {
-                "token": token,
-                "log_probability": float(log_probability),
-            }
-        )
+        decision_record = {
+            "token": token,
+            "log_probability": float(log_probability),
+        }
+        top_logprobs = record.get("top_logprobs") or []
+        if top_logprobs:
+            decision_record["top_logprobs"] = top_logprobs
+        consumed.append(decision_record)
         generated += token
         raw_log_probability += float(log_probability)
         stripped = generated.strip().upper()
-        if stripped == model_choice:
+        if stripped == choice_label:
             return consumed, raw_log_probability
-        if stripped and not model_choice.startswith(stripped):
+        if stripped and not choice_label.startswith(stripped):
             return [], None
     return [], None
+
+
+def candidate_relative_scores(choice_map, decision_tokens):
+    """Normalize over valid labels only when every label is in one top-k step."""
+    if len(decision_tokens) != 1:
+        return {}, None, None
+
+    valid_labels = list(choice_map) + [NONE_CHOICE]
+    decision = decision_tokens[0]
+    alternatives = [decision, *(decision.get("top_logprobs") or [])]
+    unique_tokens = {}
+    for alternative in alternatives:
+        token = str(alternative.get("token") or "")
+        log_probability = alternative.get("log_probability")
+        if log_probability is None or not math.isfinite(float(log_probability)):
+            continue
+        normalized_label = token.strip().upper()
+        if normalized_label not in valid_labels:
+            continue
+        token_key = (normalized_label, token)
+        unique_tokens[token_key] = max(
+            float(log_probability),
+            unique_tokens.get(token_key, -math.inf),
+        )
+
+    label_values = {label: [] for label in valid_labels}
+    for (label, _), log_probability in unique_tokens.items():
+        label_values[label].append(log_probability)
+    available_log_probabilities = {
+        label: _logsumexp(values)
+        for label, values in label_values.items()
+        if values
+    }
+    if set(available_log_probabilities) != set(valid_labels):
+        return available_log_probabilities, None, None
+
+    normalizer = _logsumexp(list(available_log_probabilities.values()))
+    label_scores = {
+        label: math.exp(log_probability - normalizer)
+        for label, log_probability in available_log_probabilities.items()
+    }
+    candidate_scores = {
+        object_id: label_scores[label]
+        for label, object_id in choice_map.items()
+    }
+    candidate_scores["none"] = label_scores[NONE_CHOICE]
+    ordered_scores = sorted(candidate_scores.values(), reverse=True)
+    association_margin = ordered_scores[0] - ordered_scores[1]
+    return available_log_probabilities, candidate_scores, association_margin
+
+
+def _logsumexp(values):
+    maximum = max(values)
+    return maximum + math.log(sum(math.exp(value - maximum) for value in values))
 
 
 def create_roi_contact_sheet(
@@ -547,40 +744,88 @@ def load_localized_objects(localization_path):
     return detections
 
 
-def _gemini_provider_result(response, model_name, logprob_error=None):
+def _gemini_provider_result(
+    response,
+    model_name,
+    logprob_error=None,
+    top_logprob_error=None,
+):
     candidate = response.candidates[0] if response.candidates else None
     logprobs_result = candidate.logprobs_result if candidate is not None else None
     chosen = logprobs_result.chosen_candidates if logprobs_result is not None else []
-    token_logprobs = [
-        {"token": item.token, "log_probability": item.log_probability}
-        for item in (chosen or [])
-    ]
+    top_steps = logprobs_result.top_candidates if logprobs_result is not None else []
+    token_logprobs = []
+    for index, item in enumerate(chosen or []):
+        record = {
+            "token": item.token,
+            "log_probability": item.log_probability,
+        }
+        if index < len(top_steps or []):
+            alternatives = top_steps[index].candidates or []
+            record["top_logprobs"] = [
+                {
+                    "token": alternative.token,
+                    "log_probability": alternative.log_probability,
+                }
+                for alternative in alternatives
+            ]
+        token_logprobs.append(record)
     if not token_logprobs and logprob_error is None:
         logprob_error = "The Gemini response did not include chosen-token log probabilities."
+    if (
+        token_logprobs
+        and not any(record.get("top_logprobs") for record in token_logprobs)
+        and top_logprob_error is None
+    ):
+        top_logprob_error = "The Gemini response did not include top-token alternatives."
     return {
         "provider": "gemini",
         "model": model_name,
         "generated_text": response.text or "",
         "token_logprobs": token_logprobs,
         "logprob_error": logprob_error,
+        "top_logprob_error": top_logprob_error,
     }
 
 
-def _openai_provider_result(response, requested_model, logprob_error=None):
+def _openai_provider_result(
+    response,
+    requested_model,
+    logprob_error=None,
+    top_logprob_error=None,
+):
     choice = response.choices[0]
     content_logprobs = choice.logprobs.content if choice.logprobs is not None else []
-    token_logprobs = [
-        {"token": item.token, "log_probability": item.logprob}
-        for item in (content_logprobs or [])
-    ]
+    token_logprobs = []
+    for item in content_logprobs or []:
+        token_logprobs.append(
+            {
+                "token": item.token,
+                "log_probability": item.logprob,
+                "top_logprobs": [
+                    {
+                        "token": alternative.token,
+                        "log_probability": alternative.logprob,
+                    }
+                    for alternative in (item.top_logprobs or [])
+                ],
+            }
+        )
     if not token_logprobs and logprob_error is None:
         logprob_error = "The OpenAI response did not include output token log probabilities."
+    if (
+        token_logprobs
+        and not any(record.get("top_logprobs") for record in token_logprobs)
+        and top_logprob_error is None
+    ):
+        top_logprob_error = "The OpenAI response did not include top-token alternatives."
     return {
         "provider": "openai",
         "model": response.model or requested_model,
         "generated_text": choice.message.content or "",
         "token_logprobs": token_logprobs,
         "logprob_error": logprob_error,
+        "top_logprob_error": top_logprob_error,
     }
 
 
