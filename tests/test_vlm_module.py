@@ -24,7 +24,6 @@ from vlm_module import (
     load_localized_objects,
     object_id_for_choice,
     resolve_association,
-    _gemini_provider_result,
     _openai_provider_result,
 )
 
@@ -609,6 +608,19 @@ class VLMModuleTests(unittest.TestCase):
             {"token": "B", "log_probability": -1.2},
         )
 
+    def test_openai_is_the_default_association_provider(self):
+        with patch("vlm_module.OpenAIVLM") as provider_class:
+            provider_class.return_value.associate.return_value = provider_result("A")
+            result = infer_target_association(
+                "white gear",
+                "annotated.png",
+                DETECTIONS,
+            )
+
+        provider_class.assert_called_once_with()
+        self.assertEqual(result["diagnostics"]["provider"], "test")
+        self.assertEqual(result["vlm_object_id"], "object_001")
+
     def test_openai_provider_requests_maximum_top_logprobs(self):
         calls = []
         response = SimpleNamespace(
@@ -649,42 +661,6 @@ class VLMModuleTests(unittest.TestCase):
 
         self.assertTrue(calls[0]["logprobs"])
         self.assertEqual(calls[0]["top_logprobs"], TOP_LOGPROBS_LIMIT)
-
-    def test_gemini_parser_reads_actual_top_candidate_shape(self):
-        response = SimpleNamespace(
-            text="A",
-            candidates=[
-                SimpleNamespace(
-                    logprobs_result=SimpleNamespace(
-                        chosen_candidates=[
-                            SimpleNamespace(token="A", log_probability=-0.1)
-                        ],
-                        top_candidates=[
-                            SimpleNamespace(
-                                candidates=[
-                                    SimpleNamespace(
-                                        token="A",
-                                        log_probability=-0.1,
-                                    ),
-                                    SimpleNamespace(
-                                        token="N",
-                                        log_probability=-2.0,
-                                    ),
-                                ]
-                            )
-                        ],
-                    )
-                )
-            ],
-        )
-
-        parsed = _gemini_provider_result(response, "gemini-test")
-
-        self.assertEqual(parsed["token_logprobs"][0]["token"], "A")
-        self.assertEqual(
-            parsed["token_logprobs"][0]["top_logprobs"][1],
-            {"token": "N", "log_probability": -2.0},
-        )
 
     def test_provider_without_logprobs_never_gets_fake_confidence(self):
         provider = FakeProvider(

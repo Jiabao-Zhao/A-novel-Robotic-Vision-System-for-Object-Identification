@@ -32,94 +32,6 @@ THRESHOLD_NOTE = (
 )
 
 
-class GeminiVLM:
-    def __init__(self):
-        from google import genai
-
-        self.client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
-        self.model_name = os.environ.get("GEMINI_VLM_MODEL", "gemini-2.5-flash")
-        self._logprobs_supported = None
-        self._top_logprobs_supported = None
-        self._logprob_error = None
-        self._top_logprob_error = None
-
-    def associate(self, image_path, prompt):
-        from google.genai import types
-
-        image_bytes = Path(image_path).read_bytes()
-        contents = [
-            types.Part.from_bytes(data=image_bytes, mime_type="image/png"),
-            prompt,
-        ]
-        common_config = {"temperature": 0, "max_output_tokens": 64}
-
-        if self._logprobs_supported is not False:
-            request_top_logprobs = self._top_logprobs_supported is not False
-            logprob_config = {
-                "response_logprobs": True,
-                **common_config,
-            }
-            if request_top_logprobs:
-                logprob_config["logprobs"] = TOP_LOGPROBS_LIMIT
-            try:
-                response = self.client.models.generate_content(
-                    model=self.model_name,
-                    contents=contents,
-                    config=types.GenerateContentConfig(**logprob_config),
-                )
-            except Exception as error:
-                if not _logprobs_unavailable(error):
-                    raise
-                if request_top_logprobs:
-                    self._top_logprobs_supported = False
-                    self._top_logprob_error = str(error)
-                    try:
-                        response = self.client.models.generate_content(
-                            model=self.model_name,
-                            contents=contents,
-                            config=types.GenerateContentConfig(
-                                response_logprobs=True,
-                                **common_config,
-                            ),
-                        )
-                    except Exception as chosen_error:
-                        if not _logprobs_unavailable(chosen_error):
-                            raise
-                        self._logprobs_supported = False
-                        self._logprob_error = str(chosen_error)
-                    else:
-                        self._logprobs_supported = True
-                        return _gemini_provider_result(
-                            response,
-                            self.model_name,
-                            top_logprob_error=self._top_logprob_error,
-                        )
-                else:
-                    self._logprobs_supported = False
-                    self._logprob_error = str(error)
-            else:
-                self._logprobs_supported = True
-                if request_top_logprobs:
-                    self._top_logprobs_supported = True
-                return _gemini_provider_result(
-                    response,
-                    self.model_name,
-                    top_logprob_error=self._top_logprob_error,
-                )
-
-        response = self.client.models.generate_content(
-            model=self.model_name,
-            contents=contents,
-            config=types.GenerateContentConfig(**common_config),
-        )
-        return _gemini_provider_result(
-            response,
-            self.model_name,
-            logprob_error=self._logprob_error
-            or "The Gemini response did not include output token log probabilities.",
-        )
-
-
 class OpenAIVLM:
     def __init__(self):
         from openai import OpenAI
@@ -216,36 +128,6 @@ class OpenAIVLM:
         )
 
 
-class GeminiThenOpenAI:
-    """Use Gemini first and instantiate OpenAI only after a Gemini call failure."""
-
-    def __init__(self):
-        self.gemini = None
-        self.gemini_initialization_error = None
-        try:
-            self.gemini = GeminiVLM()
-        except Exception as error:
-            self.gemini_initialization_error = error
-        self.openai = None
-
-    def associate(self, image_path, prompt):
-        gemini_error = self.gemini_initialization_error
-        if self.gemini is not None:
-            try:
-                return self.gemini.associate(image_path, prompt)
-            except Exception as error:
-                gemini_error = error
-        try:
-            if self.openai is None:
-                self.openai = OpenAIVLM()
-            return self.openai.associate(image_path, prompt)
-        except Exception as openai_error:
-            raise RuntimeError(
-                "Gemini VLM failed, then OpenAI VLM failed. "
-                f"Gemini: {gemini_error} | OpenAI: {openai_error}"
-            ) from openai_error
-
-
 def associate_targets_from_localization(
     target_descriptions,
     image_path=Path("outputs/physical/annotation/RGB_point_cloud_roi_annotation.png"),
@@ -297,7 +179,7 @@ def associate_targets(
     if not descriptions or any(not value for value in descriptions):
         raise ValueError("target_descriptions must contain nonempty semantic descriptions.")
 
-    active_provider = GeminiThenOpenAI() if provider is None else provider
+    active_provider = OpenAIVLM() if provider is None else provider
     return [
         associate_target(
             target_description=description,
@@ -337,7 +219,7 @@ def infer_target_association(target_description, image_path, detections, provide
     choice_map = candidate_choice_map(detections)
     prompt_candidates = candidate_prompt_records(detections, choice_map)
     prompt = _vlm_prompt(target_description, prompt_candidates)
-    active_provider = GeminiThenOpenAI() if provider is None else provider
+    active_provider = OpenAIVLM() if provider is None else provider
     provider_result = active_provider.associate(image_path, prompt)
     generated_text = str(provider_result.get("generated_text") or "")
     choice_label = parse_model_choice(generated_text, choice_map)
@@ -735,50 +617,6 @@ def load_localized_objects(localization_path):
             }
         )
     return detections
-
-
-def _gemini_provider_result(
-    response,
-    model_name,
-    logprob_error=None,
-    top_logprob_error=None,
-):
-    candidate = response.candidates[0] if response.candidates else None
-    logprobs_result = candidate.logprobs_result if candidate is not None else None
-    chosen = logprobs_result.chosen_candidates if logprobs_result is not None else []
-    top_steps = logprobs_result.top_candidates if logprobs_result is not None else []
-    token_logprobs = []
-    for index, item in enumerate(chosen or []):
-        record = {
-            "token": item.token,
-            "log_probability": item.log_probability,
-        }
-        if index < len(top_steps or []):
-            alternatives = top_steps[index].candidates or []
-            record["top_logprobs"] = [
-                {
-                    "token": alternative.token,
-                    "log_probability": alternative.log_probability,
-                }
-                for alternative in alternatives
-            ]
-        token_logprobs.append(record)
-    if not token_logprobs and logprob_error is None:
-        logprob_error = "The Gemini response did not include chosen-token log probabilities."
-    if (
-        token_logprobs
-        and not any(record.get("top_logprobs") for record in token_logprobs)
-        and top_logprob_error is None
-    ):
-        top_logprob_error = "The Gemini response did not include top-token alternatives."
-    return {
-        "provider": "gemini",
-        "model": model_name,
-        "generated_text": response.text or "",
-        "token_logprobs": token_logprobs,
-        "logprob_error": logprob_error,
-        "top_logprob_error": top_logprob_error,
-    }
 
 
 def _openai_provider_result(

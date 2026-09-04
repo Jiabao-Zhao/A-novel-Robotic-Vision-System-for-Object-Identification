@@ -13,8 +13,6 @@ import math
 from pathlib import Path
 
 from vlm_module import (
-    GeminiThenOpenAI,
-    GeminiVLM,
     OpenAIVLM,
     infer_target_association,
     load_localized_objects,
@@ -263,16 +261,6 @@ def save_evaluation(records, dataset_split, output_dir):
     return records_path, csv_path, sweep_path
 
 
-def provider_from_name(name):
-    if name == "openai":
-        return OpenAIVLM()
-    if name == "gemini":
-        return GeminiVLM()
-    if name == "auto":
-        return GeminiThenOpenAI()
-    raise ValueError(f"Unknown provider: {name}")
-
-
 def _manifest_relative_path(manifest_directory, value):
     path = Path(value)
     return path.resolve() if path.is_absolute() else (manifest_directory / path).resolve()
@@ -287,7 +275,6 @@ def main():
         description="Evaluate raw VLM association likelihood on saved RGB-D scenes."
     )
     parser.add_argument("manifest", type=Path)
-    parser.add_argument("--provider", choices=("openai", "gemini", "auto"), default="openai")
     parser.add_argument(
         "--output-dir",
         type=Path,
@@ -296,7 +283,7 @@ def main():
     arguments = parser.parse_args()
 
     dataset_split, samples = load_evaluation_manifest(arguments.manifest)
-    records = evaluate_samples(samples, provider_from_name(arguments.provider))
+    records = evaluate_samples(samples, OpenAIVLM())
     records_path, csv_path, sweep_path = save_evaluation(
         records, dataset_split, arguments.output_dir
     )

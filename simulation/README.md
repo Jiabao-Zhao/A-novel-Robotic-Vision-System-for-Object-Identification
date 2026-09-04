@@ -57,7 +57,7 @@ python -m pip install --no-build-isolation "egl-probe==1.0.2" "hf-egl-probe==1.0
 unset CMAKE_POLICY_VERSION_MINIMUM
 
 python -m pip install -e ".[libero,smolvla]"
-python -m pip install open3d google-genai openai
+python -m pip install open3d openai
 python -m pip check
 ```
 
@@ -224,7 +224,7 @@ prior, just as a physical deployment would obtain a model from its CAD library.
 `scripts.libero_task_execution [task_index]` runs one LIBERO-Object basket task;
 omitting the index retains task 7 (milk) as the backward-compatible default. It
 uses the rendered agent-view RGB-D observation, the calibration bridge, the
-existing depth localizer, the repository's Gemini-first/OpenAI-fallback VLM
+existing depth localizer, the repository's OpenAI VLM
 association, target CAD-to-observation alignment, robot proprioception, and
 normalized OSC pose actions. The VLM receives a full-scene plus enlarged-crop
 contact sheet labeled only with localized `object_id` values. It independently
@@ -248,8 +248,7 @@ settling sequence and lets MuJoCo resolve initial support contacts. The CAD pose
 treats the segmented table plane as a hard support constraint and optimizes
 only translation along the plane plus yaw.
 
-Set `GEMINI_API_KEY` and/or `OPENAI_API_KEY` in the WSL process environment
-before running the task.
+Set `OPENAI_API_KEY` in the WSL process environment before running the task.
 
 Each episode saves its perception inputs, localization JSON, enlarged VLM
 visual prompt, independent semantic association results, CAD transforms and aligned/augmented point
@@ -268,22 +267,20 @@ are not overwritten. This simulation-only controller maps the registered
 OSC pose controller; it does not alter the physical RealSense/UR5e path.
 
 The VLM response is a compact choice label mapped deterministically back to an
-`object_id`. When provider top-logprob data contains every valid choice label,
-the association score is normalized over those labels. Otherwise it falls back
-to `exp(sum(decision-bearing token logprobs))`, without counting standalone
-formatting tokens. The saved diagnostics identify the score type. Neither score
-is a calibrated correctness probability. The provisional threshold of 0.75
-controls autonomous acceptance versus human clarification and must be calibrated
-on held-out experiments. Both paths produce the same `final_object_id` field
-before CAD retrieval. A `none` decision leaves `final_object_id` null and stops
-CAD retrieval for that target.
+`object_id`. The association score is always
+`exp(sum(decision-bearing token logprobs))`, without counting standalone
+formatting tokens. It is a raw generated-label likelihood, not a calibrated
+probability of correct object identity. Candidate-normalized scores and their
+margin are optional diagnostics only; they never replace the association score
+or control the gate. The provisional threshold of 0.75 controls autonomous
+acceptance versus human clarification and must be calibrated on held-out
+experiments. Both paths produce the same `final_object_id` field before CAD
+retrieval. A `none` decision leaves `final_object_id` null and stops CAD
+retrieval for that target.
 
-With the locally tested Google Gen AI 2.21.0 Developer API,
-`gemini-2.5-flash` rejects `response_logprobs` as not enabled. The Gemini
-provider therefore preserves its label with a null score and defers to a human;
-it never fabricates confidence. The locally tested OpenAI 3.7.0 Chat
-Completions client and official API schema expose up to 20 top-token alternatives
-per output position. Candidate-normalized scores are emitted only when those
+The locally tested OpenAI Chat Completions endpoint returns the chosen output
+token log probability and up to 20 top-token alternatives for
+`gpt-4.1-mini`. Candidate-normalized scores are emitted only when those
 alternatives cover every valid localized-object label plus `N`.
 
 ## SmolVLA baseline and matched comparison
@@ -374,7 +371,7 @@ python -m scripts.libero_task_execution 1
 ```
 
 This branch sends the generated contact-sheet image and localized candidate
-metadata to the configured Gemini or OpenAI VLM. The VLA branch makes no cloud
+metadata to the configured OpenAI VLM. The VLA branch makes no cloud
 API call. Each new proposed-method image payload requires explicit approval
 before it is sent to an external VLM; do not treat the ten-task proposed sweep
 as an unattended cloud job. Only run the cross-method comparator when both
