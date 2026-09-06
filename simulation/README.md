@@ -1,5 +1,107 @@
 # LIBERO RGB-D bridge
 
+## NIST Task Board #1 custom scene
+
+The custom scene uses the official NIST Task Board #1 STL geometry, a fixed
+384 x 384 x 8.992 mm board on 20 mm standoffs, mounted fixtures, and 20 separate
+movable components beside the board. It retains the LIBERO floor arena, Panda
+arm, agent-view RGB-D camera, and wrist RGB-D camera. This is a perception and
+scene-integration baseline, not a validated NIST assembly benchmark.
+
+Download the official archive once from Windows PowerShell at the repository root:
+
+```powershell
+New-Item -ItemType Directory -Force outputs/simulation/nist_task_board_1/assets
+Invoke-WebRequest -Uri 'https://www.nist.gov/document/taskboard1stlzip' -OutFile 'outputs/simulation/nist_task_board_1/assets/stl.zip' -UserAgent 'Mozilla/5.0'
+```
+
+Then run in the existing WSL virtual environment:
+
+```bash
+cd /mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification
+MUJOCO_GL=egl PYOPENGL_PLATFORM=egl ~/.venvs/lerobot-libero/bin/python -m scripts.capture_nist_task_board
+```
+
+The script saves a 3840 x 3840 PNG, a preview, and calibrated 768 x 768 RGB-D
+observations from both cameras under `outputs/simulation/nist_task_board_1/`.
+Mesh conversion, downloaded assets, and provenance also remain under this
+ignored output directory. Existing LIBERO tasks and results are unchanged.
+`NistTaskBoardEnvironment` exposes the existing sensor/step interface, but has
+no official LIBERO initial-state index or assembly success predicate.
+
+The eight pegs, three gears, four nuts, and five male connectors are free bodies.
+Their layout is a custom parts arrangement, not NIST's official kit tray.
+Board openings are retained using triangular-prism collision geometry; a single
+convex plate collision mesh would incorrectly fill them. Other components use
+convex collision hulls. The board STL retains its supplied pilot holes, and does
+not simulate the drilling/tapping called for in the fabrication instructions.
+Connector seating heights are approximate. Thread engagement, gear meshing,
+connector latches, cables, and insertion tolerances are not validated. Materials
+and component densities are illustrative, not measured physical properties.
+The DSUB male mesh is simplified to fit MuJoCo's 200,000-triangle STL limit.
+
+The board changes the support geometry. The basket-task localization crop and
+single-table-plane assumptions must be revalidated before running automatic
+localization or CAD alignment here. No VLM association, CAD-registration result,
+or robot assembly success is claimed by this capture script.
+
+Sources: [NIST Task Board #1 downloads and description](https://www.nist.gov/el/intelligent-systems-division-73500/robotic-grasping-and-manipulation-assembly/assembly),
+[official STL archive](https://www.nist.gov/document/taskboard1stlzip), and
+[replication instructions](https://www.nist.gov/document/assemblyinstructionsv4docx).
+The generated `assets/provenance.json` records the archive checksum, source
+units, conversion, component dimensions, and limitations. These third-party
+assets are downloaded locally and are not redistributed as repository source.
+
+### Known-hole round-peg pilot
+
+`python -m scripts.run_nist_peg_pilot` runs one episode per method for the
+16 mm round peg. The part pose is unknown to both methods; its semantic target
+description is given. The hole pose is supplied from the scene design, with its
+entrance at world XYZ `(0.074450, -0.004824, 0.028992)` metres and outward axis
+`+Z`. The actual arena floor is at world Z=0; the LIBERO sampler's -25 mm offset
+must not be used as a floor elevation. The plate underside is at Z=20 mm.
+
+The framework uses RGB-D localization of the parts work area, independent VLM
+association, and the selected partial point cloud aligned to the semantic CAD
+prior. It then attempts a grasp, lift, transfer, and straight insertion using
+robot-proprioception feedback. The 0.75 raw-label-likelihood gate is provisional
+and uncalibrated for NIST. A deferral is saved and stops autonomous motion.
+An explicitly confirmed candidate can be continued separately using
+`run_method("framework_human", new_output_dir, confirmed_trial=(source_dir, object_id))`;
+the source and resumed initial-state hashes must match. Human-assisted results
+must not be reported as autonomous recognition success.
+
+The VLA branch uses the cached, pinned SmolVLA LIBERO checkpoint without
+fine-tuning. It receives agent/wrist RGB, 8D robot state, and the same task text
+including numeric hole coordinates. Official LIBERO image rotation, state
+conversion, and checkpoint normalization are retained. This checkpoint has no
+dedicated goal-pose channel; numeric goal following is unvalidated. Failure can
+therefore reflect goal conditioning or control as well as visual recognition.
+The framework uses 768-pixel images and VLA uses its native 256-pixel images.
+This is a diagnostic pilot, not a controlled ranking of the two methods.
+
+Each timestamped run saves videos, action logs, association evidence, CAD
+alignment, and evaluation JSON. Initial simulator states are hash-checked across
+methods. Simulator object poses and contacts are used only by `PegEvaluator`
+for scoring, never to choose a part or generate an action. Stages are bilateral
+target grasp, target lift by at least 15 mm, approach within 10 mm XY of the hole
+while grasped, and insertion. Insertion requires at least 5 mm engagement,
+positive estimated shaft clearance, less than one degree tilt, and five
+consecutive physics/control observations after lifting the correct peg. It is
+a simulation geometry criterion, not NIST's official completion protocol.
+
+The 16.2 mm hole and 16 mm peg provide only 0.1 mm nominal radial clearance.
+Their original dimensions are retained. Peg slip within the gripper, registration
+error, and OSC tracking error can prevent insertion even with an exact hole pose.
+The controller performs no force search or visual re-estimation after grasping.
+This pilot does not validate the other components' insertion physics.
+
+Run its integration and metric checks inside WSL:
+
+```bash
+MUJOCO_GL=egl python -m unittest discover -s tests -p 'test_nist*.py'
+```
+
 This bridge targets Ubuntu 22.04 under WSL2. It uses the current LeRobot
 `libero` optional dependency to install LIBERO, then calls the direct LIBERO
 environment API because the LeRobot Gym wrapper currently does not expose depth

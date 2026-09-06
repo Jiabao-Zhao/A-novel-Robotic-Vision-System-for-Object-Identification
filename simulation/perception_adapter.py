@@ -75,18 +75,21 @@ def mask_depth_to_world_workspace(observation, minimum_xyz_m, maximum_xyz_m):
     return np.where(inside, depth, 0.0).astype(np.float32), inside
 
 
-def run_libero_localization(observation, rgb_path, output_root):
-    """Run the existing point-cloud localizer on one LIBERO observation."""
+def run_libero_localization(observation, rgb_path, output_root, workspace_bounds=None):
+    """Run the existing localizer; optional bounds are in the MuJoCo world frame.
+
+    Other LIBERO arenas place their tables at different world offsets. Callers
+    may translate the fixed crop using arena calibration, never object poses.
+    Default LIBERO-Object behavior and all segmentation settings are unchanged.
+    """
     from point_cloud_localization import PointCloudConfig, PointCloudLocalization
 
     output_root = Path(output_root)
     capture_dir = output_root / "capture"
     capture_dir.mkdir(parents=True, exist_ok=True)
-    workspace_depth, workspace_mask = mask_depth_to_world_workspace(
-        observation,
-        LIBERO_WORKSPACE_MIN_XYZ_M,
-        LIBERO_WORKSPACE_MAX_XYZ_M,
-    )
+    bounds = ((LIBERO_WORKSPACE_MIN_XYZ_M, LIBERO_WORKSPACE_MAX_XYZ_M)
+              if workspace_bounds is None else workspace_bounds)
+    workspace_depth, workspace_mask = mask_depth_to_world_workspace(observation, *bounds)
     workspace_depth_path = capture_dir / "workspace_depth.npy"
     np.save(workspace_depth_path, workspace_depth)
 
