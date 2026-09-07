@@ -1,0 +1,653 @@
+{
+  "protocol": {
+    "selection": "initial state 0 for each of ten targets; calibration only; not selected by outcomes",
+    "conditions": [
+      "with_n",
+      "known_present_no_n"
+    ],
+    "fresh_calls": 20,
+    "settings": {
+      "model": "gpt-4.1-mini-2025-04-14",
+      "temperature": 0,
+      "max_completion_tokens": 8,
+      "logprobs": true,
+      "top_logprobs": 20
+    },
+    "system_prompt": "Associate one semantic target with an already-localized candidate. Return only the requested choice label.",
+    "image_detail": "high",
+    "visual_input": "same frozen direct-letter contact sheet in both requests; no re-rendering",
+    "score": "exp(sum(generated decision-bearing token logprobs)); no candidate/length normalization",
+    "pair_order": "with_n first for even task index, no_n first for odd task index",
+    "treatment": "combined target-present assertion and removal of N, not two separate interventions",
+    "threshold": "not fitted or changed; descriptive ten-scene pilot only",
+    "source_sha256": {
+      "scripts/run_vlm_presence_pilot.py": "d75944f3bd26cfe76743f6387e00d09ec96fab1712876b4c7bf764dc244606e3",
+      "scripts/run_vlm_visual_label_ablation.py": "3efc6775f68b306b4a43e2762ebe3d3a2a55654d8c0a5421c9de9959c9609b6e",
+      "scripts/run_vlm_output_format_ablation.py": "9713f11bebaced61623ed0f9bfdc75f43cca1874417c4d96a48a155ff7dc64ec",
+      "prompt.py": "801df6c66d677cfd19e98999f61282864048e7cb5430d4fcd368d77e8c3e4bfa",
+      "vlm_module.py": "63e332dbbcea84e2e44ca1f4d7034ea58c1fedcf030931f3d7b1b28bab66dc96"
+    }
+  },
+  "records": [
+    {
+      "sample_id": "task_00_alphabet_soup_state_00",
+      "partition": "calibration",
+      "task_index": 0,
+      "initial_state_index": 0,
+      "target_description": "alphabet soup",
+      "ground_truth_object_id": "object_005",
+      "input_sha256": "5ad352d21ef0adfb9bc68e1bb1b8efe6a84c76ef5493f73681622cbfa8503cef",
+      "condition": "known_present_no_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "F",
+      "choice": "F",
+      "predicted_object_id": "object_006",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "F",
+          "logprob": -0.019313829019665718
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": -0.019313829019665718,
+      "raw_sequence_likelihood": 0.9808714879979001,
+      "correct": false,
+      "image_sha256": "8714fd30d9000bf1f3b4dee2451ef79dbb426032f7603416988fbbe855e3c0a0",
+      "request_sha256": "52601637febe0f43eccbeabc35b9ffc2b3912c55d5634a22f8a4f9977e2c4c80",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_00_alphabet_soup_state_00_known_present_no_n.json",
+      "response_sha256": "27843d271ce9185b9ea523ea917df99557f1e179ffc4bf6e4bf4a0ca397db3f4",
+      "score_type": "raw_label_likelihood"
+    },
+    {
+      "sample_id": "task_00_alphabet_soup_state_00",
+      "partition": "calibration",
+      "task_index": 0,
+      "initial_state_index": 0,
+      "target_description": "alphabet soup",
+      "ground_truth_object_id": "object_005",
+      "input_sha256": "5ad352d21ef0adfb9bc68e1bb1b8efe6a84c76ef5493f73681622cbfa8503cef",
+      "condition": "with_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "E",
+      "choice": "E",
+      "predicted_object_id": "object_005",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "E",
+          "logprob": -0.48188725113868713
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": -0.48188725113868713,
+      "raw_sequence_likelihood": 0.6176166934180721,
+      "correct": true,
+      "image_sha256": "8714fd30d9000bf1f3b4dee2451ef79dbb426032f7603416988fbbe855e3c0a0",
+      "request_sha256": "ea243c4934baaf20c1c653dd20723e8115a88519b62bb39528290cd8dd874b2a",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_00_alphabet_soup_state_00_with_n.json",
+      "response_sha256": "5789dea181413993edb3f7fc6e25074ae4883ac2c5397cbc9b07427ec69ad5bb",
+      "score_type": "raw_label_likelihood"
+    },
+    {
+      "sample_id": "task_01_cream_cheese_state_00",
+      "partition": "calibration",
+      "task_index": 1,
+      "initial_state_index": 0,
+      "target_description": "cream cheese",
+      "ground_truth_object_id": "object_006",
+      "input_sha256": "cb42e2575aff2a3401c65ad5a6712521721b662263977e078d61eb0e6912c997",
+      "condition": "known_present_no_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "F",
+      "choice": "F",
+      "predicted_object_id": "object_006",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "F",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "correct": true,
+      "image_sha256": "577ab7da88ec0fd479606d7066c9b003ec63d14b98c36f7949955b3ba9016849",
+      "request_sha256": "53f61cb5a93b44cdd0fb7a56395f28256bb8a0a9cda21016bf7d71d649fa53eb",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_01_cream_cheese_state_00_known_present_no_n.json",
+      "response_sha256": "96033271236e62663d7e0a0f5a31e97f6d21aa96ad7e1d194a020cd80770f63b",
+      "score_type": "raw_label_likelihood"
+    },
+    {
+      "sample_id": "task_01_cream_cheese_state_00",
+      "partition": "calibration",
+      "task_index": 1,
+      "initial_state_index": 0,
+      "target_description": "cream cheese",
+      "ground_truth_object_id": "object_006",
+      "input_sha256": "cb42e2575aff2a3401c65ad5a6712521721b662263977e078d61eb0e6912c997",
+      "condition": "with_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "F",
+      "choice": "F",
+      "predicted_object_id": "object_006",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "F",
+          "logprob": -4.320199877838604e-07
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": -4.320199877838604e-07,
+      "raw_sequence_likelihood": 0.9999995679801056,
+      "correct": true,
+      "image_sha256": "577ab7da88ec0fd479606d7066c9b003ec63d14b98c36f7949955b3ba9016849",
+      "request_sha256": "6874b68da4af90fcb511ddba8864d479e1f6dfacc04a9c19b0897b983f712f85",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_01_cream_cheese_state_00_with_n.json",
+      "response_sha256": "1a341442a98a7562526073488a72646c7974a116986489f0e78d7a8493a7446e",
+      "score_type": "raw_label_likelihood"
+    },
+    {
+      "sample_id": "task_02_salad_dressing_state_00",
+      "partition": "calibration",
+      "task_index": 2,
+      "initial_state_index": 0,
+      "target_description": "salad dressing",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "db39b74d92df3478f4f078e49c8e7c652f64e0e0fb37fbd341e2ffefdebfb0eb",
+      "condition": "known_present_no_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "C",
+      "choice": "C",
+      "predicted_object_id": "object_003",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "C",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "correct": true,
+      "image_sha256": "1a0164d024d0163fc325132a7fb16f3b4c48dad18a2b1d7fb8bc7f9407ff1b15",
+      "request_sha256": "27aa5bd844f50cd8af3a9d46c80186fddb3c30a0c3b81ee1064077364eaf9bb9",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_02_salad_dressing_state_00_known_present_no_n.json",
+      "response_sha256": "04c48a873a53fb8489fd76b60c7a26267addf3fb7ad3c989b544d3838e760057",
+      "score_type": "raw_label_likelihood"
+    },
+    {
+      "sample_id": "task_02_salad_dressing_state_00",
+      "partition": "calibration",
+      "task_index": 2,
+      "initial_state_index": 0,
+      "target_description": "salad dressing",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "db39b74d92df3478f4f078e49c8e7c652f64e0e0fb37fbd341e2ffefdebfb0eb",
+      "condition": "with_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "C",
+      "choice": "C",
+      "predicted_object_id": "object_003",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "C",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "correct": true,
+      "image_sha256": "1a0164d024d0163fc325132a7fb16f3b4c48dad18a2b1d7fb8bc7f9407ff1b15",
+      "request_sha256": "907c3ff1138b08a86bc6024e471a77803dcc9c50bd31b53729dca3790d08f7cc",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_02_salad_dressing_state_00_with_n.json",
+      "response_sha256": "28cbd9b41c18f9c3382a1be47980c45e502326a8d15dc1bb6492d1d3db9fa78f",
+      "score_type": "raw_label_likelihood"
+    },
+    {
+      "sample_id": "task_03_bbq_sauce_state_00",
+      "partition": "calibration",
+      "task_index": 3,
+      "initial_state_index": 0,
+      "target_description": "bbq sauce",
+      "ground_truth_object_id": "object_005",
+      "input_sha256": "b28c444e108b5aecd7a9d9a999d378dd5ade05dabfdbd98c149255523bcf121d",
+      "condition": "known_present_no_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "E",
+      "choice": "E",
+      "predicted_object_id": "object_005",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "E",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "correct": true,
+      "image_sha256": "8c1b5c16907973f9e5c3af8eda0f0fec644e535ddadc7267be0bd7f64a734849",
+      "request_sha256": "b0b1e3db1c38b5c3737b6fd0f74b3cbd8e3c61d9e403ac95dcccb43c9c0240dd",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_03_bbq_sauce_state_00_known_present_no_n.json",
+      "response_sha256": "5aa1ac381f6476bff5db28f8ff958c93d676cca7da3481d800bfa574dd4732ae",
+      "score_type": "raw_label_likelihood"
+    },
+    {
+      "sample_id": "task_03_bbq_sauce_state_00",
+      "partition": "calibration",
+      "task_index": 3,
+      "initial_state_index": 0,
+      "target_description": "bbq sauce",
+      "ground_truth_object_id": "object_005",
+      "input_sha256": "b28c444e108b5aecd7a9d9a999d378dd5ade05dabfdbd98c149255523bcf121d",
+      "condition": "with_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "E",
+      "choice": "E",
+      "predicted_object_id": "object_005",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "E",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "correct": true,
+      "image_sha256": "8c1b5c16907973f9e5c3af8eda0f0fec644e535ddadc7267be0bd7f64a734849",
+      "request_sha256": "9740b8d7971f64e337f93f276925a4ea17bb33825292b27322ec39a3aa9aa876",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_03_bbq_sauce_state_00_with_n.json",
+      "response_sha256": "e517eb0777fee58a9d320769ade8819263aa6d1991f2d97fbfe3e233866cbe06",
+      "score_type": "raw_label_likelihood"
+    },
+    {
+      "sample_id": "task_04_ketchup_state_00",
+      "partition": "calibration",
+      "task_index": 4,
+      "initial_state_index": 0,
+      "target_description": "ketchup",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "d0ce0dab08d12ebadc2949e3016a9dec858f4dd107b55aeb908245b25e3a76ed",
+      "condition": "known_present_no_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "C",
+      "choice": "C",
+      "predicted_object_id": "object_003",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "C",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "correct": true,
+      "image_sha256": "cd5f42cc3b32279a630675eb95b59ab0f2b5316d09155ab0f2b779a7b0f6227c",
+      "request_sha256": "e6aa07448ffa3ffb58a028260b1bf818f36970054d80c17c89744f7040fb26b0",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_04_ketchup_state_00_known_present_no_n.json",
+      "response_sha256": "ed642895aa5b0b4ded8462b4eb15c533c527d7658c1e69ab4beac8af744d64df",
+      "score_type": "raw_label_likelihood"
+    },
+    {
+      "sample_id": "task_04_ketchup_state_00",
+      "partition": "calibration",
+      "task_index": 4,
+      "initial_state_index": 0,
+      "target_description": "ketchup",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "d0ce0dab08d12ebadc2949e3016a9dec858f4dd107b55aeb908245b25e3a76ed",
+      "condition": "with_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "C",
+      "choice": "C",
+      "predicted_object_id": "object_003",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "C",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "correct": true,
+      "image_sha256": "cd5f42cc3b32279a630675eb95b59ab0f2b5316d09155ab0f2b779a7b0f6227c",
+      "request_sha256": "3c3d6a4c29ee94cfd6bfa852e293281210ce1bd6142e27735258d2dc6ab63b04",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_04_ketchup_state_00_with_n.json",
+      "response_sha256": "ccb2de66d7eb3f246da4d3563276f77ca92909bb6473dd29b8434a1c8abaeebf",
+      "score_type": "raw_label_likelihood"
+    },
+    {
+      "sample_id": "task_05_tomato_sauce_state_00",
+      "partition": "calibration",
+      "task_index": 5,
+      "initial_state_index": 0,
+      "target_description": "tomato sauce",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "b940bdb5e5cdd4ae5e157d59bd74f440124afb520abdf9f8b29b14662e7a2501",
+      "condition": "known_present_no_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "E",
+      "choice": "E",
+      "predicted_object_id": "object_005",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "E",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "correct": false,
+      "image_sha256": "4adb0e5df46fa275dcf22f99e6744c4283a3175f7e37f934cf9795a6a7cb3853",
+      "request_sha256": "adb31d1f4e41aeec72d0ceff83bef429e7fdb88d27bd9762a2e4ca4a69b01df2",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_05_tomato_sauce_state_00_known_present_no_n.json",
+      "response_sha256": "86c32a4fd3621fdd4d499e9108db16f093597e8cc423696bdd2ec8606da1df64",
+      "score_type": "raw_label_likelihood"
+    },
+    {
+      "sample_id": "task_05_tomato_sauce_state_00",
+      "partition": "calibration",
+      "task_index": 5,
+      "initial_state_index": 0,
+      "target_description": "tomato sauce",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "b940bdb5e5cdd4ae5e157d59bd74f440124afb520abdf9f8b29b14662e7a2501",
+      "condition": "with_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "C",
+      "choice": "C",
+      "predicted_object_id": "object_003",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "C",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "correct": true,
+      "image_sha256": "4adb0e5df46fa275dcf22f99e6744c4283a3175f7e37f934cf9795a6a7cb3853",
+      "request_sha256": "3cf3ed507ac36f9049a4beb539b95d75d313d35b81494a0f8a7321d83e3a6c50",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_05_tomato_sauce_state_00_with_n.json",
+      "response_sha256": "eec5b79d57395101a2ee59c83db49a3f921b05b4a7b83263769b7007bcb17c4c",
+      "score_type": "raw_label_likelihood"
+    },
+    {
+      "sample_id": "task_06_butter_state_00",
+      "partition": "calibration",
+      "task_index": 6,
+      "initial_state_index": 0,
+      "target_description": "butter",
+      "ground_truth_object_id": "object_007",
+      "input_sha256": "65ac95184135d12787c3f634987bfe355a9dde51c9c50e5d69ab000584358353",
+      "condition": "known_present_no_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "G",
+      "choice": "G",
+      "predicted_object_id": "object_007",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "G",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "correct": true,
+      "image_sha256": "60adbf4fe513a25afe51e507e0bbde836f4c35d7b45a4c7544afb4b4370ca664",
+      "request_sha256": "903b7366a6783f5ca2b74b944c196be3b91b2a12dd04b6058b2e5a92af0996b4",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_06_butter_state_00_known_present_no_n.json",
+      "response_sha256": "0ea772637c8d83a4d046a465ba622e0507c5076c5a88b25b4000dc641776540a",
+      "score_type": "raw_label_likelihood"
+    },
+    {
+      "sample_id": "task_06_butter_state_00",
+      "partition": "calibration",
+      "task_index": 6,
+      "initial_state_index": 0,
+      "target_description": "butter",
+      "ground_truth_object_id": "object_007",
+      "input_sha256": "65ac95184135d12787c3f634987bfe355a9dde51c9c50e5d69ab000584358353",
+      "condition": "with_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "G",
+      "choice": "G",
+      "predicted_object_id": "object_007",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "G",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "correct": true,
+      "image_sha256": "60adbf4fe513a25afe51e507e0bbde836f4c35d7b45a4c7544afb4b4370ca664",
+      "request_sha256": "85ded3c0e59f183c71be7be4f565abdbb5f5ea4807b590df98896437c0fbfa40",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_06_butter_state_00_with_n.json",
+      "response_sha256": "26916a84786c3c68545383d8786e0fd0b01bb3857b9530b855e7d3fcec603af8",
+      "score_type": "raw_label_likelihood"
+    },
+    {
+      "sample_id": "task_07_milk_state_00",
+      "partition": "calibration",
+      "task_index": 7,
+      "initial_state_index": 0,
+      "target_description": "milk",
+      "ground_truth_object_id": "object_002",
+      "input_sha256": "b6f94ba2ebc6a7a98c8b2c1d4f74312476ab580d5abd3bac76274778ec46d14d",
+      "condition": "known_present_no_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "B",
+      "choice": "B",
+      "predicted_object_id": "object_002",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "B",
+          "logprob": -1.9361264946837764e-07
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": -1.9361264946837764e-07,
+      "raw_sequence_likelihood": 0.9999998063873693,
+      "correct": true,
+      "image_sha256": "63223fbc289c752ead5bd01d3e966cf3ac63d52697e8cc037103c6571a86d04b",
+      "request_sha256": "37b1a54678737341b2c5ac1a02996c41599ac32529125e5ed8941d56975e686f",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_07_milk_state_00_known_present_no_n.json",
+      "response_sha256": "601dad538b492895e16e00d14485d8e870192219d3a678de21ea861f181726d1",
+      "score_type": "raw_label_likelihood"
+    },
+    {
+      "sample_id": "task_07_milk_state_00",
+      "partition": "calibration",
+      "task_index": 7,
+      "initial_state_index": 0,
+      "target_description": "milk",
+      "ground_truth_object_id": "object_002",
+      "input_sha256": "b6f94ba2ebc6a7a98c8b2c1d4f74312476ab580d5abd3bac76274778ec46d14d",
+      "condition": "with_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "B",
+      "choice": "B",
+      "predicted_object_id": "object_002",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "B",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "correct": true,
+      "image_sha256": "63223fbc289c752ead5bd01d3e966cf3ac63d52697e8cc037103c6571a86d04b",
+      "request_sha256": "93bc9a8f291bdf1f9350fc2b02350f7628b25ad4fc1ee53bfe1cc56b9717b260",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_07_milk_state_00_with_n.json",
+      "response_sha256": "88a799ec1a6b9b25a080240ab635728bd0bb3f02c001a5c129d6259fc4c0f8d5",
+      "score_type": "raw_label_likelihood"
+    },
+    {
+      "sample_id": "task_08_chocolate_pudding_state_00",
+      "partition": "calibration",
+      "task_index": 8,
+      "initial_state_index": 0,
+      "target_description": "chocolate pudding",
+      "ground_truth_object_id": "object_007",
+      "input_sha256": "7625b8388e14c1834a6b6f69071336a0af16509248aac8b9164de935517d23d6",
+      "condition": "known_present_no_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "G",
+      "choice": "G",
+      "predicted_object_id": "object_007",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "G",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "correct": true,
+      "image_sha256": "18555db544c6d2d1ad1fb4b9c6e23cc0ce9bceef5629ab56f544c3e0cd944272",
+      "request_sha256": "c7db8edca29e17bd872d16da6f1b33487657d17089b2ef54f7a76d5b6bd5047e",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_08_chocolate_pudding_state_00_known_present_no_n.json",
+      "response_sha256": "adc6b7001619b84aca4212a198974b3c4c0ce3419fe1fd306f5369335a0e1d8d",
+      "score_type": "raw_label_likelihood"
+    },
+    {
+      "sample_id": "task_08_chocolate_pudding_state_00",
+      "partition": "calibration",
+      "task_index": 8,
+      "initial_state_index": 0,
+      "target_description": "chocolate pudding",
+      "ground_truth_object_id": "object_007",
+      "input_sha256": "7625b8388e14c1834a6b6f69071336a0af16509248aac8b9164de935517d23d6",
+      "condition": "with_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "G",
+      "choice": "G",
+      "predicted_object_id": "object_007",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "G",
+          "logprob": -3.128163257315464e-07
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": -3.128163257315464e-07,
+      "raw_sequence_likelihood": 0.9999996871837232,
+      "correct": true,
+      "image_sha256": "18555db544c6d2d1ad1fb4b9c6e23cc0ce9bceef5629ab56f544c3e0cd944272",
+      "request_sha256": "ae07564e9ac48d1157daeb1b10408633f2a51fc8f76ff78efdc11937677bbaa4",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_08_chocolate_pudding_state_00_with_n.json",
+      "response_sha256": "a0852c378ab13acbf937efa02b3871197056b66f1647f7b83d1d1beb54dee030",
+      "score_type": "raw_label_likelihood"
+    },
+    {
+      "sample_id": "task_09_orange_juice_state_00",
+      "partition": "calibration",
+      "task_index": 9,
+      "initial_state_index": 0,
+      "target_description": "orange juice",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "5d27c60c4d4fb3d50accda279a9cccb3d4eaaa64ce7e1a99f2f69afaa82859dc",
+      "condition": "known_present_no_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "C",
+      "choice": "C",
+      "predicted_object_id": "object_003",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "C",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "correct": true,
+      "image_sha256": "89db9fa0d99ee5cb16cb298c03d8c716657357cdaee7b703a1ca91926eb4afbb",
+      "request_sha256": "2a0602248ad6d6987bec9499e30e21b462c151cc7f713605559af786a579499f",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_09_orange_juice_state_00_known_present_no_n.json",
+      "response_sha256": "59555a32e94a1ee5e26674706181425cd60a998750efa4350dfdf963b707d3c8",
+      "score_type": "raw_label_likelihood"
+    },
+    {
+      "sample_id": "task_09_orange_juice_state_00",
+      "partition": "calibration",
+      "task_index": 9,
+      "initial_state_index": 0,
+      "target_description": "orange juice",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "5d27c60c4d4fb3d50accda279a9cccb3d4eaaa64ce7e1a99f2f69afaa82859dc",
+      "condition": "with_n",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "C",
+      "choice": "C",
+      "predicted_object_id": "object_003",
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "C",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "correct": true,
+      "image_sha256": "89db9fa0d99ee5cb16cb298c03d8c716657357cdaee7b703a1ca91926eb4afbb",
+      "request_sha256": "98476f1e2b2c82790e264e82d4dce9365c39705b9d519d16f1b6ce99ff46c740",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/known_presence_pilot/responses/task_09_orange_juice_state_00_with_n.json",
+      "response_sha256": "6bb41c22390562ff2f64451f02d7f2fff973f60b114d1ec5714d2f771aef6bc3",
+      "score_type": "raw_label_likelihood"
+    }
+  ]
+}

@@ -1,0 +1,265 @@
+{
+  "sample_id": "task_07_milk_state_01",
+  "partition": "calibration",
+  "task_index": 7,
+  "initial_state_index": 1,
+  "initial_state_sha256": "6fcead502be7ed05601c3f67dcfb92bc24717097637837375fc234e6130f4080",
+  "image_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/candidate_normalized_500/scenes/task_07_milk/init_state_01/vlm_roi_contact_sheet.png",
+  "localization_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/candidate_normalized_500/scenes/task_07_milk/init_state_01/localization.json",
+  "target_description": "milk",
+  "ground_truth_object_id": "object_002",
+  "target_localized": true,
+  "evaluation_ground_truth_path": "scenes/task_07_milk/init_state_01/evaluation_ground_truth.json",
+  "image_sha256": "b515fb53aeb2ca3408c99c80d82c0dc080bcc728fcf6b23beab7c90c1d27757b",
+  "localization_sha256": "ca31b608110b1c7842eff57443ec2c9cbfba4c6fb6b4b78dea1732fd75dbe5e0",
+  "prompt_sha256": "45ab1504cc7918ab941abc56248096bb667a5aac89679525642a7cf532fcaa18",
+  "prompt": "The image contains objects already localized by an RGB-D point-cloud pipeline.\nAssociate exactly one semantic target with exactly one labeled candidate.\nDo not estimate coordinates, add objects, or interpret the surrounding robot task.\n\nTarget: milk\n\nCandidate map and depth-derived metadata:\n[{\"choice\":\"A\",\"object_id\":\"object_001\",\"bbox_2d_xyxy\":[540,311,716,480],\"centroid_3d_m\":[0.26446965355779184,0.00963776156965039,1.047180911678085],\"size_3d_m\":[0.16556731126312085,0.19560023017189698,0.18918240070343018]},{\"choice\":\"B\",\"object_id\":\"object_002\",\"bbox_2d_xyxy\":[162,297,218,404],\"centroid_3d_m\":[-0.24005580573234142,-0.04026879166981547,1.1519315595854118],\"size_3d_m\":[0.053735071426297465,0.13172409787383307,0.10038924217224121]},{\"choice\":\"C\",\"object_id\":\"object_003\",\"bbox_2d_xyxy\":[387,421,441,548],\"centroid_3d_m\":[0.029615360603611824,0.10487982252483803,0.9191285899806043],\"size_3d_m\":[0.053004188103705135,0.13218660502088617,0.05782243609428406]},{\"choice\":\"D\",\"object_id\":\"object_004\",\"bbox_2d_xyxy\":[403,318,458,393],\"centroid_3d_m\":[0.05729459921621005,-0.03772640056106317,1.19223142598143],\"size_3d_m\":[0.06953803760927849,0.09824061053380481,0.06572961807250977]},{\"choice\":\"E\",\"object_id\":\"object_005\",\"bbox_2d_xyxy\":[306,332,344,377],\"centroid_3d_m\":[-0.0794802601660994,-0.04170552170780112,1.2504094980634313],\"size_3d_m\":[0.04863986081079599,0.06247734832528151,0.07458770275115967]},{\"choice\":\"F\",\"object_id\":\"object_006\",\"bbox_2d_xyxy\":[271,441,313,494],\"centroid_3d_m\":[-0.10335915846772983,0.09358419939393565,1.047145934280771],\"size_3d_m\":[0.04202160230059718,0.055202753028327334,0.06900787353515625]},{\"choice\":\"G\",\"object_id\":\"object_007\",\"bbox_2d_xyxy\":[174,467,220,521],\"centroid_3d_m\":[-0.20166919107410092,0.11827570752632798,1.0092332596790063],\"size_3d_m\":[0.03905182541880706,0.052294553332489085,0.06268835067749023]}]\n\nN means none of the localized candidates corresponds to the target.\nReturn only one label, without punctuation or explanation, from: A, B, C, D, E, F, G, N",
+  "candidate_map": {
+    "A": "object_001",
+    "B": "object_002",
+    "C": "object_003",
+    "D": "object_004",
+    "E": "object_005",
+    "F": "object_006",
+    "G": "object_007",
+    "N": null
+  },
+  "requested_model": "gpt-4o-2024-08-06",
+  "model": "gpt-4o-2024-08-06",
+  "temperature": 0.0,
+  "repeat": 1,
+  "order_index": 0,
+  "call_key": "task_07_milk_state_01_gpt-4o-2024-08-06_t0_r1",
+  "generated_output_text": "B",
+  "choice": "B",
+  "predicted_object_id": "object_002",
+  "decision_tokens": [
+    {
+      "index": 0,
+      "token": "B",
+      "logprob": -0.004921343177556992
+    }
+  ],
+  "decision_token_count": 1,
+  "raw_log_probability": -0.004921343177556992,
+  "raw_sequence_likelihood": 0.9950907467906867,
+  "correct": true,
+  "full_response_log_probability": -0.004921343177556992,
+  "first_position_choice_logprobs": {
+    "B": -0.004921343177556992,
+    "A": -5.3174214363098145,
+    "C": -12.754920959472656,
+    "E": -14.989295959472656,
+    " B": -15.739295959472656,
+    "F": -16.051795959472656,
+    "D": -16.114295959472656,
+    "N": -17.504920959472656,
+    "G": -18.551795959472656,
+    " A": -19.411170959472656
+  },
+  "provider_response": {
+    "id": "chatcmpl-EL7vLSW4HSt6O0iSAWPo76rx8vI6p",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "logprobs": {
+          "content": [
+            {
+              "token": "B",
+              "bytes": [
+                66
+              ],
+              "logprob": -0.004921343177556992,
+              "top_logprobs": [
+                {
+                  "token": "B",
+                  "bytes": [
+                    66
+                  ],
+                  "logprob": -0.004921343177556992
+                },
+                {
+                  "token": "A",
+                  "bytes": [
+                    65
+                  ],
+                  "logprob": -5.3174214363098145
+                },
+                {
+                  "token": "C",
+                  "bytes": [
+                    67
+                  ],
+                  "logprob": -12.754920959472656
+                },
+                {
+                  "token": "E",
+                  "bytes": [
+                    69
+                  ],
+                  "logprob": -14.989295959472656
+                },
+                {
+                  "token": "The",
+                  "bytes": [
+                    84,
+                    104,
+                    101
+                  ],
+                  "logprob": -15.364295959472656
+                },
+                {
+                  "token": " B",
+                  "bytes": [
+                    32,
+                    66
+                  ],
+                  "logprob": -15.739295959472656
+                },
+                {
+                  "token": "F",
+                  "bytes": [
+                    70
+                  ],
+                  "logprob": -16.051795959472656
+                },
+                {
+                  "token": "D",
+                  "bytes": [
+                    68
+                  ],
+                  "logprob": -16.114295959472656
+                },
+                {
+                  "token": "\"B",
+                  "bytes": [
+                    34,
+                    66
+                  ],
+                  "logprob": -16.411170959472656
+                },
+                {
+                  "token": "N",
+                  "bytes": [
+                    78
+                  ],
+                  "logprob": -17.504920959472656
+                },
+                {
+                  "token": "Choice",
+                  "bytes": [
+                    67,
+                    104,
+                    111,
+                    105,
+                    99,
+                    101
+                  ],
+                  "logprob": -17.911170959472656
+                },
+                {
+                  "token": "\"",
+                  "bytes": [
+                    34
+                  ],
+                  "logprob": -18.208045959472656
+                },
+                {
+                  "token": "```",
+                  "bytes": [
+                    96,
+                    96,
+                    96
+                  ],
+                  "logprob": -18.223670959472656
+                },
+                {
+                  "token": "G",
+                  "bytes": [
+                    71
+                  ],
+                  "logprob": -18.551795959472656
+                },
+                {
+                  "token": "\n",
+                  "bytes": [
+                    10
+                  ],
+                  "logprob": -18.645545959472656
+                },
+                {
+                  "token": "I",
+                  "bytes": [
+                    73
+                  ],
+                  "logprob": -18.676795959472656
+                },
+                {
+                  "token": "``",
+                  "bytes": [
+                    96,
+                    96
+                  ],
+                  "logprob": -18.817420959472656
+                },
+                {
+                  "token": " A",
+                  "bytes": [
+                    32,
+                    65
+                  ],
+                  "logprob": -19.411170959472656
+                },
+                {
+                  "token": "Based",
+                  "bytes": [
+                    66,
+                    97,
+                    115,
+                    101,
+                    100
+                  ],
+                  "logprob": -19.504920959472656
+                },
+                {
+                  "token": "`",
+                  "bytes": [
+                    96
+                  ],
+                  "logprob": -19.848670959472656
+                }
+              ]
+            }
+          ]
+        },
+        "message": {
+          "content": "B",
+          "role": "assistant",
+          "annotations": []
+        }
+      }
+    ],
+    "created": 1788704055,
+    "model": "gpt-4o-2024-08-06",
+    "object": "chat.completion",
+    "service_tier": "default",
+    "system_fingerprint": "fp_ffd8308b42",
+    "usage": {
+      "completion_tokens": 1,
+      "prompt_tokens": 1885,
+      "total_tokens": 1886,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 0,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 0
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cached_tokens": 1792
+      }
+    }
+  },
+  "captured_at": "2026-09-06T14:14:15.072402+00:00"
+}

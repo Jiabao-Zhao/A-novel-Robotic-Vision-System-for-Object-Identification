@@ -1,0 +1,260 @@
+{
+  "sample_id": "task_09_orange_juice_state_00",
+  "partition": "calibration",
+  "task_index": 9,
+  "initial_state_index": 0,
+  "initial_state_sha256": "95ef4c33aca066aec01083f4802b82c09643c9253620e93c9e65cc7f23143717",
+  "image_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/candidate_normalized_500/scenes/task_09_orange_juice/init_state_00/vlm_roi_contact_sheet.png",
+  "localization_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/candidate_normalized_500/scenes/task_09_orange_juice/init_state_00/localization.json",
+  "target_description": "orange juice",
+  "ground_truth_object_id": "object_003",
+  "target_localized": true,
+  "evaluation_ground_truth_path": "scenes/task_09_orange_juice/init_state_00/evaluation_ground_truth.json",
+  "image_sha256": "0e0583c84133a94ea8f0fcf301efcbe087a382077fef5999da01bdc6a406eab0",
+  "localization_sha256": "b5c20d5ae778a41be8664ecb3156c18077e0adb28e5458abb854751606124548",
+  "prompt_sha256": "30cdcb8f24cd6ab154ede23e1e391ee4b6b74c876a923ffccc6058bc21138ecd",
+  "prompt": "The image contains objects already localized by an RGB-D point-cloud pipeline.\nAssociate exactly one semantic target with exactly one labeled candidate.\nDo not estimate coordinates, add objects, or interpret the surrounding robot task.\n\nTarget: orange juice\n\nCandidate map and depth-derived metadata:\n[{\"choice\":\"A\",\"object_id\":\"object_001\",\"bbox_2d_xyxy\":[524,312,701,482],\"centroid_3d_m\":[0.24643912756484376,0.011350922303583585,1.0428757356886227],\"size_3d_m\":[0.17132416160376374,0.19612533275149746,0.18700700998306274]},{\"choice\":\"B\",\"object_id\":\"object_002\",\"bbox_2d_xyxy\":[382,408,443,544],\"centroid_3d_m\":[0.02918157119776248,0.10039564923297951,0.9252727705271968],\"size_3d_m\":[0.06341857877252635,0.14175436096573601,0.08328813314437866]},{\"choice\":\"C\",\"object_id\":\"object_003\",\"bbox_2d_xyxy\":[265,368,320,486],\"centroid_3d_m\":[-0.09777599477575045,0.04803809072999719,1.0047595451766078],\"size_3d_m\":[0.05321476790981619,0.13138696269314545,0.0960530936717987]},{\"choice\":\"D\",\"object_id\":\"object_004\",\"bbox_2d_xyxy\":[301,261,347,369],\"centroid_3d_m\":[-0.07984435793519642,-0.08475141398162002,1.2227540043434135],\"size_3d_m\":[0.062402119625787414,0.13999625561269108,0.0810428261756897]},{\"choice\":\"E\",\"object_id\":\"object_005\",\"bbox_2d_xyxy\":[181,407,229,505],\"centroid_3d_m\":[-0.19342802899414743,0.08267702970251815,0.9882343293196921],\"size_3d_m\":[0.04843138381755674,0.10726995289404877,0.0653151422739029]},{\"choice\":\"F\",\"object_id\":\"object_006\",\"bbox_2d_xyxy\":[410,350,449,398],\"centroid_3d_m\":[0.058639532998503684,-0.01570840503986286,1.208184928627488],\"size_3d_m\":[0.04915862704800848,0.0632337086280767,0.07261669635772705]},{\"choice\":\"G\",\"object_id\":\"object_007\",\"bbox_2d_xyxy\":[175,369,215,409],\"centroid_3d_m\":[-0.24124452452779113,0.0044274349713939575,1.191202863233502],\"size_3d_m\":[0.038751962638063436,0.05143065521200595,0.06489795446395874]}]\n\nN means none of the localized candidates corresponds to the target.\nReturn only one label, without punctuation or explanation, from: A, B, C, D, E, F, G, N",
+  "candidate_map": {
+    "A": "object_001",
+    "B": "object_002",
+    "C": "object_003",
+    "D": "object_004",
+    "E": "object_005",
+    "F": "object_006",
+    "G": "object_007",
+    "N": null
+  },
+  "requested_model": "gpt-4.1-mini-2025-04-14",
+  "model": "gpt-4.1-mini-2025-04-14",
+  "temperature": 1.0,
+  "repeat": 2,
+  "order_index": 0,
+  "call_key": "task_09_orange_juice_state_00_gpt-4.1-mini-2025-04-14_t1_r2",
+  "generated_output_text": "C",
+  "choice": "C",
+  "predicted_object_id": "object_003",
+  "decision_tokens": [
+    {
+      "index": 0,
+      "token": "C",
+      "logprob": 0.0
+    }
+  ],
+  "decision_token_count": 1,
+  "raw_log_probability": 0.0,
+  "raw_sequence_likelihood": 1.0,
+  "correct": true,
+  "full_response_log_probability": 0.0,
+  "first_position_choice_logprobs": {
+    "C": 0.0,
+    " C": -20.375,
+    "A": -20.875,
+    "\tC": -21.875,
+    "B": -22.75,
+    "D": -22.875,
+    "G": -24.625,
+    "N": -24.875,
+    "E": -25.0
+  },
+  "provider_response": {
+    "id": "chatcmpl-EL7y3JXGhPpKG7JjjPy6YiLMUMxBS",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "logprobs": {
+          "content": [
+            {
+              "token": "C",
+              "bytes": [
+                67
+              ],
+              "logprob": 0.0,
+              "top_logprobs": [
+                {
+                  "token": "C",
+                  "bytes": [
+                    67
+                  ],
+                  "logprob": 0.0
+                },
+                {
+                  "token": "_C",
+                  "bytes": [
+                    95,
+                    67
+                  ],
+                  "logprob": -19.25
+                },
+                {
+                  "token": "c",
+                  "bytes": [
+                    99
+                  ],
+                  "logprob": -19.375
+                },
+                {
+                  "token": " C",
+                  "bytes": [
+                    32,
+                    67
+                  ],
+                  "logprob": -20.375
+                },
+                {
+                  "token": "\"C",
+                  "bytes": [
+                    34,
+                    67
+                  ],
+                  "logprob": -20.625
+                },
+                {
+                  "token": "A",
+                  "bytes": [
+                    65
+                  ],
+                  "logprob": -20.875
+                },
+                {
+                  "token": "'C",
+                  "bytes": [
+                    39,
+                    67
+                  ],
+                  "logprob": -21.0
+                },
+                {
+                  "token": "-C",
+                  "bytes": [
+                    45,
+                    67
+                  ],
+                  "logprob": -21.75
+                },
+                {
+                  "token": "\u0421",
+                  "bytes": [
+                    208,
+                    161
+                  ],
+                  "logprob": -21.875
+                },
+                {
+                  "token": "\tC",
+                  "bytes": [
+                    9,
+                    67
+                  ],
+                  "logprob": -21.875
+                },
+                {
+                  "token": "\uff23",
+                  "bytes": [
+                    239,
+                    188,
+                    163
+                  ],
+                  "logprob": -22.5
+                },
+                {
+                  "token": "B",
+                  "bytes": [
+                    66
+                  ],
+                  "logprob": -22.75
+                },
+                {
+                  "token": "D",
+                  "bytes": [
+                    68
+                  ],
+                  "logprob": -22.875
+                },
+                {
+                  "token": "(C",
+                  "bytes": [
+                    40,
+                    67
+                  ],
+                  "logprob": -23.5
+                },
+                {
+                  "token": ".C",
+                  "bytes": [
+                    46,
+                    67
+                  ],
+                  "logprob": -23.75
+                },
+                {
+                  "token": "*C",
+                  "bytes": [
+                    42,
+                    67
+                  ],
+                  "logprob": -23.75
+                },
+                {
+                  "token": "[C",
+                  "bytes": [
+                    91,
+                    67
+                  ],
+                  "logprob": -23.875
+                },
+                {
+                  "token": "G",
+                  "bytes": [
+                    71
+                  ],
+                  "logprob": -24.625
+                },
+                {
+                  "token": "N",
+                  "bytes": [
+                    78
+                  ],
+                  "logprob": -24.875
+                },
+                {
+                  "token": "E",
+                  "bytes": [
+                    69
+                  ],
+                  "logprob": -25.0
+                }
+              ]
+            }
+          ]
+        },
+        "message": {
+          "content": "C",
+          "role": "assistant",
+          "annotations": []
+        }
+      }
+    ],
+    "created": 1788704223,
+    "model": "gpt-4.1-mini-2025-04-14",
+    "object": "chat.completion",
+    "service_tier": "default",
+    "system_fingerprint": "fp_e2d71a067d",
+    "usage": {
+      "completion_tokens": 1,
+      "prompt_tokens": 3323,
+      "total_tokens": 3324,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 0,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 0
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cached_tokens": 2304
+      }
+    }
+  },
+  "captured_at": "2026-09-06T14:17:03.947543+00:00"
+}

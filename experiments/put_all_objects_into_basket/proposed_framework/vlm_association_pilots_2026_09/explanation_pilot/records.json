@@ -1,0 +1,1510 @@
+{
+  "protocol": {
+    "selection": "initial state 0 for all ten targets; calibration only, not selected by correctness",
+    "conditions": [
+      "label_only",
+      "label_then_evidence",
+      "evidence_then_label"
+    ],
+    "fresh_calls": 30,
+    "none_policy": "known present; A-G only",
+    "settings": {
+      "model": "gpt-4.1-mini-2025-04-14",
+      "temperature": 0,
+      "max_completion_tokens": 128,
+      "logprobs": true,
+      "top_logprobs": 20
+    },
+    "system_prompt": "Associate one semantic target with an already-localized candidate. Follow the requested output format.",
+    "image_detail": "high",
+    "common_changes_from_previous_pilot": "format-neutral system instruction and 128 output tokens in ALL arms; fresh baseline",
+    "order": "cycle all six condition permutations by task index, balanced as closely as ten scenes allow",
+    "score": "exp(sum(original generated decision-bearing token logprobs)); no length/candidate normalization",
+    "interpretation": "evidence-first label likelihood is conditioned on generated evidence, not marginal identity correctness",
+    "analysis": "descriptive paired accuracy, label likelihood distributions/AUC, tie-preserving risk-coverage and matched-coverage false accepts; no threshold selection",
+    "source_sha256": {
+      "scripts/run_vlm_presence_pilot.py": "d75944f3bd26cfe76743f6387e00d09ec96fab1712876b4c7bf764dc244606e3",
+      "scripts/run_vlm_visual_label_ablation.py": "3efc6775f68b306b4a43e2762ebe3d3a2a55654d8c0a5421c9de9959c9609b6e",
+      "scripts/run_vlm_output_format_ablation.py": "9713f11bebaced61623ed0f9bfdc75f43cca1874417c4d96a48a155ff7dc64ec",
+      "prompt.py": "801df6c66d677cfd19e98999f61282864048e7cb5430d4fcd368d77e8c3e4bfa",
+      "vlm_module.py": "63e332dbbcea84e2e44ca1f4d7034ea58c1fedcf030931f3d7b1b28bab66dc96",
+      "scripts/run_vlm_explanation_pilot.py": "90b11769fd77ec1869fd8e5e9044bc1487379ffc528d79be7d2692c54979e281",
+      "scripts/analyze_vlm_uncertainty_scores.py": "f84d160724cdd4a0f82ec1065c071b25549f74b57d5570cedbfa7e2f594b551a",
+      "scripts/analyze_vlm_output_format_ablation.py": "2ca1772cbbb82b9c5ca07df49070375481313312e4dfb6aba17a1e0236993a72",
+      "scripts/analyze_vlm_visual_label_ablation.py": "ffedc6ce43f9b18b2adc01e62e1442b7c11f18226ac8939952d81fcdd6741770"
+    },
+    "inputs_sha256": "e1aa3cfbe91135b440373d5a846ba5d677a3b495c9560f064da195eaf79f0c82"
+  },
+  "records": [
+    {
+      "sample_id": "task_00_alphabet_soup_state_00",
+      "partition": "calibration",
+      "task_index": 0,
+      "initial_state_index": 0,
+      "target_description": "alphabet soup",
+      "ground_truth_object_id": "object_005",
+      "input_sha256": "5ad352d21ef0adfb9bc68e1bb1b8efe6a84c76ef5493f73681622cbfa8503cef",
+      "localization_sha256": "2af838887f59b0f2b235b949a86136698df218526fd38d2cdbb385a734f406ae",
+      "condition": "evidence_then_label",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "The can in B shows a label with images of alphabet soup ingredients and typical soup can design.  \nB",
+      "choice": "B",
+      "predicted_object_id": "object_002",
+      "explanation": "The can in B shows a label with images of alphabet soup ingredients and typical soup can design.",
+      "explanation_word_count": 18,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 20,
+          "token": "B",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 21,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        99,
+        100
+      ],
+      "correct": false,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "8714fd30d9000bf1f3b4dee2451ef79dbb426032f7603416988fbbe855e3c0a0",
+      "request_sha256": "6f730c0ff66941317cee0b7d8880fc77f040612354e113a5c11c66eea515938f",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_00_alphabet_soup_state_00_evidence_then_label.json",
+      "response_sha256": "c965edf15cab764f3400c207a908dc656ec3f6a6fe9bb72bdcdd64365366ccac"
+    },
+    {
+      "sample_id": "task_00_alphabet_soup_state_00",
+      "partition": "calibration",
+      "task_index": 0,
+      "initial_state_index": 0,
+      "target_description": "alphabet soup",
+      "ground_truth_object_id": "object_005",
+      "input_sha256": "5ad352d21ef0adfb9bc68e1bb1b8efe6a84c76ef5493f73681622cbfa8503cef",
+      "localization_sha256": "2af838887f59b0f2b235b949a86136698df218526fd38d2cdbb385a734f406ae",
+      "condition": "label_only",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "F",
+      "choice": "F",
+      "predicted_object_id": "object_006",
+      "explanation": null,
+      "explanation_word_count": 0,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "F",
+          "logprob": -0.20266515016555786
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 1,
+      "raw_log_probability": -0.20266515016555786,
+      "raw_sequence_likelihood": 0.8165516178270771,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": false,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "8714fd30d9000bf1f3b4dee2451ef79dbb426032f7603416988fbbe855e3c0a0",
+      "request_sha256": "1ccc64c380123a75336ca30b95c2eb533b05f628f45ea1274bc8a025068df1cb",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_00_alphabet_soup_state_00_label_only.json",
+      "response_sha256": "9992f6f1e14b9275e8bb6939dce77e89adae299d3c56e270791177846a8a3120"
+    },
+    {
+      "sample_id": "task_00_alphabet_soup_state_00",
+      "partition": "calibration",
+      "task_index": 0,
+      "initial_state_index": 0,
+      "target_description": "alphabet soup",
+      "ground_truth_object_id": "object_005",
+      "input_sha256": "5ad352d21ef0adfb9bc68e1bb1b8efe6a84c76ef5493f73681622cbfa8503cef",
+      "localization_sha256": "2af838887f59b0f2b235b949a86136698df218526fd38d2cdbb385a734f406ae",
+      "condition": "label_then_evidence",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "B\nThe can in B shows a label with orange shapes typical of alphabet soup cans.",
+      "choice": "B",
+      "predicted_object_id": "object_002",
+      "explanation": "The can in B shows a label with orange shapes typical of alphabet soup cans.",
+      "explanation_word_count": 15,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "B",
+          "logprob": -0.5770280957221985
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 18,
+      "raw_log_probability": -0.5770280957221985,
+      "raw_sequence_likelihood": 0.5615648059387539,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": false,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "8714fd30d9000bf1f3b4dee2451ef79dbb426032f7603416988fbbe855e3c0a0",
+      "request_sha256": "69872426f9efbb77b3f7f0f71daef3b0246ebb87c14b7672e9710c2280acb3fc",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_00_alphabet_soup_state_00_label_then_evidence.json",
+      "response_sha256": "f3d6ce5fe73ecdc79ab3e138e74f164af9d80ac375595c4e794aef15a7425980"
+    },
+    {
+      "sample_id": "task_01_cream_cheese_state_00",
+      "partition": "calibration",
+      "task_index": 1,
+      "initial_state_index": 0,
+      "target_description": "cream cheese",
+      "ground_truth_object_id": "object_006",
+      "input_sha256": "cb42e2575aff2a3401c65ad5a6712521721b662263977e078d61eb0e6912c997",
+      "localization_sha256": "bf2bfe66995370e2cd27dfdbd0e64a3411da9fdc58f46031c595855bfbfdcb72",
+      "condition": "evidence_then_label",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "The container labeled \"cream cheese\" is the small blue box with a circular logo on top.  \nF",
+      "choice": "F",
+      "predicted_object_id": "object_006",
+      "explanation": "The container labeled \"cream cheese\" is the small blue box with a circular logo on top.",
+      "explanation_word_count": 16,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 20,
+          "token": "F",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 21,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        90,
+        91
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "577ab7da88ec0fd479606d7066c9b003ec63d14b98c36f7949955b3ba9016849",
+      "request_sha256": "5239643c355e906b0d2623c148f123787e79af793e07c48cd8f74795799010f9",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_01_cream_cheese_state_00_evidence_then_label.json",
+      "response_sha256": "184140ad43d2462924dd1660c994c92041776f6e66febae0446f5057976c2e0f"
+    },
+    {
+      "sample_id": "task_01_cream_cheese_state_00",
+      "partition": "calibration",
+      "task_index": 1,
+      "initial_state_index": 0,
+      "target_description": "cream cheese",
+      "ground_truth_object_id": "object_006",
+      "input_sha256": "cb42e2575aff2a3401c65ad5a6712521721b662263977e078d61eb0e6912c997",
+      "localization_sha256": "bf2bfe66995370e2cd27dfdbd0e64a3411da9fdc58f46031c595855bfbfdcb72",
+      "condition": "label_only",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "F",
+      "choice": "F",
+      "predicted_object_id": "object_006",
+      "explanation": null,
+      "explanation_word_count": 0,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "F",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "577ab7da88ec0fd479606d7066c9b003ec63d14b98c36f7949955b3ba9016849",
+      "request_sha256": "d574754d649360855b902a476813013873239090389a8d022e9f4c22a1851e25",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_01_cream_cheese_state_00_label_only.json",
+      "response_sha256": "854e8101f957ccd683951b91b986b204ec4b33a46a8352e06c934520fb715676"
+    },
+    {
+      "sample_id": "task_01_cream_cheese_state_00",
+      "partition": "calibration",
+      "task_index": 1,
+      "initial_state_index": 0,
+      "target_description": "cream cheese",
+      "ground_truth_object_id": "object_006",
+      "input_sha256": "cb42e2575aff2a3401c65ad5a6712521721b662263977e078d61eb0e6912c997",
+      "localization_sha256": "bf2bfe66995370e2cd27dfdbd0e64a3411da9fdc58f46031c595855bfbfdcb72",
+      "condition": "label_then_evidence",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "F\nThe blue and white packaging with a circular logo matches typical cream cheese packaging.",
+      "choice": "F",
+      "predicted_object_id": "object_006",
+      "explanation": "The blue and white packaging with a circular logo matches typical cream cheese packaging.",
+      "explanation_word_count": 14,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "F",
+          "logprob": -0.00020520923135336488
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 17,
+      "raw_log_probability": -0.00020520923135336488,
+      "raw_sequence_likelihood": 0.9997948118226208,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "577ab7da88ec0fd479606d7066c9b003ec63d14b98c36f7949955b3ba9016849",
+      "request_sha256": "557b5bff3ec1d1177f5347ed93281895325b62fe9f555727d34b05d68f7178b2",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_01_cream_cheese_state_00_label_then_evidence.json",
+      "response_sha256": "3aa470560790d1ce05ef504421bedf2a16b5a63e6cedd5b51ccd918ab7848377"
+    },
+    {
+      "sample_id": "task_02_salad_dressing_state_00",
+      "partition": "calibration",
+      "task_index": 2,
+      "initial_state_index": 0,
+      "target_description": "salad dressing",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "db39b74d92df3478f4f078e49c8e7c652f64e0e0fb37fbd341e2ffefdebfb0eb",
+      "localization_sha256": "6c96c38969c00c6348bfe9cf86524ce64a3d6ffebeb310db728fb157eb47063f",
+      "condition": "evidence_then_label",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "The bottle is labeled \"Creamy Ranch Dressing,\" indicating it is salad dressing.  \nC",
+      "choice": "C",
+      "predicted_object_id": "object_003",
+      "explanation": "The bottle is labeled \"Creamy Ranch Dressing,\" indicating it is salad dressing.",
+      "explanation_word_count": 12,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 17,
+          "token": "C",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 18,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        82,
+        83
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "1a0164d024d0163fc325132a7fb16f3b4c48dad18a2b1d7fb8bc7f9407ff1b15",
+      "request_sha256": "16bdfd53026e63e3970b45c1ae3e9312d05d193ab0eca34dcccc471784309888",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_02_salad_dressing_state_00_evidence_then_label.json",
+      "response_sha256": "f9b58578c9e92ba331c89c74bc3576184a3f65dd61bd3a4994da66e0e2b65733"
+    },
+    {
+      "sample_id": "task_02_salad_dressing_state_00",
+      "partition": "calibration",
+      "task_index": 2,
+      "initial_state_index": 0,
+      "target_description": "salad dressing",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "db39b74d92df3478f4f078e49c8e7c652f64e0e0fb37fbd341e2ffefdebfb0eb",
+      "localization_sha256": "6c96c38969c00c6348bfe9cf86524ce64a3d6ffebeb310db728fb157eb47063f",
+      "condition": "label_only",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "C",
+      "choice": "C",
+      "predicted_object_id": "object_003",
+      "explanation": null,
+      "explanation_word_count": 0,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "C",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "1a0164d024d0163fc325132a7fb16f3b4c48dad18a2b1d7fb8bc7f9407ff1b15",
+      "request_sha256": "aa12a4db7d1a7c54d4a2cbe06fce129b2baff67681efbd251d4e73637e3996ad",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_02_salad_dressing_state_00_label_only.json",
+      "response_sha256": "f06741d95f91a6e8a844303b514298deda29dd724c00590a0219322103698078"
+    },
+    {
+      "sample_id": "task_02_salad_dressing_state_00",
+      "partition": "calibration",
+      "task_index": 2,
+      "initial_state_index": 0,
+      "target_description": "salad dressing",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "db39b74d92df3478f4f078e49c8e7c652f64e0e0fb37fbd341e2ffefdebfb0eb",
+      "localization_sha256": "6c96c38969c00c6348bfe9cf86524ce64a3d6ffebeb310db728fb157eb47063f",
+      "condition": "label_then_evidence",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "C\nThe label on the bottle clearly reads \"Ranch Dressing,\" indicating it is salad dressing.",
+      "choice": "C",
+      "predicted_object_id": "object_003",
+      "explanation": "The label on the bottle clearly reads \"Ranch Dressing,\" indicating it is salad dressing.",
+      "explanation_word_count": 14,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "C",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 20,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "1a0164d024d0163fc325132a7fb16f3b4c48dad18a2b1d7fb8bc7f9407ff1b15",
+      "request_sha256": "a68f52caaaa3ba6df66455b6f258b14a6ec504e7469f862c6c98491819c7205a",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_02_salad_dressing_state_00_label_then_evidence.json",
+      "response_sha256": "d6dbbe9f2b2056c210decde54dcb64b544022c1f9a0a5ff784b6470e685a1559"
+    },
+    {
+      "sample_id": "task_03_bbq_sauce_state_00",
+      "partition": "calibration",
+      "task_index": 3,
+      "initial_state_index": 0,
+      "target_description": "bbq sauce",
+      "ground_truth_object_id": "object_005",
+      "input_sha256": "b28c444e108b5aecd7a9d9a999d378dd5ade05dabfdbd98c149255523bcf121d",
+      "localization_sha256": "0916e75bd13552776a79995f27ffc64fae4b82ebed9c01a8b49d916b6e5665ca",
+      "condition": "evidence_then_label",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "The label on this bottle clearly reads \"BBQ Sauce\" with a red and yellow design.  \nE",
+      "choice": "E",
+      "predicted_object_id": "object_005",
+      "explanation": "The label on this bottle clearly reads \"BBQ Sauce\" with a red and yellow design.",
+      "explanation_word_count": 15,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 20,
+          "token": "E",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 21,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        83,
+        84
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "8c1b5c16907973f9e5c3af8eda0f0fec644e535ddadc7267be0bd7f64a734849",
+      "request_sha256": "f0e8c8e1159d1fbddf0087d8d73643d711487231222b15aa8f019141289e3a36",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_03_bbq_sauce_state_00_evidence_then_label.json",
+      "response_sha256": "b9f2d55e43f16d687f7a3260130f93ec190771e922c494f6d4bdebec43b41812"
+    },
+    {
+      "sample_id": "task_03_bbq_sauce_state_00",
+      "partition": "calibration",
+      "task_index": 3,
+      "initial_state_index": 0,
+      "target_description": "bbq sauce",
+      "ground_truth_object_id": "object_005",
+      "input_sha256": "b28c444e108b5aecd7a9d9a999d378dd5ade05dabfdbd98c149255523bcf121d",
+      "localization_sha256": "0916e75bd13552776a79995f27ffc64fae4b82ebed9c01a8b49d916b6e5665ca",
+      "condition": "label_only",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "E",
+      "choice": "E",
+      "predicted_object_id": "object_005",
+      "explanation": null,
+      "explanation_word_count": 0,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "E",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "8c1b5c16907973f9e5c3af8eda0f0fec644e535ddadc7267be0bd7f64a734849",
+      "request_sha256": "409b806bd4a9cd6b225940f1224e832a3d853d34c80c2ed99f677139035995b3",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_03_bbq_sauce_state_00_label_only.json",
+      "response_sha256": "8d33b62464114717223d38870ecc7ee4dff046c35c337cf921ca1a84f5900a63"
+    },
+    {
+      "sample_id": "task_03_bbq_sauce_state_00",
+      "partition": "calibration",
+      "task_index": 3,
+      "initial_state_index": 0,
+      "target_description": "bbq sauce",
+      "ground_truth_object_id": "object_005",
+      "input_sha256": "b28c444e108b5aecd7a9d9a999d378dd5ade05dabfdbd98c149255523bcf121d",
+      "localization_sha256": "0916e75bd13552776a79995f27ffc64fae4b82ebed9c01a8b49d916b6e5665ca",
+      "condition": "label_then_evidence",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "E\nThe label on this bottle clearly reads \"BBQ Sauce\" in red and yellow colors.",
+      "choice": "E",
+      "predicted_object_id": "object_005",
+      "explanation": "The label on this bottle clearly reads \"BBQ Sauce\" in red and yellow colors.",
+      "explanation_word_count": 14,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "E",
+          "logprob": -3.7697225252486533e-06
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 20,
+      "raw_log_probability": -3.7697225252486533e-06,
+      "raw_sequence_likelihood": 0.9999962302845802,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "8c1b5c16907973f9e5c3af8eda0f0fec644e535ddadc7267be0bd7f64a734849",
+      "request_sha256": "a6a45b2a74509f979c02af839d082b402dfd7ba100c2d38c0dfce45b493d8467",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_03_bbq_sauce_state_00_label_then_evidence.json",
+      "response_sha256": "f24970b5d0b78da206ecdd197c9aafc6d1f01a76ce267b4c09e73809d751b1a0"
+    },
+    {
+      "sample_id": "task_04_ketchup_state_00",
+      "partition": "calibration",
+      "task_index": 4,
+      "initial_state_index": 0,
+      "target_description": "ketchup",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "d0ce0dab08d12ebadc2949e3016a9dec858f4dd107b55aeb908245b25e3a76ed",
+      "localization_sha256": "202a3b5620a98ca475ce0a98b20de6481ee9400ad8f710311b238a580fcf5b91",
+      "condition": "evidence_then_label",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "The bottle labeled \"Tomato Ketchup\" clearly identifies candidate C as ketchup.  \nC",
+      "choice": "C",
+      "predicted_object_id": "object_003",
+      "explanation": "The bottle labeled \"Tomato Ketchup\" clearly identifies candidate C as ketchup.",
+      "explanation_word_count": 11,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 17,
+          "token": "C",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 18,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        81,
+        82
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "cd5f42cc3b32279a630675eb95b59ab0f2b5316d09155ab0f2b779a7b0f6227c",
+      "request_sha256": "30aa2a09c3f5adf11d3670fbac4ff9b9ea5aa5f4296d9e4e045f08ad8bd05915",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_04_ketchup_state_00_evidence_then_label.json",
+      "response_sha256": "4945c7e061b0d0fc2fb7b26e671eee527d1207731851c0ce268757cdc70e7e56"
+    },
+    {
+      "sample_id": "task_04_ketchup_state_00",
+      "partition": "calibration",
+      "task_index": 4,
+      "initial_state_index": 0,
+      "target_description": "ketchup",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "d0ce0dab08d12ebadc2949e3016a9dec858f4dd107b55aeb908245b25e3a76ed",
+      "localization_sha256": "202a3b5620a98ca475ce0a98b20de6481ee9400ad8f710311b238a580fcf5b91",
+      "condition": "label_only",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "C",
+      "choice": "C",
+      "predicted_object_id": "object_003",
+      "explanation": null,
+      "explanation_word_count": 0,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "C",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "cd5f42cc3b32279a630675eb95b59ab0f2b5316d09155ab0f2b779a7b0f6227c",
+      "request_sha256": "e25f41505845b893103f0477ababd977170c3e68a9f3f6a9f80df67e703a5a21",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_04_ketchup_state_00_label_only.json",
+      "response_sha256": "af7ce0e13306f84821df98259307f0727536778d647fe42266784b56289ff9aa"
+    },
+    {
+      "sample_id": "task_04_ketchup_state_00",
+      "partition": "calibration",
+      "task_index": 4,
+      "initial_state_index": 0,
+      "target_description": "ketchup",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "d0ce0dab08d12ebadc2949e3016a9dec858f4dd107b55aeb908245b25e3a76ed",
+      "localization_sha256": "202a3b5620a98ca475ce0a98b20de6481ee9400ad8f710311b238a580fcf5b91",
+      "condition": "label_then_evidence",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "C\nThe label clearly reads \"Tomato Ketchup\" on the red bottle in candidate C.",
+      "choice": "C",
+      "predicted_object_id": "object_003",
+      "explanation": "The label clearly reads \"Tomato Ketchup\" on the red bottle in candidate C.",
+      "explanation_word_count": 13,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "C",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 20,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "cd5f42cc3b32279a630675eb95b59ab0f2b5316d09155ab0f2b779a7b0f6227c",
+      "request_sha256": "601340600949d7b3e75a451664c54836596e3fa54dd3927bc55d32919e7e1f4b",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_04_ketchup_state_00_label_then_evidence.json",
+      "response_sha256": "f3c3779dab0590fdb5f546f275c417972fd9d57c93aed9f4dc87880f8f88b48c"
+    },
+    {
+      "sample_id": "task_05_tomato_sauce_state_00",
+      "partition": "calibration",
+      "task_index": 5,
+      "initial_state_index": 0,
+      "target_description": "tomato sauce",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "b940bdb5e5cdd4ae5e157d59bd74f440124afb520abdf9f8b29b14662e7a2501",
+      "localization_sha256": "f91a6a93f745d599381ccf57fd17486b3ff6a17c05d44b1318a9f6051376432f",
+      "condition": "evidence_then_label",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "The bottle labeled \"BBQ Sauce\" is the closest match to tomato sauce among the candidates.\nE",
+      "choice": "E",
+      "predicted_object_id": "object_005",
+      "explanation": "The bottle labeled \"BBQ Sauce\" is the closest match to tomato sauce among the candidates.",
+      "explanation_word_count": 15,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 19,
+          "token": "E",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 20,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        90,
+        91
+      ],
+      "correct": false,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "4adb0e5df46fa275dcf22f99e6744c4283a3175f7e37f934cf9795a6a7cb3853",
+      "request_sha256": "99e53056f8d04984c2b3c4d47dddd5db67d71474f28c42c2c564f01c7ad22471",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_05_tomato_sauce_state_00_evidence_then_label.json",
+      "response_sha256": "78b7a1edb6072b42a6a9bac3100de2bdf3c7f76b736eb376769fa7b00b0f416e"
+    },
+    {
+      "sample_id": "task_05_tomato_sauce_state_00",
+      "partition": "calibration",
+      "task_index": 5,
+      "initial_state_index": 0,
+      "target_description": "tomato sauce",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "b940bdb5e5cdd4ae5e157d59bd74f440124afb520abdf9f8b29b14662e7a2501",
+      "localization_sha256": "f91a6a93f745d599381ccf57fd17486b3ff6a17c05d44b1318a9f6051376432f",
+      "condition": "label_only",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "C",
+      "choice": "C",
+      "predicted_object_id": "object_003",
+      "explanation": null,
+      "explanation_word_count": 0,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "C",
+          "logprob": -0.06405963003635406
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 1,
+      "raw_log_probability": -0.06405963003635406,
+      "raw_sequence_likelihood": 0.9379490679261255,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "4adb0e5df46fa275dcf22f99e6744c4283a3175f7e37f934cf9795a6a7cb3853",
+      "request_sha256": "3a25780afb73e6931a648238b4fc1254bf0af3591b202fd7886271ce9debd2bf",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_05_tomato_sauce_state_00_label_only.json",
+      "response_sha256": "64b4f6d9a98681b7dbfee65948281a72bee42a9441428ce4071e75abf46ed3b7"
+    },
+    {
+      "sample_id": "task_05_tomato_sauce_state_00",
+      "partition": "calibration",
+      "task_index": 5,
+      "initial_state_index": 0,
+      "target_description": "tomato sauce",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "b940bdb5e5cdd4ae5e157d59bd74f440124afb520abdf9f8b29b14662e7a2501",
+      "localization_sha256": "f91a6a93f745d599381ccf57fd17486b3ff6a17c05d44b1318a9f6051376432f",
+      "condition": "label_then_evidence",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "C\nThe can in C has a red and green label typical of tomato sauce packaging.",
+      "choice": "C",
+      "predicted_object_id": "object_003",
+      "explanation": "The can in C has a red and green label typical of tomato sauce packaging.",
+      "explanation_word_count": 15,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "C",
+          "logprob": -1.5048530030981055e-06
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 18,
+      "raw_log_probability": -1.5048530030981055e-06,
+      "raw_sequence_likelihood": 0.9999984951481292,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "4adb0e5df46fa275dcf22f99e6744c4283a3175f7e37f934cf9795a6a7cb3853",
+      "request_sha256": "c39338d1b908d08b240c1b18e92a48855126e645e6cafdf0f3c9d49814cbe503",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_05_tomato_sauce_state_00_label_then_evidence.json",
+      "response_sha256": "06be046f6ff848d0d91f6e1092981069d8119694a6986a7de50153c6e8722acb"
+    },
+    {
+      "sample_id": "task_06_butter_state_00",
+      "partition": "calibration",
+      "task_index": 6,
+      "initial_state_index": 0,
+      "target_description": "butter",
+      "ground_truth_object_id": "object_007",
+      "input_sha256": "65ac95184135d12787c3f634987bfe355a9dde51c9c50e5d69ab000584358353",
+      "localization_sha256": "013e1fb641c9a9387a4bd8e12f133e76541b89b9fb5307c694bb0dcd00360295",
+      "condition": "evidence_then_label",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "The object labeled G clearly shows the word \"BUTTER\" on the packaging.\nG",
+      "choice": "G",
+      "predicted_object_id": "object_007",
+      "explanation": "The object labeled G clearly shows the word \"BUTTER\" on the packaging.",
+      "explanation_word_count": 12,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 16,
+          "token": "G",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 17,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        71,
+        72
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "60adbf4fe513a25afe51e507e0bbde836f4c35d7b45a4c7544afb4b4370ca664",
+      "request_sha256": "da6ebb3c2fb3389d79f88a167e3c92a0ab67c6e83e8021ccb886080525ed812e",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_06_butter_state_00_evidence_then_label.json",
+      "response_sha256": "82a5ccbf33043f8d857173723bd9351544ee3913d9d2c69ad73b689c1ab6e661"
+    },
+    {
+      "sample_id": "task_06_butter_state_00",
+      "partition": "calibration",
+      "task_index": 6,
+      "initial_state_index": 0,
+      "target_description": "butter",
+      "ground_truth_object_id": "object_007",
+      "input_sha256": "65ac95184135d12787c3f634987bfe355a9dde51c9c50e5d69ab000584358353",
+      "localization_sha256": "013e1fb641c9a9387a4bd8e12f133e76541b89b9fb5307c694bb0dcd00360295",
+      "condition": "label_only",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "G",
+      "choice": "G",
+      "predicted_object_id": "object_007",
+      "explanation": null,
+      "explanation_word_count": 0,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "G",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "60adbf4fe513a25afe51e507e0bbde836f4c35d7b45a4c7544afb4b4370ca664",
+      "request_sha256": "c33f50965399e223886cf3e3b613fb710ac3a94fe916cf6f387e739f60f56938",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_06_butter_state_00_label_only.json",
+      "response_sha256": "6f6d02f6205be5dd86a124e878a14e813d2e80db2fe6d2f22514e08b69e41dd8"
+    },
+    {
+      "sample_id": "task_06_butter_state_00",
+      "partition": "calibration",
+      "task_index": 6,
+      "initial_state_index": 0,
+      "target_description": "butter",
+      "ground_truth_object_id": "object_007",
+      "input_sha256": "65ac95184135d12787c3f634987bfe355a9dde51c9c50e5d69ab000584358353",
+      "localization_sha256": "013e1fb641c9a9387a4bd8e12f133e76541b89b9fb5307c694bb0dcd00360295",
+      "condition": "label_then_evidence",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "G\nThe packaging clearly shows the word \"BUTTER\" on the box, identifying it as butter.",
+      "choice": "G",
+      "predicted_object_id": "object_007",
+      "explanation": "The packaging clearly shows the word \"BUTTER\" on the box, identifying it as butter.",
+      "explanation_word_count": 14,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "G",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 21,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "60adbf4fe513a25afe51e507e0bbde836f4c35d7b45a4c7544afb4b4370ca664",
+      "request_sha256": "a718fc327da92da325792fb45269b4410cc7c1c898dad7ea18fa843e7cf75d3d",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_06_butter_state_00_label_then_evidence.json",
+      "response_sha256": "1288aa69ffc01ece3c677d6a87456ce8d52d856481326e1f6246a7cc5b40820a"
+    },
+    {
+      "sample_id": "task_07_milk_state_00",
+      "partition": "calibration",
+      "task_index": 7,
+      "initial_state_index": 0,
+      "target_description": "milk",
+      "ground_truth_object_id": "object_002",
+      "input_sha256": "b6f94ba2ebc6a7a98c8b2c1d4f74312476ab580d5abd3bac76274778ec46d14d",
+      "localization_sha256": "16015e3a45b606da2472e2eba6355a621a44ecd31d105a234ee6d484296eaa26",
+      "condition": "evidence_then_label",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "The carton clearly shows the word \"Milk\" and a cow image on the front label.  \nB",
+      "choice": "B",
+      "predicted_object_id": "object_002",
+      "explanation": "The carton clearly shows the word \"Milk\" and a cow image on the front label.",
+      "explanation_word_count": 15,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 19,
+          "token": "B",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 20,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        79,
+        80
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "63223fbc289c752ead5bd01d3e966cf3ac63d52697e8cc037103c6571a86d04b",
+      "request_sha256": "0d77216df081b7ad2af288c0ea47492e0662a0b95288f2a6b14ff3b89ceee67d",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_07_milk_state_00_evidence_then_label.json",
+      "response_sha256": "099b1d86ff764a6c75f62a6dbea7b3de2f42b3a81ad17e8c05a7879404d87cd7"
+    },
+    {
+      "sample_id": "task_07_milk_state_00",
+      "partition": "calibration",
+      "task_index": 7,
+      "initial_state_index": 0,
+      "target_description": "milk",
+      "ground_truth_object_id": "object_002",
+      "input_sha256": "b6f94ba2ebc6a7a98c8b2c1d4f74312476ab580d5abd3bac76274778ec46d14d",
+      "localization_sha256": "16015e3a45b606da2472e2eba6355a621a44ecd31d105a234ee6d484296eaa26",
+      "condition": "label_only",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "B",
+      "choice": "B",
+      "predicted_object_id": "object_002",
+      "explanation": null,
+      "explanation_word_count": 0,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "B",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "63223fbc289c752ead5bd01d3e966cf3ac63d52697e8cc037103c6571a86d04b",
+      "request_sha256": "c37c5958934afc9f81f8ee9811c9b5df63ab9fb7d2616334c73d4dfa5a254920",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_07_milk_state_00_label_only.json",
+      "response_sha256": "bad2e10d5ff33c619672e2094820bdb2eaa3f70606edd897b836caeb44451462"
+    },
+    {
+      "sample_id": "task_07_milk_state_00",
+      "partition": "calibration",
+      "task_index": 7,
+      "initial_state_index": 0,
+      "target_description": "milk",
+      "ground_truth_object_id": "object_002",
+      "input_sha256": "b6f94ba2ebc6a7a98c8b2c1d4f74312476ab580d5abd3bac76274778ec46d14d",
+      "localization_sha256": "16015e3a45b606da2472e2eba6355a621a44ecd31d105a234ee6d484296eaa26",
+      "condition": "label_then_evidence",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "B\nThe package clearly shows the word \"Milk\" and a cow image, indicating it contains milk.",
+      "choice": "B",
+      "predicted_object_id": "object_002",
+      "explanation": "The package clearly shows the word \"Milk\" and a cow image, indicating it contains milk.",
+      "explanation_word_count": 15,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "B",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 21,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "63223fbc289c752ead5bd01d3e966cf3ac63d52697e8cc037103c6571a86d04b",
+      "request_sha256": "44bd6f2f89ebf73893c4a63a72dc3dc34961c40bc263e68f37149f843d3ff7ab",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_07_milk_state_00_label_then_evidence.json",
+      "response_sha256": "60ad6ba542b40d1aa6d638a8cbb068ac1398f3fa11ca09132908c099fb519bd6"
+    },
+    {
+      "sample_id": "task_08_chocolate_pudding_state_00",
+      "partition": "calibration",
+      "task_index": 8,
+      "initial_state_index": 0,
+      "target_description": "chocolate pudding",
+      "ground_truth_object_id": "object_007",
+      "input_sha256": "7625b8388e14c1834a6b6f69071336a0af16509248aac8b9164de935517d23d6",
+      "localization_sha256": "1b3034a3c743a1a663e6535d89e054f0cbed879422f33aed9a80fec22afe14d8",
+      "condition": "evidence_then_label",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "The label on candidate E shows a can with a dark brown top, consistent with chocolate pudding packaging.  \nE",
+      "choice": "E",
+      "predicted_object_id": "object_005",
+      "explanation": "The label on candidate E shows a can with a dark brown top, consistent with chocolate pudding packaging.",
+      "explanation_word_count": 18,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 21,
+          "token": "E",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 22,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        107,
+        108
+      ],
+      "correct": false,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "18555db544c6d2d1ad1fb4b9c6e23cc0ce9bceef5629ab56f544c3e0cd944272",
+      "request_sha256": "660d1f319c399c9e7e522fdc36b972ca30c6011117932836354524dd500b2aa8",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_08_chocolate_pudding_state_00_evidence_then_label.json",
+      "response_sha256": "fdcead716691fb708a4df4db1d9bd0c743825b5e76f5aa1099e551cf63cb16a1"
+    },
+    {
+      "sample_id": "task_08_chocolate_pudding_state_00",
+      "partition": "calibration",
+      "task_index": 8,
+      "initial_state_index": 0,
+      "target_description": "chocolate pudding",
+      "ground_truth_object_id": "object_007",
+      "input_sha256": "7625b8388e14c1834a6b6f69071336a0af16509248aac8b9164de935517d23d6",
+      "localization_sha256": "1b3034a3c743a1a663e6535d89e054f0cbed879422f33aed9a80fec22afe14d8",
+      "condition": "label_only",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "G",
+      "choice": "G",
+      "predicted_object_id": "object_007",
+      "explanation": null,
+      "explanation_word_count": 0,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "G",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "18555db544c6d2d1ad1fb4b9c6e23cc0ce9bceef5629ab56f544c3e0cd944272",
+      "request_sha256": "b59c1b2fd8d536387c103a39880362470f879a2be1c149e7b328338b12094335",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_08_chocolate_pudding_state_00_label_only.json",
+      "response_sha256": "d587fbc37eb364ab6008f22dad63edce714dbbe760ae91f01bb1566e2f3dc0d7"
+    },
+    {
+      "sample_id": "task_08_chocolate_pudding_state_00",
+      "partition": "calibration",
+      "task_index": 8,
+      "initial_state_index": 0,
+      "target_description": "chocolate pudding",
+      "ground_truth_object_id": "object_007",
+      "input_sha256": "7625b8388e14c1834a6b6f69071336a0af16509248aac8b9164de935517d23d6",
+      "localization_sha256": "1b3034a3c743a1a663e6535d89e054f0cbed879422f33aed9a80fec22afe14d8",
+      "condition": "label_then_evidence",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "G\nThe label on candidate G shows \"chocolate pudding\" text and the container matches pudding packaging.",
+      "choice": "G",
+      "predicted_object_id": "object_007",
+      "explanation": "The label on candidate G shows \"chocolate pudding\" text and the container matches pudding packaging.",
+      "explanation_word_count": 15,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "G",
+          "logprob": -0.0015023599844425917
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 21,
+      "raw_log_probability": -0.0015023599844425917,
+      "raw_sequence_likelihood": 0.9984987679933719,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "18555db544c6d2d1ad1fb4b9c6e23cc0ce9bceef5629ab56f544c3e0cd944272",
+      "request_sha256": "982baca1c2eb30433afe3bf8d8bd1b3e1e1550c72fb8e17d77f8d714c23fe6d0",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_08_chocolate_pudding_state_00_label_then_evidence.json",
+      "response_sha256": "2cdfde3c993d7225d24615343daf0012e478d6d4257a2fcfd902858aa1a10294"
+    },
+    {
+      "sample_id": "task_09_orange_juice_state_00",
+      "partition": "calibration",
+      "task_index": 9,
+      "initial_state_index": 0,
+      "target_description": "orange juice",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "5d27c60c4d4fb3d50accda279a9cccb3d4eaaa64ce7e1a99f2f69afaa82859dc",
+      "localization_sha256": "b5c20d5ae778a41be8664ecb3156c18077e0adb28e5458abb854751606124548",
+      "condition": "evidence_then_label",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "The carton clearly shows the label \"ORANGE JUICE\" with an orange graphic on it.  \nC",
+      "choice": "C",
+      "predicted_object_id": "object_003",
+      "explanation": "The carton clearly shows the label \"ORANGE JUICE\" with an orange graphic on it.",
+      "explanation_word_count": 14,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 20,
+          "token": "C",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 21,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        82,
+        83
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "89db9fa0d99ee5cb16cb298c03d8c716657357cdaee7b703a1ca91926eb4afbb",
+      "request_sha256": "6cd306b1501ed29754827ceba08c034c50760442094f27aabb475fc49cf86200",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_09_orange_juice_state_00_evidence_then_label.json",
+      "response_sha256": "76920f4e4ba825f0d31c627bdbd2435f3a6ff9d5777d669a509c3bdc143d9a7a"
+    },
+    {
+      "sample_id": "task_09_orange_juice_state_00",
+      "partition": "calibration",
+      "task_index": 9,
+      "initial_state_index": 0,
+      "target_description": "orange juice",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "5d27c60c4d4fb3d50accda279a9cccb3d4eaaa64ce7e1a99f2f69afaa82859dc",
+      "localization_sha256": "b5c20d5ae778a41be8664ecb3156c18077e0adb28e5458abb854751606124548",
+      "condition": "label_only",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "C",
+      "choice": "C",
+      "predicted_object_id": "object_003",
+      "explanation": null,
+      "explanation_word_count": 0,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "C",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 1,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "89db9fa0d99ee5cb16cb298c03d8c716657357cdaee7b703a1ca91926eb4afbb",
+      "request_sha256": "0024e302be0f3d8ae6031e21fe0fa7986746812b6a6625c7e11e80aa43f88ede",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_09_orange_juice_state_00_label_only.json",
+      "response_sha256": "ad11da296a3c64bf0030099ed26d12cefd6b88fc36a9740bff15aea5ab359ee1"
+    },
+    {
+      "sample_id": "task_09_orange_juice_state_00",
+      "partition": "calibration",
+      "task_index": 9,
+      "initial_state_index": 0,
+      "target_description": "orange juice",
+      "ground_truth_object_id": "object_003",
+      "input_sha256": "5d27c60c4d4fb3d50accda279a9cccb3d4eaaa64ce7e1a99f2f69afaa82859dc",
+      "localization_sha256": "b5c20d5ae778a41be8664ecb3156c18077e0adb28e5458abb854751606124548",
+      "condition": "label_then_evidence",
+      "provider": "openai",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "generated_output_text": "C\nThe label clearly reads \"ORANGE JUICE\" with an orange graphic on the carton.",
+      "choice": "C",
+      "predicted_object_id": "object_003",
+      "explanation": "The label clearly reads \"ORANGE JUICE\" with an orange graphic on the carton.",
+      "explanation_word_count": 13,
+      "format_valid": true,
+      "decision_tokens": [
+        {
+          "index": 0,
+          "token": "C",
+          "logprob": 0.0
+        }
+      ],
+      "decision_token_count": 1,
+      "output_token_count": 20,
+      "raw_log_probability": 0.0,
+      "raw_sequence_likelihood": 1.0,
+      "decision_character_span": [
+        0,
+        1
+      ],
+      "correct": true,
+      "score_type": "raw_label_likelihood",
+      "candidate_map": {
+        "A": "object_001",
+        "B": "object_002",
+        "C": "object_003",
+        "D": "object_004",
+        "E": "object_005",
+        "F": "object_006",
+        "G": "object_007"
+      },
+      "image_sha256": "89db9fa0d99ee5cb16cb298c03d8c716657357cdaee7b703a1ca91926eb4afbb",
+      "request_sha256": "a184824a65127cfae578015be2b3df66a40d270264f98e56ab94f0e8bcdf776d",
+      "response_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/explanation_pilot/responses/task_09_orange_juice_state_00_label_then_evidence.json",
+      "response_sha256": "6227dadb34002bf02e122014275f9d389dc16b96080e8fe78055b465eff923cb"
+    }
+  ]
+}

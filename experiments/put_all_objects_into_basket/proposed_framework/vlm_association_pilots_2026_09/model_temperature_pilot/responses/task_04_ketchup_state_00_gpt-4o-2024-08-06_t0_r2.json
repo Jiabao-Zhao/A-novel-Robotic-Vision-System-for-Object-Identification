@@ -1,0 +1,275 @@
+{
+  "sample_id": "task_04_ketchup_state_00",
+  "partition": "calibration",
+  "task_index": 4,
+  "initial_state_index": 0,
+  "initial_state_sha256": "65c2427a4638cca8aa08a1ffc2d91504ef3fffc97ca065efb368e4a83ec3d8fa",
+  "image_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/candidate_normalized_500/scenes/task_04_ketchup/init_state_00/vlm_roi_contact_sheet.png",
+  "localization_path": "outputs/simulation/experiments/put_all_objects_into_basket/openai_vlm_confidence/candidate_normalized_500/scenes/task_04_ketchup/init_state_00/localization.json",
+  "target_description": "ketchup",
+  "ground_truth_object_id": "object_003",
+  "target_localized": true,
+  "evaluation_ground_truth_path": "scenes/task_04_ketchup/init_state_00/evaluation_ground_truth.json",
+  "image_sha256": "1721654c02de62ed007d7c780b764083d6e33b067cfc6cdb4ab09570660b14ef",
+  "localization_sha256": "202a3b5620a98ca475ce0a98b20de6481ee9400ad8f710311b238a580fcf5b91",
+  "prompt_sha256": "c39155b60de71eb329770e8be533e0eeec416d9635a9fe7285270a92214f75f2",
+  "prompt": "The image contains objects already localized by an RGB-D point-cloud pipeline.\nAssociate exactly one semantic target with exactly one labeled candidate.\nDo not estimate coordinates, add objects, or interpret the surrounding robot task.\n\nTarget: ketchup\n\nCandidate map and depth-derived metadata:\n[{\"choice\":\"A\",\"object_id\":\"object_001\",\"bbox_2d_xyxy\":[539,314,718,485],\"centroid_3d_m\":[0.26246365117963644,0.014540362464597039,1.0387910066013655],\"size_3d_m\":[0.16814365424191996,0.19628662080050419,0.18955223262310028]},{\"choice\":\"B\",\"object_id\":\"object_002\",\"bbox_2d_xyxy\":[160,426,228,520],\"centroid_3d_m\":[-0.19986109730977392,0.09350964391792882,0.979686627740817],\"size_3d_m\":[0.07060569079173845,0.0993041813750464,0.06812143325805664]},{\"choice\":\"C\",\"object_id\":\"object_003\",\"bbox_2d_xyxy\":[169,288,223,402],\"centroid_3d_m\":[-0.23710851219211168,-0.04020224339671849,1.1556940122127415],\"size_3d_m\":[0.06281969083857208,0.14067888287534822,0.09152543544769287]},{\"choice\":\"D\",\"object_id\":\"object_004\",\"bbox_2d_xyxy\":[405,277,453,389],\"centroid_3d_m\":[0.0582857562281982,-0.058135180222636786,1.1804994770870743],\"size_3d_m\":[0.0626318331259174,0.14122649044762445,0.08109617233276367]},{\"choice\":\"E\",\"object_id\":\"object_005\",\"bbox_2d_xyxy\":[298,270,340,371],\"centroid_3d_m\":[-0.08419691704492203,-0.08085769838770393,1.2169634335709416],\"size_3d_m\":[0.053796545237558786,0.13001142423458592,0.08352303504943848]},{\"choice\":\"F\",\"object_id\":\"object_006\",\"bbox_2d_xyxy\":[272,384,316,478],\"centroid_3d_m\":[-0.1008097803374204,0.05824160604939919,1.0271327902650194],\"size_3d_m\":[0.04931263298390183,0.1066774743409287,0.06496500968933105]},{\"choice\":\"G\",\"object_id\":\"object_007\",\"bbox_2d_xyxy\":[394,494,435,555],\"centroid_3d_m\":[0.030671708480743343,0.143990965337842,0.96523508174607],\"size_3d_m\":[0.04151562557109799,0.05522429101169196,0.06676401197910309]}]\n\nN means none of the localized candidates corresponds to the target.\nReturn only one label, without punctuation or explanation, from: A, B, C, D, E, F, G, N",
+  "candidate_map": {
+    "A": "object_001",
+    "B": "object_002",
+    "C": "object_003",
+    "D": "object_004",
+    "E": "object_005",
+    "F": "object_006",
+    "G": "object_007",
+    "N": null
+  },
+  "requested_model": "gpt-4o-2024-08-06",
+  "model": "gpt-4o-2024-08-06",
+  "temperature": 0.0,
+  "repeat": 2,
+  "order_index": 5,
+  "call_key": "task_04_ketchup_state_00_gpt-4o-2024-08-06_t0_r2",
+  "generated_output_text": "C",
+  "choice": "C",
+  "predicted_object_id": "object_003",
+  "decision_tokens": [
+    {
+      "index": 0,
+      "token": "C",
+      "logprob": -1.2352385965641588e-05
+    }
+  ],
+  "decision_token_count": 1,
+  "raw_log_probability": -1.2352385965641588e-05,
+  "raw_sequence_likelihood": 0.9999876476903248,
+  "correct": true,
+  "full_response_log_probability": -1.2352385965641588e-05,
+  "first_position_choice_logprobs": {
+    "C": -1.2352385965641588e-05,
+    "B": -11.484387397766113,
+    "D": -14.250012397766113,
+    "A": -14.515637397766113,
+    "E": -14.937512397766113,
+    "F": -15.687512397766113,
+    " C": -16.390636444091797,
+    "G": -16.953136444091797,
+    "N": -19.281261444091797
+  },
+  "provider_response": {
+    "id": "chatcmpl-EL7siBnJZFRChH1Svz9gGBGQBHMcw",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "logprobs": {
+          "content": [
+            {
+              "token": "C",
+              "bytes": [
+                67
+              ],
+              "logprob": -1.2352385965641588e-05,
+              "top_logprobs": [
+                {
+                  "token": "C",
+                  "bytes": [
+                    67
+                  ],
+                  "logprob": -1.2352385965641588e-05
+                },
+                {
+                  "token": "B",
+                  "bytes": [
+                    66
+                  ],
+                  "logprob": -11.484387397766113
+                },
+                {
+                  "token": "D",
+                  "bytes": [
+                    68
+                  ],
+                  "logprob": -14.250012397766113
+                },
+                {
+                  "token": "A",
+                  "bytes": [
+                    65
+                  ],
+                  "logprob": -14.515637397766113
+                },
+                {
+                  "token": "E",
+                  "bytes": [
+                    69
+                  ],
+                  "logprob": -14.937512397766113
+                },
+                {
+                  "token": "F",
+                  "bytes": [
+                    70
+                  ],
+                  "logprob": -15.687512397766113
+                },
+                {
+                  "token": "The",
+                  "bytes": [
+                    84,
+                    104,
+                    101
+                  ],
+                  "logprob": -15.843762397766113
+                },
+                {
+                  "token": "Choice",
+                  "bytes": [
+                    67,
+                    104,
+                    111,
+                    105,
+                    99,
+                    101
+                  ],
+                  "logprob": -16.031261444091797
+                },
+                {
+                  "token": " C",
+                  "bytes": [
+                    32,
+                    67
+                  ],
+                  "logprob": -16.390636444091797
+                },
+                {
+                  "token": "G",
+                  "bytes": [
+                    71
+                  ],
+                  "logprob": -16.953136444091797
+                },
+                {
+                  "token": "```",
+                  "bytes": [
+                    96,
+                    96,
+                    96
+                  ],
+                  "logprob": -18.718761444091797
+                },
+                {
+                  "token": "**",
+                  "bytes": [
+                    42,
+                    42
+                  ],
+                  "logprob": -19.125011444091797
+                },
+                {
+                  "token": "I",
+                  "bytes": [
+                    73
+                  ],
+                  "logprob": -19.218761444091797
+                },
+                {
+                  "token": "N",
+                  "bytes": [
+                    78
+                  ],
+                  "logprob": -19.281261444091797
+                },
+                {
+                  "token": "Object",
+                  "bytes": [
+                    79,
+                    98,
+                    106,
+                    101,
+                    99,
+                    116
+                  ],
+                  "logprob": -19.359386444091797
+                },
+                {
+                  "token": "\"C",
+                  "bytes": [
+                    34,
+                    67
+                  ],
+                  "logprob": -19.593761444091797
+                },
+                {
+                  "token": "Option",
+                  "bytes": [
+                    79,
+                    112,
+                    116,
+                    105,
+                    111,
+                    110
+                  ],
+                  "logprob": -19.859386444091797
+                },
+                {
+                  "token": "\u200b",
+                  "bytes": [
+                    226,
+                    128,
+                    139
+                  ],
+                  "logprob": -19.906261444091797
+                },
+                {
+                  "token": "\n",
+                  "bytes": [
+                    10
+                  ],
+                  "logprob": -20.328136444091797
+                },
+                {
+                  "token": "Based",
+                  "bytes": [
+                    66,
+                    97,
+                    115,
+                    101,
+                    100
+                  ],
+                  "logprob": -20.359386444091797
+                }
+              ]
+            }
+          ]
+        },
+        "message": {
+          "content": "C",
+          "role": "assistant",
+          "annotations": []
+        }
+      }
+    ],
+    "created": 1788703892,
+    "model": "gpt-4o-2024-08-06",
+    "object": "chat.completion",
+    "service_tier": "default",
+    "system_fingerprint": "fp_ffd8308b42",
+    "usage": {
+      "completion_tokens": 1,
+      "prompt_tokens": 1885,
+      "total_tokens": 1886,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 0,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 0
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cached_tokens": 1792
+      }
+    }
+  },
+  "captured_at": "2026-09-06T14:11:31.518118+00:00"
+}
