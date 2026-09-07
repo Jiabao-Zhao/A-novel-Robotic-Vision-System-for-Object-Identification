@@ -215,19 +215,20 @@ def execute_top_grasp_and_place(
     place_xyz_m,
     callback=None,
 ):
-    """Execute a top grasp using a perception-derived world-frame grip-site pose."""
+    """Reference sequence using the same skills as the LLM plan executor."""
+    observation = pick_object(environment, observation, world_T_grasp, callback)
+    return place_object(environment, observation, world_T_grasp, place_xyz_m, callback)
+
+
+def pick_object(environment, observation, world_T_grasp, callback=None):
+    """Approach, close, and lift using a perception-derived grip-site pose."""
     grasp_pose = np.asarray(world_T_grasp, dtype=float)
     if grasp_pose.shape != (4, 4) or not np.all(np.isfinite(grasp_pose)):
         raise ValueError("world_T_grasp must be a finite 4x4 matrix.")
-    place = np.asarray(place_xyz_m, dtype=float)
     pregrasp_pose = grasp_pose.copy()
     pregrasp_pose[2, 3] += 0.15
     lift_pose = grasp_pose.copy()
     lift_pose[2, 3] = 0.27
-    preplace_pose = grasp_pose.copy()
-    preplace_pose[:3, 3] = [place[0], place[1], max(0.29, place[2] + 0.16)]
-    retreat_pose = preplace_pose.copy()
-    retreat_pose[2, 3] = 0.35
 
     observation = move_eef_to_pose(
         environment,
@@ -254,12 +255,22 @@ def execute_top_grasp_and_place(
     observation = move_eef_to_pose(
         environment, observation, lift_pose, CLOSE_GRIPPER, "lift_target", callback
     )
+    return observation
+
+
+def place_object(environment, observation, world_T_grasp, place_xyz_m, callback=None):
+    """Release into an open container; retains the original basket controller."""
+    preplace_pose = np.asarray(world_T_grasp, dtype=float).copy()
+    place = np.asarray(place_xyz_m, dtype=float)
+    preplace_pose[:3, 3] = [place[0], place[1], max(0.29, place[2] + 0.16)]
+    retreat_pose = preplace_pose.copy()
+    retreat_pose[2, 3] = 0.35
     observation = move_eef_to_pose(
         environment,
         observation,
         preplace_pose,
         CLOSE_GRIPPER,
-        "move_above_basket",
+        "move_above_destination",
         callback,
     )
     observation = hold_gripper(

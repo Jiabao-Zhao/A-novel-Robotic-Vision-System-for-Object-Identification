@@ -327,12 +327,14 @@ prior, just as a physical deployment would obtain a model from its CAD library.
 omitting the index retains task 7 (milk) as the backward-compatible default. It
 uses the rendered agent-view RGB-D observation, the calibration bridge, the
 existing depth localizer, the repository's OpenAI VLM
-association, target CAD-to-observation alignment, robot proprioception, and
-normalized OSC pose actions. The VLM receives a full-scene plus enlarged-crop
-contact sheet labeled only with localized `object_id` values. It independently
-associates the semantic descriptions for the product and basket; it does not
-infer which one is moved or used as a destination. The task-execution layer
-retains those relationships from the LIBERO task definition. The target object
+association, target CAD-to-observation alignment, an LLM plan, robot proprioception,
+and normalized OSC pose actions. The VLM receives the original task instruction
+and a full-scene plus enlarged-crop contact sheet marked with candidate letters.
+It returns one `letter: object name` entry per mentioned object using the joint
+prompt from `scripts.run_vlm_multi_object_pilot`. No pre-extracted target list,
+candidate metadata, or task roles are supplied to the VLM. Letter-to-object-ID
+mapping and output-completeness checks happen locally. The LLM infers task roles
+from the original instruction and returns object IDs in its action sequence. The target object
 pose comes from CAD registration. A simulation-only grasp conversion then
 handles the CAD's declared Y-up or Z-up convention, keeps the gripper tool axis
 vertical, selects the closer 180-degree-equivalent wrist yaw, and chooses a
@@ -340,9 +342,16 @@ grasp height from the registered CAD extent. Flat packages use their center,
 medium-height products use a small upward offset, and tall products are grasped
 40 mm below the top. The basket place position remains its depth-localized
 centroid.
-Simulator segmentation, simulator object identities, and ground-truth object
-poses are not method inputs. LIBERO's task success predicate is read only after
-execution as the evaluation result.
+The controlled simulation condition assumes a correct human response whenever
+the confidence gate defers. `ASSUME_CORRECT_HUMAN = True` resolves those cases
+using simulator identity matched to an unambiguous localized candidate. This is
+an explicitly logged substitute for a human response, not an actual human trial.
+Accepted VLM decisions are not corrected. Missing or ambiguous localized targets
+still fail. Only an object ID is returned; CAD registration, grasp generation,
+and execution continue using estimated geometry. The run records whether this
+identity assistance was used. Simulator segmentation and ground-truth execution
+poses are not supplied to the pipeline. LIBERO's task success predicate is checked during
+execution for evaluation and episode termination; it is not a planner input.
 
 Before each RGB-D frame is captured, the environment advances ten zero-pose,
 open-gripper physics steps (0.5 seconds at 20 Hz). This matches LeRobot's
@@ -353,37 +362,114 @@ only translation along the plane plus yaw.
 Set `OPENAI_API_KEY` in the WSL process environment before running the task.
 
 Each episode saves its perception inputs, localization JSON, enlarged VLM
-visual prompt, independent semantic association results, CAD transforms and aligned/augmented point
+visual prompt, joint VLM request and full provider response/token usage,
+resolved associations, any assumed-human identity audit, CAD transforms and aligned/augmented point
 clouds, normalized action log, final agent and wrist RGB-D observations,
 success value, and MP4 video beneath its corresponding
-`proposed_framework/task_XX_product/init_state_00/` folder. This remains a
-top-grasp execution baseline, not a general grasp planner or VLA policy.
+task/state folder. It uses bounded top-grasp/container-placement skills, not
+a general grasp planner or VLA policy.
 
 The current higher-resolution trial renders the proposed method at 768 x 768,
-uses 448-pixel VLM contact-sheet tiles, and queries one explicit semantic target
-description at a time. Its artifacts are isolated under
-`proposed_framework/_resolution_trials/768x768_semantic_association_grasp_pose_v5/`
-so the completed 512 x 512 breadth sweep and the earlier XYZ-controller trial
-are not overwritten. This simulation-only controller maps the registered
+uses 448-pixel VLM contact-sheet tiles, and queries all mentioned objects jointly.
+Its artifacts are isolated under
+`proposed_framework/_resolution_trials/768x768_joint_instruction_assumed_human_v2/`.
+The old one-target `768x768_raw_likelihood_gate_llm_plan_v1` pilot remains intact.
+The CAD catalog now declares BBQ sauce Z-up and alphabet soup/tomato sauce Y-up,
+matching their source mesh frames. These corrections were checked against frozen
+observations before the new pilot. This simulation-only controller maps the registered
 `world_T_cad` pose to a collision-aware robosuite grip-site target and uses its
 OSC pose controller; it does not alter the physical RealSense/UR5e path.
 
-The VLM response is a compact choice label mapped deterministically back to an
-`object_id`. The association score is always
+### Executable LLM plans and failure evidence
+
+The runner now calls `simulation.libero_planning.generate_simulation_plan` after
+CAD alignment. It reuses the OpenAI client in `LLM_planner.py`, with
+`OPENAI_LLM_MODEL` (default `gpt-4.1-mini`) and temperature 0. Set this to a fixed
+supported model snapshot for an experiment. The joint VLM defaults to
+`gpt-4.1-mini-2025-04-14`. The physical one-target VLM path and RTDE action schema are
+not used by the simulation.
+
+The planner receives the original task text and resolved objects with descriptions,
+estimated centroids, CAD transforms/dimensions where available, grasp bindings,
+placement capabilities, and robot proprioception. All geometry uses meters in
+explicit frames. It receives no expected plan or source/destination role labels.
+The supported structured actions are `pick(object_id)` and
+`place(object_id, destination_id, relation="in")`. Numeric motion parameters are
+bound by the executor from perception, never generated by the LLM. Only the
+existing ten LIBERO-Object basket tasks are connected; plate placement and the
+proposed broader task selection still require separate integration. Only the
+associated product currently has a CAD-derived grasp binding, so this is a
+limited instruction-to-skill evaluation, not an unconstrained planning benchmark.
+
+The complete plan is checked before any task motion: known IDs, exact arguments,
+supported capabilities, one held object, placement after picking, and no reuse
+of an object's stale initial pose after moving it. Rejected plans, blocked plans,
+refusals, incomplete responses, and API failures stop the episode without a
+scripted fallback. A controller exception remains an execution error. JSON
+schema compliance alone is not evidence that a plan satisfies the task.
+
+Each run saves `llm_plan.json` with the prompt, context, model settings, raw provider
+response/token usage, parsed plan, and validation outcome. `execution_inputs.json`
+freezes the perception values and controller/environment configuration.
+`episode.json` includes planning status, success, and action logs linked to plan
+action indices. Task consistency is graded against the instruction's object
+relationships only in the evaluation layer; this grade never guides execution.
+It is conditional on correct upstream identities and geometry, and does not
+automatically assign a causal failure stage. Pre-planning exceptions record
+`failure_observed_at` while leaving causal attribution unresolved.
+
+Run a selected initial arrangement programmatically inside WSL:
+
+```python
+from scripts.libero_task_execution import main
+episode_path = main(7, initial_state_index=4)
+```
+
+The existing `python -m scripts.libero_task_execution 7` command uses state 0.
+It exits unsuccessfully when the task fails; the Python function returns the
+episode path for completed attempts, including planning stops. Existing output
+directories cannot be overwritten.
+
+For an unsuccessful episode that reached planning, make an explicit diagnostic
+replay in a new directory:
+
+```python
+from scripts.libero_task_execution import replay_with_reference_plan
+episode_path = replay_with_reference_plan(
+    source_dir="outputs/simulation/experiments/put_all_objects_into_basket/proposed_framework/"
+               "_resolution_trials/768x768_joint_instruction_assumed_human_v2/task_07_milk/init_state_00",
+    output_root="outputs/simulation/planning_diagnostics/milk_state00_reference",
+)
+```
+
+Replay uses the same frozen perception values, initial state, settling actions,
+controller and executor source hashes, library versions, and episode budget.
+It verifies both the official initial-state hash and the full simulator-state
+hash after settling. State values used for this integrity check are never
+exposed to the planner. No VLM, CAD, or LLM calls are repeated. Only the plan is
+replaced with a checked pick/place reference using the same resolved IDs.
+The original episode remains unchanged. `reference_comparison.json` records the
+paired outcomes; these diagnostic executions are excluded from the main trial
+count. Reference success supports a planning contribution only when the
+executable plan changed, subject to upstream correctness. The original planning
+status distinguishes rejected model output from blocked plans or service failures.
+Two failures, or different outcomes from identical executable plans, leave the
+cause unresolved.
+
+Each joint VLM entry contains a decision letter mapped deterministically back to
+an `object_id`. Its gate score is
 `exp(sum(decision-bearing token logprobs))`, without counting standalone
 formatting tokens. It is a raw generated-label likelihood, not a calibrated
-probability of correct object identity. Candidate-normalized scores and their
-margin are optional diagnostics only; they never replace the association score
-or control the gate. The provisional threshold of 0.75 controls autonomous
-acceptance versus human clarification and must be calibrated on held-out
-experiments. Both paths produce the same `final_object_id` field before CAD
+probability of correct object identity. Whole-response and letter-plus-name
+likelihoods are saved only as diagnostics. The inherited threshold
+`0.9999832372181827` is provisional and has not been validated for the joint
+prompt; later entry probabilities also depend on earlier generated output.
+Malformed/incomplete output or missing decision-letter log probabilities defers
+to the assumed human. Both paths produce the same `final_object_id` field before CAD
 retrieval. A `none` decision leaves `final_object_id` null and stops CAD
 retrieval for that target.
 
-The locally tested OpenAI Chat Completions endpoint returns the chosen output
-token log probability and up to 20 top-token alternatives for
-`gpt-4.1-mini`. Candidate-normalized scores are emitted only when those
-alternatives cover every valid localized-object label plus `N`.
+The physical single-target VLM retains its existing prompt and threshold settings.
 
 ## SmolVLA baseline and matched comparison
 
@@ -472,11 +558,10 @@ python -m scripts.libero_task_execution 1
 # continue through task index 9
 ```
 
-This branch sends the generated contact-sheet image and localized candidate
-metadata to the configured OpenAI VLM. The VLA branch makes no cloud
-API call. Each new proposed-method image payload requires explicit approval
-before it is sent to an external VLM; do not treat the ten-task proposed sweep
-as an unattended cloud job. Only run the cross-method comparator when both
+This branch sends the generated letter-marked contact sheet and task instruction
+to the configured OpenAI VLM. The VLA branch makes no cloud API call. Obtain
+authorization for the intended cloud evaluation scope before starting it;
+existing user authorization for that scope covers the batch. Only run the cross-method comparator when both
 branches use the same image resolution:
 
 ```bash

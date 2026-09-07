@@ -771,6 +771,7 @@ def create_roi_contact_sheet(
     output_path,
     tile_size_px=224,
     columns=4,
+    candidate_labels=None,
 ):
     """Create a full-scene plus enlarged-candidate visual prompt for the VLM."""
     image = cv2.imread(str(rgb_path), cv2.IMREAD_COLOR)
@@ -802,7 +803,8 @@ def create_roi_contact_sheet(
         _place_contact_sheet_tile(
             canvas,
             image[y1:y2, x1:x2],
-            str(item.get("object_id", "unknown")),
+            (candidate_labels[str(item["object_id"])] if candidate_labels is not None
+             else str(item.get("object_id", "unknown"))),
             tile_index,
             tile_size_px,
             columns,

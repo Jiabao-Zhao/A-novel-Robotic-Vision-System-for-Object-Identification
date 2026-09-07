@@ -22,7 +22,7 @@ CATALOG_CASES = (
         "libero_object_alphabet_soup",
         "stable_hope_objects/alphabet_soup/textured.obj",
         0.01,
-        "Z",
+        "Y",
         "9f83394a8b6d243b2133be244b3de83e9318401e53a5768063031795bc6919a0",
     ),
     (
@@ -46,7 +46,7 @@ CATALOG_CASES = (
         "libero_object_bbq_sauce",
         "stable_hope_objects/bbq_sauce/bbq_sauce.obj",
         0.0077,
-        "Y",
+        "Z",
         "69030e437ba6d8970e925f1b5344b80d2a67511658c2625dfbeb508f53e34417",
     ),
     (
@@ -62,7 +62,7 @@ CATALOG_CASES = (
         "libero_object_tomato_sauce",
         "stable_hope_objects/tomato_sauce/textured.obj",
         0.01,
-        "Z",
+        "Y",
         "b75cd4063af13da2c3c95f4ed6cc2fbdc00f51730b49b704feb6f1ef362204bf",
     ),
     (

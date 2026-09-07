@@ -1,6 +1,7 @@
-"""Run one RGB-D/VLM/CAD LIBERO-Object episode."""
+"""Run one RGB-D/VLM/CAD/LLM LIBERO-Object episode or a reference-plan replay."""
 
 import hashlib
+import importlib.metadata
 import json
 import sys
 from pathlib import Path
@@ -9,11 +10,16 @@ import cv2
 import numpy as np
 
 from simulation.libero_cad import register_libero_cad_to_observation
+from simulation.libero_assumed_human import assumed_human_selection
+from simulation.libero_joint_association import associate_instruction_from_localization
 from simulation.libero_control import (
     OPEN_GRIPPER,
-    execute_top_grasp_and_place,
     hold_gripper,
     top_down_grasp_pose,
+)
+from simulation.libero_planning import (
+    build_simulation_context, generate_simulation_plan, execute_simulation_plan,
+    evaluate_simulation_plan, reference_pick_place_plan, validate_simulation_plan,
 )
 from simulation.libero_env import LiberoIntegrationError, LiberoTaskEnvironment
 from simulation.libero_experiment import (
@@ -25,7 +31,7 @@ from simulation.libero_io import save_libero_observation
 from simulation.libero_sensor import LiberoRGBDSensor
 from simulation.perception_adapter import run_libero_localization
 from vlm_module import (
-    associate_targets_from_localization,
+    candidate_choice_map,
     contact_sheet_candidate_bbox_map,
     create_roi_contact_sheet,
     opencv_human_resolver,
@@ -38,10 +44,11 @@ CAMERA_NAME = "agentview"
 IMAGE_WIDTH = 768
 IMAGE_HEIGHT = 768
 VLM_CONTACT_SHEET_TILE_SIZE_PX = 448
-RUN_VARIANT = "768x768_raw_likelihood_gate_grasp_pose_v6"
+RUN_VARIANT = "768x768_joint_instruction_assumed_human_v2"
+ASSUME_CORRECT_HUMAN = True  # User-requested simulation condition, not measured human input.
 # Development operating point selected on the 500-trial LIBERO
-# calibration/validation partitions. It is specific to this simulation
-# experiment and is not a calibrated probability of correctness.
+# calibration/validation partitions for the one-target prompt. It is provisional
+# for this joint prompt and is not a calibrated probability of correctness.
 LIBERO_RAW_ASSOCIATION_THRESHOLD = 0.9999832372181827
 CONTROL_FREQUENCY_HZ = 20
 EPISODE_HORIZON_STEPS = 280
@@ -50,7 +57,7 @@ RANDOM_SEED = 1000
 INITIAL_STATE_INDEX = 0
 INITIAL_PHYSICS_SETTLE_STEPS = 10
 VIDEO_FRAME_STRIDE = 2
-METHOD_NAME = "rgbd_vlm_cad_scripted_controller"
+METHOD_NAME = "rgbd_vlm_cad_llm_planner"
 
 
 class _EpisodeSucceeded(RuntimeError):
@@ -65,14 +72,12 @@ class _EnvironmentTerminated(RuntimeError):
     pass
 
 
-def main(task_index=DEFAULT_TASK_INDEX):
+def main(task_index=DEFAULT_TASK_INDEX, *, initial_state_index=INITIAL_STATE_INDEX,
+         output_root=None, reference_source=None):
     task_index, target_slug, instruction = libero_object_task(task_index)
-    output_root = episode_result_dir(
-        PROPOSED_METHOD_FOLDER,
-        task_index,
-        INITIAL_STATE_INDEX,
-        run_variant=RUN_VARIANT,
-    )
+    output_root = Path(output_root or episode_result_dir(
+        PROPOSED_METHOD_FOLDER, task_index, initial_state_index, run_variant=RUN_VARIANT,
+    )).resolve()
     if output_root.exists() and (
         not output_root.is_dir() or any(output_root.iterdir())
     ):
@@ -80,8 +85,9 @@ def main(task_index=DEFAULT_TASK_INDEX):
             f"Refusing to overwrite the existing proposed-method result: {output_root}. "
             "Move the directory aside before deliberately rerunning this task."
         )
+    progress = {"stage": "simulation_setup"}
     try:
-        return _run_task(task_index)
+        return _run_task(task_index, output_root, initial_state_index, reference_source, progress)
     except Exception as error:
         _write_pipeline_failure(
             output_root,
@@ -89,19 +95,25 @@ def main(task_index=DEFAULT_TASK_INDEX):
             target_slug,
             instruction,
             error,
+            initial_state_index=initial_state_index,
+            failure_stage=progress["stage"],
+            simulator_identity_used=progress.get("simulator_identity_used", False),
         )
         raise
 
 
-def _run_task(task_index):
+def _run_task(task_index, output_root, initial_state_index, reference_source, progress):
     task_index, target_slug, expected_instruction = libero_object_task(task_index)
     target_name = target_slug.replace("_", " ")
-    output_root = episode_result_dir(
-        PROPOSED_METHOD_FOLDER,
-        task_index,
-        INITIAL_STATE_INDEX,
-        run_variant=RUN_VARIANT,
-    )
+    frozen = None
+    if reference_source is not None:
+        frozen = json.loads((Path(reference_source) / "execution_inputs.json").read_text())
+        if frozen["execution_config"] != _execution_config(task_index, initial_state_index):
+            raise ValueError("Reference replay requires the same task, state, controller, and settings.")
+        if frozen["instruction"] != expected_instruction:
+            raise ValueError("Reference instruction does not match the task catalog.")
+        if frozen["inputs_sha256"] != _json_sha256(frozen["perception"]):
+            raise ValueError("Frozen perception inputs have changed.")
     perception_root = output_root / "perception"
     action_log = []
     video_frames = []
@@ -118,10 +130,12 @@ def _run_task(task_index):
     ) as environment:
         raw_observation = environment.reset(
             seed=RANDOM_SEED,
-            init_state_index=INITIAL_STATE_INDEX,
+            init_state_index=initial_state_index,
         )
         initial_state_sha256 = environment.last_init_state_sha256
         initial_state_count = environment.initial_state_count
+        if frozen is not None and frozen["initial_state_sha256"] != initial_state_sha256:
+            raise ValueError("Reference replay initial-state hash differs from the original.")
         raw_observation = hold_gripper(
             environment,
             raw_observation,
@@ -130,6 +144,12 @@ def _run_task(task_index):
             INITIAL_PHYSICS_SETTLE_STEPS,
         )
         environment.set_control_mode(CONTROL_MODE)
+        # Integrity evidence only; no simulator object state is exposed to the planner.
+        settled_state_sha256 = hashlib.sha256(
+            np.ascontiguousarray(environment.sim.get_state().flatten()).tobytes()
+        ).hexdigest()
+        if frozen is not None and frozen["settled_state_sha256"] != settled_state_sha256:
+            raise ValueError("Reference replay simulator state differs after settling.")
         sensor = LiberoRGBDSensor(environment, CAMERA_NAME)
         observation = sensor.capture(raw_observation)
         if observation.instruction != expected_instruction:
@@ -137,87 +157,166 @@ def _run_task(task_index):
                 "LIBERO instruction does not match the experiment catalog: "
                 f"expected {expected_instruction!r}, received {observation.instruction!r}."
             )
-        capture_paths = save_libero_observation(
-            observation,
-            environment,
-            perception_root / "capture",
-        )
-        localization, localization_paths, workspace_mask = run_libero_localization(
-            observation,
-            rgb_path=capture_paths["rgb"],
-            output_root=perception_root,
-        )
-        vlm_visual_prompt_path = create_roi_contact_sheet(
-            capture_paths["rgb"],
-            localization_paths["localization"],
-            output_root / "vlm_roi_contact_sheet.png",
-            tile_size_px=VLM_CONTACT_SHEET_TILE_SIZE_PX,
-        )
-        vlm_result_path = associate_targets_from_localization(
-            [target_name, "basket"],
-            image_path=vlm_visual_prompt_path,
-            localization_path=localization_paths["localization"],
-            output_path=output_root / "vlm_result.json",
-            threshold=LIBERO_RAW_ASSOCIATION_THRESHOLD,
-            human_resolver=opencv_human_resolver,
-            clarification_bboxes=contact_sheet_candidate_bbox_map(
+        if frozen is None:
+            capture_paths = save_libero_observation(
+                observation,
+                environment,
+                perception_root / "capture",
+            )
+            progress["stage"] = "initial_pose_estimation"
+            localization, localization_paths, workspace_mask = run_libero_localization(
+                observation,
+                rgb_path=capture_paths["rgb"],
+                output_root=perception_root,
+            )
+            vlm_visual_prompt_path = create_roi_contact_sheet(
+                capture_paths["rgb"],
                 localization_paths["localization"],
+                output_root / "vlm_roi_contact_sheet.png",
                 tile_size_px=VLM_CONTACT_SHEET_TILE_SIZE_PX,
-            ),
-        )
-        task_associations = task_associations_from_vlm_result(
-            vlm_result_path,
-            target_name,
-        )
-        objects_by_id = {
-            item["object_id"]: item for item in localization["objects"]
-        }
-        target_object = objects_by_id[task_associations["target_object_id"]]
-        basket = objects_by_id[task_associations["basket_object_id"]]
-        target_depth_centroid_world_m = camera_point_to_world(
-            target_object["centroid_3d_m"], observation.world_T_camera
-        )
-        basket_world_m = camera_point_to_world(
-            basket["centroid_3d_m"], observation.world_T_camera
-        )
-        target_cad_registration = register_libero_cad_to_observation(
-            object_type=target_name,
-            object_id=task_associations["target_object_id"],
-            localization=localization,
-            world_T_camera=observation.world_T_camera,
-            output_dir=output_root / "cad_registration" / target_slug,
-        )
-        target_world_m = np.asarray(
-            target_cad_registration["registered_center_world_m"],
-            dtype=float,
-        )
-        from robosuite.utils.transform_utils import quat2mat
+                candidate_labels={object_id: label for label, object_id in
+                                  candidate_choice_map(localization["objects"]).items()},
+            )
+            progress["stage"] = "classification"
 
-        world_T_grasp = top_down_grasp_pose(
-            target_cad_registration["world_T_cad"],
-            target_cad_registration["cad_center_cad_m"],
-            target_cad_registration["cad_extent_m"],
-            target_cad_registration["cad_up_axis"],
-            quat2mat(np.asarray(raw_observation["robot0_eef_quat"], dtype=float)),
-        )
-        if not np.allclose(world_T_grasp[:3, 2], [0.0, 0.0, -1.0], atol=2e-3):
-            raise RuntimeError("CAD-derived grasp pose is not top-down in the world frame.")
+            def correct_human(request):
+                progress["simulator_identity_used"] = True
+                return assumed_human_selection(
+                    request, environment, localization, observation.world_T_camera,
+                    output_root / "assumed_human",
+                )
+
+            vlm_result_path = associate_instruction_from_localization(
+                expected_instruction, [target_name, "basket"],
+                image_path=vlm_visual_prompt_path,
+                localization_path=localization_paths["localization"],
+                output_path=output_root / "vlm_result.json",
+                threshold=LIBERO_RAW_ASSOCIATION_THRESHOLD,
+                human_resolver=correct_human if ASSUME_CORRECT_HUMAN else opencv_human_resolver,
+                assumed_human=ASSUME_CORRECT_HUMAN,
+                clarification_bboxes=contact_sheet_candidate_bbox_map(
+                    localization_paths["localization"],
+                    tile_size_px=VLM_CONTACT_SHEET_TILE_SIZE_PX,
+                ),
+            )
+            task_associations = task_associations_from_vlm_result(
+                vlm_result_path,
+                target_name,
+            )
+            objects_by_id = {
+                item["object_id"]: item for item in localization["objects"]
+            }
+            target_object = objects_by_id[task_associations["target_object_id"]]
+            basket = objects_by_id[task_associations["basket_object_id"]]
+            target_depth_centroid_world_m = camera_point_to_world(
+                target_object["centroid_3d_m"], observation.world_T_camera
+            )
+            basket_world_m = camera_point_to_world(
+                basket["centroid_3d_m"], observation.world_T_camera
+            )
+            progress["stage"] = "cad_alignment"
+            target_cad_registration = register_libero_cad_to_observation(
+                object_type=target_name,
+                object_id=task_associations["target_object_id"],
+                localization=localization,
+                world_T_camera=observation.world_T_camera,
+                output_dir=output_root / "cad_registration" / target_slug,
+            )
+            target_world_m = np.asarray(
+                target_cad_registration["registered_center_world_m"],
+                dtype=float,
+            )
+            progress["stage"] = "pose_to_grasp_binding"
+            from robosuite.utils.transform_utils import quat2mat
+
+            world_T_grasp = top_down_grasp_pose(
+                target_cad_registration["world_T_cad"],
+                target_cad_registration["cad_center_cad_m"],
+                target_cad_registration["cad_extent_m"],
+                target_cad_registration["cad_up_axis"],
+                quat2mat(np.asarray(raw_observation["robot0_eef_quat"], dtype=float)),
+            )
+            if not np.allclose(world_T_grasp[:3, 2], [0.0, 0.0, -1.0], atol=2e-3):
+                raise RuntimeError("CAD-derived grasp pose is not top-down in the world frame.")
+
+            output_root.mkdir(parents=True, exist_ok=True)
+            task_associations_path = output_root / "task_associations.json"
+            task_associations_path.write_text(
+                json.dumps(task_associations, indent=2),
+                encoding="utf-8",
+            )
+            planning_context = build_simulation_context(
+                localization, task_associations["associations"], target_cad_registration,
+                observation.world_T_camera, world_T_grasp, observation.robot_state,
+            )
+            perception = {
+                "context": planning_context,
+                "simulator_identity_used_for_assumed_human": task_associations.get(
+                    "simulator_identity_used_for_assumed_human", False),
+                "task_associations": task_associations,
+                "target_depth_centroid_world_m": target_depth_centroid_world_m.tolist(),
+                "target_cad_registration": target_cad_registration,
+                "workspace_rgbd_pixels": int(workspace_mask.sum()),
+                "localized_object_count": localization["object_count"],
+                "artifacts": {
+                    "localization": str(localization_paths["localization"]),
+                    "annotation": str(localization_paths["annotated_rgb"]),
+                    "task_associations": str(task_associations_path),
+                    "vlm_visual_prompt": str(vlm_visual_prompt_path),
+                    "vlm_result": str(vlm_result_path),
+                    "vlm_request": str(output_root / "vlm_request.json"),
+                    "vlm_provider_response": str(output_root / "vlm_provider_response.json"),
+                    "target_cad_registration": target_cad_registration["result_path"],
+                    "target_aligned_cad_cloud": target_cad_registration["aligned_cad_cloud_path"],
+                    "target_augmented_cloud": target_cad_registration["augmented_cloud_path"],
+                },
+            }
+        else:
+            perception = frozen["perception"]
+            planning_context = perception["context"]
+            task_associations = perception["task_associations"]
+            target_cad_registration = perception["target_cad_registration"]
+            target_depth_centroid_world_m = np.array(perception["target_depth_centroid_world_m"])
+            by_id = {item["object_id"]: item for item in planning_context["objects"]}
+            world_T_grasp = np.array(by_id[task_associations["target_object_id"]]["world_T_grasp"])
+            basket_world_m = np.array(by_id[task_associations["basket_object_id"]]["centroid_world_m"])
+            target_world_m = np.array(target_cad_registration["registered_center_world_m"])
 
         output_root.mkdir(parents=True, exist_ok=True)
-        task_associations_path = output_root / "task_associations.json"
-        task_associations_path.write_text(
-            json.dumps(task_associations, indent=2),
-            encoding="utf-8",
+        inputs = {
+            "schema_version": 1, "instruction": expected_instruction,
+            "execution_config": _execution_config(task_index, initial_state_index),
+            "initial_state_sha256": initial_state_sha256, "perception": perception,
+            "settled_state_sha256": settled_state_sha256,
+            "inputs_sha256": _json_sha256(perception),
+        }
+        (output_root / "execution_inputs.json").write_text(
+            json.dumps(inputs, indent=2), encoding="utf-8",
         )
+        progress["stage"] = "llm_planning"
+        planner_path = output_root / "llm_plan.json"
+        if frozen is None:
+            planning = generate_simulation_plan(expected_instruction, planning_context, planner_path)
+        else:
+            reference = reference_pick_place_plan(
+                task_associations["target_object_id"], task_associations["basket_object_id"],
+            )
+            validate_simulation_plan(reference, planning_context)
+            planning = {"source": "reference_diagnostic", "status": "ready", "plan": reference,
+                        "context": planning_context, "instruction": expected_instruction,
+                        "reference_source": str(Path(reference_source).resolve())}
+            planner_path.write_text(json.dumps(planning, indent=2), encoding="utf-8")
         video_frames.append(_agentview_rgb(raw_observation))
 
-        def record_step(phase, phase_step, raw, action, reward, done, info):
+        def record_step(plan_index, planned_action, phase, phase_step, raw, action, reward, done, info):
             nonlocal first_success_step, step_count
             step_count += 1
             is_success = environment.check_success()
             action_log.append(
                 {
                     "step": step_count,
+                    "plan_action_index": plan_index,
+                    "planned_action": planned_action,
                     "phase": phase,
                     "phase_step": int(phase_step),
                     "action": [float(value) for value in action],
@@ -242,14 +341,15 @@ def _run_task(task_index):
             if step_count >= EPISODE_HORIZON_STEPS:
                 raise _EpisodeHorizonReached
 
+        final_raw_observation = raw_observation
         try:
-            final_raw_observation = execute_top_grasp_and_place(
-                environment,
-                raw_observation,
-                world_T_grasp,
-                basket_world_m,
-                callback=record_step,
-            )
+            if planning["status"] == "ready":
+                progress["stage"] = "execution"
+                final_raw_observation = execute_simulation_plan(
+                    environment, raw_observation, planning["plan"], planning_context, record_step,
+                )
+            else:
+                termination_reason = "planning_" + planning["status"]
         except _EpisodeSucceeded:
             termination_reason = "success"
             final_raw_observation = environment.last_observation
@@ -264,7 +364,7 @@ def _run_task(task_index):
             execution_error = str(error)
             final_raw_observation = environment.last_observation
 
-        success = environment.check_success()
+        success = planning["status"] == "ready" and environment.check_success()
         if success and first_success_step is None:
             first_success_step = step_count
         if not success and termination_reason == "controller_completed":
@@ -285,6 +385,10 @@ def _run_task(task_index):
             output_root / "final_wrist",
         )
 
+    progress["stage"] = "result_saving"
+    plan_evaluation = evaluate_simulation_plan(
+        planning, task_associations["target_object_id"], task_associations["basket_object_id"],
+    )
     video_path = output_root / "episode.mp4"
     save_video(video_frames, video_path, fps=10.0)
     episode_path = output_root / "episode.json"
@@ -292,8 +396,12 @@ def _run_task(task_index):
         json.dumps(
             {
                 "schema_version": 1,
-                "method": METHOD_NAME,
-                "run_status": "completed",
+                "method": METHOD_NAME if frozen is None else "reference_plan_diagnostic",
+                "run_status": "completed" if planning["status"] == "ready" else "planning_stopped",
+                "planning_status": planning["status"],
+                "planning_error": planning.get("error"),
+                "plan_evaluation": plan_evaluation,
+                "reference_source": None if reference_source is None else str(Path(reference_source).resolve()),
                 "suite": SUITE_NAME,
                 "task_index": task_index,
                 "target_object": target_name,
@@ -313,11 +421,16 @@ def _run_task(task_index):
                     "robot proprioception",
                     "language instruction",
                     "known target CAD prior retrieved from the semantic target description",
+                    "assumed correct human object selection on deferral, if required",
                 ],
-                "simulator_object_identity_or_pose_used_by_method": False,
+                "simulator_object_identity_or_pose_used_by_method": perception.get(
+                    "simulator_identity_used_for_assumed_human", False),
+                "assumed_correct_human_on_deferral": ASSUME_CORRECT_HUMAN,
+                "execution_poses_from_simulator_ground_truth": False,
                 "seed": RANDOM_SEED,
-                "initial_state_index": INITIAL_STATE_INDEX,
+                "initial_state_index": initial_state_index,
                 "initial_state_sha256": initial_state_sha256,
+                "settled_state_sha256": settled_state_sha256,
                 "available_initial_state_count": initial_state_count,
                 "episode_horizon_steps": EPISODE_HORIZON_STEPS,
                 "control_frequency_hz": CONTROL_FREQUENCY_HZ,
@@ -330,8 +443,8 @@ def _run_task(task_index):
                 "exact_rendering_cad_prior_used": target_cad_registration[
                     "exact_rendering_cad_prior_used"
                 ],
-                "workspace_rgbd_pixels": int(workspace_mask.sum()),
-                "localized_object_count": int(localization["object_count"]),
+                "workspace_rgbd_pixels": perception["workspace_rgbd_pixels"],
+                "localized_object_count": perception["localized_object_count"],
                 "semantic_associations": task_associations,
                 "target_depth_centroid_world_m": target_depth_centroid_world_m.tolist(),
                 "target_registered_center_world_m": target_world_m.tolist(),
@@ -358,18 +471,9 @@ def _run_task(task_index):
                 "action_steps": step_count,
                 "actions": action_log,
                 "artifacts": {
-                    "localization": str(localization_paths["localization"]),
-                    "annotation": str(localization_paths["annotated_rgb"]),
-                    "task_associations": str(task_associations_path),
-                    "vlm_visual_prompt": str(vlm_visual_prompt_path),
-                    "vlm_result": str(vlm_result_path),
-                    "target_cad_registration": target_cad_registration["result_path"],
-                    "target_aligned_cad_cloud": target_cad_registration[
-                        "aligned_cad_cloud_path"
-                    ],
-                    "target_augmented_cloud": target_cad_registration[
-                        "augmented_cloud_path"
-                    ],
+                    **perception["artifacts"],
+                    "planning": str(planner_path),
+                    "execution_inputs": str(output_root / "execution_inputs.json"),
                     "video": str(video_path),
                     "final_agentview_rgb": str(final_agentview_paths["rgb"]),
                     "final_wrist_rgb": str(final_wrist_paths["rgb"]),
@@ -380,41 +484,89 @@ def _run_task(task_index):
         encoding="utf-8",
     )
 
-    print(f"Instruction: {observation.instruction}")
-    print(f"Localized candidates: {localization['object_count']}")
-    print(f"VLM providers: {', '.join(task_associations['providers'])}")
-    print(
-        f"Associated target ({target_name}): "
-        f"{task_associations['target_object_id']}"
-    )
-    print(f"Associated basket: {task_associations['basket_object_id']}")
-    print(
-        "Target depth centroid in world frame (m): "
-        f"{np.round(target_depth_centroid_world_m, 4).tolist()}"
-    )
-    print(
-        "Target CAD-registered center in world frame (m): "
-        f"{np.round(target_world_m, 4).tolist()}"
-    )
-    print(
-        "Target CAD registration RMSE (m): "
-        f"{target_cad_registration['constrained_rmse_m']:.6f}"
-    )
-    print(f"Basket centroid in world frame (m): {np.round(basket_world_m, 4).tolist()}")
-    print(f"Action steps: {step_count}")
-    print(f"Initial state: {INITIAL_STATE_INDEX} ({initial_state_sha256[:12]}...)")
-    print(f"Termination: {termination_reason}")
-    print(f"LIBERO task success: {success}")
-    print(f"Episode video: {video_path}")
+    print(f"Instruction: {expected_instruction}")
+    print(f"Plan: {planning['status']}; termination: {termination_reason}")
+    print(f"LIBERO task success: {success}; action steps: {step_count}")
     print(f"Episode report: {episode_path}")
-    print(
-        "MuJoCo instance identity, segmentation, and ground-truth object pose "
-        "were not used by the method"
+    return episode_path
+
+
+def _json_sha256(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True, allow_nan=False).encode()).hexdigest()
+
+
+def _execution_config(task_index, initial_state_index):
+    simulation_dir = Path(__file__).resolve().parents[1] / "simulation"
+    return {
+        "suite": SUITE_NAME, "task_index": task_index, "initial_state_index": initial_state_index,
+        "seed": RANDOM_SEED, "control_mode": CONTROL_MODE,
+        "control_frequency_hz": CONTROL_FREQUENCY_HZ, "episode_horizon_steps": EPISODE_HORIZON_STEPS,
+        "observation_resolution_hw": [IMAGE_HEIGHT, IMAGE_WIDTH],
+        "initial_physics_settle_steps": INITIAL_PHYSICS_SETTLE_STEPS,
+        "assumed_correct_human_on_deferral": ASSUME_CORRECT_HUMAN,
+        "association_source_sha256": {name: hashlib.sha256((simulation_dir / name).read_bytes()).hexdigest()
+                                      for name in ("libero_joint_association.py", "libero_assumed_human.py")},
+        "cad_catalog_sha256": hashlib.sha256((simulation_dir.parent / "CAD/libero_object_library.json").read_bytes()).hexdigest(),
+        "joint_protocol_sha256": hashlib.sha256((simulation_dir.parent / "scripts/run_vlm_multi_object_pilot.py").read_bytes()).hexdigest(),
+        "simulation_versions": {name: importlib.metadata.version(name)
+                                for name in ("mujoco", "robosuite", "hf_libero", "numpy")},
+        "controller_sha256": hashlib.sha256((simulation_dir / "libero_control.py").read_bytes()).hexdigest(),
+        "plan_executor_sha256": hashlib.sha256((simulation_dir / "libero_planning.py").read_bytes()).hexdigest(),
+    }
+
+
+def replay_with_reference_plan(source_dir, output_root):
+    """Replay a failed LLM episode with frozen perception and a reference plan.
+
+    No VLM, CAD registration, or LLM request is made. The source is never changed;
+    these extra executions are diagnostic and excluded from the main trial count.
+    """
+    source_dir = Path(source_dir).resolve()
+    source = json.loads((source_dir / "episode.json").read_text())
+    if source.get("method") != METHOD_NAME or source.get("success") is not False:
+        raise ValueError("Reference replay requires an unsuccessful LLM-runner episode.")
+    if "planning_status" not in source:
+        raise ValueError("Episode did not reach planning; no plan-only replay is possible.")
+    original_planning = json.loads((source_dir / "llm_plan.json").read_text())
+    if original_planning["status"] != source["planning_status"]:
+        raise ValueError("Source episode and saved planning status disagree.")
+    frozen = json.loads((source_dir / "execution_inputs.json").read_text())
+    config = frozen["execution_config"]
+    if (source["task_index"] != config["task_index"]
+            or source["initial_state_index"] != config["initial_state_index"]
+            or source["initial_state_sha256"] != frozen["initial_state_sha256"]):
+        raise ValueError("Source episode and frozen inputs disagree.")
+    result_path = main(config["task_index"], initial_state_index=config["initial_state_index"],
+                       output_root=output_root, reference_source=source_dir)
+    replay = json.loads(result_path.read_text())
+    reference_planning = json.loads((result_path.parent / "llm_plan.json").read_text())
+    same_executable_plan = (
+        original_planning["status"] == "ready"
+        and original_planning["plan"]["actions"] == reference_planning["plan"]["actions"]
     )
-    if execution_error is not None:
-        raise SystemExit(f"Task execution failed: {execution_error}")
-    if not success:
-        raise SystemExit("Task execution finished, but LIBERO reported failure.")
+    if not replay["success"]:
+        interpretation = "Cause remains unresolved; both plans failed."
+    elif same_executable_plan:
+        interpretation = "Cause remains unresolved; the same plan produced different outcomes."
+    else:
+        interpretation = "Reference plan succeeded with unchanged perception and controller."
+    comparison = {
+        "source_episode": str(source_dir / "episode.json"), "reference_episode": str(result_path),
+        "original_success": source["success"], "reference_success": replay["success"],
+        "same_perception_inputs_sha256": frozen["inputs_sha256"],
+        "same_initial_state_sha256": frozen["initial_state_sha256"],
+        "same_settled_state_sha256": frozen["settled_state_sha256"],
+        "original_planning_status": original_planning["status"],
+        "same_executable_plan": same_executable_plan,
+        "planning_contribution_supported": bool(replay["success"] and not same_executable_plan),
+        "interpretation": interpretation,
+        "conditional_on_correct_upstream_outputs": True,
+        "included_in_main_evaluation": False,
+    }
+    (result_path.parent / "reference_comparison.json").write_text(
+        json.dumps(comparison, indent=2), encoding="utf-8",
+    )
+    return result_path
 
 
 def _write_pipeline_failure(
@@ -423,6 +575,9 @@ def _write_pipeline_failure(
     target_slug,
     instruction,
     error,
+    initial_state_index=INITIAL_STATE_INDEX,
+    failure_stage=None,
+    simulator_identity_used=False,
 ):
     """Preserve a pre-control pipeline failure without hiding the exception."""
     output_root = Path(output_root)
@@ -436,7 +591,7 @@ def _write_pipeline_failure(
     state_hash = None
     state_hash_error = None
     try:
-        state_hash = _official_initial_state_sha256(task_index, INITIAL_STATE_INDEX)
+        state_hash = _official_initial_state_sha256(task_index, initial_state_index)
     except Exception as hash_error:
         state_hash_error = str(hash_error)
 
@@ -453,10 +608,14 @@ def _write_pipeline_failure(
                 "success": False,
                 "success_predicate": "LIBERO task environment check_success()",
                 "termination_reason": "pipeline_error",
+                "failure_observed_at": failure_stage,
+                "causal_failure_stage": None,
                 "execution_error": f"{type(error).__name__}: {error}",
-                "simulator_object_identity_or_pose_used_by_method": False,
+                "simulator_object_identity_or_pose_used_by_method": simulator_identity_used,
+                "assumed_correct_human_on_deferral": ASSUME_CORRECT_HUMAN,
+                "execution_poses_from_simulator_ground_truth": False,
                 "seed": RANDOM_SEED,
-                "initial_state_index": INITIAL_STATE_INDEX,
+                "initial_state_index": initial_state_index,
                 "initial_state_sha256": state_hash,
                 "initial_state_hash_error": state_hash_error,
                 "episode_horizon_steps": EPISODE_HORIZON_STEPS,
@@ -508,6 +667,8 @@ def task_associations_from_vlm_result(result_path, target_name="milk"):
         "vlm_accepted",
         "human_confirmed",
         "human_corrected",
+        "assumed_human_confirmed",
+        "assumed_human_corrected",
         "target_not_present",
     }
     unresolved = [
@@ -533,7 +694,8 @@ def task_associations_from_vlm_result(result_path, target_name="milk"):
             "localized object."
         )
     return {
-        "method": "independent semantic association over localized RGB-D candidates",
+        "method": payload.get("method", "independent semantic association over localized RGB-D candidates"),
+        "simulator_identity_used_for_assumed_human": payload.get("simulator_identity_used_for_assumed_human", False),
         "target_description": target_name,
         "target_object_id": target_object_id,
         "basket_description": "basket",
@@ -575,6 +737,8 @@ if __name__ == "__main__":
         arguments = sys.argv[1:]
         if len(arguments) > 1:
             raise SystemExit("Usage: python -m scripts.libero_task_execution [task_index]")
-        main(DEFAULT_TASK_INDEX if not arguments else int(arguments[0]))
+        result_path = main(DEFAULT_TASK_INDEX if not arguments else int(arguments[0]))
+        if not json.loads(result_path.read_text())["success"]:
+            raise SystemExit("Episode was unsuccessful; see its saved report.")
     except LiberoIntegrationError as error:
         raise SystemExit(f"LIBERO task execution failed: {error}") from error

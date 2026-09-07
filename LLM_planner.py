@@ -87,7 +87,13 @@ class OpenAIPlanner:
         self.model_name = os.environ.get("OPENAI_LLM_MODEL", "gpt-4.1-mini")
 
     def plan(self, prompt):
-        response = self.client.chat.completions.create(
+        response = self.complete(prompt)
+        return response.choices[0].message.content or "{}"
+
+    def complete(self, prompt, response_format=None):
+        """Return the provider response so simulation can retain plan evidence."""
+        options = {} if response_format is None else {"response_format": response_format}
+        return self.client.chat.completions.create(
             model=self.model_name,
             messages=[
                 {
@@ -97,8 +103,8 @@ class OpenAIPlanner:
                 {"role": "user", "content": prompt},
             ],
             temperature=0,
+            **options,
         )
-        return response.choices[0].message.content or "{}"
 
 
 def plan_from_outputs(
