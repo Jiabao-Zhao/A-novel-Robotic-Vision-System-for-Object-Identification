@@ -1,21 +1,115 @@
 """Joint instruction-to-object association for the controlled LIBERO runner."""
 
+import base64
 import json
+import math
 import os
 import re
 from pathlib import Path
 
 from openai import OpenAI
 
-from scripts.run_vlm_multi_object_pilot import (
-    ROLE, parse_response, request_arguments, token_likelihood,
-)
 from vlm_module import candidate_choice_map, load_localized_objects, resolve_association
+
+
+ROLE = """You identify objects mentioned in a task instruction by associating them
+with already-localized candidates in the marked image.
+Return one line per distinct object mentioned in the instruction:
+<existing image letter>: <object description from the instruction>
+Use the letters already shown in the image. Preserve the instruction's object
+names and identifying modifiers. Do not classify unrelated objects.
+Do not output explanations, confidence numbers, coordinates, task roles, or actions.
+If a mentioned object is not present, return N: <object description>."""
+
+
+def request_arguments(image_bytes, instruction, model):
+    return {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": ROLE + "\n\nTask instruction:\n" + instruction},
+            {"role": "user", "content": [{
+                "type": "image_url", "image_url": {
+                    "url": "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii"),
+                    "detail": "high",
+                },
+            }]},
+        ],
+        "temperature": 0, "max_completion_tokens": 128,
+        "logprobs": True, "top_logprobs": 20,
+    }
+
+
+def normalized_name(text):
+    return " ".join(text.casefold().split())
+
+
+def token_likelihood(tokens):
+    """Original provider probabilities only; no clipping or length normalization."""
+    if not tokens or any(not isinstance(t.get("logprob"), (int, float))
+                         or not math.isfinite(t["logprob"])
+                         or not -9999 < t["logprob"] <= 0 for t in tokens):
+        return None, None
+    logprob = math.fsum(t["logprob"] for t in tokens)
+    return logprob, math.exp(logprob)
+
+
+def parse_response(raw, mapping, instruction):
+    """Parse letter:name entries, retaining original token likelihood diagnostics."""
+    choice = raw["choices"][0]
+    text = choice["message"].get("content") or ""
+    tokens = (choice.get("logprobs") or {}).get("content") or []
+    aligned = bool(tokens) and "".join(t["token"] for t in tokens) == text
+    stopped = choice["finish_reason"] == "stop"
+    full_logprob, full_score = token_likelihood(tokens) if aligned and stopped else (None, None)
+    entries, errors, seen = [], [], set()
+    spans, offset = [], 0
+    for index, token in enumerate(tokens):
+        end = offset + len(token["token"])
+        spans.append((offset, end, {"index": index, "token": token["token"], "logprob": token.get("logprob")}))
+        offset = end
+    for line in re.finditer(r"[^\r\n]+", text):
+        if not line[0].strip():
+            continue
+        match = re.fullmatch(r"\s*(?P<label>[A-Z]):[ \t]*(?P<name>\S(?:.*?\S)?)[ \t]*", line[0])
+        if match is None or match["label"] not in mapping:
+            errors.append("Invalid letter:name line: " + line[0])
+            continue
+        name = normalized_name(match["name"])
+        if name in seen:
+            errors.append("Duplicate object description: " + name)
+        seen.add(name)
+        if not re.search(r"(?<!\w)" + re.escape(name) + r"(?!\w)", normalized_name(instruction)):
+            errors.append("Object description not preserved from instruction: " + name)
+        fields = [(line.start() + a, line.start() + b) for a, b in
+                  (match.span("label"), match.span("name"))]
+        selected = [t for start, end, t in spans if any(start < b and end > a for a, b in fields)] if aligned else []
+        lp, score = token_likelihood(selected) if stopped else (None, None)
+        entries.append({"choice_label": match["label"], "target_description": name,
+                        "predicted_object_id": mapping[match["label"]],
+                        "decision_tokens": selected, "decision_token_count": len(selected),
+                        "raw_log_probability": lp, "raw_association_likelihood": score})
+    # Provider tokens spanning two entries cannot have independent entry scores.
+    indices = [t["index"] for e in entries for t in e["decision_tokens"]]
+    for entry in entries:
+        if any(indices.count(t["index"]) > 1 for t in entry["decision_tokens"]):
+            entry.update(raw_log_probability=None, raw_association_likelihood=None,
+                         score_unavailable_reason="one provider token spans multiple associations")
+    if not entries:
+        errors.append("No associations returned.")
+    if not stopped:
+        errors.append("Unfinished provider response.")
+    format_valid = not errors
+    return {"generated_output_text": text, "entries": entries, "format_valid": format_valid,
+            "format_errors": errors, "full_raw_log_probability": full_logprob,
+            "full_response_likelihood": full_score, "output_token_count": len(tokens),
+            "joint_gate_score": full_score if format_valid else None,
+            "score_unavailable_reason": (None if full_score is not None else
+                                         "Missing, invalid, sentinel or unaligned output logprobs; or unfinished response.")}
 
 
 def object_phrase(text):
     """Ignore a copied leading article, preserving every identifying modifier."""
-    return " ".join(text.casefold().split()).removeprefix("the ")
+    return normalized_name(text).removeprefix("the ")
 
 
 def label_likelihood(raw, description):
@@ -81,7 +175,7 @@ def associate_instruction_from_localization(
     instruction, target_descriptions, *, image_path, localization_path, output_path,
     threshold, human_resolver=None, assumed_human=False, clarification_bboxes=None,
 ):
-    """Reuse the joint pilot prompt; preserve the decision-letter threshold contract."""
+    """Resolve the joint instruction using the decision-letter threshold contract."""
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     mapping = candidate_choice_map(load_localized_objects(localization_path))

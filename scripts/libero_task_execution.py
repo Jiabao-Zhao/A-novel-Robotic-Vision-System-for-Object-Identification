@@ -46,9 +46,8 @@ IMAGE_HEIGHT = 768
 VLM_CONTACT_SHEET_TILE_SIZE_PX = 448
 RUN_VARIANT = "768x768_joint_instruction_assumed_human_v2"
 ASSUME_CORRECT_HUMAN = True  # User-requested simulation condition, not measured human input.
-# Development operating point selected on the 500-trial LIBERO
-# calibration/validation partitions for the one-target prompt. It is provisional
-# for this joint prompt and is not a calibrated probability of correctness.
+# Provisional simulation threshold retained for the joint-instruction pilot;
+# it is not a calibrated probability of correct identity.
 LIBERO_RAW_ASSOCIATION_THRESHOLD = 0.9999832372181827
 CONTROL_FREQUENCY_HZ = 20
 EPISODE_HORIZON_STEPS = 280
@@ -507,7 +506,6 @@ def _execution_config(task_index, initial_state_index):
         "association_source_sha256": {name: hashlib.sha256((simulation_dir / name).read_bytes()).hexdigest()
                                       for name in ("libero_joint_association.py", "libero_assumed_human.py")},
         "cad_catalog_sha256": hashlib.sha256((simulation_dir.parent / "CAD/libero_object_library.json").read_bytes()).hexdigest(),
-        "joint_protocol_sha256": hashlib.sha256((simulation_dir.parent / "scripts/run_vlm_multi_object_pilot.py").read_bytes()).hexdigest(),
         "simulation_versions": {name: importlib.metadata.version(name)
                                 for name in ("mujoco", "robosuite", "hf_libero", "numpy")},
         "controller_sha256": hashlib.sha256((simulation_dir / "libero_control.py").read_bytes()).hexdigest(),

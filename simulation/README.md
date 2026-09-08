@@ -331,7 +331,7 @@ association, target CAD-to-observation alignment, an LLM plan, robot propriocept
 and normalized OSC pose actions. The VLM receives the original task instruction
 and a full-scene plus enlarged-crop contact sheet marked with candidate letters.
 It returns one `letter: object name` entry per mentioned object using the joint
-prompt from `scripts.run_vlm_multi_object_pilot`. No pre-extracted target list,
+prompt in `simulation.libero_joint_association`. No pre-extracted target list,
 candidate metadata, or task roles are supplied to the VLM. Letter-to-object-ID
 mapping and output-completeness checks happen locally. The LLM infers task roles
 from the original instruction and returns object IDs in its action sequence. The target object
@@ -471,6 +471,31 @@ retrieval for that target.
 
 The physical single-target VLM retains its existing prompt and threshold settings.
 
+## Development batches
+
+Run `python -m scripts.run_libero_development` in the WSL environment for the
+current 100-episode batch: ten LIBERO-Object tasks at states
+2, 3, 4, 5, 6, 7, 8, 9, 11, and 12. Three separate simulation processes run
+episodes and then restore each initial scene for an evaluation-only identity
+audit. Both API models are pinned to `gpt-4.1-mini-2025-04-14`; the existing
+joint prompt, raw-score threshold, CAD settings, and controller are retained.
+
+Results are saved under
+`outputs/simulation/study_1200/development/object_states_02_to_12/`.
+The manifest records source hashes and settings. Repeating the command resumes
+unfinished work with the same configuration, preserving completed failures as
+well as successes. A different batch needs a new output root and state list in
+the script's constants. These are development episodes, separate from the
+planned 1,200 final comparison executions.
+
+The contact sheet includes an overview captioned `full scene`. Some responses
+copy that caption, for example `full scene: cream cheese`, instead of returning
+a candidate letter. This fails the `letter: name` contract and cannot select an
+object point cloud. The current joint parser defers every entry when any entry
+is malformed; these gate scores are null, not numeric confidence measurements.
+Audits report malformed output separately from scored wrong-object selections
+and inspect accepted predictions without correcting them.
+
 ## SmolVLA baseline and matched comparison
 
 The VLA is a parallel baseline, not another stage after CAD registration:
@@ -498,7 +523,7 @@ under `outputs/` and are intentionally ignored by Git.
 Same LIBERO task + same official fixed state 0
 ├── Proposed method
 │   agent RGB-D -> depth localization -> VLM association -> target CAD alignment
-│   -> task-specific scripted OSC controller -> 7D actions
+│   -> LLM pick/place plan -> bounded OSC skills -> 7D actions
 └── VLA baseline
     agent RGB + wrist RGB + 8D robot state + instruction
     -> SmolVLA -> 7D actions
@@ -522,7 +547,7 @@ A **task index** selects the product instruction: task 0 is alphabet soup, task
 the 50 saved simulator arrangements inside that task. These are independent
 indices. The completed VLA baseline remains at its official 256 x 256 input
 setting. The completed proposed-method breadth sweep uses 512 x 512, while the
-current Alphabet Soup resolution trial uses 768 x 768. Neither proposed result
+current joint-prompt planning pilot uses 768 x 768. Neither proposed result
 is a resolution-matched cross-method comparison with the VLA baseline. All runs
 still use:
 

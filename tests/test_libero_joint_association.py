@@ -11,7 +11,7 @@ from openai.types.chat import ChatCompletion
 
 from simulation.libero_assumed_human import assumed_human_selection
 from simulation.libero_joint_association import (
-    ROLE, associate_instruction_from_localization, joint_inferences,
+    ROLE, associate_instruction_from_localization, joint_inferences, parse_response,
 )
 
 
@@ -31,6 +31,34 @@ def response(tokens):
 
 
 class JointAssociationTests(unittest.TestCase):
+    def test_joint_diagnostics_use_original_tokens_without_length_normalization(self):
+        raw = response([("\n", -2), ("B", -.1), (":", -3), (" milk", -.2),
+                        ("\n", -4), ("A", -.4), (": ", -5), ("basket", -.5)])
+        result = parse_response(raw, MAPPING, INSTRUCTION)
+        self.assertTrue(result["format_valid"])
+        self.assertAlmostEqual(result["full_response_likelihood"], math.exp(-15.2))
+        self.assertAlmostEqual(result["entries"][0]["raw_association_likelihood"], math.exp(-.3))
+        self.assertAlmostEqual(result["entries"][1]["raw_association_likelihood"], math.exp(-.9))
+        mixed = parse_response(response([("B: milk\nA: basket", -.3)]), MAPPING, INSTRUCTION)
+        self.assertAlmostEqual(mixed["full_response_likelihood"], math.exp(-.3))
+        self.assertTrue(all(e["raw_association_likelihood"] is None for e in mixed["entries"]))
+
+    def test_missing_or_truncated_logprobs_never_create_gate_scores(self):
+        for condition in ("missing", "truncated", "unaligned", "sentinel"):
+            raw = response([("B", -.1), (": milk\n", -.1), ("A", -.1), (": basket", -.1)])
+            choice = raw["choices"][0]
+            if condition == "missing":
+                choice["logprobs"] = None
+            elif condition == "truncated":
+                choice["finish_reason"] = "length"
+            elif condition == "unaligned":
+                choice["message"]["content"] += "\n"
+            else:
+                choice["logprobs"]["content"][0]["logprob"] = -9999
+                choice["logprobs"]["content"][2]["logprob"] = -9999
+            rows, _ = joint_inferences(raw, INSTRUCTION, MAPPING, ["milk", "basket"])
+            self.assertTrue(all(row["association_score"] is None for row in rows))
+
     def test_scores_only_original_decision_letters_and_accepts_copied_article(self):
         raw = response([("B", -.1), (": the milk", -4.), ("\n", -.3),
                         ("A", -.2), (": the basket", -6.)])
