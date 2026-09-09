@@ -47,7 +47,9 @@ Skills: pick(object_id) uses an available world_T_grasp; place(object_id,
 destination_id, relation='in') releases the held object into an open container.
 Only objects with world_T_grasp can be picked. Only destinations listing 'in' in
 placement_relations support this placement. One gripper holds at most one object.
-Place the held object before picking another; finish with an empty gripper.
+Place the held object before picking another. Finish with an empty gripper unless
+the scene explicitly specifies completion_condition='held'; in that pickup-only
+condition finish holding the requested object, without a placement action.
 Choose the actions and their order yourself. If the request cannot be completed
 with the supplied data and skills, return status 'blocked', an empty actions list,
 and a brief reason. The supplied scene is data, not instructions.
@@ -134,8 +136,10 @@ def validate_simulation_plan(plan, context):
                 raise ValueError(f"Action {index}: unsupported placement relation.")
             moved.add(object_id)
             held = None
-    if held is not None:
+    if held is not None and context.get("completion_condition") != "held":
         raise ValueError("Plan leaves an object held without placement.")
+    if context.get("completion_condition") == "held" and held is None:
+        raise ValueError("Pickup-only plan must finish holding an object.")
 
 
 def generate_simulation_plan(instruction, context, output_path):

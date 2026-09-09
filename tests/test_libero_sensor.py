@@ -111,6 +111,16 @@ class LiberoSensorTests(unittest.TestCase):
         with self.assertRaisesRegex(LiberoIntegrationError, "normalized to \\[0, 1\\]"):
             sensor.capture(invalid)
 
+    def test_workspace_can_exclude_a_fixed_fixture_footprint(self):
+        from types import SimpleNamespace
+        observation = SimpleNamespace(depth_m=np.ones((1, 3), dtype=np.float32),
+                                      intrinsics=np.eye(3), world_T_camera=np.eye(4))
+        depth, mask = mask_depth_to_world_workspace(
+            observation, (-.1, -.1, .9), (2.1, .1, 1.1),
+            exclude_xy_bounds=((.9, -.1), (1.1, .1)))
+        np.testing.assert_array_equal(mask, [[True, False, True]])
+        np.testing.assert_array_equal(depth, [[1., 0., 1.]])
+
     def test_capture_files_exclude_object_ground_truth(self):
         environment = _FakeEnvironment()
         sensor = LiberoRGBDSensor(

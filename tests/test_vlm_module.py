@@ -7,6 +7,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 import cv2
+import numpy as np
 
 from main import cad_request_from_association, register_resolved_associations
 from prompt import _vlm_prompt
@@ -21,7 +22,7 @@ from vlm_module import (
     candidate_relative_scores,
     candidate_choice_map,
     choice_for_object_id,
-    contact_sheet_candidate_bbox_map,
+    annotate_candidate_boxes,
     decision_sequence_log_probability,
     infer_target_association,
     load_localized_objects,
@@ -207,6 +208,17 @@ class VLMModuleTests(unittest.TestCase):
         self.assertEqual(choice_for_object_id(choice_map, "object_001"), "A")
         with self.assertRaisesRegex(ValueError, "Unknown localized object ID"):
             choice_for_object_id(choice_map, "object_999")
+
+    def test_candidate_labels_extend_beyond_single_letters_without_using_none(self):
+        detections = [{"object_id": f"object_{index:03d}"} for index in range(1, 704)]
+        mapping = candidate_choice_map(list(reversed(detections)))
+        self.assertEqual(len(mapping), 703)
+        self.assertNotIn("N", mapping)
+        self.assertEqual(mapping["H"], "object_008")
+        self.assertEqual(mapping["O"], "object_014")
+        self.assertEqual(mapping["Z"], "object_025")
+        self.assertEqual(mapping["AA"], "object_026")
+        self.assertEqual(mapping["AAA"], "object_702")
 
     def test_prompt_is_one_target_compact_choice_without_task_roles(self):
         prompt = _vlm_prompt(
@@ -945,29 +957,28 @@ class VLMModuleTests(unittest.TestCase):
             },
         )
 
-    def test_contact_sheet_click_regions_follow_candidate_tile_order(self):
+    def test_boxed_scene_preserves_image_and_stable_letter_to_object_mapping(self):
         payload = {
             "objects": [
-                {"object_id": "object_002"},
-                {"object_id": "object_001"},
+                {"object_id": "object_002", "roi": {"x1": 90, "y1": 60, "x2": 120, "y2": 90}},
+                {"object_id": "object_001", "roi": {"x1": 20, "y1": 60, "x2": 50, "y2": 90}},
             ]
         }
         with tempfile.TemporaryDirectory() as temporary_directory:
             path = Path(temporary_directory) / "localization.json"
             path.write_text(json.dumps(payload), encoding="utf-8")
-            bboxes = contact_sheet_candidate_bbox_map(
-                path,
-                tile_size_px=100,
-                columns=2,
-            )
-
-        self.assertEqual(
-            bboxes,
-            {
-                "object_002": [100, 0, 199, 99],
-                "object_001": [0, 100, 99, 199],
-            },
-        )
+            original = np.full((140, 180, 3), 70, dtype=np.uint8)
+            rgb_path = Path(temporary_directory) / "rgb.png"
+            cv2.imwrite(str(rgb_path), original)
+            with patch("vlm_module.cv2.putText", wraps=cv2.putText) as draw_text:
+                result = annotate_candidate_boxes(rgb_path, path, Path(temporary_directory) / "boxed.png")
+            marked = cv2.imread(str(result))
+        self.assertEqual(marked.shape, original.shape)
+        np.testing.assert_array_equal(marked[110:, :], original[110:, :])
+        np.testing.assert_array_equal(marked[75, 20], [0, 0, 255])
+        np.testing.assert_array_equal(marked[75, 90], [0, 0, 255])
+        self.assertEqual([call.args[1] for call in draw_text.call_args_list], ["A", "B"])
+        self.assertEqual([call.args[2][0] for call in draw_text.call_args_list], [24, 94])
 
 
 if __name__ == "__main__":

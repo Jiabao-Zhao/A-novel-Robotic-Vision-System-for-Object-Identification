@@ -63,7 +63,7 @@ class LiberoControlTests(unittest.TestCase):
         target_pose = np.eye(4)
         target_pose[:3, 3] = [2.0, 0.0, 0.2]
 
-        with self.assertRaisesRegex(ValueError, "Unsafe or unreachable"):
+        with self.assertRaisesRegex(ValueError, "Outside configured translation bounds"):
             move_eef_to_pose(
                 environment,
                 observation,
@@ -117,6 +117,22 @@ class LiberoControlTests(unittest.TestCase):
         self.assertIn("release_target", phases)
         self.assertFalse(any("milk" in phase for phase in phases))
 
+    def test_hold_gripper_resists_drift_instead_of_following_each_new_position(self):
+        environment = _FakeEnvironment()
+        initial = environment.position.copy()
+        original_step = environment.step
+
+        def disturbed_step(action):
+            environment.position[0] += .001
+            return original_step(action)
+
+        environment.step = disturbed_step
+        result = hold_gripper(environment, {
+            "robot0_eef_pos": initial.copy(), "robot0_eef_quat": np.array([0., 0., 0., 1.])},
+            OPEN_GRIPPER, "hold_under_disturbance", 20)
+        self.assertLess(np.linalg.norm(result["robot0_eef_pos"]-initial), .0011)
+        self.assertTrue(any(action[0] < 0 for action in environment.actions))
+
     def test_top_down_grasp_pose_uses_center_for_low_profile_z_up_cad(self):
         world_T_cad = np.eye(4)
         world_T_cad[:3, 3] = [0.1, -0.2, 0.01]
@@ -156,6 +172,22 @@ class LiberoControlTests(unittest.TestCase):
         np.testing.assert_allclose(grasp_pose[:3, 3], [0.05, -0.1, expected_z])
         np.testing.assert_allclose(grasp_pose[:3, :3], reference_rotation)
 
+    def test_floor_nut_estimate_has_margin_above_controller_minimum(self):
+        pose = np.eye(4)
+        pose[:3, 3] = [-.283, .137, .004939077619726746]
+        grasp = top_down_grasp_pose(pose, [0., 0., 0.], [.022, .019, .010],
+                                    "Z", np.diag([1., -1., -1.]))
+        np.testing.assert_allclose(grasp[:2, 3], pose[:2, 3])
+        self.assertAlmostEqual(grasp[2, 3], .0051)
+
+    def test_large_height_error_still_rejected_by_controller(self):
+        pose = np.eye(4)
+        pose[2, 3] = .002
+        grasp = top_down_grasp_pose(pose, [0., 0., 0.], [.022, .019, .010],
+                                    "Z", np.diag([1., -1., -1.]))
+        with self.assertRaisesRegex(ValueError, "Outside configured translation bounds"):
+            move_eef_to_pose(_FakeEnvironment(), {}, grasp, OPEN_GRIPPER, "invalid_grasp")
+
     def test_top_down_grasp_pose_selects_equivalent_yaw_nearest_to_robot(self):
         world_T_cad = np.eye(4)
         world_T_cad[:3, :3] = np.diag([-1.0, -1.0, 1.0])
@@ -183,6 +215,16 @@ class LiberoControlTests(unittest.TestCase):
         )
 
         np.testing.assert_allclose(grasp_pose[:3, 3], [0.0, 0.0, 0.045])
+
+    def test_free_grasp_yaw_uses_robot_heading_instead_of_gear_phase(self):
+        pose = np.eye(4)
+        angle = np.deg2rad(-74.)
+        pose[:2, :2] = [[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]]
+        reference = np.diag([1., -1., -1.])
+        grasp = top_down_grasp_pose(pose, [0., 0., .01], [.062, .062, .02],
+                                    "Z", reference, free_yaw=True)
+        np.testing.assert_allclose(grasp[:3, :3], reference)
+        np.testing.assert_allclose(grasp[:3, 3], [0., 0., .01])
 
 
 if __name__ == "__main__":

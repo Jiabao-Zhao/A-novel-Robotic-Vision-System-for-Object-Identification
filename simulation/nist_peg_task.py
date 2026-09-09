@@ -22,18 +22,21 @@ TASK_TEXT = "Insert the 16mm round peg into the vertical hole at world XYZ meter
 HORIZON = 400
 
 
-def localize_parts(observation, rgb_path, output_dir):
+def localize_parts(observation, rgb_path, output_dir,
+                   workspace_min=(-.34, -.36, -.04), workspace_max=(.36, -.16, .12),
+                   cluster_in_table_plane=False, exclude_xy_bounds=None):
     """Depth-only localization within the parts work area, with no instance poses."""
     from point_cloud_localization import PointCloudConfig, PointCloudLocalization
     from .perception_adapter import mask_depth_to_world_workspace, pointcloud_localization_inputs
 
-    depth, _ = mask_depth_to_world_workspace(observation, (-.34, -.36, -.04), (.36, -.16, .12))
+    depth, _ = mask_depth_to_world_workspace(observation, workspace_min, workspace_max, exclude_xy_bounds)
     depth_path = output_dir / "workspace_depth.npy"
     np.save(depth_path, depth)
     config = PointCloudConfig(
         output_dir=output_dir / "point_cloud", annotation_dir=output_dir / "annotation",
         voxel_size_m=.0008, plane_distance_threshold_m=.0008,
         dbscan_eps_m=.006, dbscan_min_points=4, min_cluster_points=12,
+        cluster_in_table_plane=cluster_in_table_plane,
         min_cluster_extent_m=.002, max_cluster_aspect_ratio=20,
         min_roi_width_px=3, min_roi_height_px=3,
         raw_cluster_dbscan_eps_m=.003, raw_cluster_dbscan_min_points=3,

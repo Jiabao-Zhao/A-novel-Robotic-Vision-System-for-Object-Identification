@@ -1,4 +1,6 @@
 import unittest
+import tempfile
+from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
@@ -52,6 +54,18 @@ def _environment(states):
 
 
 class LiberoEnvironmentTests(unittest.TestCase):
+    def test_custom_states_do_not_load_incompatible_official_states(self):
+        environment = _environment(np.zeros((2, 5)))
+        custom = np.arange(14, dtype=np.float64).reshape(2, 7)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "states.npy"
+            np.save(path, custom)
+            environment.scene_paths = {"initial_states_path": str(path)}
+            observation = environment.reset(seed=1000, init_state_index=1)
+        np.testing.assert_array_equal(observation["state"], custom[1])
+        self.assertEqual(environment.suite.load_calls, 0)
+        self.assertEqual(environment.initial_state_count, 2)
+
     def test_reset_selects_and_records_official_fixed_state(self):
         states = np.arange(15, dtype=np.float64).reshape(3, 5)
         environment = _environment(states)

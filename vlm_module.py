@@ -603,9 +603,16 @@ def candidate_choice_map(detections):
     if len(set(object_ids)) != len(object_ids):
         raise ValueError("Localized candidate object IDs must be unique.")
 
-    labels = [label for label in string.ascii_uppercase if label != NONE_CHOICE]
-    if len(object_ids) > len(labels):
-        raise ValueError(f"At most {len(labels)} localized candidates are supported.")
+    # Preserve existing single-letter IDs, then continue AA, AB, ... .
+    labels, ordinal = [], 1
+    while len(labels) < len(object_ids):
+        value, label = ordinal, ""
+        while value:
+            value, remainder = divmod(value - 1, 26)
+            label = string.ascii_uppercase[remainder] + label
+        if label != NONE_CHOICE:
+            labels.append(label)
+        ordinal += 1
     return dict(zip(labels, object_ids))
 
 
@@ -765,6 +772,39 @@ def _logsumexp(values):
     return maximum + math.log(sum(math.exp(value - maximum) for value in values))
 
 
+def annotate_candidate_boxes(rgb_path, localization_path, output_path):
+    """Mark depth-localized boxes with stable letters on the original RGB image."""
+    image = cv2.imread(str(rgb_path), cv2.IMREAD_COLOR)
+    if image is None:
+        raise FileNotFoundError(f"RGB image is unavailable: {rgb_path}")
+    detections = load_localized_objects(localization_path)
+    boxes = candidate_bbox_map(detections)
+    height, width = image.shape[:2]
+    for object_id, (x1, y1, x2, y2) in boxes.items():
+        if not (0 <= x1 < x2 <= width and 0 <= y1 < y2 <= height):
+            raise ValueError(f"Localized box is outside the RGB image: {object_id}")
+        cv2.rectangle(image, (x1, y1), (min(x2, width - 1), min(y2, height - 1)),
+                      (0, 0, 255), 2)
+    # Draw labels last so a neighboring object's box cannot cross a letter.
+    for letter, object_id in candidate_choice_map(detections).items():
+        x1, y1, _, _ = boxes[object_id]
+        (text_width, text_height), baseline = cv2.getTextSize(
+            letter, cv2.FONT_HERSHEY_SIMPLEX, 0.65, 2,
+        )
+        label_width, label_height = text_width + 8, text_height + baseline + 6
+        left = min(x1, max(0, width - label_width))
+        top = max(0, y1 - label_height)
+        cv2.rectangle(image, (left, top), (left + label_width, top + label_height),
+                      (255, 255, 255), cv2.FILLED)
+        cv2.putText(image, letter, (left + 4, top + text_height + 2),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 0, 0), 2, cv2.LINE_AA)
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    if not cv2.imwrite(str(output_path), image):
+        raise RuntimeError(f"Could not save annotated RGB image: {output_path}")
+    return output_path
+
+
 def create_roi_contact_sheet(
     rgb_path,
     localization_path,
@@ -773,7 +813,7 @@ def create_roi_contact_sheet(
     columns=4,
     candidate_labels=None,
 ):
-    """Create a full-scene plus enlarged-candidate visual prompt for the VLM."""
+    """Legacy NIST visual prompt; LIBERO uses annotate_candidate_boxes instead."""
     image = cv2.imread(str(rgb_path), cv2.IMREAD_COLOR)
     if image is None:
         raise FileNotFoundError(f"Could not read RGB image for VLM prompt: {rgb_path}")
@@ -815,29 +855,6 @@ def create_roi_contact_sheet(
     if not cv2.imwrite(str(output_path), canvas):
         raise RuntimeError(f"Could not save VLM contact sheet: {output_path}")
     return output_path
-
-
-def contact_sheet_candidate_bbox_map(
-    localization_path,
-    tile_size_px=224,
-    columns=4,
-):
-    """Map object IDs to their clickable candidate tiles in a contact sheet."""
-    if tile_size_px <= 0 or columns <= 0:
-        raise ValueError("Contact-sheet tile size and column count must be positive.")
-    payload = json.loads(Path(localization_path).read_text(encoding="utf-8"))
-    objects = list(payload.get("objects", []))
-    if not objects:
-        raise RuntimeError("Cannot map contact-sheet tiles without localized objects.")
-    return {
-        str(item["object_id"]): [
-            (tile_index % columns) * tile_size_px,
-            (tile_index // columns) * tile_size_px,
-            (tile_index % columns + 1) * tile_size_px - 1,
-            (tile_index // columns + 1) * tile_size_px - 1,
-        ]
-        for tile_index, item in enumerate(objects, start=1)
-    }
 
 
 def _place_contact_sheet_tile(canvas, image, label, index, tile_size, columns):

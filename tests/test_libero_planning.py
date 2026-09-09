@@ -44,6 +44,16 @@ class SimulationPlanningTests(unittest.TestCase):
         self.context = scene_context()
         self.plan = reference_pick_place_plan("object_0", "object_2")
 
+    def test_pickup_only_requires_explicit_held_completion_condition(self):
+        pickup = {"status": "ready", "reason": "Lift and hold.",
+                  "actions": [{"action": "pick", "object_id": "object_0"}]}
+        with self.assertRaises(ValueError):
+            validate_simulation_plan(pickup, self.context)
+        self.context["completion_condition"] = "held"
+        validate_simulation_plan(pickup, self.context)
+        with self.assertRaises(ValueError):
+            validate_simulation_plan(self.plan, self.context)
+
     def test_structured_request_preserves_physical_planner_interface(self):
         planner = OpenAIPlanner.__new__(OpenAIPlanner)
         planner.model_name = "test-model"

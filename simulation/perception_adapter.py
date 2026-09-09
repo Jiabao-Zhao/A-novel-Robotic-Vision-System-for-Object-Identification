@@ -41,7 +41,7 @@ def pointcloud_localization_inputs(observation, rgb_path, depth_path, depth_m=No
     }
 
 
-def mask_depth_to_world_workspace(observation, minimum_xyz_m, maximum_xyz_m):
+def mask_depth_to_world_workspace(observation, minimum_xyz_m, maximum_xyz_m, exclude_xy_bounds=None):
     """Zero depth outside an axis-aligned MuJoCo-world workspace.
 
     The mask is computed only from metric depth, camera intrinsics, and
@@ -72,6 +72,11 @@ def mask_depth_to_world_workspace(observation, minimum_xyz_m, maximum_xyz_m):
         world_points <= maximum,
         axis=-1,
     )
+    if exclude_xy_bounds is not None:
+        lower, upper = np.asarray(exclude_xy_bounds, dtype=float)
+        if lower.shape != (2,) or upper.shape != (2,) or np.any(lower >= upper):
+            raise ValueError("Excluded fixture bounds must be ordered XY pairs.")
+        inside &= ~np.all((world_points[..., :2] >= lower) & (world_points[..., :2] <= upper), axis=-1)
     return np.where(inside, depth, 0.0).astype(np.float32), inside
 
 

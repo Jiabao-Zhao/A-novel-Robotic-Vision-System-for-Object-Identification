@@ -15,18 +15,32 @@ from vlm_module import candidate_choice_map, load_localized_objects, resolve_ass
 ROLE = """You identify objects mentioned in a task instruction by associating them
 with already-localized candidates in the marked image.
 Return one line per distinct object mentioned in the instruction:
-<existing image letter>: <object description from the instruction>
-Use the letters already shown in the image. Preserve the instruction's object
+<existing image label>: <object description from the instruction>
+Use the labels already shown in the image. Preserve the instruction's object
 names and identifying modifiers. Do not classify unrelated objects.
+Different products from the same family may be present and look alike while
+differing in size. Match the full target description, including size, color, and
+model modifiers; compare similar candidates rather than treating them as
+interchangeable. Account for perspective and orientation when comparing apparent
+size. Do not infer exact physical dimensions or model identifiers from pixel size alone.
+Interpret the complete object name: a square peg is an elongated peg with a
+square cross-section, not any block or object showing a square face. Match the
+object category and its identifying modifiers together, not one visual feature.
+When the instruction specifies a color, match the object's own visible color;
+do not substitute a differently colored object of similar shape. Ignore the
+colors of annotation boxes and label backgrounds when judging object color.
 Do not output explanations, confidence numbers, coordinates, task roles, or actions.
 If a mentioned object is not present, return N: <object description>."""
 
 
-def request_arguments(image_bytes, instruction, model):
+def request_arguments(image_bytes, instruction, model, *, camera_description=None):
+    system_prompt = ROLE + "\n\nTask instruction:\n" + instruction
+    if camera_description:
+        system_prompt += "\n\n" + camera_description
     return {
         "model": model,
         "messages": [
-            {"role": "system", "content": ROLE + "\n\nTask instruction:\n" + instruction},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": [{
                 "type": "image_url", "image_url": {
                     "url": "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii"),
@@ -70,7 +84,7 @@ def parse_response(raw, mapping, instruction):
     for line in re.finditer(r"[^\r\n]+", text):
         if not line[0].strip():
             continue
-        match = re.fullmatch(r"\s*(?P<label>[A-Z]):[ \t]*(?P<name>\S(?:.*?\S)?)[ \t]*", line[0])
+        match = re.fullmatch(r"\s*(?P<label>[A-Z]+):[ \t]*(?P<name>\S(?:.*?\S)?)[ \t]*", line[0])
         if match is None or match["label"] not in mapping:
             errors.append("Invalid letter:name line: " + line[0])
             continue
@@ -113,14 +127,14 @@ def object_phrase(text):
 
 
 def label_likelihood(raw, description):
-    """Score only the original tokens overlapping this entry's decision letter."""
+    """Score only the original tokens overlapping this entry's decision label."""
     choice = raw["choices"][0]
     text = choice["message"].get("content") or ""
     tokens = (choice.get("logprobs") or {}).get("content") or []
     if "".join(token["token"] for token in tokens) != text:
         return None, None, []
     lines = [line for line in re.finditer(
-        r"^[ \t]*(?P<label>[A-Z]):[ \t]*(?P<name>[^\r\n]+)", text, re.MULTILINE
+        r"^[ \t]*(?P<label>[A-Z]+):[ \t]*(?P<name>[^\r\n]+)", text, re.MULTILINE
     ) if object_phrase(line["name"]) == description]
     if len(lines) != 1:
         return None, None, []
@@ -174,19 +188,22 @@ def joint_inferences(raw, instruction, mapping, target_descriptions):
 def associate_instruction_from_localization(
     instruction, target_descriptions, *, image_path, localization_path, output_path,
     threshold, human_resolver=None, assumed_human=False, clarification_bboxes=None,
+    camera_description=None,
 ):
     """Resolve the joint instruction using the decision-letter threshold contract."""
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     mapping = candidate_choice_map(load_localized_objects(localization_path))
     model = os.environ.get("OPENAI_VLM_MODEL", "gpt-4.1-mini-2025-04-14")
-    args = request_arguments(Path(image_path).read_bytes(), instruction, model)
+    args = request_arguments(Path(image_path).read_bytes(), instruction, model,
+                             camera_description=camera_description)
     request_record = {
         "model": model, "role": ROLE, "instruction": instruction,
+        "system_prompt": args["messages"][0]["content"],
         "image_path": str(image_path), "candidate_map_local_only": mapping,
         "settings": {key: value for key, value in args.items() if key != "messages"},
         "image_detail": "high",
-        "vlm_inputs": "Role plus original task instruction and letter-marked image only.",
+        "vlm_inputs": "Role plus original task instruction and one RGB scene with letter-labeled boxes; no candidate list or crops.",
         "gate": "Each entry uses only raw generated decision-letter likelihood; full-output and letter+name likelihoods are diagnostics.",
         "threshold": threshold,
         "threshold_validation": "Provisional inherited value; not calibrated for the joint prompt.",

@@ -114,6 +114,7 @@ class LiberoTaskEnvironment:
         image_width=256,
         image_height=256,
         rendering_backend=None,
+        scene_paths=None,
     ):
         self.suite_name = str(suite_name)
         self.task_index = int(task_index)
@@ -160,7 +161,9 @@ class LiberoTaskEnvironment:
         self.task = self.suite.get_task(self.task_index)
         self.task_name = str(getattr(self.task, "name", Path(self.task.bddl_file).stem))
         self.instruction = str(getattr(self.task, "language", ""))
-        self.bddl_path = Path(get_libero_path("bddl_files")) / self.task.problem_folder / self.task.bddl_file
+        self.scene_paths = scene_paths
+        self.bddl_path = (Path(scene_paths["bddl_path"]) if scene_paths else
+                          Path(get_libero_path("bddl_files")) / self.task.problem_folder / self.task.bddl_file)
         if not self.bddl_path.is_file():
             raise LiberoIntegrationError(
                 f"LIBERO task definition is missing: {self.bddl_path}. "
@@ -250,6 +253,12 @@ class LiberoTaskEnvironment:
     def _load_task_initial_states(self):
         if self._task_initial_states is not None:
             return self._task_initial_states
+        if getattr(self, "scene_paths", None):
+            states = np.load(self.scene_paths["initial_states_path"], allow_pickle=False)
+            if states.ndim != 2 or not len(states) or not np.all(np.isfinite(states)):
+                raise LiberoIntegrationError("Custom scene initial states are invalid.")
+            self._task_initial_states = states
+            return states
         loader = getattr(self.suite, "get_task_init_states", None)
         if loader is None:
             raise LiberoIntegrationError(

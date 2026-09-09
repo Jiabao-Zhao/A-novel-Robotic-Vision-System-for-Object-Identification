@@ -57,14 +57,21 @@ PARTS = (
 
 def prepare_assets():
     """Convert the official millimetre STLs to centered metre binary STLs."""
-    import open3d as o3d
-
     archive = ASSET_DIR / "stl.zip"
     if not archive.is_file():
         raise FileNotFoundError(f"Download {STL_URL} to {archive}; see simulation/README.md.")
     mesh_dir = ASSET_DIR / "meshes"
     mesh_dir.mkdir(parents=True, exist_ok=True)
     names = {BOARD_FILE, *PARTS, *(item[0] for item in FIXTURES)}
+    archive_hash = hashlib.sha256(archive.read_bytes()).hexdigest()
+    provenance_path = ASSET_DIR / "provenance.json"
+    if provenance_path.exists():
+        cached = json.loads(provenance_path.read_text())
+        if (cached.get("conversion_revision") == 1 and cached["archive_sha256"] == archive_hash
+                and all((mesh_dir / f"{name}_m.stl").is_file() for name in names)):
+            return mesh_dir, cached["dimensions_m"]
+    import open3d as o3d
+
     dimensions = {}
     with zipfile.ZipFile(archive) as source:
         for name in sorted(names):
@@ -92,7 +99,7 @@ def prepare_assets():
     np.testing.assert_allclose(dimensions[BOARD_FILE], BOARD_SIZE_M, atol=1e-6)
     provenance = {
         "source_url": STL_URL,
-        "archive_sha256": hashlib.sha256(archive.read_bytes()).hexdigest(),
+        "archive_sha256": archive_hash, "conversion_revision": 1,
         "source_units": "mm", "mesh_units": "m", "dimensions_m": dimensions,
         "fixture_xy_source": "mounting-hole centers measured from the official plate STL",
         "fixture_z_note": "scene mounting approximations; fastener engagement is not validated",
@@ -102,7 +109,7 @@ def prepare_assets():
                         "no official NIST task success metric", "uniform illustrative materials",
                         "STL pilot holes are preserved; no post-fabrication drilling is modeled"],
     }
-    (ASSET_DIR / "provenance.json").write_text(json.dumps(provenance, indent=2))
+    provenance_path.write_text(json.dumps(provenance, indent=2))
     return mesh_dir, dimensions
 
 
@@ -122,8 +129,8 @@ def _color(name):
     return "0.52 0.57 0.61 1"
 
 
-def add_board_scene(model, mesh_dir, dimensions):
-    """Add fixed hardware and 20 independently movable parts before compilation."""
+def add_board_scene(model, mesh_dir, dimensions, parts=PARTS, placements=None):
+    """Add fixed hardware and the selected movable parts before compilation."""
     import open3d as o3d
 
     for name in dimensions:
@@ -169,28 +176,70 @@ def add_board_scene(model, mesh_dir, dimensions):
         xy = (np.array([x_mm, y_mm]) - 192) * 0.001 + BOARD_CENTER_XY_M
         component(name, f"nist_fixture_{index}",
                   [*xy, board_top + base_mm * 0.001 + dimensions[name][2] / 2], yaw)
-    for index, name in enumerate(PARTS):
+    for index, name in enumerate(parts):
         row, column = divmod(index, 10)
+        placement = (placements[name] if placements else
+                     {"xy_m": [-0.28 + column * 0.064, -0.215 - row * 0.082], "yaw_deg": 0.})
         component(name, f"nist_part_{name}",
-                  [-0.28 + column * 0.064, -0.215 - row * 0.082,
-                   FLOOR_Z_M + dimensions[name][2] / 2 + 0.001], movable=True)
+                  [*placement["xy_m"], FLOOR_Z_M + dimensions[name][2] / 2 + 0.001],
+                  yaw=placement["yaw_deg"], movable=True)
 
 
 class NistTaskBoardEnvironment(LiberoTaskEnvironment):
     """Reuse the RGB-D bridge and robot controls for a custom board scene."""
 
-    def __init__(self, image_size=768):
+    def __init__(self, image_size=768, parts=PARTS, placements=None, overhead_view=False, common_parts=(),
+                 camera_names=("agentview", "robot0_eye_in_hand"), additional_scene=None):
+        if not parts or len(set(parts)) != len(parts) or not set(parts).issubset(PARTS):
+            raise ValueError("NIST scene requires distinct known component names.")
+        active_parts = (*parts, *common_parts)
+        if len(set(active_parts)) != len(active_parts):
+            raise ValueError("Scene component names must be distinct.")
+        if placements is not None and set(placements) != set(active_parts):
+            raise ValueError("Every selected NIST component needs one scenario placement.")
+        self.active_parts = active_parts
         self.rendering_backend = configure_mujoco_rendering()
         from libero.libero.envs import OffScreenRenderEnv
         from libero.libero.envs.bddl_base_domain import TASK_MAPPING, register_problem
 
         mesh_dir, dimensions = prepare_assets()
+        self.part_dimensions_m = dimensions
 
         @register_problem
         class Nist_Task_Board_One(TASK_MAPPING["libero_floor_manipulation"]):
             def _load_model(self):
                 super()._load_model()
-                add_board_scene(self.model, mesh_dir, dimensions)
+                add_board_scene(self.model, mesh_dir, dimensions, parts, placements)
+                if common_parts:
+                    from libero.libero.envs.objects import get_object_fn
+                    from scipy.spatial.transform import Rotation
+
+                    for name in common_parts:
+                        obj = get_object_fn(name)(name=f"mixed_{name}")
+                        body = obj.get_obj()
+                        body.set("name", f"nist_part_{name}")
+                        placement = placements[name]
+                        rotation = Rotation.identity()
+                        axes = (obj.rotation if isinstance(obj.rotation, dict) else
+                                {obj.rotation_axis: obj.rotation})
+                        for axis, angles in axes.items():
+                            if angles[0] != angles[1]:
+                                raise ValueError("Mixed-scene assets require a fixed supplied base orientation.")
+                            rotation = Rotation.from_euler(axis, angles[0]) * rotation
+                        rotation = Rotation.from_euler("z", placement["yaw_deg"], degrees=True) * rotation
+                        body.set("quat", _values(rotation.as_quat()[[3, 0, 1, 2]]))
+                        body.set("pos", _values([*placement["xy_m"], FLOOR_Z_M - obj.bottom_offset[2] + .001]))
+                        self.model.merge_assets(obj)
+                        self.model.worldbody.append(body)
+                if additional_scene is not None:
+                    additional_scene(self.model)
+                if overhead_view:
+                    camera = self.model.worldbody.find(".//camera[@name='agentview']")
+                    if camera is None:
+                        raise ValueError("NIST classification camera is missing.")
+                    camera.set("pos", "0 -0.065 1.4")
+                    camera.set("quat", "1 0 0 0")
+                    camera.set("fovy", "32")
 
             def _check_success(self):
                 return False  # This capture scene defines no assembly success predicate.
@@ -199,7 +248,7 @@ class NistTaskBoardEnvironment(LiberoTaskEnvironment):
         self.task_index = None
         self.task_name = "nist_task_board_1_perception"
         self.instruction = "Inspect the NIST Task Board 1 and its loose assembly components."
-        self.camera_names = ("agentview", "robot0_eye_in_hand")
+        self.camera_names = tuple(camera_names)
         self.image_width = self.image_height = int(image_size)
         self.last_observation = None
         self.last_reset_seed = self.last_init_state_index = self.last_init_state_sha256 = None

@@ -78,6 +78,19 @@ class JointAssociationTests(unittest.TestCase):
                                    INSTRUCTION, MAPPING, ["milk", "basket"])
         self.assertIsNone(rows[0]["association_score"])
 
+    def test_multi_letter_labels_score_every_original_label_token(self):
+        mapping = {"A": "object_001", "AA": "object_026"}
+        for tokens in ([("AA", -.3), (": milk", -4.)],
+                       [("A", -.1), ("A", -.2), (": milk", -4.)]):
+            rows, parsed = joint_inferences(response(tokens), "pick up the milk", mapping, ["milk"])
+            self.assertTrue(parsed["format_valid"])
+            self.assertEqual(rows[0]["vlm_object_id"], "object_026")
+            self.assertAlmostEqual(rows[0]["association_score"], math.exp(-.3))
+        rows, _ = joint_inferences(response([("N", -.1), (": milk", -4.)]),
+                                   "pick up the milk", mapping, ["milk"])
+        self.assertIsNone(rows[0]["vlm_object_id"])
+        self.assertAlmostEqual(rows[0]["association_score"], math.exp(-.1))
+
     def run_association(self, tokens, resolver):
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)

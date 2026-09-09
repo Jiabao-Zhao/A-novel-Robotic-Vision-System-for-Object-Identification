@@ -52,60 +52,101 @@ The generated `assets/provenance.json` records the archive checksum, source
 units, conversion, component dimensions, and limitations. These third-party
 assets are downloaded locally and are not redistributed as repository source.
 
-### Known-hole round-peg pilot
+### Wrist-only scattered-object pickup
 
-`python -m scripts.run_nist_peg_pilot` runs one episode per method for the
-16 mm round peg. The part pose is unknown to both methods; its semantic target
-description is given. The hole pose is supplied from the scene design, with its
-entrance at world XYZ `(0.074450, -0.004824, 0.028992)` metres and outward axis
-`+Z`. The actual arena floor is at world Z=0; the LIBERO sampler's -25 mm offset
-must not be used as a floor elevation. The plate underside is at Z=20 mm.
+`python -m scripts.run_wrist_cluster` runs Try 2: one seeded scatter of all 14
+active movable targets and one independent pickup attempt for each target.
+Use `main(trial_number=N)` for a specific try from 1 through 10. Each try uses
+seed `20260908 + N`, changing every object's XY position and yaw while retaining
+its supported resting orientation. The same saved simulator state and gripper
+command are restored before each attempt within a try. Only
+`robot0_eye_in_hand` RGB and metric depth are enabled; there is no external-camera
+perception input. Camera calibration is read at the robot's observation pose.
+The seeded scatter uses a 380 by 740 mm world-XY region closer to the robot,
+with at least 12 mm between conservative object footprints and 45 mm of extra
+clearance from the excluded board bounds for the fingers. The board footprint
+is excluded from placement and the depth workspace using its fixed workcell
+layout bounds. This is not a simulator-instance segmentation mask.
+Motion subsequently uses the initial estimated object pose and robot proprioception;
+the wrist recording is not a claim of continuous visual pose correction.
 
-The framework uses RGB-D localization of the parts work area, independent VLM
-association, and the selected partial point cloud aligned to the semantic CAD
-prior. It then attempts a grasp, lift, transfer, and straight insertion using
-robot-proprioception feedback. The 0.75 raw-label-likelihood gate is provisional
-and uncalibrated for NIST. A deferral is saved and stops autonomous motion.
-An explicitly confirmed candidate can be continued separately using
-`run_method("framework_human", new_output_dir, confirmed_trial=(source_dir, object_id))`;
-the source and resumed initial-state hashes must match. Human-assisted results
-must not be reported as autonomous recognition success.
+The seven NIST parts are large/medium gears, M12/M16 nuts, D-sub connector, and
+16 mm round/square pegs. The square-peg instruction uses "white square peg"
+and its visual material is white; its CAD and collision geometry are unchanged.
+BBQ sauce and cream cheese reuse the installed LIBERO assets. Cable shark has
+been removed from the active test bed. Its original repository CAD remains available.
+Bearing, pulley, spacer, red block, and blue block use explicitly
+labeled representative procedural CAD. Their dimensions are prototype choices,
+not physical calibration or official NIST component dimensions. Ring collisions
+preserve center openings; the pulley's belt recess is visual, with an outer-envelope
+collision approximation. The NIST board remains background; basket, plate,
+placement, insertion, and final orientation are outside this pickup-only run.
 
-The VLA branch uses the cached, pinned SmolVLA LIBERO checkpoint without
-fine-tuning. It receives agent/wrist RGB, 8D robot state, and the same task text
-including numeric hole coordinates. Official LIBERO image rotation, state
-conversion, and checkpoint normalization are retained. This checkpoint has no
-dedicated goal-pose channel; numeric goal following is unvalidated. Failure can
-therefore reflect goal conditioning or control as well as visual recognition.
-The framework uses 768-pixel images and VLA uses its native 256-pixel images.
-This is a diagnostic pilot, not a controlled ranking of the two methods.
+BBQ sauce replaces butter in this study.
+The two common assets start upright on their CAD Z support plane, consistent with
+the current alignment baseline and placement footprints. This overrides LIBERO's
+sideways BBQ preset; it is a controlled initial-state assumption, not a measured
+orientation or a demonstration of arbitrary resting-state pose estimation.
 
-Each timestamped run saves videos, action logs, association evidence, CAD
-alignment, and evaluation JSON. Initial simulator states are hash-checked across
-methods. Simulator object poses and contacts are used only by `PegEvaluator`
-for scoring, never to choose a part or generate an action. Stages are bilateral
-target grasp, target lift by at least 15 mm, approach within 10 mm XY of the hole
-while grasped, and insertion. Insertion requires at least 5 mm engagement,
-positive estimated shaft clearance, less than one degree tilt, and five
-consecutive physics/control observations after lifting the correct peg. It is
-a simulation geometry criterion, not NIST's official completion protocol.
+The boxed-scene VLM prompt explicitly distinguishes similar-looking products
+within a family using the target's size, color, and model modifiers, while
+accounting for perspective. Exact physical size cannot be inferred from pixel
+size alone. The input remains one annotated image and the task instruction;
+output remains `label: description` with the 0.99 raw decision-label gate.
+The prompt distinguishes a square peg's cross-section and elongated shape from
+a block's square face. It explicitly requires any stated object color to match,
+while excluding annotation-box and label colors from that judgment. The model
+must match the object category and modifiers together.
+The instruction is followed by: "You are given a near-top-down wrist-camera
+view of the workspace."
+Assumed-human identity correction applies only after deferral and cannot repair a
+missing or ambiguous depth candidate. The LLM receives the explicit `held`
+completion condition; ordinary basket plans still require an empty final gripper.
+Gear contacts use separate lower-section and hub hulls within one rigid body,
+preserving the original nominal mass/inertia. Their grip heading follows the
+robot's current heading rather than the gear's arbitrary CAD yaw. A grasp estimate
+up to 1 mm below the controller's 5 mm lower bound is raised to 5.1 mm;
+larger violations remain rejected. These are simulation pickup settings.
+Before wrist pickup, bounded inverse kinematics checks the pregrasp and grasp
+against the robot's joint limits. The controller can use the equivalent 180-degree
+parallel-jaw orientation at the same grasp point. These checks do not establish
+collision-free motion. Opening, closing, and final holding maintain one fixed hand
+pose with feedback, so relative zero commands cannot accumulate position drift.
+Confirmed robot-execution faults are recorded separately from the four framework
+failure stages. Diagnostic controller replays preserve the original task outcomes
+and do not count as additional study attempts.
+Success requires the requested target to rise at least 20 mm and maintain bilateral
+finger contact for 20 consecutive control steps (one second) ending at trial end,
+with no other object lifted during the trial. Logs separately report the longest
+continuous hold and whether a one-second hold occurred at any earlier point.
+These are pickup outcome measures, not causal framework-stage diagnoses.
+Simulator identity, positions, and contacts are used only for
+evaluation and the previously authorized assumed-human correction.
 
-The 16.2 mm hole and 16 mm peg provide only 0.1 mm nominal radial clearance.
-Their original dimensions are retained. Peg slip within the gripper, registration
-error, and OSC tracking error can prevent insertion even with an exact hole pose.
-The controller performs no force search or visual re-estimation after grasping.
-This pilot does not validate the other components' insertion physics.
+This wrist setup clusters connectivity in the estimated table plane. That joins
+visible surfaces separated vertically by occlusion (such as a pulley's rim and
+upper face), while retaining their original 3D points for localization and CAD
+alignment. Raw-cloud cleanup uses the same connectivity rule. The setting is
+specific to this scattered scene; existing physical and other simulation runs
+retain 3D clustering by default. It assumes separated tabletop footprints and
+does not resolve stacked or horizontally overlapping objects.
 
-Run its integration and metric checks inside WSL:
-
-```bash
-MUJOCO_GL=egl python -m unittest discover -s tests -p 'test_nist*.py'
-```
-
-This bridge targets Ubuntu 22.04 under WSL2. It uses the current LeRobot
-`libero` optional dependency to install LIBERO, then calls the direct LIBERO
-environment API because the LeRobot Gym wrapper currently does not expose depth
-observations.
+Artifacts live under `outputs/simulation/wrist_cluster/`: initial wrist RGB-D,
+boxed input, exact initial state, catalog provenance, per-target VLM scores,
+CAD alignment, LLM plans, action logs, and wrist video when motion is attempted.
+The recorded stopping stage is not by itself a causal diagnosis; execution/grasp
+failures remain unresolved unless supported by additional evidence. The first
+scene is exploratory development, not held-out validation or a VLA comparison.
+Try 1 is preserved at `run_20260909T190843Z/`, including its original results and
+a snapshot of the recorded source files. `study.json` indexes the ten-try study
+(140 planned pickup attempts). Older simulation results and generated reports
+were removed, together with the obsolete classification sweeps, basket/VLA
+comparison runners, and insertion diagnostics. The current runner, reusable
+simulation code, regression tests, CAD assets, and BDDL scene definitions remain.
+Local preview regeneration is `main(execute=False, trial_number=N)`;
+it saves `setup_try_NN/` without calling the VLM or attempting a pickup.
+The configured translation bounds are not an inverse-kinematics or collision
+check; a scattered pose inside those bounds is not guaranteed to be reachable.
 
 ## Where the simulation runs
 
@@ -123,9 +164,9 @@ MuJoCo renders through WSL GPU passthrough and EGL. `environment.reset()` and
 process; there is no image-transfer service between Windows and WSL. The sensor
 adapter selects the allowed camera and robot fields, converts depth, and passes
 NumPy arrays to the local perception pipeline. For the VLM stage only, the
-generated contact-sheet image, instruction, and localized candidate metadata
-are sent from WSL to the configured cloud API; the returned JSON association is
-then consumed locally by the controller.
+single boxed wrist-camera image and task instruction are sent from WSL to
+the configured cloud API. Candidate metadata and point clouds remain local.
+The generated letter association is resolved locally before CAD alignment.
 
 ## WSL and Python environment
 
@@ -212,13 +253,7 @@ export MUJOCO_GL=egl
 export PYOPENGL_PLATFORM=egl
 python -m scripts.libero_smoke_test
 python -m scripts.capture_libero_rgbd
-python -m scripts.libero_pointcloud_test
-python -m scripts.libero_localization_test
-python -m scripts.libero_milk_cad_test
-python -m scripts.setup_libero_experiment
-python -m scripts.libero_task_execution
-python -m scripts.libero_vla_eval
-python -m scripts.compare_libero_results
+# The numbered study runner is described above; these commands only check/capture the simulator.
 ```
 
 If EGL cannot create an offscreen renderer, verify that `nvidia-smi` works
@@ -256,350 +291,17 @@ Depth is converted with `robosuite.utils.camera_utils.get_real_depth_map`. The
 saved `depth.npy` is `float32` in metres. The point cloud is reconstructed only
 from that rendered metric depth, RGB, and the retrieved intrinsic matrix.
 
-## Existing localization compatibility
+## Verification and saved-state diagnostics
 
-`scripts.libero_localization_test` passes the simulated capture into
-`PointCloudLocalization.run_from_arrays`. Before that shared algorithm runs,
-the simulation adapter masks depth to a calibrated MuJoCo-world tabletop box:
-
-```text
-minimum XYZ: (-0.25, -0.35, -0.02) m
-maximum XYZ: ( 0.35,  0.35,  0.23) m
-```
-
-This mask uses only metric depth, camera intrinsics, and `world_T_camera`; it
-does not use simulator segmentation, object IDs, or object poses. The LIBERO
-test uses a 2 mm voxel and plane tolerance plus smaller cluster, ROI, and raw
-point-cloud cleanup cutoffs appropriate for its clean 256 x 256 rendered
-depth. RealSense defaults remain unchanged.
-
-Outputs are saved beneath `outputs/simulation/libero_localization/`. The localization JSON
-contains camera-frame ROI, centroid, axis-aligned size, accepted downsampled
-cluster point count, cleaned saved PLY point count, and cluster path for each
-candidate. The test also prints each centroid transformed into the MuJoCo world
-frame for calibration verification.
-
-## Milk CAD-to-observation experiment
-
-`scripts.libero_milk_cad_test` isolates the first CAD experiment from robot
-motion. It reads the saved initial observation, depth-localization result, VLM
-semantic association result, and `world_T_camera` from task 7. It then:
-
-```text
-VLM association: "milk" -> final_object_id
-  -> that candidate's RGB-D-derived partial point cloud
-  -> semantic lookup in CAD/libero_object_library.json
-  -> tabletop-constrained CAD-to-observation registration
-  -> camera_T_cad
-  -> world_T_cad = world_T_camera @ camera_T_cad
-```
-
-The registered object center is the CAD bounding-box center transformed by
-`world_T_cad`; it is not assumed to be the CAD file origin. Results are saved
-beneath
-`outputs/simulation/experiments/put_all_objects_into_basket/proposed_framework/task_07_milk/init_state_00/cad_registration/milk/`,
-including the sampled, aligned, and augmented point clouds, candidate scores,
-transforms, provenance, RMSE, and `alignment_views.png`.
-
-Before the pose is allowed into task execution, the adapter requires a
-camera-frame localization result, a finite table plane, a checksum-verified
-milk asset, no registration warnings, and constrained RMSE at or below 15 mm.
-Failure aborts the task instead of silently reverting to the partial-cloud
-centroid.
-
-The experiment intentionally uses LIBERO's exact HOPE visual mesh for each of
-the ten target products as a known CAD prior. Every product has its own
-cataloged source scale, support axis, and SHA-256. The meshes are not copied
-into this repository; they are resolved from the installed
-`~/.cache/libero/assets` directory. Results are labeled `exact simulator CAD
-prior` rather than being presented as independently retrieved real-world
-models. See `CAD/LIBERO_ASSET_NOTICE.md` for provenance and license information.
-
-Neither the isolated registration test nor the full task pipeline reads a
-MuJoCo object name, object ID, segmentation mask, or ground-truth object pose.
-The simulator contributes only rendered RGB-D, camera calibration, the language
-instruction, and robot proprioception. The known mesh is an experimental CAD
-prior, just as a physical deployment would obtain a model from its CAD library.
-
-## Perception-driven task execution
-
-`scripts.libero_task_execution [task_index]` runs one LIBERO-Object basket task;
-omitting the index retains task 7 (milk) as the backward-compatible default. It
-uses the rendered agent-view RGB-D observation, the calibration bridge, the
-existing depth localizer, the repository's OpenAI VLM
-association, target CAD-to-observation alignment, an LLM plan, robot proprioception,
-and normalized OSC pose actions. The VLM receives the original task instruction
-and a full-scene plus enlarged-crop contact sheet marked with candidate letters.
-It returns one `letter: object name` entry per mentioned object using the joint
-prompt in `simulation.libero_joint_association`. No pre-extracted target list,
-candidate metadata, or task roles are supplied to the VLM. Letter-to-object-ID
-mapping and output-completeness checks happen locally. The LLM infers task roles
-from the original instruction and returns object IDs in its action sequence. The target object
-pose comes from CAD registration. A simulation-only grasp conversion then
-handles the CAD's declared Y-up or Z-up convention, keeps the gripper tool axis
-vertical, selects the closer 180-degree-equivalent wrist yaw, and chooses a
-grasp height from the registered CAD extent. Flat packages use their center,
-medium-height products use a small upward offset, and tall products are grasped
-40 mm below the top. The basket place position remains its depth-localized
-centroid.
-The controlled simulation condition assumes a correct human response whenever
-the confidence gate defers. `ASSUME_CORRECT_HUMAN = True` resolves those cases
-using simulator identity matched to an unambiguous localized candidate. This is
-an explicitly logged substitute for a human response, not an actual human trial.
-Accepted VLM decisions are not corrected. Missing or ambiguous localized targets
-still fail. Only an object ID is returned; CAD registration, grasp generation,
-and execution continue using estimated geometry. The run records whether this
-identity assistance was used. Simulator segmentation and ground-truth execution
-poses are not supplied to the pipeline. LIBERO's task success predicate is checked during
-execution for evaluation and episode termination; it is not a planner input.
-
-Before each RGB-D frame is captured, the environment advances ten zero-pose,
-open-gripper physics steps (0.5 seconds at 20 Hz). This matches LeRobot's
-settling sequence and lets MuJoCo resolve initial support contacts. The CAD pose
-treats the segmented table plane as a hard support constraint and optimizes
-only translation along the plane plus yaw.
-
-Set `OPENAI_API_KEY` in the WSL process environment before running the task.
-
-Each episode saves its perception inputs, localization JSON, enlarged VLM
-visual prompt, joint VLM request and full provider response/token usage,
-resolved associations, any assumed-human identity audit, CAD transforms and aligned/augmented point
-clouds, normalized action log, final agent and wrist RGB-D observations,
-success value, and MP4 video beneath its corresponding
-task/state folder. It uses bounded top-grasp/container-placement skills, not
-a general grasp planner or VLA policy.
-
-The current higher-resolution trial renders the proposed method at 768 x 768,
-uses 448-pixel VLM contact-sheet tiles, and queries all mentioned objects jointly.
-Its artifacts are isolated under
-`proposed_framework/_resolution_trials/768x768_joint_instruction_assumed_human_v2/`.
-The old one-target `768x768_raw_likelihood_gate_llm_plan_v1` pilot remains intact.
-The CAD catalog now declares BBQ sauce Z-up and alphabet soup/tomato sauce Y-up,
-matching their source mesh frames. These corrections were checked against frozen
-observations before the new pilot. This simulation-only controller maps the registered
-`world_T_cad` pose to a collision-aware robosuite grip-site target and uses its
-OSC pose controller; it does not alter the physical RealSense/UR5e path.
-
-### Executable LLM plans and failure evidence
-
-The runner now calls `simulation.libero_planning.generate_simulation_plan` after
-CAD alignment. It reuses the OpenAI client in `LLM_planner.py`, with
-`OPENAI_LLM_MODEL` (default `gpt-4.1-mini`) and temperature 0. Set this to a fixed
-supported model snapshot for an experiment. The joint VLM defaults to
-`gpt-4.1-mini-2025-04-14`. The physical one-target VLM path and RTDE action schema are
-not used by the simulation.
-
-The planner receives the original task text and resolved objects with descriptions,
-estimated centroids, CAD transforms/dimensions where available, grasp bindings,
-placement capabilities, and robot proprioception. All geometry uses meters in
-explicit frames. It receives no expected plan or source/destination role labels.
-The supported structured actions are `pick(object_id)` and
-`place(object_id, destination_id, relation="in")`. Numeric motion parameters are
-bound by the executor from perception, never generated by the LLM. Only the
-existing ten LIBERO-Object basket tasks are connected; plate placement and the
-proposed broader task selection still require separate integration. Only the
-associated product currently has a CAD-derived grasp binding, so this is a
-limited instruction-to-skill evaluation, not an unconstrained planning benchmark.
-
-The complete plan is checked before any task motion: known IDs, exact arguments,
-supported capabilities, one held object, placement after picking, and no reuse
-of an object's stale initial pose after moving it. Rejected plans, blocked plans,
-refusals, incomplete responses, and API failures stop the episode without a
-scripted fallback. A controller exception remains an execution error. JSON
-schema compliance alone is not evidence that a plan satisfies the task.
-
-Each run saves `llm_plan.json` with the prompt, context, model settings, raw provider
-response/token usage, parsed plan, and validation outcome. `execution_inputs.json`
-freezes the perception values and controller/environment configuration.
-`episode.json` includes planning status, success, and action logs linked to plan
-action indices. Task consistency is graded against the instruction's object
-relationships only in the evaluation layer; this grade never guides execution.
-It is conditional on correct upstream identities and geometry, and does not
-automatically assign a causal failure stage. Pre-planning exceptions record
-`failure_observed_at` while leaving causal attribution unresolved.
-
-Run a selected initial arrangement programmatically inside WSL:
-
-```python
-from scripts.libero_task_execution import main
-episode_path = main(7, initial_state_index=4)
-```
-
-The existing `python -m scripts.libero_task_execution 7` command uses state 0.
-It exits unsuccessfully when the task fails; the Python function returns the
-episode path for completed attempts, including planning stops. Existing output
-directories cannot be overwritten.
-
-For an unsuccessful episode that reached planning, make an explicit diagnostic
-replay in a new directory:
-
-```python
-from scripts.libero_task_execution import replay_with_reference_plan
-episode_path = replay_with_reference_plan(
-    source_dir="outputs/simulation/experiments/put_all_objects_into_basket/proposed_framework/"
-               "_resolution_trials/768x768_joint_instruction_assumed_human_v2/task_07_milk/init_state_00",
-    output_root="outputs/simulation/planning_diagnostics/milk_state00_reference",
-)
-```
-
-Replay uses the same frozen perception values, initial state, settling actions,
-controller and executor source hashes, library versions, and episode budget.
-It verifies both the official initial-state hash and the full simulator-state
-hash after settling. State values used for this integrity check are never
-exposed to the planner. No VLM, CAD, or LLM calls are repeated. Only the plan is
-replaced with a checked pick/place reference using the same resolved IDs.
-The original episode remains unchanged. `reference_comparison.json` records the
-paired outcomes; these diagnostic executions are excluded from the main trial
-count. Reference success supports a planning contribution only when the
-executable plan changed, subject to upstream correctness. The original planning
-status distinguishes rejected model output from blocked plans or service failures.
-Two failures, or different outcomes from identical executable plans, leave the
-cause unresolved.
-
-Each joint VLM entry contains a decision letter mapped deterministically back to
-an `object_id`. Its gate score is
-`exp(sum(decision-bearing token logprobs))`, without counting standalone
-formatting tokens. It is a raw generated-label likelihood, not a calibrated
-probability of correct object identity. Whole-response and letter-plus-name
-likelihoods are saved only as diagnostics. The inherited threshold
-`0.9999832372181827` is provisional and has not been validated for the joint
-prompt; later entry probabilities also depend on earlier generated output.
-Malformed/incomplete output or missing decision-letter log probabilities defers
-to the assumed human. Both paths produce the same `final_object_id` field before CAD
-retrieval. A `none` decision leaves `final_object_id` null and stops CAD
-retrieval for that target.
-
-The physical single-target VLM retains its existing prompt and threshold settings.
-
-## Development batches
-
-Run `python -m scripts.run_libero_development` in the WSL environment for the
-current 100-episode batch: ten LIBERO-Object tasks at states
-2, 3, 4, 5, 6, 7, 8, 9, 11, and 12. Three separate simulation processes run
-episodes and then restore each initial scene for an evaluation-only identity
-audit. Both API models are pinned to `gpt-4.1-mini-2025-04-14`; the existing
-joint prompt, raw-score threshold, CAD settings, and controller are retained.
-
-Results are saved under
-`outputs/simulation/study_1200/development/object_states_02_to_12/`.
-The manifest records source hashes and settings. Repeating the command resumes
-unfinished work with the same configuration, preserving completed failures as
-well as successes. A different batch needs a new output root and state list in
-the script's constants. These are development episodes, separate from the
-planned 1,200 final comparison executions.
-
-The contact sheet includes an overview captioned `full scene`. Some responses
-copy that caption, for example `full scene: cream cheese`, instead of returning
-a candidate letter. This fails the `letter: name` contract and cannot select an
-object point cloud. The current joint parser defers every entry when any entry
-is malformed; these gate scores are null, not numeric confidence measurements.
-Audits report malformed output separately from scored wrong-object selections
-and inspect accepted predictions without correcting them.
-
-## SmolVLA baseline and matched comparison
-
-The VLA is a parallel baseline, not another stage after CAD registration:
-
-```text
-outputs/simulation/experiments/put_all_objects_into_basket/
-├── experiment_manifest.json
-├── comparison_summary.json             # after both matched methods run
-├── per_episode.csv                      # after both matched methods run
-├── VLA/
-│   ├── task_00_alphabet_soup/init_state_00/...
-│   ├── ...
-│   └── task_09_orange_juice/init_state_00/...
-└── proposed_framework/
-    ├── task_00_alphabet_soup/init_state_00/...
-    ├── ...
-    └── task_09_orange_juice/init_state_00/...
-```
-
-Run `python -m scripts.setup_libero_experiment` once to create the two method
-folders and the ten actual LIBERO-Object task folders. Generated artifacts stay
-under `outputs/` and are intentionally ignored by Git.
-
-```text
-Same LIBERO task + same official fixed state 0
-├── Proposed method
-│   agent RGB-D -> depth localization -> VLM association -> target CAD alignment
-│   -> LLM pick/place plan -> bounded OSC skills -> 7D actions
-└── VLA baseline
-    agent RGB + wrist RGB + 8D robot state + instruction
-    -> SmolVLA -> 7D actions
-                         |
-                         v
-              same LIBERO success predicate
-```
-
-`scripts.libero_vla_eval` delegates policy loading, image orientation,
-normalization, state construction, action unnormalization, and rollout to the
-official LeRobot evaluator. It intentionally does not import the RGB-D sensor,
-VLM, CAD, or scripted controller. The selected
-`HuggingFaceVLA/smolvla_libero` checkpoint is already LIBERO-fine-tuned; no
-local fine-tuning is needed for this benchmark baseline. The exact tested
-checkpoint revision is
-`6721902bc4d61e50a3bfdb11dfb4cb626f05d102`.
-
-The all-product breadth test evaluates task indices 0 through 9 once per method.
-A **task index** selects the product instruction: task 0 is alphabet soup, task
-7 is milk, and task 9 is orange juice. An **initial-state index** selects one of
-the 50 saved simulator arrangements inside that task. These are independent
-indices. The completed VLA baseline remains at its official 256 x 256 input
-setting. The completed proposed-method breadth sweep uses 512 x 512, while the
-current joint-prompt planning pilot uses 768 x 768. Neither proposed result
-is a resolution-matched cross-method comparison with the VLA baseline. All runs
-still use:
-
-- official `.pruned_init` state index 0, including a byte hash check
-- seed 1000
-- relative OSC control at 20 Hz
-- 10 pre-policy physics-settling actions
-- a 280-action episode horizon
-- LIBERO's own `check_success()` task predicate
-
-Run the VLA branch inside the WSL environment:
+Run regression checks in the WSL environment without calling either model:
 
 ```bash
-source ~/.venvs/lerobot-libero/bin/activate
-export MUJOCO_GL=egl
-export PYOPENGL_PLATFORM=egl
-python -m scripts.libero_vla_eval
+MUJOCO_GL=egl PYOPENGL_PLATFORM=egl python -m unittest discover -s tests
 ```
 
-The VLA runner preserves every complete task package, including the existing
-milk pilot, and evaluates all missing task indices in one official LeRobot
-batch. It preserves the combined batch under `VLA/_batch_runs/` and writes a
-separate manifest, `eval_info.json`, and copied video beneath each task's
-`init_state_00/` directory. A nonempty but incomplete task directory is treated
-as an error and is never overwritten silently.
-
-Run the proposed branch for each task index from the same repository and WSL
-environment. The default remains task 7 for backward compatibility:
-
-```bash
-python -m scripts.libero_task_execution 0
-python -m scripts.libero_task_execution 1
-# continue through task index 9
-```
-
-This branch sends the generated letter-marked contact sheet and task instruction
-to the configured OpenAI VLM. The VLA branch makes no cloud API call. Obtain
-authorization for the intended cloud evaluation scope before starting it;
-existing user authorization for that scope covers the batch. Only run the cross-method comparator when both
-branches use the same image resolution:
-
-```bash
-python -m scripts.compare_libero_results
-```
-
-The comparison script writes `comparison_summary.json` and `per_episode.csv`
-beneath
-`outputs/simulation/experiments/put_all_objects_into_basket/`, but only after
-both methods contain exactly tasks 0 through 9 and each pair matches on the
-instruction, seed, byte-hashed state 0, settling, horizon, control
-mode/frequency, resolution, and success predicate. The primary metric is binary
-task success rate across the ten products. Action count and execution speed are
-not used to rank the methods. Because there is only one arrangement per product,
-this is a breadth test rather than a within-task robustness benchmark; a later
-study should repeat every product over multiple matched fixed states.
+`scripts/diagnose_wrist_pickups.py` retains only the reusable `restore` and
+`measure` helpers for exact saved-state replay and contact/joint measurements.
+It has no hardcoded historical run or batch entry point. Select the saved study
+manifest and initial state explicitly when investigating a recorded failure.
+Current controller diagnoses are recorded in Try 2's `failure_review.json` and
+indexed by `outputs/simulation/wrist_cluster/study.json`.

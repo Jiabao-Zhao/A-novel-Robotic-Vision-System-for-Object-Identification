@@ -26,6 +26,7 @@ class PointCloudConfig:
     plane_distance_threshold_m: float = 0.005
     dbscan_eps_m: float = 0.02
     dbscan_min_points: int = 30
+    cluster_in_table_plane: bool = False
     min_cluster_points: int = 100
     min_cluster_extent_m: float = 0.006
     max_cluster_aspect_ratio: float = 12.0
@@ -136,7 +137,7 @@ class PointCloudLocalization:
         )
         downsampled_cloud = workspace_cloud.voxel_down_sample(self.config.voxel_size_m)
         object_cloud, plane_model, table_cloud = self.segment_table_plane(downsampled_cloud)
-        clusters = self.cluster_objects(object_cloud, camera_intrinsics)
+        clusters = self.cluster_objects(object_cloud, camera_intrinsics, plane_model)
         objects = self.localize_clusters(clusters, camera_intrinsics)
         paths = self.save_outputs(
             rgb_path=Path(rgb_path),
@@ -193,9 +194,24 @@ class PointCloudLocalization:
         table_cloud = workspace_cloud.select_by_index(inliers)
         return object_cloud, plane_model, table_cloud
 
-    def cluster_objects(self, object_cloud, camera_intrinsics):
+    def clustering_cloud(self, cloud, plane_model):
+        """Use tabletop footprints for connectivity while preserving measured 3D points."""
+        if not self.config.cluster_in_table_plane:
+            return cloud
+        if plane_model is None:
+            raise ValueError("Table-plane clustering requires an estimated support plane.")
+        normal = np.asarray(plane_model[:3], dtype=float)
+        norm = np.linalg.norm(normal)
+        if not np.isfinite(norm) or norm <= 0:
+            raise ValueError("Clustering plane needs a finite nonzero normal.")
+        normal /= norm
+        points = np.asarray(cloud.points)
+        projected = points - (points @ normal)[:, None] * normal
+        return o3d.geometry.PointCloud(o3d.utility.Vector3dVector(projected))
+
+    def cluster_objects(self, object_cloud, camera_intrinsics, plane_model=None):
         labels = np.asarray(
-            object_cloud.cluster_dbscan(
+            self.clustering_cloud(object_cloud, plane_model).cluster_dbscan(
                 eps=self.config.dbscan_eps_m,
                 min_points=self.config.dbscan_min_points,
                 print_progress=False,
@@ -317,7 +333,7 @@ class PointCloudLocalization:
             object_path = self.config.output_dir / f"object_cluster_{index}.ply"
             downsampled_object_path = self.config.output_dir / f"object_cluster_{index}_downsampled.ply"
             raw_cluster = self.clean_raw_cluster(
-                self.crop_raw_cluster(raw_object_cloud, cluster)
+                self.crop_raw_cluster(raw_object_cloud, cluster), plane_model
             )
             cluster_vis = o3d.geometry.PointCloud(cluster)
             color = self.cluster_colors[(index - 1) % len(self.cluster_colors)]
@@ -345,6 +361,7 @@ class PointCloudLocalization:
                 for name, value in camera_intrinsics.items()
             },
             "object_count": len(objects),
+            "clustering_space": "table_plane" if self.config.cluster_in_table_plane else "camera_3d",
             "plane_model": [float(value) for value in plane_model],
             "objects": [asdict(obj) for obj in objects],
         }
@@ -399,7 +416,7 @@ class PointCloudLocalization:
             return o3d.geometry.PointCloud(downsampled_cluster)
         return raw_cluster
 
-    def clean_raw_cluster(self, cloud):
+    def clean_raw_cluster(self, cloud, plane_model=None):
         if cloud.is_empty():
             return cloud
 
@@ -418,7 +435,7 @@ class PointCloudLocalization:
 
         if len(cleaned.points) >= self.config.raw_cluster_dbscan_min_points:
             labels = np.asarray(
-                cleaned.cluster_dbscan(
+                self.clustering_cloud(cleaned, plane_model).cluster_dbscan(
                     eps=self.config.raw_cluster_dbscan_eps_m,
                     min_points=self.config.raw_cluster_dbscan_min_points,
                     print_progress=False,
