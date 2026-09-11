@@ -300,6 +300,60 @@ from that rendered metric depth, RGB, and the retrieved intrinsic matrix.
 
 ## Verification and saved-state diagnostics
 
+### Six-object CAD association experiment
+
+Run the frozen DINOv2-small + FPFH/RANSAC/ICP baseline under the wrist camera:
+
+```bash
+cd /mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification
+MUJOCO_GL=egl PYOPENGL_PLATFORM=egl OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
+  ~/.venvs/lerobot-libero/bin/python -m scripts.run_wrist_association
+```
+
+This separate experiment places a large white gear, medium white gear, rectangular
+pin (the existing 16 x 10 x 50 mm rectangular pin lying flat), pulley, red block, and blue
+block in a fixed, separated layout. It removes the fixed board and fixtures, uses
+only `robot0_eye_in_hand`, and moves the simulated wrist to the existing calibrated
+observation pose. There are no pickup, planner, VLM, or final pose-registration calls.
+
+The existing depth localizer supplies candidates. Exact IDs from a generated
+simulation CAD library bypass text retrieval. Every target compares against every
+localized candidate using both modalities; all six targets share batched scene
+DINOv2 features and FPFH features. CAD descriptors reuse the usual persistent cache.
+Simulator positions enter only the separate identity audit and accuracy calculation.
+The audit's existing distance/separation checks validate evaluation labels; they
+do not filter association candidates or change ranking decisions.
+
+Each timestamped directory under `outputs/simulation/wrist_association/` contains
+calibrated RGB-D, localization and raw object clouds, `wrist_identities.png`
+(ground-truth labels, not predictions), `manifest.json`, the exact CAD library,
+six `association/target_NNN.json` score/ranking/runtime records, the conflict summary,
+and `evaluation.json` with visual-only, geometry-only, and fused top-1 results.
+The runtime summary separates CAD preprocessing/cache loading from scene association;
+the association-set wall time also includes CAD lookup and result writing, but not
+simulation startup, wrist motion, capture, or localization. Cache state is recorded.
+
+The generated CAD library stores `base_color_rgb` from each object's material:
+the CAD views of the red and blue blocks now use red and blue. White gears/pin and
+the dark pulley use their supplied colors as well. Color participates through
+DINOv2 descriptors; no color gate or separate color score is used.
+
+To run association on CPU, set `DINO_DEVICE = "cpu"` in `cad_object_association.py`
+before launching, or add `CUDA_VISIBLE_DEVICES=-1` to the command above. This
+controls inference independently of the simulator's EGL graphics backend. Saved
+RGB-D replay through `scripts.run_wrist_association.run_association(output_dir)`
+needs no simulator renderer. For software camera rendering too, use the OSMesa
+setup above.
+
+This is a single-scene smoke test. The two blocks intentionally share identical CAD
+geometry, so geometry-only matching cannot distinguish their color identities. Independent
+queries may select the same candidate, which is recorded as a conflicting set.
+The 0.5/0.5 fusion scores are uncalibrated. Do not tune weights or thresholds to this
+scene or treat these six outcomes as benchmark accuracy. Layout constants live in
+`scripts/run_wrist_association.py`; matching parameters are unchanged.
+
+### Regression checks
+
 Run regression checks in the WSL environment without calling either model:
 
 ```bash

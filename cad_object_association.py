@@ -22,6 +22,8 @@ DINO_MODEL = "dinov2_vits14"
 DINO_DEVICE = "auto"  # Set to "cpu" to force CPU even when CUDA is available.
 IMAGE_SIZE = 224
 CACHE_VERSION = 1  # Increment when rendering, preprocessing, or geometry code changes.
+VISUAL_RENDER_VERSION = 2  # Color-aware rendering; geometry caches remain reusable.
+DEFAULT_CAD_COLOR_RGB = (200 / 255, 200 / 255, 200 / 255)  # Only for unspecified materials.
 VIEW_DIRECTIONS = np.vstack((np.eye(3), -np.eye(3), list(product((-1, 1), repeat=3))))
 FUSION_METHOD = "weighted_mean"  # Or "geometric_mean".
 # Experimental baseline only: these bounded scores are not calibrated or equivalent.
@@ -68,8 +70,11 @@ def extract_dino_features(images):
     return np.concatenate(features)
 
 
-def render_cad_views(cad_path):
-    """Neutral shaded RGB mesh views via CPU ray casting; no OpenGL or display."""
+def render_cad_views(cad_path, base_color_rgb=None):
+    """Shaded library material color via CPU ray casting; no OpenGL or display."""
+    color = np.asarray(DEFAULT_CAD_COLOR_RGB if base_color_rgb is None else base_color_rgb, dtype=float)
+    if color.shape != (3,) or not np.isfinite(color).all() or np.any((color < 0) | (color > 1)):
+        raise ValueError("CAD base_color_rgb must contain three finite RGB values in [0, 1].")
     mesh = o3d.io.read_triangle_mesh(str(cad_path))
     if mesh.is_empty() or not len(mesh.triangles):
         raise ValueError(f"CAD visual association requires a triangle mesh: {cad_path}")
@@ -91,9 +96,9 @@ def render_cad_views(cad_path):
         hit = scene.cast_rays(o3d.core.Tensor(rays.astype(np.float32)))
         mask = np.isfinite(hit["t_hit"].numpy())
         normals = hit["primitive_normals"].numpy()
-        intensity = 70 + 130 * np.abs(normals @ direction)
+        illumination = .35 + .65 * np.abs(normals @ direction)
         image = np.full((IMAGE_SIZE, IMAGE_SIZE, 3), 255, dtype=np.uint8)
-        image[mask] = np.clip(intensity[mask, None], 0, 255).astype(np.uint8)
+        image[mask] = np.clip(255 * illumination[mask, None] * color, 0, 255).astype(np.uint8)
         images.append(image)
     return images
 
@@ -172,8 +177,9 @@ def prepare_cad_features(cad_model, registrar, cache_dir):
     source_hash = content_hash(cad_model.file_path)
     key = cache_key(CACHE_VERSION, source_hash, asdict(registrar.config), o3d.__version__)
     geometry_path = cache_dir / f"{key}_geometry.npz"
-    visual_key = cache_key(CACHE_VERSION, source_hash, DINO_REPO, DINO_MODEL, IMAGE_SIZE,
-                           VIEW_DIRECTIONS.tolist(), o3d.__version__)
+    color = getattr(cad_model, "base_color_rgb", None)
+    visual_key = cache_key(CACHE_VERSION, VISUAL_RENDER_VERSION, source_hash, color,
+                           DINO_REPO, DINO_MODEL, IMAGE_SIZE, VIEW_DIRECTIONS.tolist(), o3d.__version__)
     visual_path = cache_dir / f"{visual_key}_visual.npy"
     geometry_hit, visual_hit = geometry_path.exists(), visual_path.exists()
     runtime = {"cad_visual_preprocessing_time_s": 0.0, "cad_geometry_preprocessing_time_s": 0.0,
@@ -197,7 +203,7 @@ def prepare_cad_features(cad_model, registrar, cache_dir):
         views = np.load(visual_path, allow_pickle=False)
         runtime["cad_cache_load_time_s"] += perf_counter() - stage
     else:
-        views = extract_dino_features(render_cad_views(cad_model.file_path))
+        views = extract_dino_features(render_cad_views(cad_model.file_path, color))
         np.save(visual_path, views, allow_pickle=False)
         runtime["cad_visual_preprocessing_time_s"] = perf_counter() - stage
     runtime["cad_preparation_total_time_s"] = perf_counter() - start
@@ -355,6 +361,9 @@ def associate_cad_to_candidates(cad_model, localization_payload, rgb_path, plane
             "geometry_score_direction": "observed_partial_surface_to_complete_cad",
             "cad_geometry_cache_key": cad["geometry_cache_key"], "cad_visual_cache_key": cad["visual_cache_key"],
             "encoder": DINO_MODEL, "encoder_source": DINO_REPO,
+            "cad_base_color_rgb": getattr(cad_model, "base_color_rgb", None),
+            "cad_color_source": ("library_material" if getattr(cad_model, "base_color_rgb", None) is not None
+                                 else "unspecified_neutral_default"),
             "voxel_size_m": registrar.config.voxel_size_m,
             "fusion_method": FUSION_METHOD, "visual_weight": VISUAL_WEIGHT, "geometry_weight": GEOMETRY_WEIGHT,
             "decision_policy": "ranking_only_no_thresholds",

@@ -22,6 +22,8 @@ NIST_PARTS = {
 }
 COMMON = ("bbq_sauce", "cream_cheese")
 ADDED = ("bearing", "pulley", "spacer", "red_block", "blue_block")
+ADDED_COLORS = {"red_block": [.85, .025, .025, 1.], "blue_block": [.025, .12, .85, 1.],
+                "bearing": [.63, .67, .72, 1.], "pulley": [.28, .30, .32, 1.]}
 DESCRIPTIONS = {**NIST_PARTS, **{name: name.replace("_", " ") for name in (*COMMON, *ADDED)}}
 WORKSPACE_MIN = (-.34, -.37, -.01)
 WORKSPACE_MAX = (.04, .37, .17)
@@ -94,6 +96,7 @@ def prepare_catalog():
             raise RuntimeError(f"Cannot save representative CAD: {name}")
         catalog[name] = {"cad_path": str(path), "scale_to_m": 1., "cad_up_axis": "Z",
                          "extent_m": np.ptp(np.asarray(mesh.vertices), axis=0).tolist(),
+                         "visual_rgba": ADDED_COLORS.get(name, [.55, .59, .63, 1.]),
                          "source": source,
                          "max_registration_rmse_m": .004}
     for name, record in catalog.items():
@@ -163,7 +166,7 @@ def make_environment(catalog, placements, image_size=768, additional_scene=None)
         for name, record in catalog.items():
             if record.get("collision_model") == "separate_lower_section_and_hub":
                 replace_gear_collision(model, name, record["cad_path"])
-            if "visual_rgba" in record:
+            if "visual_rgba" in record and name not in added_parts:
                 visual = model.worldbody.find(f"./body[@name='nist_part_{name}']/geom[@name='nist_part_{name}_visual']")
                 visual.set("rgba", _values(record["visual_rgba"]))
         # Use the same upright support assumption as CAD alignment and scatter
@@ -186,8 +189,7 @@ def make_environment(catalog, placements, image_size=768, additional_scene=None)
                 quat=_values([np.cos(angle), 0, 0, np.sin(angle)]))
             ET.SubElement(body, "freejoint", name=f"{name}_joint")
             ET.SubElement(model.asset, "mesh", name=name, file=catalog[name]["cad_path"])
-            color = {"red_block": ".85 .025 .025 1", "blue_block": ".025 .12 .85 1",
-                     "bearing": ".63 .67 .72 1", "pulley": ".28 .30 .32 1"}.get(name, ".55 .59 .63 1")
+            color = _values(catalog[name].get("visual_rgba", ADDED_COLORS.get(name, [.55, .59, .63, 1.])))
             ET.SubElement(body, "geom", name=f"{name}_visual", type="mesh", mesh=name,
                           rgba=color, contype="0", conaffinity="0", group="1", mass="0")
             common = {"group": "0", "density": "1800", "friction": "0.8 0.005 0.0001"}

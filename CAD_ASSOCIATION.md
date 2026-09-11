@@ -1,5 +1,9 @@
 # Training-free CAD-to-observation association
 
+Recorded six-object simulation results, all pair scores, CADs, RGB-D observations,
+and a CPU replay recipe are published in
+[`experiments/wrist_association_2026-09-11`](experiments/wrist_association_2026-09-11/README.md).
+
 Supply known CAD IDs from `CAD/cad_library.json` to evaluate association separately
 from text retrieval. Each target's CAD remains fixed. The pipeline evaluates every
 localized candidate with both modalities and saves visual-only, geometry-only,
@@ -27,6 +31,24 @@ to `outputs/cache/torch_hub`; later runs work from that cache. No training or
 object-specific checkpoint is required. `DINO_DEVICE = "auto"` chooses CUDA when
 available; set it to `"cpu"` for CPU inference. Rendering uses Open3D CPU ray casting
 and requires neither a display nor an OpenGL context.
+
+CAD library records can supply `base_color_rgb`, three RGB material values in
+`[0, 1]`, for example `"base_color_rgb": [0.025, 0.12, 0.85]` for the simulation's
+blue block. The renderer shades this supplied color on a white background. The
+six-object simulation uses the same material values for its objects and CAD views:
+white gears and pin, red/blue blocks, and a dark pulley. Color comes from the fixed
+CAD record, never from candidate pixels or simulator identity during association.
+No color filtering or additional score is introduced; the frozen DINOv2 descriptors
+now see the colored rendered views. Missing material metadata retains the neutral
+default; no color is guessed from semantic text. Existing CAD records remain valid.
+The visual cache includes material RGB and renderer version; color changes rebuild
+only CAD visual descriptors and reuse geometric descriptors.
+
+CPU runs require no CUDA. Set `DINO_DEVICE = "cpu"` in
+`cad_object_association.py` before starting Python, or hide CUDA devices and retain
+`"auto"`. DINOv2, CAD ray casting, and FPFH/RANSAC/ICP all support CPU. MuJoCo camera
+rendering is a separate component: its EGL/OSMesa setup is described in
+`simulation/README.md`. Saved RGB-D association does not start the simulator.
 
 Set `TARGET_DESCRIPTIONS` and `TARGET_CAD_IDS` in `main.py`, then run
 `python main.py`. Use a complete mapping from semantic target descriptions to
@@ -156,6 +178,13 @@ when later targets reuse scene features.
 
 ## Evaluation and limits
 
+For the six-object wrist-camera simulation, run
+`python -m scripts.run_wrist_association` in the existing WSL simulation environment
+(see `simulation/README.md`). The runner supplies an isolated simulation library via
+`associate_targets_with_cad(..., known_cad_ids=..., library_path=...)`, preserving
+the physical library default. It saves all pair scores and independent predictions,
+then scores them with a separate simulator identity audit. It does not execute picks.
+
 `vlm_module.py` is unchanged and remains the GPT/Gemini semantic-association
 baseline. Its token likelihood and provisional threshold are not used by the
 CAD association path. Compare each modality's saved prediction against the known
@@ -165,9 +194,10 @@ in accuracy evaluation and report the set conflict separately. The code does not
 claim measured accuracy without ground-truth object IDs. Both modalities are always
 evaluated exhaustively, including in visual-only or geometry-only analyses.
 
-Canonical CAD views use neutral shading because STL files carry no surface color.
-Known CAD IDs bypass text-retrieval errors, but association cannot distinguish
-identical CAD geometry by semantic color alone. Partial, planar, or symmetric
+STL meshes use the optional library material color described above. Distinct
+supplied colors give DINOv2 visual evidence for geometrically identical parts;
+the geometry-only branch cannot distinguish those color identities. Color alone
+does not guarantee a correct DINOv2 ranking. Partial, planar, or symmetric
 observations can support several CAD fits;
 high observed fitness is evidence of surface compatibility, not proof of identity.
 This is a baseline, not an accuracy claim. Seeded Open3D RANSAC can still vary with

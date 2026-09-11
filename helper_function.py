@@ -490,6 +490,7 @@ class CADModel:
     file_path: str
     description: str
     category: str
+    base_color_rgb: tuple[float, float, float] | None = None  # RGB material values in [0, 1].
 
 
 class CADRetrieval:
@@ -516,6 +517,8 @@ class CADRetrieval:
                 file_path=record["file_path"],
                 description=record["description"],
                 category=record["category"],
+                base_color_rgb=(tuple(record["base_color_rgb"])
+                                if record.get("base_color_rgb") is not None else None),
             )
             for record in records
         ]

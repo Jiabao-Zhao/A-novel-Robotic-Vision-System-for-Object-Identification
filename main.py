@@ -93,9 +93,9 @@ def observed_cloud_from_localization(localization_payload, object_id):
     raise ValueError(f"Selected object_id was not found in localization output: {object_id}")
 
 
-def retrieve_cad_model(target_description, cad_id=None):
+def retrieve_cad_model(target_description, cad_id=None, *, library_path=None):
     retriever = CADRetrieval()
-    cad_models = CADRetrieval.load_library(CAD_LIBRARY_PATH)
+    cad_models = CADRetrieval.load_library(CAD_LIBRARY_PATH if library_path is None else library_path)
     if cad_id is not None:
         matches = [model for model in cad_models if str(model.cad_id) == str(cad_id)]
         if len(matches) != 1:
@@ -144,17 +144,20 @@ def association_conflicts(associations):
 
 
 def associate_targets_with_cad(target_descriptions, localization_payload, rgb_path,
-                               plane_model=None, output_dir=ASSOCIATION_OUTPUT_DIR, *, known_cad_ids=None):
+                               plane_model=None, output_dir=ASSOCIATION_OUTPUT_DIR, *, known_cad_ids=None,
+                               library_path=None):
     """Fix target -> CAD before observing any pair scores; reuse scene features."""
     targets = list(target_descriptions)
     if not targets or len(set(targets)) != len(targets):
         raise ValueError("Provide nonempty, unique target descriptions for the association set.")
+    library_options = {} if library_path is None else {"library_path": library_path}
     if known_cad_ids is not None:
         if set(known_cad_ids) != set(targets) or any(value is None for value in known_cad_ids.values()):
             raise ValueError("known_cad_ids must supply one explicit CAD ID for every target description.")
-        retrieved_cads = {target: retrieve_cad_model(target, cad_id=known_cad_ids[target]) for target in targets}
+        retrieved_cads = {target: retrieve_cad_model(target, cad_id=known_cad_ids[target], **library_options)
+                         for target in targets}
     else:
-        retrieved_cads = {target: retrieve_cad_model(target) for target in targets}
+        retrieved_cads = {target: retrieve_cad_model(target, **library_options) for target in targets}
     associations, scene_cache = [], {}
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)

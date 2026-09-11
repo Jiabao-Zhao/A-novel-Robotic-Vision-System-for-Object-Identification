@@ -166,6 +166,19 @@ class FeatureAndCacheTests(unittest.TestCase):
         self.assertTrue(all(v.shape == (224, 224, 3) and v.dtype == np.uint8 for v in views))
         self.assertTrue(all(np.any(v < 255) and np.any(v == 255) for v in views))
 
+    def test_cad_material_colors_preserve_rgb_and_white_background(self):
+        for color, dominant_channel in (([.85, .025, .025], 0), ([.025, .12, .85], 2)):
+            views = association.render_cad_views(self.cad.file_path, color)
+            for view in views:
+                foreground = np.any(view != 255, axis=2)
+                self.assertTrue(foreground.any() and (~foreground).any())
+                self.assertTrue(np.all(view[foreground].argmax(axis=1) == dominant_channel))
+        white = association.render_cad_views(self.cad.file_path, [.95, .95, .95])[0]
+        self.assertGreater(white[np.any(white != 255, axis=2)].max(), 235)
+        for bad in ([255, 0, 0], [0, 1], [np.nan, 0, 0], [-.1, 0, 0]):
+            with self.assertRaisesRegex(ValueError, "base_color_rgb"):
+                association.render_cad_views(self.cad.file_path, bad)
+
     def test_encoder_is_frozen_eval_and_uses_inference_mode_on_cpu(self):
         import torch
 
@@ -181,7 +194,8 @@ class FeatureAndCacheTests(unittest.TestCase):
         encoder = Encoder()
         association.load_dino_encoder.cache_clear()
         self.addCleanup(association.load_dino_encoder.cache_clear)
-        with patch("torch.hub.load", return_value=encoder) as load, patch.object(association, "DINO_DEVICE", "cpu"):
+        with patch("torch.hub.load", return_value=encoder) as load, patch.object(association, "DINO_DEVICE", "cpu"), \
+                patch("torch.cuda.is_available", return_value=True):
             features = association.extract_dino_features([np.full((20, 30, 3), 128, dtype=np.uint8)] * 2)
         self.assertFalse(encoder.training)
         self.assertTrue(encoder.inference_mode)
@@ -208,6 +222,23 @@ class FeatureAndCacheTests(unittest.TestCase):
         o3d.io.write_triangle_mesh(self.cad.file_path, mesh)
         _, changed = association.prepare_cad_features(self.cad, self.registrar, cache)
         self.assertFalse(changed["cad_visual_cache_hit"] or changed["cad_geometry_cache_hit"])
+
+    @patch.object(association, "extract_dino_features", side_effect=lambda images: np.ones((len(images), 384)))
+    def test_color_change_invalidates_visual_cache_and_reuses_geometry(self, encode):
+        cache = self.root / "cache"
+        self.cad.base_color_rgb = (.85, .025, .025)
+        red, _ = association.prepare_cad_features(self.cad, self.registrar, cache)
+        self.cad.base_color_rgb = (.025, .12, .85)
+        with patch.object(self.registrar, "compute_fpfh", wraps=self.registrar.compute_fpfh) as fpfh:
+            blue, timing = association.prepare_cad_features(self.cad, self.registrar, cache)
+            _, warm = association.prepare_cad_features(self.cad, self.registrar, cache)
+        fpfh.assert_not_called()
+        self.assertEqual(encode.call_count, 2)
+        self.assertTrue(timing["cad_geometry_cache_hit"])
+        self.assertFalse(timing["cad_visual_cache_hit"])
+        self.assertTrue(warm["cad_visual_cache_hit"])
+        self.assertEqual(red["geometry_cache_key"], blue["geometry_cache_key"])
+        self.assertNotEqual(red["visual_cache_key"], blue["visual_cache_key"])
 
     def test_all_candidates_both_modalities_and_scene_cache_reuse_across_targets(self):
         cache = {}

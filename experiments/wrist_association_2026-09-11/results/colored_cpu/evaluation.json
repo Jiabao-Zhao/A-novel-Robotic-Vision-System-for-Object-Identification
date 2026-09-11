@@ -1,0 +1,194 @@
+{
+  "target_count": 6,
+  "localized_target_count": 6,
+  "accuracy": {
+    "visual": {
+      "correct": 3,
+      "total": 6,
+      "fraction": 0.5
+    },
+    "geometry": {
+      "correct": 3,
+      "total": 6,
+      "fraction": 0.5
+    },
+    "fused": {
+      "correct": 4,
+      "total": 6,
+      "fraction": 0.6666666666666666
+    }
+  },
+  "per_target": [
+    {
+      "target_description": "large white gear",
+      "cad_id": "Gear_Large",
+      "expected_object_id": "object_002",
+      "localized": true,
+      "predictions": {
+        "visual": "object_002",
+        "geometry": "object_005",
+        "fused": "object_002"
+      },
+      "predicted_instances": {
+        "visual": "Gear_Large",
+        "geometry": "Gear_Medium",
+        "fused": "Gear_Large"
+      },
+      "correct": {
+        "visual": true,
+        "geometry": false,
+        "fused": true
+      }
+    },
+    {
+      "target_description": "medium white gear",
+      "cad_id": "Gear_Medium",
+      "expected_object_id": "object_005",
+      "localized": true,
+      "predictions": {
+        "visual": "object_002",
+        "geometry": "object_005",
+        "fused": "object_005"
+      },
+      "predicted_instances": {
+        "visual": "Gear_Large",
+        "geometry": "Gear_Medium",
+        "fused": "Gear_Medium"
+      },
+      "correct": {
+        "visual": false,
+        "geometry": true,
+        "fused": true
+      }
+    },
+    {
+      "target_description": "rectangular pin",
+      "cad_id": "KET16_Square_16mm",
+      "expected_object_id": "object_006",
+      "localized": true,
+      "predictions": {
+        "visual": "object_003",
+        "geometry": "object_005",
+        "fused": "object_003"
+      },
+      "predicted_instances": {
+        "visual": "blue_block",
+        "geometry": "Gear_Medium",
+        "fused": "blue_block"
+      },
+      "correct": {
+        "visual": false,
+        "geometry": false,
+        "fused": false
+      }
+    },
+    {
+      "target_description": "pulley",
+      "cad_id": "pulley",
+      "expected_object_id": "object_001",
+      "localized": true,
+      "predictions": {
+        "visual": "object_001",
+        "geometry": "object_001",
+        "fused": "object_001"
+      },
+      "predicted_instances": {
+        "visual": "pulley",
+        "geometry": "pulley",
+        "fused": "pulley"
+      },
+      "correct": {
+        "visual": true,
+        "geometry": true,
+        "fused": true
+      }
+    },
+    {
+      "target_description": "red block",
+      "cad_id": "red_block",
+      "expected_object_id": "object_004",
+      "localized": true,
+      "predictions": {
+        "visual": "object_003",
+        "geometry": "object_003",
+        "fused": "object_003"
+      },
+      "predicted_instances": {
+        "visual": "blue_block",
+        "geometry": "blue_block",
+        "fused": "blue_block"
+      },
+      "correct": {
+        "visual": false,
+        "geometry": false,
+        "fused": false
+      }
+    },
+    {
+      "target_description": "blue block",
+      "cad_id": "blue_block",
+      "expected_object_id": "object_003",
+      "localized": true,
+      "predictions": {
+        "visual": "object_003",
+        "geometry": "object_003",
+        "fused": "object_003"
+      },
+      "predicted_instances": {
+        "visual": "blue_block",
+        "geometry": "blue_block",
+        "fused": "blue_block"
+      },
+      "correct": {
+        "visual": true,
+        "geometry": true,
+        "fused": true
+      }
+    }
+  ],
+  "ground_truth_policy": "Separate simulator XY identity audit; never passed to association.",
+  "protocol": "One fixed scene, known CAD IDs, independent top-1 rankings; no confidence thresholds.",
+  "limitations": [
+    "One clean simulated scene is a smoke test, not a benchmark accuracy estimate.",
+    "Red and blue blocks share geometry; only their supplied CAD material colors distinguish them.",
+    "Visual and geometric scores are uncalibrated; 0.5/0.5 fusion is an experimental baseline.",
+    "Pulley and blocks are representative procedural assets, not measured physical parts."
+  ],
+  "association_set_resolution": "conflicting",
+  "conflicts": [
+    {
+      "object_id": "object_003",
+      "targets": [
+        {
+          "target_description": "rectangular pin",
+          "cad_id": "KET16_Square_16mm"
+        },
+        {
+          "target_description": "red block",
+          "cad_id": "red_block"
+        },
+        {
+          "target_description": "blue block",
+          "cad_id": "blue_block"
+        }
+      ]
+    }
+  ],
+  "runtime": {
+    "association_set_wall_time_s": 11.803896117,
+    "cad_visual_preprocessing_time_s": 10.505230376000002,
+    "cad_geometry_preprocessing_time_s": 0.0,
+    "cad_cache_load_time_s": 0.023947217999998216,
+    "workspace_dino_feature_time_s": 0.6589713870000011,
+    "workspace_fpfh_feature_time_s": 0.030126999000000154,
+    "pairwise_matching_time_s": 0.24386296700001076,
+    "fusion_time_s": 0.0004359769999950913,
+    "scene_association_time_s": 1.203260148,
+    "device": "cpu",
+    "torch_version": "2.11.0+cu130",
+    "omp_num_threads": "1",
+    "candidate_pair_count": 36,
+    "cad_visual_cache_hits": 0,
+    "cad_geometry_cache_hits": 6
+  }
+}
