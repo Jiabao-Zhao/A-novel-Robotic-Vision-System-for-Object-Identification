@@ -41,26 +41,103 @@ class CADPointCloudRegistration:
             raise ValueError(f"Observed point cloud is empty or unreadable: {path}")
         return cloud
 
+    def compute_fpfh(self, cloud, camera_location=None):
+        """Keep local 33-D descriptors; use the same metric voxel size for all objects."""
+        if cloud.is_empty() or not np.isfinite(np.asarray(cloud.points)).all():
+            raise ValueError("FPFH requires a nonempty, finite point cloud.")
+        down = cloud.voxel_down_sample(self.config.voxel_size_m)
+        if len(down.points) < 4:
+            raise ValueError("FPFH requires at least four downsampled points.")
+        if not down.has_normals():
+            down.estimate_normals(o3d.geometry.KDTreeSearchParamHybrid(
+                radius=2 * self.config.voxel_size_m, max_nn=30,
+            ))
+        if camera_location is not None:
+            down.orient_normals_towards_camera_location(camera_location)
+        feature = o3d.pipelines.registration.compute_fpfh_feature(
+            down, o3d.geometry.KDTreeSearchParamHybrid(
+                radius=5 * self.config.voxel_size_m, max_nn=100,
+            ),
+        )
+        if not np.isfinite(feature.data).all() or not np.any(feature.data):
+            raise ValueError("FPFH descriptors are nonfinite or have no local support.")
+        return down, feature
+
+    def match_fpfh(self, cad_cloud, cad_feature, observed_cloud, observed_feature,
+                   max_distance_m=None, ransac_iterations=10000):
+        """FPFH/RANSAC then ICP, with the partial observation as the source.
+
+        Fitness is observed inliers / observed points, never complete-CAD coverage.
+        Association transforms are diagnostics; run() retains the existing final
+        tabletop pose-estimation interface.
+        """
+        reg = o3d.pipelines.registration
+        distance = (1.5 * self.config.voxel_size_m
+                    if max_distance_m is None else float(max_distance_m))
+        o3d.utility.random.seed(int(self.config.random_seed))
+        ransac = reg.registration_ransac_based_on_feature_matching(
+            observed_cloud, cad_cloud, observed_feature, cad_feature,
+            False, distance, reg.TransformationEstimationPointToPoint(False), 3,
+            [reg.CorrespondenceCheckerBasedOnEdgeLength(0.9),
+             reg.CorrespondenceCheckerBasedOnDistance(distance)],
+            reg.RANSACConvergenceCriteria(ransac_iterations, 0.999),
+        )
+        raw = {
+            "status": "failed",
+            "ransac_inlier_ratio": float(ransac.fitness),
+            "ransac_correspondence_count": len(ransac.correspondence_set),
+            "registration_fitness": 0.0,
+            "observed_to_cad_rmse_m": None,
+            "inlier_rmse_m": None,
+            "correspondence_count": 0,
+            "max_correspondence_distance_m": distance,
+            "T_observed_from_cad": None,
+        }
+        if len(ransac.correspondence_set) < 3:
+            return raw
+        refined = reg.registration_icp(
+            observed_cloud, cad_cloud, distance, ransac.transformation,
+            reg.TransformationEstimationPointToPoint(False),
+            reg.ICPConvergenceCriteria(max_iteration=30),
+        )
+        # Retain the global solution if local refinement reduced observed coverage.
+        best = max((ransac, refined), key=lambda r: (r.fitness, -r.inlier_rmse))
+        if not np.isfinite(best.transformation).all():
+            return raw
+        transform = np.linalg.inv(best.transformation)
+        raw.update(
+            status="matched",
+            registration_fitness=float(best.fitness),
+            observed_to_cad_rmse_m=self.observed_to_cad_rmse(
+                cad_cloud, observed_cloud, transform,
+            ),
+            inlier_rmse_m=float(best.inlier_rmse),
+            correspondence_count=len(best.correspondence_set),
+            T_observed_from_cad=transform.tolist(),
+        )
+        return raw
+
     def load_cad_as_point_cloud(self, cad_path, scale_to_m=None):
         path = Path(cad_path)
         suffix = path.suffix.lower()
         point_cloud_suffixes = {".ply", ".pcd", ".xyz", ".xyzn", ".xyzrgb"}
         mesh_suffixes = {".stl", ".obj", ".off", ".gltf", ".glb"}
 
+        if suffix in mesh_suffixes or suffix == ".ply":
+            mesh = o3d.io.read_triangle_mesh(str(path))
+            if not mesh.is_empty() and len(mesh.triangles):
+                self.normalize_cad_units(mesh, scale_to_m)
+                mesh.compute_vertex_normals()
+                o3d.utility.random.seed(int(self.config.random_seed))
+                return mesh.sample_points_uniformly(self.config.cad_sample_points)
+            if suffix != ".ply":
+                raise ValueError(f"CAD file is not a readable triangle mesh: {path}")
+
         if suffix in point_cloud_suffixes:
             cloud = o3d.io.read_point_cloud(str(path))
             if not cloud.is_empty():
                 self.normalize_cad_units(cloud, scale_to_m)
                 return cloud
-
-        if suffix in mesh_suffixes or suffix == ".ply":
-            mesh = o3d.io.read_triangle_mesh(str(path))
-            if mesh.is_empty() or len(mesh.triangles) == 0:
-                raise ValueError(f"CAD file is not a readable triangle mesh: {path}")
-            self.normalize_cad_units(mesh, scale_to_m)
-            mesh.compute_vertex_normals()
-            o3d.utility.random.seed(int(self.config.random_seed))
-            return mesh.sample_points_uniformly(self.config.cad_sample_points)
 
         supported = ".ply, .pcd, .xyz, .xyzn, .xyzrgb, .stl, .obj, .off, .gltf, .glb"
         raise ValueError(
@@ -142,6 +219,9 @@ class CADPointCloudRegistration:
         candidates_path.write_text(json.dumps(candidate_records, indent=2), encoding="utf-8")
 
         result = {
+            "cad_id": cad_metadata.get("cad_id"),
+            "target_description": cad_metadata.get("target_description"),
+            "object_id": cad_metadata.get("object_id"),
             "cad_path": str(cad_path),
             "cad_scale_to_m": cad_metadata.get("scale_to_m"),
             "observed_cloud_path": str(observed_cloud_path),

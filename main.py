@@ -3,28 +3,24 @@ import re
 from pathlib import Path
 
 from CADPointCloudRegistration import CADPointCloudRegistration
+from cad_object_association import associate_cad_to_candidates, raw_observed_cloud_path
 from helper_function import CADRetrieval
 from LLM_planner import plan_from_outputs
 from point_cloud_localization import PointCloudLocalization
-from vlm_module import (
-    PROVISIONAL_ASSOCIATION_THRESHOLD,
-    associate_targets_from_localization,
-    opencv_human_resolver,
-)
 
 
 OPEN_3D_VISUALIZATION = False
 USE_SAVED_RAW_CAPTURE = False
 OUTPUT_ROBOT_BASE_POSE = True
 RUN_LLM_PLANNER = False
-INTERACTIVE_CLARIFICATION = True
 USER_TEXT = "put the white gear on top of the red block"
 # Semantic target descriptions are currently supplied by the experiment caller.
-# Extracting them from USER_TEXT is outside the VLM association stage.
+# Extracting them from USER_TEXT is outside the CAD association stage.
 TARGET_DESCRIPTIONS = ("white gear", "red block")
 SAVED_RGB_PATH = Path("outputs/physical/raw/RGB.png")
 SAVED_DEPTH_PATH = Path("outputs/physical/raw/depth_data.npz")
 CAD_LIBRARY_PATH = Path("CAD/cad_library.json")
+ASSOCIATION_OUTPUT_DIR = Path("outputs/physical/cad_association")
 
 
 def run_pipeline():
@@ -89,12 +85,7 @@ def observed_cloud_from_localization(localization_payload, object_id):
     payload = localization_payload
     for item in payload["objects"]:
         if item["object_id"] == object_id:
-            cloud_path = Path(item["pointcloud_path"])
-            if cloud_path.stem.endswith("_downsampled"):
-                cloud_path = cloud_path.with_name(
-                    cloud_path.stem.removesuffix("_downsampled") + cloud_path.suffix
-                )
-            return cloud_path
+            return raw_observed_cloud_path(item)
     raise ValueError(f"Selected object_id was not found in localization output: {object_id}")
 
 
@@ -125,6 +116,33 @@ def cad_request_from_association(association):
     }
 
 
+def associate_targets_with_cad(target_descriptions, localization_payload, rgb_path,
+                               plane_model=None, output_dir=ASSOCIATION_OUTPUT_DIR):
+    """Fix target -> CAD before observing any pair scores; reuse scene features."""
+    retrieved_cads = {target: retrieve_cad_model(target) for target in target_descriptions}
+    associations, scene_cache = [], {}
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for index, (target, (cad_model, cad_result)) in enumerate(retrieved_cads.items(), 1):
+        result = associate_cad_to_candidates(
+            cad_model, localization_payload, rgb_path, plane_model,
+            target_description=target, scene_cache=scene_cache,
+        )
+        result["cad_retrieval"] = cad_result
+        result_path = output_dir / f"target_{index:03d}.json"
+        result_path.write_text(json.dumps(result, indent=2, allow_nan=False), encoding="utf-8")
+        print(f"CAD association: {target} -> {cad_model.cad_id} -> "
+              f"{result['selected_object_id']} ({result['resolution']}); saved {result_path}")
+        associations.append(result)
+    # Compact adapter for the planner's existing associations/final_object_id contract.
+    summary_path = output_dir / "semantic_associations.json"
+    summary = {"associations": [{key: item[key] for key in (
+        "target_description", "cad_id", "cad_path", "final_object_id", "resolution",
+    )} for item in associations]}
+    summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    return associations, retrieved_cads, summary_path
+
+
 def register_resolved_associations(
     associations,
     localization_payload,
@@ -132,6 +150,7 @@ def register_resolved_associations(
     cad_retrieval=None,
     registrar=None,
     registration_root=Path("outputs/physical/registered_point_cloud"),
+    retrieved_cads=None,
 ):
     requests = [cad_request_from_association(item) for item in associations]
     registration_records = []
@@ -140,11 +159,24 @@ def register_resolved_associations(
     cad_retrieval = retrieve_cad_model if cad_retrieval is None else cad_retrieval
     registrar = CADPointCloudRegistration() if registrar is None else registrar
 
-    for request in requests:
+    for association, request in zip(associations, requests):
         object_id = request["object_id"]
         target_description = request["target_description"]
         observed_cloud_path = observed_cloud_from_localization(localization_payload, object_id)
-        cad_model, cad_result = cad_retrieval(target_description)
+        if retrieved_cads is not None:
+            cad_model, cad_result = retrieved_cads[target_description]
+            if (str(cad_model.cad_id) != association["cad_id"]
+                    or str(cad_model.file_path) != association["cad_path"]):
+                raise ValueError("CAD identity changed between association and registration.")
+            if (association["resolution"] != "automatic_match"
+                    or association["selected_object_id"] != object_id):
+                raise ValueError("CAD association is unresolved or has inconsistent object IDs.")
+        else:
+            if "cad_id" in association:
+                raise ValueError("CAD association requires its original retrieved_cads handoff.")
+            # Compatibility for the separately invoked VLM experimental baseline.
+            cad_model, cad_result = cad_retrieval(target_description)
+        cad_id = str(cad_model.cad_id) if retrieved_cads is not None else cad_result.get("selected_cad_id")
         output_dir = registration_root / object_id if multi_object else registration_root
 
         print(f"Resolved target: {target_description} -> {object_id}")
@@ -155,6 +187,8 @@ def register_resolved_associations(
             cad_path=cad_model.file_path,
             observed_cloud_path=observed_cloud_path,
             plane_model=plane_model,
+            cad_metadata={"cad_id": cad_id,
+                          "target_description": target_description, "object_id": object_id},
             output_dir=output_dir,
         )
         print(f"Saved aligned CAD point cloud: {registration_result['aligned_cad_cloud_path']}")
@@ -165,6 +199,7 @@ def register_resolved_associations(
             {
                 "object_id": object_id,
                 "target_description": target_description,
+                "cad_id": cad_id,
                 "cad_retrieval": cad_result,
                 "registration": registration_result,
             }
@@ -207,8 +242,8 @@ def output_robot_base_pose():
     return pose_result
 
 
-def output_llm_plan():
-    planner_path = plan_from_outputs(USER_TEXT)
+def output_llm_plan(association_path=ASSOCIATION_OUTPUT_DIR / "semantic_associations.json"):
+    planner_path = plan_from_outputs(USER_TEXT, vlm_path=association_path)
     print(f"Saved LLM planner result: {planner_path}")
     return planner_path
 
@@ -230,22 +265,17 @@ def main():
     localization_payload = json.loads(Path(paths["localization"]).read_text(encoding="utf-8"))
     plane_model = localization_payload.get("plane_model")
 
-    vlm_path = associate_targets_from_localization(
-        target_descriptions=TARGET_DESCRIPTIONS,
-        image_path=paths["annotated_rgb"],
-        localization_path=paths["localization"],
-        threshold=PROVISIONAL_ASSOCIATION_THRESHOLD,
-        human_resolver=(
-            opencv_human_resolver if INTERACTIVE_CLARIFICATION else None
-        ),
+    associations, retrieved_cads, association_path = associate_targets_with_cad(
+        TARGET_DESCRIPTIONS, localization_payload, paths["rgb"], plane_model,
     )
-    print(f"Saved VLM result: {vlm_path}")
-
-    associations = resolved_associations_from_vlm(vlm_path)
+    if any(item["resolution"] != "automatic_match" for item in associations):
+        raise SystemExit("CAD association unresolved or target not present; see per-target results. "
+                         "Registration and downstream execution stopped.")
     registration_records = register_resolved_associations(
         associations,
         localization_payload,
         plane_model,
+        retrieved_cads=retrieved_cads,
     )
 
     if OUTPUT_ROBOT_BASE_POSE:
@@ -256,7 +286,7 @@ def main():
 
     if RUN_LLM_PLANNER:
         if len(registration_records) == 1:
-            output_llm_plan()
+            output_llm_plan(association_path)
         else:
             print("Skipped LLM planner because multiple registered objects need role-aware planning.")
 
