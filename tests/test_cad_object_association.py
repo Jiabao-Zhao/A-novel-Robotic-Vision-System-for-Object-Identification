@@ -49,48 +49,51 @@ class ScoreTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             association.fuse_scores(1, 0, "learned")
 
-    def test_ranking_and_automatic_match(self):
+    def test_ranking_only(self):
         ranking, selected, resolution, _ = association.rank_and_resolve([
             scored("object_001", 0.65, 0.5), scored("object_003", 0.88, 0.91),
         ])
         self.assertEqual([r["object_id"] for r in ranking], ["object_003", "object_001"])
-        self.assertEqual((selected, resolution), ("object_003", "automatic_match"))
+        self.assertEqual((selected, resolution), ("object_003", "ranking_only"))
 
-    def test_ties_are_deterministic_but_ambiguous(self):
+    def test_ties_are_ranked_deterministically_without_a_margin_gate(self):
         ranking, selected, resolution, reason = association.rank_and_resolve([
             scored("b", 0.9, 0.9), scored("a", 0.9, 0.9),
         ])
         self.assertEqual(ranking[0]["object_id"], "a")
-        self.assertEqual((selected, resolution, reason), (None, "ambiguous", "small_fused_margin"))
+        self.assertEqual((selected, resolution, reason), ("a", "ranking_only", "highest_fused_score"))
 
-    def test_strong_cross_candidate_disagreement(self):
-        _, selected, resolution, reason = association.rank_and_resolve([
+    def test_modality_disagreement_does_not_gate_any_ranking(self):
+        rows = [
             scored("a", 0.95, 0.45), scored("b", 0.70, 0.99),
-        ])
-        self.assertEqual((selected, resolution), (None, "ambiguous"))
-        self.assertEqual(reason, "modalities_prefer_different_objects")
+        ]
+        _, selected, resolution, _ = association.rank_and_resolve(rows)
+        self.assertEqual((selected, resolution), ("b", "ranking_only"))
+        self.assertEqual(association.rank_candidates(rows, "visual_score")[0]["object_id"], "a")
+        self.assertEqual(association.rank_candidates(rows, "geometry_score")[0]["object_id"], "b")
 
-    def test_single_candidate_disagreement_and_weak_evidence(self):
-        for visual, geometry in [(0.95, 0.25), (0.61, 0.4)]:
-            self.assertEqual(association.rank_and_resolve([scored("a", visual, geometry)])[2], "ambiguous")
+    def test_weak_scores_and_single_candidate_disagreement_are_ranked(self):
+        for visual, geometry in [(0.95, 0.25), (0.61, 0.4), (0, 0)]:
+            self.assertEqual(association.rank_and_resolve([scored("a", visual, geometry)])[1:3], ("a", "ranking_only"))
 
-    def test_all_registration_failures_are_ambiguous_not_absence(self):
+    def test_all_registration_failures_keep_zero_fitness_in_ranking(self):
         self.assertEqual(association.rank_and_resolve([
             scored("a", 0.2, 0, "failed"), scored("b", 0.1, 0, "failed"),
-        ])[2:], ("ambiguous", "geometric_matching_failed_for_all"))
+        ])[1:3], ("a", "ranking_only"))
 
-    def test_invalid_candidate_is_retained_and_prevents_forced_match(self):
+    def test_invalid_candidate_is_retained_after_computable_scores(self):
         invalid = scored("b", 0.5, 0)
         invalid.update(geometry_score=None, fused_score=None)
         ranking, selected, resolution, _ = association.rank_and_resolve([scored("a", 0.95, 0.95), invalid])
         self.assertEqual(len(ranking), 2)
-        self.assertEqual((selected, resolution), (None, "ambiguous"))
+        self.assertEqual((selected, resolution), ("a", "ranking_only"))
+        self.assertEqual(association.rank_and_resolve([invalid])[1:3], (None, "no_valid_candidates"))
 
-    def test_no_match_requires_weak_absolute_evidence(self):
+    def test_weak_evidence_never_claims_absence(self):
         self.assertEqual(association.rank_and_resolve([
             scored("a", 0.3, 0.10), scored("b", 0.2, 0.05),
-        ])[1:3], (None, "not_present"))
-        self.assertEqual(association.rank_and_resolve([])[1:3], (None, "not_present"))
+        ])[1:3], ("a", "ranking_only"))
+        self.assertEqual(association.rank_and_resolve([])[1:3], (None, "no_candidates"))
 
 
 class GeometryTests(unittest.TestCase):
@@ -209,12 +212,12 @@ class FeatureAndCacheTests(unittest.TestCase):
     def test_all_candidates_both_modalities_and_scene_cache_reuse_across_targets(self):
         cache = {}
         seen_crops = []
+        batch_sizes = []
 
         def encode(images):
             seen_crops.extend(images)
-            if len(images) == 1 and not np.any(images[0]):
-                return np.array([[-1.0, 0.0]])
-            return np.tile([1.0, 0.0], (len(images), 1))
+            batch_sizes.append(len(images))
+            return np.array([[1.0 if np.any(image) else -1.0, 0.0] for image in images])
 
         with patch.object(association, "extract_dino_features", side_effect=encode), \
                 patch.object(CADPointCloudRegistration, "match_fpfh", return_value={
@@ -226,6 +229,7 @@ class FeatureAndCacheTests(unittest.TestCase):
             second = association.associate_cad_to_candidates(other_cad, self.payload, self.rgb_path,
                 target_description="second box", scene_cache=cache, cache_dir=self.root / "cache")
         self.assertEqual(match.call_count, 4)
+        self.assertEqual(batch_sizes, [14, 2])
         self.assertEqual(len(first["candidate_ranking"]), 2)
         self.assertEqual(first["candidate_ranking"][1]["visual_raw"], -1)
         self.assertEqual(first["candidate_ranking"][1]["geometry_score"], 0.8)
@@ -234,6 +238,7 @@ class FeatureAndCacheTests(unittest.TestCase):
         self.assertEqual(second["runtime"]["scene_feature_cache_hits"], 2)
         self.assertEqual(second["runtime"]["workspace_dino_feature_time_s"], 0)
         self.assertEqual(second["runtime"]["workspace_fpfh_feature_time_s"], 0)
+        self.assertEqual(second["runtime"]["workspace_dino_crop_count"], 0)
         self.assertEqual((second["target_description"], second["cad_id"]), ("second box", "CAD_008"))
         for key in ("cad_visual_preprocessing_time_s", "cad_geometry_preprocessing_time_s",
                     "workspace_dino_feature_time_s", "workspace_fpfh_feature_time_s",
@@ -241,6 +246,18 @@ class FeatureAndCacheTests(unittest.TestCase):
             self.assertGreaterEqual(first["runtime"][key], 0)
         self.assertEqual(len(first["runtime"]["per_candidate_matching_time_s"]), 2)
         self.assertGreaterEqual(first["runtime"]["total_time_s"], first["runtime"]["scene_association_time_s"])
+        self.assertAlmostEqual(sum(row["runtime"]["dino_batch_share_time_s"] for row in first["candidate_ranking"]),
+                               first["runtime"]["workspace_dino_feature_time_s"])
+        for row in second["candidate_ranking"]:
+            self.assertTrue(row["runtime"]["scene_feature_cache_hit"])
+            self.assertEqual(row["runtime"]["dino_batch_share_time_s"], 0)
+            self.assertEqual(row["runtime"]["fpfh_feature_time_s"], 0)
+            self.assertGreaterEqual(row["runtime"]["accounted_time_s"], row["runtime"]["geometric_matching_time_s"])
+        # Reusing a cache must not mutate the timing from the earlier target.
+        self.assertGreater(first["candidate_ranking"][0]["runtime"]["dino_batch_share_time_s"], 0)
+        self.assertEqual(first["predictions"], {"visual": "object_000", "geometry": "object_000", "fused": "object_000"})
+        self.assertEqual(set(first["rankings"]), {"visual", "geometry", "fused"})
+        self.assertNotIn("thresholds", first["diagnostics"])
         json.dumps(first, allow_nan=False)
 
     @patch.object(association, "extract_dino_features", return_value=np.ones((1, 384)))
@@ -256,7 +273,7 @@ class FeatureAndCacheTests(unittest.TestCase):
         self.assertEqual(timing["scene_feature_cache_hits"], 0)
 
     @patch.object(association, "extract_dino_features", side_effect=lambda images: np.ones((len(images), 384)))
-    def test_insufficient_cloud_keeps_visual_evaluation_and_defers(self, encode):
+    def test_insufficient_cloud_keeps_visual_evaluation_and_missing_geometry(self, encode):
         path = self.payload["objects"][1]["pointcloud_path"]
         cloud = o3d.geometry.PointCloud(o3d.utility.Vector3dVector([[0, 0, 0], [0.01, 0, 0]]))
         o3d.io.write_point_cloud(path, cloud)
@@ -265,10 +282,10 @@ class FeatureAndCacheTests(unittest.TestCase):
         }) as match:
             result = association.associate_cad_to_candidates(self.cad, self.payload, self.rgb_path,
                 target_description="box", cache_dir=self.root / "cache")
-        self.assertEqual(encode.call_count, 3)  # CAD views and both scene crops.
+        self.assertEqual(encode.call_count, 2)  # CAD views, then one batch of both scene crops.
         self.assertEqual(match.call_count, 1)
-        self.assertEqual(result["resolution"], "ambiguous")
-        self.assertIsNone(result["selected_object_id"])
+        self.assertEqual(result["resolution"], "ranking_only")
+        self.assertEqual(result["selected_object_id"], "object_000")
         self.assertEqual(len(result["candidate_ranking"]), 2)
         invalid = result["candidate_ranking"][1]
         self.assertEqual(invalid["visual_score"], 1)
@@ -294,9 +311,10 @@ class PipelineContractTests(unittest.TestCase):
             self.assertIs(model, cad)
             self.assertEqual(rgb, "original.png")
             scene_caches.append(kwargs["scene_cache"])
+            object_id = "object_003" if kwargs["target_description"] == "round peg" else "object_004"
             return {"target_description": kwargs["target_description"], "cad_id": model.cad_id,
-                    "cad_path": model.file_path, "selected_object_id": "object_003",
-                    "final_object_id": "object_003", "resolution": "automatic_match"}
+                    "cad_path": model.file_path, "selected_object_id": object_id,
+                    "final_object_id": object_id, "resolution": "ranking_only"}
 
         payload = {"objects": [{"object_id": "object_003", "pointcloud_path": "partial_downsampled.ply"}]}
         registrar = Mock()
@@ -322,7 +340,7 @@ class PipelineContractTests(unittest.TestCase):
 
     def test_changed_cad_or_missing_fixed_handoff_cannot_trigger_registration(self):
         result = {"target_description": "peg", "cad_id": "correct", "cad_path": "correct.stl",
-                  "final_object_id": "a", "selected_object_id": "a", "resolution": "automatic_match"}
+                  "final_object_id": "a", "selected_object_id": "a", "resolution": "ranking_only"}
         payload = {"objects": [{"object_id": "a", "pointcloud_path": "a.ply"}]}
         registrar = Mock()
         with tempfile.TemporaryDirectory() as directory:
@@ -332,20 +350,98 @@ class PipelineContractTests(unittest.TestCase):
                         registration_root=directory, retrieved_cads=retrieved)
         registrar.run.assert_not_called()
 
-    def test_main_stops_downstream_for_ambiguous_or_absent_target(self):
+    def test_known_cad_ids_bypass_text_embeddings_and_preserve_identity(self):
+        observed = []
+
+        def associate(model, payload, rgb, plane, **kwargs):
+            observed.append((kwargs["target_description"], model.cad_id))
+            object_id = "object_" + str(model.cad_id)
+            return {"target_description": kwargs["target_description"], "cad_id": str(model.cad_id),
+                    "cad_path": model.file_path, "selected_object_id": object_id,
+                    "final_object_id": object_id, "resolution": "ranking_only"}
+
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(main, "build_local_embedding_function") as embed, \
+                patch.object(main.CADRetrieval, "retrieve") as text_retrieval, \
+                patch.object(main, "associate_cad_to_candidates", side_effect=associate):
+            results, fixed, _ = main.associate_targets_with_cad(
+                ["target with ambiguous text", "block"], {}, "rgb.png", output_dir=directory,
+                known_cad_ids={"target with ambiguous text": "3", "block": 5})
+        embed.assert_not_called()
+        text_retrieval.assert_not_called()
+        self.assertEqual(observed, [("target with ambiguous text", "3"), ("block", "5")])
+        self.assertEqual(results[0]["cad_retrieval"]["selection_method"], "known_cad_id")
+        self.assertIsNone(results[0]["cad_retrieval"]["score"])
+        self.assertEqual(fixed["target with ambiguous text"][0].cad_id, "3")
+
+    def test_missing_or_unknown_known_cad_never_falls_back_to_text(self):
+        with patch.object(main.CADRetrieval, "retrieve") as text_retrieval, \
+                patch.object(main, "associate_cad_to_candidates") as match:
+            for mapping in ({}, {"gear": None}, {"gear": "missing"}, {"gear": "2", "extra": "5"}):
+                with self.assertRaises(ValueError):
+                    main.associate_targets_with_cad(["gear"], {}, "rgb.png", known_cad_ids=mapping)
+        text_retrieval.assert_not_called()
+        match.assert_not_called()
+
+    def test_conflict_is_saved_without_erasing_independent_predictions(self):
+        def associate(model, payload, rgb, plane, **kwargs):
+            return {"target_description": kwargs["target_description"], "cad_id": str(model.cad_id),
+                    "cad_path": model.file_path, "selected_object_id": "same_object",
+                    "final_object_id": "same_object", "resolution": "ranking_only",
+                    "predictions": {"visual": "same_object", "geometry": "same_object", "fused": "same_object"}}
+
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(main, "associate_cad_to_candidates", side_effect=associate):
+            results, fixed, summary_path = main.associate_targets_with_cad(
+                ["gear", "block"], {}, "rgb.png", output_dir=directory,
+                known_cad_ids={"gear": "3", "block": "5"})
+            summary = json.loads(summary_path.read_text())
+            self.assertEqual(summary["resolution"], "conflicting")
+            self.assertEqual(len(summary["conflicts"]), 1)
+            self.assertEqual({target["cad_id"] for target in summary["conflicts"][0]["targets"]}, {"3", "5"})
+            for index, result in enumerate(results, 1):
+                saved = json.loads((Path(directory) / f"target_{index:03d}.json").read_text())
+                self.assertEqual(saved, result)
+                self.assertEqual(result["selected_object_id"], "same_object")
+                self.assertIsNone(result["final_object_id"])
+                self.assertEqual(result["predictions"]["fused"], "same_object")
+            registrar = Mock()
+            # Even a subset of a flagged set cannot accidentally resume registration.
+            for selected_results in (results, results[:1]):
+                with self.assertRaisesRegex(ValueError, "Conflicting"):
+                    main.register_resolved_associations(selected_results, {}, None,
+                        registrar=registrar, retrieved_cads=fixed, registration_root=directory)
+            registrar.run.assert_not_called()
+
+    def test_direct_registration_rejects_duplicate_selections_before_any_work(self):
+        results = [{"target_description": target, "cad_id": cad_id,
+                    "selected_object_id": "a", "final_object_id": "a"}
+                   for target, cad_id in [("gear", "3"), ("block", "5")]]
+        registrar = Mock()
+        with self.assertRaisesRegex(ValueError, "Conflicting"):
+            main.register_resolved_associations(results, {}, None, registrar=registrar)
+        registrar.run.assert_not_called()
+
+    def test_main_experiments_stop_after_saving_rankings_and_flag_conflicts(self):
         with tempfile.TemporaryDirectory() as directory:
             localization = Path(directory) / "localization.json"
             localization.write_text('{"objects": []}', encoding="utf-8")
             paths = dict.fromkeys(("rgb", "depth", "annotated_rgb", "workspace_cloud", "table_cloud", "segmented_cloud"), "unused")
             paths.update(localization=localization, object_count=0)
-            for resolution in ("ambiguous", "not_present"):
+            for resolution in ("ranking_only", "no_candidates", "no_valid_candidates", "conflicting"):
+                results = [{"resolution": resolution, "association_set_resolution":
+                            "conflicting" if resolution == "conflicting" else "ranking_only"}]
                 with patch.object(main, "run_pipeline", return_value=paths), \
-                        patch.object(main, "associate_targets_with_cad", return_value=([{"resolution": resolution}], {}, "summary")), \
+                        patch.object(main, "associate_targets_with_cad", return_value=(results, {}, "summary")), \
+                        patch.object(main, "RUN_CAD_REGISTRATION", False), \
                         patch.object(main, "register_resolved_associations") as register, \
                         patch.object(main, "output_robot_base_pose") as robot, \
                         patch.object(main, "output_llm_plan") as planner:
-                    with self.assertRaises(SystemExit):
-                        main.main()
+                    if resolution == "conflicting":
+                        with self.assertRaises(SystemExit):
+                            main.main()
+                    else:
+                        self.assertEqual(main.main(), results)
                     register.assert_not_called()
                     robot.assert_not_called()
                     planner.assert_not_called()

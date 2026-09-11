@@ -24,17 +24,9 @@ IMAGE_SIZE = 224
 CACHE_VERSION = 1  # Increment when rendering, preprocessing, or geometry code changes.
 VIEW_DIRECTIONS = np.vstack((np.eye(3), -np.eye(3), list(product((-1, 1), repeat=3))))
 FUSION_METHOD = "weighted_mean"  # Or "geometric_mean".
+# Experimental baseline only: these bounded scores are not calibrated or equivalent.
 VISUAL_WEIGHT = 0.5
 GEOMETRY_WEIGHT = 0.5
-# Provisional experiment settings, not calibrated probabilities or test-set fits.
-MIN_FUSED_SCORE = 0.65
-MIN_VISUAL_SCORE = 0.60
-MIN_GEOMETRY_SCORE = 0.35
-MIN_FUSED_MARGIN = 0.04
-STRONG_WINNER_MARGIN = 0.10
-MAX_MODALITY_GAP = 0.45
-ABSENT_VISUAL_CEILING = 0.60
-ABSENT_GEOMETRY_CEILING = 0.15
 
 
 @lru_cache(maxsize=1)
@@ -140,37 +132,22 @@ def fuse_scores(visual_score, geometry_score, method=None):
     return float(VISUAL_WEIGHT * visual_score + GEOMETRY_WEIGHT * geometry_score)
 
 
-def rank_and_resolve(candidates):
-    """Resolve only after every pair has both modalities, retaining invalid rows."""
-    ranking = sorted(candidates, key=lambda c: (
-        -(c["fused_score"] if c["fused_score"] is not None else -1), c["object_id"],
+def rank_candidates(candidates, score_key="fused_score"):
+    """Keep every candidate; missing scores sort last, exact ties use object ID."""
+    return sorted(candidates, key=lambda c: (
+        -(c[score_key] if c[score_key] is not None else -1), c["object_id"],
     ))
+
+
+def rank_and_resolve(candidates):
+    """Return an experimental argmax, without confidence or presence thresholds."""
+    ranking = rank_candidates(candidates)
     if not ranking:
-        return ranking, None, "not_present", "no_localized_candidates"
-    if any(c["fused_score"] is None for c in ranking):
-        return ranking, None, "ambiguous", "insufficient_valid_evidence"
-    if all(c["geometry_raw"]["status"] != "matched" for c in ranking):
-        return ranking, None, "ambiguous", "geometric_matching_failed_for_all"
-    # Absence requires weak evidence across the entire scene, not a relative rank.
-    if all(c["visual_score"] < ABSENT_VISUAL_CEILING
-           and c["geometry_score"] < ABSENT_GEOMETRY_CEILING for c in ranking):
-        return ranking, None, "not_present", "all_candidates_have_weak_evidence"
+        return ranking, None, "no_candidates", "no_localized_candidates"
     top = ranking[0]
-    if len(ranking) > 1:
-        if top["fused_score"] - ranking[1]["fused_score"] < MIN_FUSED_MARGIN:
-            return ranking, None, "ambiguous", "small_fused_margin"
-        visual = sorted(ranking, key=lambda c: -c["visual_score"])
-        geometry = sorted(ranking, key=lambda c: -c["geometry_score"])
-        if (visual[0]["object_id"] != geometry[0]["object_id"]
-                and visual[0]["visual_score"] - visual[1]["visual_score"] >= STRONG_WINNER_MARGIN
-                and geometry[0]["geometry_score"] - geometry[1]["geometry_score"] >= STRONG_WINNER_MARGIN):
-            return ranking, None, "ambiguous", "modalities_prefer_different_objects"
-    if abs(top["visual_score"] - top["geometry_score"]) > MAX_MODALITY_GAP:
-        return ranking, None, "ambiguous", "strong_modality_disagreement"
-    if (top["fused_score"] < MIN_FUSED_SCORE or top["visual_score"] < MIN_VISUAL_SCORE
-            or top["geometry_score"] < MIN_GEOMETRY_SCORE):
-        return ranking, None, "ambiguous", "weak_top_candidate"
-    return ranking, top["object_id"], "automatic_match", "sufficient_multimodal_evidence"
+    if top["fused_score"] is None:
+        return ranking, None, "no_valid_candidates", "no_computable_fused_score"
+    return ranking, top["object_id"], "ranking_only", "highest_fused_score"
 
 
 def raw_observed_cloud_path(item):
@@ -237,7 +214,9 @@ def prepare_scene_features(localization_payload, rgb_path, registrar, scene_cach
     rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
     height, width = rgb.shape[:2]
     candidates, timing = [], {"workspace_dino_feature_time_s": 0.0,
-                               "workspace_fpfh_feature_time_s": 0.0, "scene_feature_cache_hits": 0}
+                               "workspace_fpfh_feature_time_s": 0.0, "scene_feature_cache_hits": 0,
+                               "workspace_crop_time_s": 0.0, "workspace_dino_crop_count": 0}
+    pending, crops, crop_candidates = [], [], []
     ids = [item["object_id"] for item in localization_payload["objects"]]
     if len(set(ids)) != len(ids):
         raise ValueError("Localization object IDs must be unique.")
@@ -248,13 +227,15 @@ def prepare_scene_features(localization_payload, rgb_path, registrar, scene_cach
         path = raw_observed_cloud_path(item)
         key = cache_key(CACHE_VERSION, rgb_hash, item["object_id"], bbox, content_hash(path),
                          asdict(registrar.config), DINO_REPO, DINO_MODEL, IMAGE_SIZE, o3d.__version__)
+        candidate_runtime = {"scene_feature_cache_hit": key in scene_cache, "crop_time_s": 0.0,
+                             "dino_batch_share_time_s": 0.0, "fpfh_feature_time_s": 0.0}
         if key in scene_cache:
-            candidates.append(scene_cache[key])
+            candidates.append({**scene_cache[key], "runtime": candidate_runtime})
             timing["scene_feature_cache_hits"] += 1
             continue
         candidate = {"object_id": item["object_id"], "bbox_2d_xyxy": bbox,
                      "pointcloud_path": str(path), "visual_feature": None,
-                     "cloud": None, "fpfh": None, "errors": []}
+                     "cloud": None, "fpfh": None, "errors": [], "runtime": candidate_runtime}
         stage = perf_counter()
         x1, y1, x2, y2 = map(int, bbox)
         # Localizer ROI maxima are inclusive pixel coordinates.
@@ -263,24 +244,38 @@ def prepare_scene_features(localization_payload, rgb_path, registrar, scene_cach
         if crop.size == 0 or x2 < x1 or y2 < y1:
             candidate["errors"].append("invalid_rgb_crop")
         else:
-            candidate["visual_feature"] = extract_dino_features([crop])[0]
-        timing["workspace_dino_feature_time_s"] += perf_counter() - stage
-        # Geometry is attempted regardless of the crop or visual similarity.
+            crops.append(crop)
+            crop_candidates.append(candidate)
+        candidate_runtime["crop_time_s"] = perf_counter() - stage
+        timing["workspace_crop_time_s"] += candidate_runtime["crop_time_s"]
+        pending.append((key, candidate))
+        candidates.append(candidate)
+    if crops:
+        stage = perf_counter()
+        features = extract_dino_features(crops)
+        timing["workspace_dino_feature_time_s"] = perf_counter() - stage
+        timing["workspace_dino_crop_count"] = len(crops)
+        for candidate, feature in zip(crop_candidates, features, strict=True):
+            candidate["visual_feature"] = feature
+            # Amortized batch cost, not a measured single-crop inference latency.
+            candidate["runtime"]["dino_batch_share_time_s"] = timing["workspace_dino_feature_time_s"] / len(crops)
+    for key, candidate in pending:
+        # Geometry is attempted for every uncached candidate, including invalid crops.
         stage = perf_counter()
         try:
-            cloud = registrar.load_observed_cloud(path)
+            cloud = registrar.load_observed_cloud(candidate["pointcloud_path"])
             candidate["cloud"], candidate["fpfh"] = registrar.compute_fpfh(cloud, camera_location=[0, 0, 0])
         except ValueError as error:
             candidate["errors"].append(str(error))
-        timing["workspace_fpfh_feature_time_s"] += perf_counter() - stage
+        candidate["runtime"]["fpfh_feature_time_s"] = perf_counter() - stage
+        timing["workspace_fpfh_feature_time_s"] += candidate["runtime"]["fpfh_feature_time_s"]
         scene_cache[key] = candidate
-        candidates.append(candidate)
     return candidates, timing
 
 
 def associate_cad_to_candidates(cad_model, localization_payload, rgb_path, plane_model=None,
                                  *, target_description, scene_cache=None, cache_dir=CACHE_DIR):
-    """Return JSON-compatible results; selected/final IDs are null unless resolved.
+    """Return all scores and experimental rankings, without a confidence gate.
 
     plane_model is retained for handoff compatibility. Pairwise matching is rigid
     FPFH/RANSAC + ICP; final registration still applies the existing table constraints.
@@ -300,8 +295,11 @@ def associate_cad_to_candidates(cad_model, localization_payload, rgb_path, plane
     rows = []
     for candidate in candidates:
         row = {name: candidate[name] for name in ("object_id", "bbox_2d_xyxy", "pointcloud_path")}
-        row.update(visual_raw=None, visual_score=None, geometry_raw={"status": "invalid"},
-                   geometry_score=None, fused_score=None, errors=list(candidate["errors"]))
+        row.update(visual_raw=None, visual_score=None,
+                   geometry_raw={"status": "invalid", "registration_fitness": None,
+                                 "ransac_inlier_ratio": None, "observed_to_cad_rmse_m": None},
+                   geometry_score=None, fused_score=None, errors=list(candidate["errors"]),
+                   runtime=dict(candidate["runtime"]))
         stage = perf_counter()
         if candidate["visual_feature"] is not None:
             try:
@@ -309,7 +307,8 @@ def associate_cad_to_candidates(cad_model, localization_payload, rgb_path, plane
                 row["visual_score"] = normalize_visual_score(row["visual_raw"])
             except ValueError as error:
                 row["errors"].append(str(error))
-        runtime["visual_comparison_time_s"] += perf_counter() - stage
+        row["runtime"]["visual_comparison_time_s"] = perf_counter() - stage
+        runtime["visual_comparison_time_s"] += row["runtime"]["visual_comparison_time_s"]
         stage = perf_counter()
         if candidate["fpfh"] is not None:
             row["geometry_raw"] = registrar.match_fpfh(
@@ -317,14 +316,23 @@ def associate_cad_to_candidates(cad_model, localization_payload, rgb_path, plane
             )
             row["geometry_score"] = normalize_geometry_score(row["geometry_raw"]["registration_fitness"])
         elapsed = perf_counter() - stage
+        row["runtime"]["geometric_matching_time_s"] = elapsed
         runtime["per_candidate_matching_time_s"][candidate["object_id"]] = elapsed
         runtime["pairwise_matching_time_s"] += elapsed
         rows.append(row)
     stage = perf_counter()
     for row in rows:
+        fusion_start = perf_counter()
         if row["visual_score"] is not None and row["geometry_score"] is not None:
             row["fused_score"] = fuse_scores(row["visual_score"], row["geometry_score"])
+        row["runtime"]["fusion_time_s"] = perf_counter() - fusion_start
+        row["runtime"]["accounted_time_s"] = sum(value for key, value in row["runtime"].items() if key.endswith("_time_s"))
     ranking, selected, resolution, reason = rank_and_resolve(rows)
+    rankings, predictions = {}, {}
+    for modality, score_key in (("visual", "visual_score"), ("geometry", "geometry_score"), ("fused", "fused_score")):
+        ordered = rank_candidates(rows, score_key)
+        rankings[modality] = [row["object_id"] for row in ordered]
+        predictions[modality] = (ordered[0]["object_id"] if ordered and ordered[0][score_key] is not None else None)
     runtime["fusion_time_s"] = perf_counter() - stage
     runtime["scene_association_time_s"] = perf_counter() - scene_start
     runtime["visual_feature_time_s"] = runtime["workspace_dino_feature_time_s"]
@@ -341,7 +349,7 @@ def associate_cad_to_candidates(cad_model, localization_payload, rgb_path, plane
             "geometry_rmse_m": top["geometry_raw"].get("observed_to_cad_rmse_m"),
             "geometry_normalized": top["geometry_score"], "fused": top["fused_score"],
         } if top else {},
-        "candidate_ranking": ranking, "runtime": runtime,
+        "candidate_ranking": ranking, "rankings": rankings, "predictions": predictions, "runtime": runtime,
         "diagnostics": {
             "method": "frozen DINOv2-small + local FPFH/RANSAC/ICP",
             "geometry_score_direction": "observed_partial_surface_to_complete_cad",
@@ -349,12 +357,9 @@ def associate_cad_to_candidates(cad_model, localization_payload, rgb_path, plane
             "encoder": DINO_MODEL, "encoder_source": DINO_REPO,
             "voxel_size_m": registrar.config.voxel_size_m,
             "fusion_method": FUSION_METHOD, "visual_weight": VISUAL_WEIGHT, "geometry_weight": GEOMETRY_WEIGHT,
-            "thresholds": {
-                "min_fused_score": MIN_FUSED_SCORE, "min_visual_score": MIN_VISUAL_SCORE,
-                "min_geometry_score": MIN_GEOMETRY_SCORE, "min_fused_margin": MIN_FUSED_MARGIN,
-                "strong_winner_margin": STRONG_WINNER_MARGIN, "max_modality_gap": MAX_MODALITY_GAP,
-                "absent_visual_ceiling": ABSENT_VISUAL_CEILING, "absent_geometry_ceiling": ABSENT_GEOMETRY_CEILING,
-            },
+            "decision_policy": "ranking_only_no_thresholds",
+            "score_interpretation": "Uncalibrated, non-equivalent scores; fixed fusion is an experimental baseline.",
+            "dino_candidate_timing": "Equal share of measured workspace batch time; not individual inference latency.",
         },
     }
     runtime["total_time_s"] = perf_counter() - start

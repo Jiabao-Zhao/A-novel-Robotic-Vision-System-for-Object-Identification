@@ -13,10 +13,14 @@ OPEN_3D_VISUALIZATION = False
 USE_SAVED_RAW_CAPTURE = False
 OUTPUT_ROBOT_BASE_POSE = True
 RUN_LLM_PLANNER = False
+RUN_CAD_REGISTRATION = False  # Experiments save rankings and stop after association.
 USER_TEXT = "put the white gear on top of the red block"
 # Semantic target descriptions are currently supplied by the experiment caller.
 # Extracting them from USER_TEXT is outside the CAD association stage.
 TARGET_DESCRIPTIONS = ("white gear", "red block")
+# Supply a complete {target_description: known_cad_id} mapping for experiments.
+# None retains text retrieval as a separate baseline; never infer ground truth here.
+TARGET_CAD_IDS = None
 SAVED_RGB_PATH = Path("outputs/physical/raw/RGB.png")
 SAVED_DEPTH_PATH = Path("outputs/physical/raw/depth_data.npz")
 CAD_LIBRARY_PATH = Path("CAD/cad_library.json")
@@ -89,16 +93,26 @@ def observed_cloud_from_localization(localization_payload, object_id):
     raise ValueError(f"Selected object_id was not found in localization output: {object_id}")
 
 
-def retrieve_cad_model(target_description):
+def retrieve_cad_model(target_description, cad_id=None):
     retriever = CADRetrieval()
     cad_models = CADRetrieval.load_library(CAD_LIBRARY_PATH)
+    if cad_id is not None:
+        matches = [model for model in cad_models if str(model.cad_id) == str(cad_id)]
+        if len(matches) != 1:
+            raise ValueError(f"Known CAD ID must identify exactly one library model: {cad_id!r}")
+        model = matches[0]
+        return model, {"selected_cad_id": str(model.cad_id), "selected_cad_name": model.cad_name,
+                       "selected_file_path": model.file_path, "selection_method": "known_cad_id",
+                       "score": None}
     model_texts = [retriever.build_model_text(model) for model in cad_models]
     embedding_function = build_local_embedding_function([target_description] + model_texts)
-    return retriever.retrieve(
+    model, result = retriever.retrieve(
         classification_text=target_description,
         cad_models=cad_models,
         embedding_function=embedding_function,
     )
+    result["selection_method"] = "text_retrieval"
+    return model, result
 
 
 def cad_request_from_association(association):
@@ -116,28 +130,61 @@ def cad_request_from_association(association):
     }
 
 
+def association_conflicts(associations):
+    """Flag independent target queries selecting the same observed object."""
+    by_object = {}
+    for item in associations:
+        object_id = item.get("selected_object_id")
+        if object_id is not None:
+            by_object.setdefault(object_id, []).append({
+                "target_description": item["target_description"], "cad_id": item["cad_id"],
+            })
+    return [{"object_id": object_id, "targets": targets}
+            for object_id, targets in sorted(by_object.items()) if len(targets) > 1]
+
+
 def associate_targets_with_cad(target_descriptions, localization_payload, rgb_path,
-                               plane_model=None, output_dir=ASSOCIATION_OUTPUT_DIR):
+                               plane_model=None, output_dir=ASSOCIATION_OUTPUT_DIR, *, known_cad_ids=None):
     """Fix target -> CAD before observing any pair scores; reuse scene features."""
-    retrieved_cads = {target: retrieve_cad_model(target) for target in target_descriptions}
+    targets = list(target_descriptions)
+    if not targets or len(set(targets)) != len(targets):
+        raise ValueError("Provide nonempty, unique target descriptions for the association set.")
+    if known_cad_ids is not None:
+        if set(known_cad_ids) != set(targets) or any(value is None for value in known_cad_ids.values()):
+            raise ValueError("known_cad_ids must supply one explicit CAD ID for every target description.")
+        retrieved_cads = {target: retrieve_cad_model(target, cad_id=known_cad_ids[target]) for target in targets}
+    else:
+        retrieved_cads = {target: retrieve_cad_model(target) for target in targets}
     associations, scene_cache = [], {}
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
-    for index, (target, (cad_model, cad_result)) in enumerate(retrieved_cads.items(), 1):
+    for target, (cad_model, cad_result) in retrieved_cads.items():
         result = associate_cad_to_candidates(
             cad_model, localization_payload, rgb_path, plane_model,
             target_description=target, scene_cache=scene_cache,
         )
         result["cad_retrieval"] = cad_result
+        associations.append(result)
+    conflicts = association_conflicts(associations)
+    set_resolution = "conflicting" if conflicts else "ranking_only"
+    for index, result in enumerate(associations, 1):
+        result["association_set_resolution"] = set_resolution
+        result["conflicts"] = conflicts
+        if conflicts:
+            # Retain independent predictions for evaluation; block downstream handoff.
+            result["final_object_id"] = None
         result_path = output_dir / f"target_{index:03d}.json"
         result_path.write_text(json.dumps(result, indent=2, allow_nan=False), encoding="utf-8")
-        print(f"CAD association: {target} -> {cad_model.cad_id} -> "
+        print(f"CAD association: {result['target_description']} -> {result['cad_id']} -> "
               f"{result['selected_object_id']} ({result['resolution']}); saved {result_path}")
-        associations.append(result)
+    if conflicts:
+        print(f"Conflicting association set: {json.dumps(conflicts)}")
     # Compact adapter for the planner's existing associations/final_object_id contract.
     summary_path = output_dir / "semantic_associations.json"
-    summary = {"associations": [{key: item[key] for key in (
-        "target_description", "cad_id", "cad_path", "final_object_id", "resolution",
+    summary = {"resolution": set_resolution, "conflicts": conflicts,
+               "associations": [{key: item[key] for key in (
+        "target_description", "cad_id", "cad_path", "selected_object_id", "final_object_id", "resolution",
+        "association_set_resolution",
     )} for item in associations]}
     summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     return associations, retrieved_cads, summary_path
@@ -152,6 +199,8 @@ def register_resolved_associations(
     registration_root=Path("outputs/physical/registered_point_cloud"),
     retrieved_cads=None,
 ):
+    if association_conflicts(associations) or any(item.get("association_set_resolution") == "conflicting" for item in associations):
+        raise ValueError("Conflicting association set cannot proceed to CAD registration.")
     requests = [cad_request_from_association(item) for item in associations]
     registration_records = []
     registration_root = Path(registration_root)
@@ -168,7 +217,7 @@ def register_resolved_associations(
             if (str(cad_model.cad_id) != association["cad_id"]
                     or str(cad_model.file_path) != association["cad_path"]):
                 raise ValueError("CAD identity changed between association and registration.")
-            if (association["resolution"] != "automatic_match"
+            if (association["resolution"] != "ranking_only"
                     or association["selected_object_id"] != object_id):
                 raise ValueError("CAD association is unresolved or has inconsistent object IDs.")
         else:
@@ -267,10 +316,15 @@ def main():
 
     associations, retrieved_cads, association_path = associate_targets_with_cad(
         TARGET_DESCRIPTIONS, localization_payload, paths["rgb"], plane_model,
+        known_cad_ids=TARGET_CAD_IDS,
     )
-    if any(item["resolution"] != "automatic_match" for item in associations):
-        raise SystemExit("CAD association unresolved or target not present; see per-target results. "
-                         "Registration and downstream execution stopped.")
+    if any(item["association_set_resolution"] == "conflicting" for item in associations):
+        raise SystemExit("Conflicting target selections; rankings saved. Downstream execution stopped.")
+    if not RUN_CAD_REGISTRATION:
+        print(f"Association experiment complete; saved rankings and summary: {association_path}")
+        return associations
+    if any(item["resolution"] != "ranking_only" for item in associations):
+        raise SystemExit("No computable candidate ranking; CAD registration stopped.")
     registration_records = register_resolved_associations(
         associations,
         localization_payload,
