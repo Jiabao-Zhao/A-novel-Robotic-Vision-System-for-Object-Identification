@@ -90,7 +90,7 @@ class SimulationPlanningTests(unittest.TestCase):
         plan["actions"] += self.plan["actions"]
         calls = []
         observations = []
-        def pick(env, obs, grasp, callback):
+        def pick(env, obs, grasp, callback, **kwargs):
             calls.append(("pick", grasp))
             observations.append(obs)
             callback("close", 0, {}, np.zeros(7), 0., False, {})

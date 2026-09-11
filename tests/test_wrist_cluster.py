@@ -2,7 +2,6 @@
 
 from types import SimpleNamespace
 import unittest
-from unittest.mock import patch
 
 import numpy as np
 
@@ -19,11 +18,10 @@ class PickupMetricTests(unittest.TestCase):
             geom_name2id=lambda name: {"left": 2, "right": 3}[name])
         self.data = SimpleNamespace(body_xpos=np.zeros((4, 3)), ncon=2,
             contact=[SimpleNamespace(geom1=0, geom2=2), SimpleNamespace(geom1=0, geom2=3)])
-        env = SimpleNamespace(sim=SimpleNamespace(model=model, data=self.data),
+        env = SimpleNamespace(sim=SimpleNamespace(model=model, data=self.data), active_parts=('target', 'other'),
             robots=[SimpleNamespace(gripper=SimpleNamespace(important_geoms={
                 "left_fingerpad": ["left"], "right_fingerpad": ["right"]}))])
-        with patch("scripts.run_wrist_cluster.DESCRIPTIONS", {"target": "target", "other": "other"}):
-            self.evaluator = PickupEvaluator(env, "target")
+        self.evaluator = PickupEvaluator(env, "target")
 
     def test_lift_needs_bilateral_contact_and_continuous_hold(self):
         self.data.body_xpos[1, 2] = .025

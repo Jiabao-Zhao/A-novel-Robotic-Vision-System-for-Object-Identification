@@ -49,7 +49,7 @@ def identity_audit(environment, localization, observation):
     objects = [{"instance": name, "semantic_identity": DESCRIPTIONS[name],
                 "position_world_m": environment.sim.data.body_xpos[
                     environment.sim.model.body_name2id(f"nist_part_{name}")].tolist()}
-               for name in DESCRIPTIONS]
+               for name in environment.active_parts]
     return match_candidates(localization, observation.world_T_camera, objects)
 
 
@@ -59,7 +59,7 @@ class PickupEvaluator:
     def __init__(self, environment, target):
         self.environment, self.target = environment, target
         sim = environment.sim
-        self.ids = {name: sim.model.body_name2id(f"nist_part_{name}") for name in DESCRIPTIONS}
+        self.ids = {name: sim.model.body_name2id(f"nist_part_{name}") for name in environment.active_parts}
         self.start = {name: sim.data.body_xpos[index].copy() for name, index in self.ids.items()}
         self.part_geoms = {}
         for name, body_id in self.ids.items():
@@ -122,7 +122,7 @@ def register_target(name, object_id, localization, observation, catalog, output_
 
 
 def run_target(environment, frozen_state, name, catalog, root, localization, observation, visual, paths,
-               *, frozen_gripper_action, seed=SEED):
+               *, frozen_gripper_action, seed=SEED, assembly=None):
     from robosuite.utils.transform_utils import quat2mat
     from simulation.libero_joint_association import associate_instruction_from_localization
     from simulation.libero_planning import build_simulation_context, generate_simulation_plan, execute_simulation_plan
@@ -138,8 +138,12 @@ def run_target(environment, frozen_state, name, catalog, root, localization, obs
     environment.robots[0].gripper.current_action = frozen_gripper_action.copy()
     restored = np.ascontiguousarray(environment.sim.get_state().flatten())
     np.testing.assert_allclose(restored, frozen_state, atol=0, rtol=0)
-    instruction = f"Pick up the {DESCRIPTIONS[name]} and hold it above the workspace."
-    result = {"target": name, "instruction": instruction, "success": False,
+    instruction = (assembly["instruction"] if assembly else
+                   f"Pick up the {DESCRIPTIONS[name]} and hold it above the workspace.")
+    # Fixed board fixtures are supplied by the workcell design, not localized
+    # candidates. Keep VLM association restricted to the one movable target.
+    association_instruction = f"Pick up the {DESCRIPTIONS[name]} and hold it above the workspace."
+    result = {"target": name, "instruction": instruction, "association_instruction": association_instruction, "success": False,
               "camera": CAMERA, "threshold": THRESHOLD, "seed": seed,
               "initial_gripper_action": environment.robots[0].gripper.current_action.tolist(),
               "frozen_state_sha256": hashlib.sha256(restored.tobytes()).hexdigest()}
@@ -148,6 +152,9 @@ def run_target(environment, frozen_state, name, catalog, root, localization, obs
     expected = [row["object_id"] for row in audit if row["simulator_instance"] == name]
     result["target_localized"] = len(expected) == 1
     evaluator = PickupEvaluator(environment, name)
+    if assembly:
+        from simulation.nist_assembly import AssemblyEvaluator
+        evaluator = AssemblyEvaluator(environment, name, assembly)
     video = cv2.VideoWriter(str(case / "wrist.mp4"), cv2.VideoWriter_fourcc(*"mp4v"), 10, (768, 768))
     if not video.isOpened():
         raise RuntimeError("Cannot open wrist video writer.")
@@ -160,7 +167,7 @@ def run_target(environment, frozen_state, name, catalog, root, localization, obs
                 raise RuntimeError("Target has no uniquely localized candidate for assumed human correction.")
             return expected[0]
         stage = "classification"
-        associate_instruction_from_localization(instruction, [DESCRIPTIONS[name]], image_path=visual,
+        associate_instruction_from_localization(association_instruction, [DESCRIPTIONS[name]], image_path=visual,
             localization_path=paths["localization"], output_path=case / "vlm_result.json", threshold=THRESHOLD,
             human_resolver=human, assumed_human=True,
             camera_description=CAMERA_DESCRIPTION,
@@ -188,29 +195,37 @@ def run_target(environment, frozen_state, name, catalog, root, localization, obs
         context = build_simulation_context(localization, [association], registration,
                                            observation.world_T_camera, grasp, raw)
         context["completion_condition"] = "held"
+        if assembly:
+            from simulation.nist_assembly import bind_assembly_context
+            bind_assembly_context(context, assembly)
         save_json(case / "execution_inputs.json", {"registration": registration, "context": context})
         stage = "llm_planning"
         planning = generate_simulation_plan(instruction, context, case / "llm_plan.json")
         result["planning_status"] = planning["status"]
         if planning["status"] != "ready":
             raise RuntimeError(f"Planner returned {planning['status']}")
-        result["plan_consistent_with_resolved_identity"] = planning["plan"]["actions"] == [
-            {"action": "pick", "object_id": association["final_object_id"]}]
+        expected_actions = [{"action": "pick", "object_id": association["final_object_id"]}]
+        if assembly:
+            expected_actions.append({"action": "insert", "object_id": association["final_object_id"],
+                                     "destination_id": assembly["destination_id"]})
+        result["plan_consistent_with_resolved_identity"] = planning["plan"]["actions"] == expected_actions
         def record(plan_index, planned_action, phase, phase_step, raw, action, reward, done, info):
             metrics = evaluator.score()
             actions.append({"phase": phase, "action": np.asarray(action).tolist(), "metrics": metrics})
             if len(actions) % 2 == 0:
                 rgb = np.ascontiguousarray(raw[f"{CAMERA}_image"][::-1])
                 video.write(cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
-            if len(actions) >= 600:
-                raise RuntimeError("Pickup action budget exhausted.")
+            if len(actions) >= (1400 if assembly else 600):
+                raise RuntimeError("Robot action budget exhausted.")
         stage = "execution"
         raw = execute_simulation_plan(environment, raw, planning["plan"], context, record)
-        raw = hold_gripper(environment, raw, CLOSE_GRIPPER, "hold_above_workspace", HOLD_STEPS,
-                           lambda *args: record(0, planning["plan"]["actions"][-1], *args))
-        result["success"] = evaluator.hold_steps >= HOLD_STEPS
+        if not assembly:
+            raw = hold_gripper(environment, raw, CLOSE_GRIPPER, "hold_above_workspace", HOLD_STEPS,
+                               lambda *args: record(0, planning["plan"]["actions"][-1], *args))
+        result["success"] = evaluator.assembly_success if assembly else evaluator.hold_steps >= HOLD_STEPS
         if not result["success"]:
-            result["error"] = ("Final hold failed: require bilateral contact with the requested object "
+            result["error"] = ("Assembly seating and release criterion was not satisfied." if assembly else
+                "Final hold failed: require bilateral contact with the requested object "
                 "at least 20 mm above its start for 20 consecutive control steps ending at trial end, "
                 "with no wrong object lifted during the trial.")
     except Exception as error:
@@ -221,7 +236,7 @@ def run_target(environment, frozen_state, name, catalog, root, localization, obs
         provider_path = case / "vlm_provider_response.json"
         if provider_path.exists():
             from simulation.libero_joint_association import joint_inferences
-            inferred, parsed = joint_inferences(json.loads(provider_path.read_text()), instruction,
+            inferred, parsed = joint_inferences(json.loads(provider_path.read_text()), association_instruction,
                 candidate_choice_map(load_localized_objects(paths["localization"])), [DESCRIPTIONS[name]])
             result.update(raw_score=inferred[0]["association_score"],
                           raw_log_score=inferred[0]["diagnostics"]["raw_log_probability"],
@@ -235,6 +250,12 @@ def run_target(environment, frozen_state, name, catalog, root, localization, obs
             "initial_pose_estimation" if not result["target_localized"] else
             "classification" if result.get("final_identity_correct") is False else
             "execution_or_grasp_unresolved" if stage == "execution" else stage)
+        if assembly:
+            result["assembly"] = assembly
+            result["assembly_metrics"] = evaluator.last_assembly_metrics
+            if not assembly["ready"]:
+                result.update(success=None, status="blocked_simulation_readiness",
+                              failure_attribution=None, readiness_reason=assembly["readiness_reason"])
         result["pickup_metrics"] = {"max_lift_mm": evaluator.max_lift_m*1000,
             "max_consecutive_hold_steps": evaluator.max_hold_steps,
             "achieved_one_second_hold_at_any_time": evaluator.max_hold_steps >= HOLD_STEPS,

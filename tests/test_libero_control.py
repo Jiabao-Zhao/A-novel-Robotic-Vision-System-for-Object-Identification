@@ -9,7 +9,9 @@ from simulation.libero_control import (
     OPEN_GRIPPER,
     execute_top_grasp_and_place,
     hold_gripper,
+    grasp_position_tolerance_m,
     move_eef_to_pose,
+    pick_object,
     top_down_grasp_pose,
 )
 
@@ -32,6 +34,63 @@ class _FakeEnvironment:
 
 
 class LiberoControlTests(unittest.TestCase):
+    def test_precision_compensation_removes_static_error_without_relaxing_tolerance(self):
+        for compensate in (False, True):
+            environment = _FakeEnvironment()
+            original_step = environment.step
+            def loaded_step(action):
+                observation, reward, done, info = original_step(action)
+                environment.position[0] -= .0003
+                observation['robot0_eef_pos'] = environment.position.copy()
+                return observation, reward, done, info
+            environment.step = loaded_step
+            observation = {'robot0_eef_pos': environment.position.copy(),
+                           'robot0_eef_quat': np.array([0., 0., 0., 1.])}
+            goal = np.eye(4)
+            goal[:3, 3] = [.05, 0., .2]
+            if compensate:
+                final = move_eef_to_pose(environment, observation, goal, OPEN_GRIPPER, 'precision',
+                    tolerance_m=.00015, max_steps=100, compensate_position_bias=True)
+                self.assertLessEqual(np.linalg.norm(final['robot0_eef_pos']-goal[:3, 3]), .00015)
+            else:
+                with self.assertRaises(RuntimeError):
+                    move_eef_to_pose(environment, observation, goal, OPEN_GRIPPER, 'precision',
+                                    tolerance_m=.00015, max_steps=100)
+
+    def test_pick_waits_for_precise_position_before_closing_on_small_parts(self):
+        environment = _FakeEnvironment()
+        original_step = environment.step
+
+        def settling_step(action):
+            slowed = np.asarray(action).copy()
+            slowed[:3] *= .25
+            return original_step(slowed)
+
+        environment.step = settling_step
+        grasp = np.eye(4)
+        grasp[:3, 3] = [.05, -.10, .04]
+        closure_errors = []
+
+        def record(phase, step, observation, *_):
+            if phase == "close_gripper" and step == 0:
+                closure_errors.append(np.linalg.norm(observation["robot0_eef_pos"]-grasp[:3, 3]))
+
+        pick_object(environment, {
+            "robot0_eef_pos": environment.position.copy(),
+            "robot0_eef_quat": np.array([0., 0., 0., 1.])}, grasp, record,
+            position_tolerance_m=grasp_position_tolerance_m(np.eye(4), [.016, .010, .050]))
+        self.assertEqual(len(closure_errors), 1)
+        self.assertLessEqual(closure_errors[0], .001)
+
+    def test_grasp_precision_uses_cad_dimensions_and_world_up_without_object_names(self):
+        self.assertEqual(grasp_position_tolerance_m(np.eye(4), [.016, .010, .050]), .001)
+        for extent in ([.022, .019, .010], [.035, .035, .035], [.050, .033, .114]):
+            self.assertEqual(grasp_position_tolerance_m(np.eye(4), extent), .008)
+        y_up = np.eye(4)
+        y_up[:3, :3] = [[1, 0, 0], [0, 0, -1], [0, 1, 0]]
+        self.assertEqual(grasp_position_tolerance_m(y_up, [.016, .050, .010]), .001)
+        self.assertEqual(grasp_position_tolerance_m(y_up, [.016, .010, .050]), .008)
+
     def test_simulation_grip_site_allows_low_profile_tabletop_objects(self):
         self.assertEqual(MINIMUM_GRIP_SITE_Z_M, 0.005)
 

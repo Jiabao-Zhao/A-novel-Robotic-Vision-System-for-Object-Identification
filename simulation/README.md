@@ -71,7 +71,7 @@ Motion subsequently uses the initial estimated object pose and robot propriocept
 the wrist recording is not a claim of continuous visual pose correction.
 
 The seven NIST parts are large/medium gears, M12/M16 nuts, D-sub connector, and
-16 mm round/square pegs. The square-peg instruction uses "white square peg"
+16 mm round/square pins. The square-pin instruction uses "square pin"
 and its visual material is white; its CAD and collision geometry are unchanged.
 BBQ sauce and cream cheese reuse the installed LIBERO assets. Cable shark has
 been removed from the active test bed. Its original repository CAD remains available.
@@ -112,6 +112,13 @@ against the robot's joint limits. The controller can use the equivalent 180-degr
 parallel-jaw orientation at the same grasp point. These checks do not establish
 collision-free motion. Opening, closing, and final holding maintain one fixed hand
 pose with feedback, so relative zero commands cannot accumulate position drift.
+For upright parts whose CAD height is at least twice their maximum cross-section
+width and whose cross-section is no wider than 20 mm, the final descent requires
+position error within 1 mm before closing. This prevents the coarser approach
+tolerance from initiating an off-center grasp on narrow pegs. Other parts retain
+the 8 mm tolerance; applying 1 mm to all parts blocked previously successful
+nut, bearing, and BBQ-sauce pickups. This controller setting uses registered CAD
+geometry, not object names or simulator object poses.
 Confirmed robot-execution faults are recorded separately from the four framework
 failure stages. Diagnostic controller replays preserve the original task outcomes
 and do not count as additional study attempts.

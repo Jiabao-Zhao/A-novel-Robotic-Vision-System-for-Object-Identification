@@ -17,8 +17,8 @@ ROOT = Path(__file__).resolve().parents[1] / "outputs/simulation/wrist_cluster"
 NIST_PARTS = {
     "Gear_Large": "large gear", "Gear_Medium": "medium gear",
     "M12_Hex_Nut": "M12 hex nut", "M16_Hex_Nut": "M16 hex nut",
-    "DSUB_Male": "D-sub connector", "RGOCG16-50_16mm": "round peg",
-    "KET16_Square_16mm": "white square peg",
+    "DSUB_Male": "D-sub connector", "RGOCG16-50_16mm": "round pin",
+    "KET16_Square_16mm": "square pin",
 }
 COMMON = ("bbq_sauce", "cream_cheese")
 ADDED = ("bearing", "pulley", "spacer", "red_block", "blue_block")
@@ -156,7 +156,7 @@ def replace_gear_collision(model, name, cad_path):
         ET.SubElement(body, "geom", **{**attributes, "name": key, "mesh": key, "mass": "0"})
 
 
-def make_environment(catalog, placements, image_size=768):
+def make_environment(catalog, placements, image_size=768, additional_scene=None):
     common_parts = tuple(name for name, record in catalog.items() if "asset_relative_path" in record)
     added_parts = tuple(name for name in catalog if name not in (*NIST_PARTS, *common_parts))
     def add_shapes(model):
@@ -213,8 +213,11 @@ def make_environment(catalog, placements, image_size=768):
             else:
                 ET.SubElement(body, "geom", name=f"{name}_collision", type="box",
                               size=_values(extent/2), **common)
-    original_names = (*NIST_PARTS, *common_parts)
-    env = NistTaskBoardEnvironment(parts=tuple(NIST_PARTS), common_parts=common_parts,
+        if additional_scene is not None:
+            additional_scene(model)
+    nist_parts = tuple(name for name in NIST_PARTS if name in catalog)
+    original_names = (*nist_parts, *common_parts)
+    env = NistTaskBoardEnvironment(parts=nist_parts, common_parts=common_parts,
         placements={name: placements[name] for name in original_names},
         camera_names=(CAMERA,), additional_scene=add_shapes, image_size=image_size)
     env.active_parts = tuple(catalog)

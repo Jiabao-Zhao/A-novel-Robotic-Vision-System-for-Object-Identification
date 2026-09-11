@@ -7,7 +7,7 @@ import numpy as np
 from openai import OpenAIError
 
 from LLM_planner import OpenAIPlanner
-from .libero_control import pick_object, place_object
+from .libero_control import grasp_position_tolerance_m, pick_object, place_object
 
 
 def _object_schema(properties):
@@ -33,6 +33,11 @@ PLAN_RESPONSE_FORMAT = {
                     "destination_id": {"type": "string"},
                     "relation": {"type": "string", "enum": ["in"]},
                 }),
+                _object_schema({
+                    "action": {"type": "string", "enum": ["insert"]},
+                    "object_id": {"type": "string"},
+                    "destination_id": {"type": "string"},
+                }),
             ]}},
         }),
     },
@@ -45,6 +50,9 @@ identities, invent IDs or coordinates, or output robot code. Geometry is in the
 MuJoCo world frame, in meters; the executor binds IDs to those estimated poses.
 Skills: pick(object_id) uses an available world_T_grasp; place(object_id,
 destination_id, relation='in') releases the held object into an open container.
+insert(object_id, destination_id) aligns, inserts, releases, and retreats using
+an available assembly binding. It is available ONLY for destinations with
+insertion_supported=true. It cannot thread nuts or mate unsupported connectors.
 Only objects with world_T_grasp can be picked. Only destinations listing 'in' in
 placement_relations support this placement. One gripper holds at most one object.
 Place the held object before picking another. Finish with an empty gripper unless
@@ -111,7 +119,9 @@ def validate_simulation_plan(plan, context):
         fields = {"action", "object_id"}
         if name == "place":
             fields |= {"destination_id", "relation"}
-        if name not in ("pick", "place") or set(action) != fields:
+        elif name == "insert":
+            fields.add("destination_id")
+        if name not in ("pick", "place", "insert") or set(action) != fields:
             raise ValueError(f"Action {index} has unsupported skill or arguments.")
         object_id = action["object_id"]
         if not isinstance(object_id, str) or object_id not in objects:
@@ -131,7 +141,12 @@ def validate_simulation_plan(plan, context):
             if (not isinstance(destination_id, str) or destination_id not in objects
                     or destination_id == object_id or destination_id in moved):
                 raise ValueError(f"Action {index}: invalid or stale destination.")
-            if (action["relation"] != "in"
+            if name == "insert":
+                if not objects[destination_id].get("insertion_supported"):
+                    raise ValueError(f"Action {index}: insertion is not available at this destination.")
+                from .nist_assembly import insertion_goal
+                insertion_goal(objects[object_id], objects[destination_id])
+            elif (action["relation"] != "in"
                     or "in" not in objects[destination_id]["placement_relations"]):
                 raise ValueError(f"Action {index}: unsupported placement relation.")
             moved.add(object_id)
@@ -190,7 +205,15 @@ def execute_simulation_plan(environment, observation, plan, context, callback=No
 
         grasp = objects[action["object_id"]]["world_T_grasp"]
         if action["action"] == "pick":
-            observation = pick_object(environment, observation, grasp, record_step)
+            item = objects[action["object_id"]]
+            tolerance = (grasp_position_tolerance_m(item["world_T_cad"], item["cad_extent_m"])
+                         if item.get("cad_extent_m") is not None else .008)
+            observation = pick_object(environment, observation, grasp, record_step,
+                                      position_tolerance_m=tolerance)
+        elif action["action"] == "insert":
+            from .nist_assembly import insert_object
+            observation = insert_object(environment, observation, objects[action["object_id"]],
+                                        objects[action["destination_id"]], record_step)
         else:
             destination = objects[action["destination_id"]]["centroid_world_m"]
             observation = place_object(environment, observation, grasp, destination, record_step)

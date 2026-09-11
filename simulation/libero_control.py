@@ -201,6 +201,7 @@ def move_eef_to_pose(
     tolerance_m=0.008,
     orientation_tolerance_rad=0.06,
     max_steps=180,
+    compensate_position_bias=False,
 ):
     """Move robosuite's grip-site frame to a world-frame SE(3) target."""
     from robosuite.utils.control_utils import orientation_error
@@ -225,8 +226,17 @@ def move_eef_to_pose(
         )
 
     stable_steps = 0
+    position_bias = np.zeros(3)
     for step_index in range(max_steps):
-        action = _pose_action(environment, observation, target_position, target_rotation, gripper_action)
+        if compensate_position_bias:
+            # Remove small loaded-hand steady-state error using proprioception.
+            # Convergence is still checked against the original target below.
+            error = target_position - np.asarray(observation["robot0_eef_pos"])
+            if np.linalg.norm(error) < .003:
+                position_bias += .15 * error
+                position_bias *= min(1., .002 / max(np.linalg.norm(position_bias), 1e-12))
+        action = _pose_action(environment, observation, target_position + position_bias,
+                              target_rotation, gripper_action)
         observation, reward, done, info = environment.step(action)
         if callback is not None:
             callback(phase, step_index, observation, action, reward, done, info)
@@ -292,7 +302,19 @@ def execute_top_grasp_and_place(
     return place_object(environment, observation, world_T_grasp, place_xyz_m, callback)
 
 
-def pick_object(environment, observation, world_T_grasp, callback=None):
+def grasp_position_tolerance_m(world_T_cad, cad_extent_m):
+    """Use a precise final approach for narrow, upright CAD geometry."""
+    rotation = np.asarray(world_T_cad)[:3, :3]
+    extent = np.asarray(cad_extent_m)
+    up = int(np.argmax(np.abs(rotation[2])))
+    width = float(np.max(np.delete(extent, up)))
+    narrow_upright = (abs(rotation[2, up]) >= .99 and width <= .020
+                      and extent[up] >= 2 * width)
+    return .001 if narrow_upright else .008
+
+
+def pick_object(environment, observation, world_T_grasp, callback=None, *,
+                position_tolerance_m=.008):
     """Approach, close, and lift using a perception-derived grip-site pose."""
     grasp_pose = np.asarray(world_T_grasp, dtype=float)
     if grasp_pose.shape != (4, 4) or not np.all(np.isfinite(grasp_pose)):
@@ -320,6 +342,7 @@ def pick_object(environment, observation, world_T_grasp, callback=None):
         OPEN_GRIPPER,
         "descend_to_target",
         callback,
+        tolerance_m=position_tolerance_m,
     )
     observation = hold_gripper(
         environment, observation, CLOSE_GRIPPER, "close_gripper", 30, callback
