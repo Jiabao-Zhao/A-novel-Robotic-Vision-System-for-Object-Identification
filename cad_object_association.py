@@ -43,6 +43,20 @@ def load_dino_encoder():
     return model.to(device)
 
 
+def letterbox_rgb(image):
+    """Return the exact 224x224 RGB canvas used before DINO normalization."""
+    height, width = image.shape[:2]
+    if height == 0 or width == 0:
+        raise ValueError("DINOv2 requires a nonempty RGB image.")
+    scale = IMAGE_SIZE / max(height, width)
+    resized = cv2.resize(image, (max(1, round(width * scale)), max(1, round(height * scale))),
+                         interpolation=cv2.INTER_CUBIC)
+    canvas = np.full((IMAGE_SIZE, IMAGE_SIZE, 3), 255, dtype=np.uint8)
+    y, x = (IMAGE_SIZE - resized.shape[0]) // 2, (IMAGE_SIZE - resized.shape[1]) // 2
+    canvas[y:y + resized.shape[0], x:x + resized.shape[1]] = resized
+    return canvas
+
+
 def extract_dino_features(images):
     """Identical RGB letterboxing/normalization for CAD views and observed crops."""
     import torch
@@ -50,15 +64,7 @@ def extract_dino_features(images):
     model = load_dino_encoder()
     tensors = []
     for image in images:
-        height, width = image.shape[:2]
-        if height == 0 or width == 0:
-            raise ValueError("DINOv2 requires a nonempty RGB image.")
-        scale = IMAGE_SIZE / max(height, width)
-        resized = cv2.resize(image, (max(1, round(width * scale)), max(1, round(height * scale))),
-                             interpolation=cv2.INTER_CUBIC)
-        canvas = np.full((IMAGE_SIZE, IMAGE_SIZE, 3), 255, dtype=np.uint8)
-        y, x = (IMAGE_SIZE - resized.shape[0]) // 2, (IMAGE_SIZE - resized.shape[1]) // 2
-        canvas[y:y + resized.shape[0], x:x + resized.shape[1]] = resized
+        canvas = letterbox_rgb(image)
         normalized = (canvas.astype(np.float32) / 255 - [0.485, 0.456, 0.406]) / [0.229, 0.224, 0.225]
         tensors.append(torch.from_numpy(normalized.transpose(2, 0, 1).astype(np.float32)))
     # Small batches bound CPU memory; there is no training or gradient computation.
