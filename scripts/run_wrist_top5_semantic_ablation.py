@@ -35,11 +35,14 @@ def template_rotation(direction):
     return np.stack((right, -up, -direction))
 
 
-def score_view_similarities(cad_id, similarities):
+def score_view_similarities(cad_id, similarities, template_rotations=None):
     """Mean the best five individual cosines; retain the single best template."""
     scores = np.asarray(similarities, dtype=float)
-    if scores.shape != (len(association.VIEW_DIRECTIONS),) or len(scores) < TOP_K:
-        raise ValueError("Expected one similarity for each of the 14 existing CAD views.")
+    if template_rotations is None:
+        template_rotations = [template_rotation(d) for d in association.VIEW_DIRECTIONS]
+    rotations = np.asarray(template_rotations, dtype=float)
+    if scores.shape != (len(rotations),) or len(scores) < TOP_K or rotations.shape != (len(scores), 3, 3):
+        raise ValueError("Expected one similarity and one 3x3 rotation per template, with at least five views.")
     if not np.isfinite(scores).all() or np.any(np.abs(scores) > 1):
         raise ValueError("Per-view cosines must be finite and in [-1, 1].")
     order = np.argsort(-scores, kind="stable")  # First saved view wins exact ties.
@@ -54,7 +57,7 @@ def score_view_similarities(cad_id, similarities):
         "top5_cosines": scores[top].tolist(),
         "best_view_index_1based": best + 1,
         "best_template_id": f"{cad_id}/view_{best + 1:02}",
-        "best_template_rotation_camera_from_cad": template_rotation(association.VIEW_DIRECTIONS[best]).tolist(),
+        "best_template_rotation_camera_from_cad": rotations[best].tolist(),
     }
 
 

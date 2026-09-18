@@ -24,6 +24,16 @@ class TopFiveSemanticTests(unittest.TestCase):
         self.assertEqual(result["top5_view_indices_1based"], [1, 2, 3, 4, 5])
         self.assertEqual(result["best_template_id"], "gear/view_01")
 
+    def test_42_views_return_supplied_rotation_and_top_five_individual_cosines(self):
+        rotations = np.tile(np.eye(3), (42, 1, 1))
+        rotations[41] = np.diag([-1., -1., 1.])
+        scores = [-.5] * 37 + [.5, .6, .7, .8, .9]
+        result = score_view_similarities("gear", scores, rotations)
+        self.assertAlmostEqual(result["semantic_score"], .7)
+        self.assertEqual(result["top5_view_indices_1based"], [42, 41, 40, 39, 38])
+        self.assertEqual(result["best_template_id"], "gear/view_42")
+        np.testing.assert_array_equal(result["best_template_rotation_camera_from_cad"], rotations[41])
+
     def test_rotation_matches_renderer_axes_for_all_views(self):
         for direction in association.VIEW_DIRECTIONS:
             direction = direction / np.linalg.norm(direction)
