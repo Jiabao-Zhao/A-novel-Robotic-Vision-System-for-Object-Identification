@@ -35,11 +35,16 @@ def main():
         scale = 1 / (2 * radius)
         obj.set_scale([scale] * 3)
         obj.set_location(-center * scale)
-        material = bproc.material.create(item["cad_id"])
-        material.set_principled_shader_value("Base Color", [*item["base_color_rgb"], 1.])
-        material.set_principled_shader_value("Roughness", .5)
-        material.set_principled_shader_value("Metallic", 0.)
-        obj.set_material(0, material)
+        if item.get("texture_vflip", False):
+            # Match MuJoCo's texture vflip for Open3D-exported tool assets.
+            for loop in obj.blender_obj.data.uv_layers.active.data:
+                loop.uv[1] = 1 - loop.uv[1]
+        if not item.get("preserve_materials", False):
+            material = bproc.material.create(item["cad_id"])
+            material.set_principled_shader_value("Base Color", [*item["base_color_rgb"], 1.])
+            material.set_principled_shader_value("Roughness", .5)
+            material.set_principled_shader_value("Metallic", 0.)
+            obj.set_material(0, material)
         bproc.camera.set_intrinsics_from_blender_params(
             lens=.691111, image_width=512, image_height=512, lens_unit="FOV")
         bproc.renderer.set_max_amount_of_samples(50)

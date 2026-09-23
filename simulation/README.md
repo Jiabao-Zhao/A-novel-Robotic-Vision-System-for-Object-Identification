@@ -1,5 +1,36 @@
 # LIBERO RGB-D bridge
 
+## Industrial workbench preview
+
+Run `python -m scripts.capture_industrial_workbench` in the existing WSL EGL
+environment to inspect a 1.30 by 1.00 m workbench, 0.85 m above the floor.
+The tabletop remains at world Z=0 so the existing robot base and wrist observation
+pose retain their relationship to the support surface. These are designed scene
+dimensions, not physical calibration values. A diffuse overhead task light
+illuminates the inspection area.
+
+The preview contains 16 separated parts: the repository Cable Shark; three NIST
+gears; NIST M8/M12/M16 nuts; waterproof, D-sub, USB and BNC connectors; round and
+rectangular pins; and a screwdriver, drill and tape measure replacing the three
+representative ring-shaped parts. The screwdriver and drill use the textured
+Google 16k scans from [YCB](https://ycb-benchmarks.s3.amazonaws.com/index.html)
+(Calli et al., CC BY 4.0). The tape measure is LonesomeDucky's CC0 authored model
+from [Tool Pack 1](https://opengameart.org/content/tool-pack-1), not a measured
+physical product. Original base-color textures and native metric dimensions are
+retained; tools are not scaled down to fit the inspection grid. Downloads,
+converted meshes, textures, transforms and provenance stay in ignored outputs.
+The existing Open3D importer handles conversion without additional packages.
+NIST/Cable Shark materials and convex tool collisions are illustrative. This
+setup does not validate assembly mechanics or real depth-sensor behavior on metal.
+
+The script saves native 3840-square wrist RGB-D, camera calibration, simulator
+state, evaluation-only object poses and a separate workbench overview under
+`outputs/simulation/industrial_workbench/`. It checks that the settled meshes
+rest on the support and project within the wrist image. It does not run
+localization, SAM, feature extraction, association, or robot pickup. The grid
+is for asset inspection, not a benchmark split. Branch order and fusion weights
+remain undecided pending separately defined development and test scenes.
+
 ## NIST Task Board #1 custom scene
 
 The custom scene uses the official NIST Task Board #1 STL geometry, a fixed

@@ -8,7 +8,7 @@ import xml.etree.ElementTree as ET
 import numpy as np
 
 from .nist_task_board_1 import (NistTaskBoardEnvironment, prepare_assets, _values,
-                              BOARD_CENTER_XY_M, BOARD_SIZE_M, FLOOR_Z_M)
+                              BOARD_CENTER_XY_M, BOARD_SIZE_M, FLOOR_Z_M, PARTS)
 
 
 CAMERA = "robot0_eye_in_hand"
@@ -161,7 +161,7 @@ def replace_gear_collision(model, name, cad_path):
 
 def make_environment(catalog, placements, image_size=768, additional_scene=None):
     common_parts = tuple(name for name, record in catalog.items() if "asset_relative_path" in record)
-    added_parts = tuple(name for name in catalog if name not in (*NIST_PARTS, *common_parts))
+    added_parts = tuple(name for name in catalog if name not in (*PARTS, *common_parts))
     def add_shapes(model):
         for name, record in catalog.items():
             if record.get("collision_model") == "separate_lower_section_and_hub":
@@ -188,13 +188,22 @@ def make_environment(catalog, placements, image_size=768, additional_scene=None)
                 pos=_values([*placement["xy_m"], extent[2]/2 + .001]),
                 quat=_values([np.cos(angle), 0, 0, np.sin(angle)]))
             ET.SubElement(body, "freejoint", name=f"{name}_joint")
-            ET.SubElement(model.asset, "mesh", name=name, file=catalog[name]["cad_path"])
+            ET.SubElement(model.asset, "mesh", name=name,
+                          file=catalog[name].get("visual_mesh_path", catalog[name]["cad_path"]))
             color = _values(catalog[name].get("visual_rgba", ADDED_COLORS.get(name, [.55, .59, .63, 1.])))
-            ET.SubElement(body, "geom", name=f"{name}_visual", type="mesh", mesh=name,
-                          rgba=color, contype="0", conaffinity="0", group="1", mass="0")
+            visual = ET.SubElement(body, "geom", name=f"{name}_visual", type="mesh", mesh=name,
+                                   rgba=color, contype="0", conaffinity="0", group="1", mass="0")
+            if "texture_path" in catalog[name]:
+                # OBJ UVs use a bottom-left origin; image files use top-left.
+                ET.SubElement(model.asset, "texture", name=f"{name}_texture", type="2d",
+                              file=catalog[name]["texture_path"], vflip="true")
+                ET.SubElement(model.asset, "material", name=f"{name}_material",
+                              texture=f"{name}_texture", specular=".1", shininess=".1")
+                visual.attrib.pop("rgba")
+                visual.set("material", f"{name}_material")
             common = {"group": "0", "density": "1800", "friction": "0.8 0.005 0.0001"}
-            if name == "cable_shark_device":
-                # Preserve replay of historical catalogs that included this object.
+            if name == "cable_shark_device" or catalog[name].get("collision_model") == "convex_mesh":
+                # MuJoCo uses the mesh's convex hull for collision detection.
                 ET.SubElement(body, "geom", name=f"{name}_collision", type="mesh",
                               mesh=name, **common)
             elif name in ("bearing", "pulley", "spacer"):
@@ -217,7 +226,7 @@ def make_environment(catalog, placements, image_size=768, additional_scene=None)
                               size=_values(extent/2), **common)
         if additional_scene is not None:
             additional_scene(model)
-    nist_parts = tuple(name for name in NIST_PARTS if name in catalog)
+    nist_parts = tuple(name for name in dict.fromkeys((*NIST_PARTS, *PARTS)) if name in catalog)
     original_names = (*nist_parts, *common_parts)
     env = NistTaskBoardEnvironment(parts=nist_parts, common_parts=common_parts,
         placements={name: placements[name] for name in original_names},

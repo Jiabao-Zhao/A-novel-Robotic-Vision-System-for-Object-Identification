@@ -30,7 +30,7 @@ GEOM_FIELDS = ("geom_type", "geom_dataid", "geom_matid", "geom_rgba", "geom_size
                "geom_pos", "geom_quat", "geom_rbound", "geom_sameframe", "geom_aabb")
 
 
-def visible_mask(sim, geom_id, mask_context):
+def visible_mask(sim, geom_id, mask_context, image_size=768):
     """Read ID colors without multisampling, which can blend IDs at edges."""
     context = sim._render_context_offscreen
     site_groups = context.vopt.sitegroup.copy()
@@ -41,10 +41,10 @@ def visible_mask(sim, geom_id, mask_context):
     flags = context.scn.flags.copy()
     context.scn.flags[mujoco.mjtRndFlag.mjRND_SEGMENT] = True
     context.scn.flags[mujoco.mjtRndFlag.mjRND_IDCOLOR] = True
-    viewport = mujoco.MjrRect(0, 0, 768, 768)
+    viewport = mujoco.MjrRect(0, 0, image_size, image_size)
     mujoco.mjr_setBuffer(mujoco.mjtFramebuffer.mjFB_OFFSCREEN, mask_context)
     mujoco.mjr_render(viewport, context.scn, mask_context)
-    encoded = np.empty((768, 768, 3), dtype=np.uint8)
+    encoded = np.empty((image_size, image_size, 3), dtype=np.uint8)
     mujoco.mjr_readPixels(encoded, None, viewport, mask_context)
     context.scn.flags[:] = flags
     mujoco.mjr_setBuffer(mujoco.mjtFramebuffer.mjFB_OFFSCREEN, context.con)

@@ -24,24 +24,57 @@ def box_iou(a, b):
     return overlap / (area(a) + area(b) - overlap)
 
 
-def surface_scores(depth, observed_mask, rendered_depth, K, pixel_offset=.5):
-    """Depths are optical-axis Z in meters. Unknown depth supplies no contradiction.
-
-    A closer non-target measurement can externally occlude CAD; a target pixel
-    cannot hide its own incorrectly posed CAD. Full rendered support is supplied
-    by the caller, including protrusions outside the observation mask.
-    """
+def visible_support(depth, observed_mask, rendered_depth):
+    """Retain assessable first-hit CAD pixels, including unsupported protrusions."""
     valid = np.isfinite(depth) & (depth > 0)
     observed = observed_mask.astype(bool) & valid
     rendered = np.isfinite(rendered_depth) & (rendered_depth > 0)
     occluded = rendered & valid & ~observed & (depth < rendered_depth - OCCLUSION_M)
     assessable = rendered & valid & ~occluded
-    intersection = observed & assessable
     union = observed | assessable
     counts = {"observed_pixels": int(observed.sum()), "rendered_pixels": int(rendered.sum()),
               "externally_occluded_pixels": int(occluded.sum()),
-              "unknown_rendered_pixels": int((rendered & ~valid).sum()),
-              "assessable_rendered_pixels": int(assessable.sum()), "union_pixels": int(union.sum())}
+               "unknown_rendered_pixels": int((rendered & ~valid).sum()),
+               "assessable_rendered_pixels": int(assessable.sum()), "union_pixels": int(union.sum())}
+    return observed, assessable, counts
+
+
+def equal_penalty_scores(depth, observed_mask, rendered_depth):
+    """User-specified mean of two union penalties and mean clipped Z error.
+
+    Keep the existing visibility policy. With no intersection the depth mean is
+    undefined, so the score is unavailable rather than assigned a fallback.
+    SIGMA_M is a depth-error scale, not a downsampling operation.
+    """
+    observed, cad, counts = visible_support(depth, observed_mask, rendered_depth)
+    intersection = observed & cad
+    union_count = counts["union_pixels"]
+    observed_only = int((observed & ~cad).sum())
+    cad_only = int((cad & ~observed).sum())
+    result = {**counts, "intersection_pixels": int(intersection.sum()),
+              "observed_only_pixels": observed_only, "cad_only_pixels": cad_only,
+              "p_obs": observed_only / union_count if union_count else None,
+              "p_cad": cad_only / union_count if union_count else None,
+              "p_depth": None, "geometry_score": None}
+    if not observed.any():
+        return {**result, "status": "unassessable"}
+    if not intersection.any():
+        return {**result, "status": "no_overlap"}
+    residual = np.abs(depth[intersection] - rendered_depth[intersection])
+    result["p_depth"] = float(np.minimum(residual / SIGMA_M, 1.).mean())
+    result["geometry_score"] = 1. - (result["p_obs"] + result["p_cad"] + result["p_depth"]) / 3.
+    return {**result, "status": "assessable"}
+
+
+def surface_scores(depth, observed_mask, rendered_depth, K, pixel_offset=.5):
+    """Original mask/depth agreement; depth residuals are camera-ray distances.
+
+    A closer non-target measurement can externally occlude CAD; a target pixel
+    cannot hide its own incorrectly posed CAD. Unknown depth is not evidence.
+    """
+    observed, assessable, counts = visible_support(depth, observed_mask, rendered_depth)
+    intersection = observed & assessable
+    union = observed | assessable
     if not observed.any() or not union.any():
         return {**counts, "status": "unassessable", "box_iou": None, "mask_iou": None, "surface_score": None}
     y, x = np.nonzero(intersection)
