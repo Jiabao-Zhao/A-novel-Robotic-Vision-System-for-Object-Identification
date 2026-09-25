@@ -1,0 +1,792 @@
+{
+  "names": {
+    "Gear_Large": "Large gear",
+    "Gear_Medium": "Medium gear",
+    "Gear_Small": "Small gear",
+    "Waterproof_Male": "Waterproof connector",
+    "M12_Hex_Nut": "M12 hex nut",
+    "M16_Hex_Nut": "M16 hex nut",
+    "RGOCG16-50_16mm": "16 mm round pin",
+    "RGOCG12-50_12mm": "12 mm round pin",
+    "RGOCG8-50_8mm": "8 mm round pin",
+    "USB_Male": "USB connector + cable",
+    "DSUB_Male": "DSUB connector"
+  },
+  "prompts": {
+    "Gear_Large": {
+      "condition": "original inventory",
+      "system_prompt": "You compare a cropped image of a physical object with reference\ndescriptions derived from multiple views of one CAD model.\n\nJudge the association using only evidence visible in the image.\nThe descriptions define the target object; they do not establish\nthat the candidate is that object.\n\nReturn exactly one label: A, B, or C.\nDo not output an explanation or a numerical confidence.\n",
+      "user_prompt": "[Task]\nDetermine whether the candidate object in the attached crop is\nvisually consistent with the target CAD object.\n\n[Target CAD descriptions]\nThe following descriptions refer to the SAME object viewed from\ndifferent angles, not to different objects.\n\n- Large gear: White gear with raised hub\n- Large gear: white gear with central hole\n\n[Color and appearance]\nThe colors in the CAD descriptions accurately represent the physical\ntarget object. Use them as reliable reference information.\n\nCompare the candidate's visible colors, their spatial distribution,\nand their association with specific features or components.\n\nAllow reasonable appearance differences from lighting, shadows,\nand reflections. However, a clearly incompatible color on a visible\ncorresponding surface is evidence against a match.\n\nMatching color alone is insufficient when the shape or distinctive\nstructural features contradict the description.\n\n[Comparison rules]\n1. Compare the visible overall shape, relative proportions, and\n   distinctive features, such as holes, teeth, slots, protrusions,\n   and their spatial arrangement.\n\n2. Account for changes in viewpoint, perspective, lighting, and\n   partial occlusion. Features described from different CAD views\n   do not all need to be visible in this crop.\n\n3. Distinguish a feature that is not visible from a feature that is\n   visibly absent. Treat absence as a contradiction only when the\n   relevant surface or boundary is clearly visible at sufficient\n   image detail.\n\n4. Do not invent hidden features. Matching only a generic color or\n   basic shape is not enough when distinctive features cannot be\n   assessed.\n\n5. Judge whether one plausible view of the target object explains\n   the visible features together. Do not explain different features\n   using mutually incompatible object orientations.\n\n6. Evaluate the candidate object, not background pixels or nearby\n   objects. Do not infer absolute physical dimensions from crop\n   size alone.\n\n[Decision labels]\nA: MATCH SUPPORTED\nVisible distinctive features support the association, and there is\nno clear contradiction in the observable features.\n\nB: MISMATCH SUPPORTED\nAt least one clearly observable, reliable feature contradicts the\ntarget description in a way that viewpoint, occlusion, or lighting\ncannot reasonably explain.\n\nC: INSUFFICIENT EVIDENCE\nThe visible evidence is inadequate or ambiguous, so neither a match\nnor a mismatch is sufficiently supported.\n\n[Output]\nReturn exactly A, B, or C.\n"
+    },
+    "Gear_Medium": {
+      "condition": "original inventory",
+      "system_prompt": "You compare a cropped image of a physical object with reference\ndescriptions derived from multiple views of one CAD model.\n\nJudge the association using only evidence visible in the image.\nThe descriptions define the target object; they do not establish\nthat the candidate is that object.\n\nReturn exactly one label: A, B, or C.\nDo not output an explanation or a numerical confidence.\n",
+      "user_prompt": "[Task]\nDetermine whether the candidate object in the attached crop is\nvisually consistent with the target CAD object.\n\n[Target CAD descriptions]\nThe following descriptions refer to the SAME object viewed from\ndifferent angles, not to different objects.\n\n- Medium gear: white gear with raised hub\n- Medium gear: white gear with central hole\n\n[Color and appearance]\nThe colors in the CAD descriptions accurately represent the physical\ntarget object. Use them as reliable reference information.\n\nCompare the candidate's visible colors, their spatial distribution,\nand their association with specific features or components.\n\nAllow reasonable appearance differences from lighting, shadows,\nand reflections. However, a clearly incompatible color on a visible\ncorresponding surface is evidence against a match.\n\nMatching color alone is insufficient when the shape or distinctive\nstructural features contradict the description.\n\n[Comparison rules]\n1. Compare the visible overall shape, relative proportions, and\n   distinctive features, such as holes, teeth, slots, protrusions,\n   and their spatial arrangement.\n\n2. Account for changes in viewpoint, perspective, lighting, and\n   partial occlusion. Features described from different CAD views\n   do not all need to be visible in this crop.\n\n3. Distinguish a feature that is not visible from a feature that is\n   visibly absent. Treat absence as a contradiction only when the\n   relevant surface or boundary is clearly visible at sufficient\n   image detail.\n\n4. Do not invent hidden features. Matching only a generic color or\n   basic shape is not enough when distinctive features cannot be\n   assessed.\n\n5. Judge whether one plausible view of the target object explains\n   the visible features together. Do not explain different features\n   using mutually incompatible object orientations.\n\n6. Evaluate the candidate object, not background pixels or nearby\n   objects. Do not infer absolute physical dimensions from crop\n   size alone.\n\n[Decision labels]\nA: MATCH SUPPORTED\nVisible distinctive features support the association, and there is\nno clear contradiction in the observable features.\n\nB: MISMATCH SUPPORTED\nAt least one clearly observable, reliable feature contradicts the\ntarget description in a way that viewpoint, occlusion, or lighting\ncannot reasonably explain.\n\nC: INSUFFICIENT EVIDENCE\nThe visible evidence is inadequate or ambiguous, so neither a match\nnor a mismatch is sufficiently supported.\n\n[Output]\nReturn exactly A, B, or C.\n"
+    },
+    "Gear_Small": {
+      "condition": "original inventory",
+      "system_prompt": "You compare a cropped image of a physical object with reference\ndescriptions derived from multiple views of one CAD model.\n\nJudge the association using only evidence visible in the image.\nThe descriptions define the target object; they do not establish\nthat the candidate is that object.\n\nReturn exactly one label: A, B, or C.\nDo not output an explanation or a numerical confidence.\n",
+      "user_prompt": "[Task]\nDetermine whether the candidate object in the attached crop is\nvisually consistent with the target CAD object.\n\n[Target CAD descriptions]\nThe following descriptions refer to the SAME object viewed from\ndifferent angles, not to different objects.\n\n- Small gear: white gear with raised hub\n- Small gear: white gear with central hole\n\n[Color and appearance]\nThe colors in the CAD descriptions accurately represent the physical\ntarget object. Use them as reliable reference information.\n\nCompare the candidate's visible colors, their spatial distribution,\nand their association with specific features or components.\n\nAllow reasonable appearance differences from lighting, shadows,\nand reflections. However, a clearly incompatible color on a visible\ncorresponding surface is evidence against a match.\n\nMatching color alone is insufficient when the shape or distinctive\nstructural features contradict the description.\n\n[Comparison rules]\n1. Compare the visible overall shape, relative proportions, and\n   distinctive features, such as holes, teeth, slots, protrusions,\n   and their spatial arrangement.\n\n2. Account for changes in viewpoint, perspective, lighting, and\n   partial occlusion. Features described from different CAD views\n   do not all need to be visible in this crop.\n\n3. Distinguish a feature that is not visible from a feature that is\n   visibly absent. Treat absence as a contradiction only when the\n   relevant surface or boundary is clearly visible at sufficient\n   image detail.\n\n4. Do not invent hidden features. Matching only a generic color or\n   basic shape is not enough when distinctive features cannot be\n   assessed.\n\n5. Judge whether one plausible view of the target object explains\n   the visible features together. Do not explain different features\n   using mutually incompatible object orientations.\n\n6. Evaluate the candidate object, not background pixels or nearby\n   objects. Do not infer absolute physical dimensions from crop\n   size alone.\n\n[Decision labels]\nA: MATCH SUPPORTED\nVisible distinctive features support the association, and there is\nno clear contradiction in the observable features.\n\nB: MISMATCH SUPPORTED\nAt least one clearly observable, reliable feature contradicts the\ntarget description in a way that viewpoint, occlusion, or lighting\ncannot reasonably explain.\n\nC: INSUFFICIENT EVIDENCE\nThe visible evidence is inadequate or ambiguous, so neither a match\nnor a mismatch is sufficiently supported.\n\n[Output]\nReturn exactly A, B, or C.\n"
+    },
+    "Waterproof_Male": {
+      "condition": "everyday name",
+      "system_prompt": "You compare a cropped image of a physical object with reference\ndescriptions derived from multiple views of one CAD model.\n\nJudge the association using only evidence visible in the image.\nThe descriptions define the target object; they do not establish\nthat the candidate is that object.\n\nReturn exactly one label: A, B, or C.\nDo not output an explanation or a numerical confidence.\n",
+      "user_prompt": "[Task]\nDetermine whether the candidate object in the attached crop is\nvisually consistent with the target CAD object.\n\n[Target CAD descriptions]\nThe following descriptions refer to the SAME object viewed from\ndifferent angles, not to different objects.\n\n- Connector block: Connector block\n- Connector block: Rectangular connector with holes\n- Connector block: Electrical connector with round holes\n\n[Color and appearance]\nThe colors in the CAD descriptions accurately represent the physical\ntarget object. Use them as reliable reference information.\n\nCompare the candidate's visible colors, their spatial distribution,\nand their association with specific features or components.\n\nAllow reasonable appearance differences from lighting, shadows,\nand reflections. However, a clearly incompatible color on a visible\ncorresponding surface is evidence against a match.\n\nMatching color alone is insufficient when the shape or distinctive\nstructural features contradict the description.\n\n[Comparison rules]\n1. Compare the visible overall shape, relative proportions, and\n   distinctive features, such as holes, teeth, slots, protrusions,\n   and their spatial arrangement.\n\n2. Account for changes in viewpoint, perspective, lighting, and\n   partial occlusion. Features described from different CAD views\n   do not all need to be visible in this crop.\n\n3. Distinguish a feature that is not visible from a feature that is\n   visibly absent. Treat absence as a contradiction only when the\n   relevant surface or boundary is clearly visible at sufficient\n   image detail.\n\n4. Do not invent hidden features. Matching only a generic color or\n   basic shape is not enough when distinctive features cannot be\n   assessed.\n\n5. Judge whether one plausible view of the target object explains\n   the visible features together. Do not explain different features\n   using mutually incompatible object orientations.\n\n6. Evaluate the candidate object, not background pixels or nearby\n   objects. Do not infer absolute physical dimensions from crop\n   size alone.\n\n[Decision labels]\nA: MATCH SUPPORTED\nVisible distinctive features support the association, and there is\nno clear contradiction in the observable features.\n\nB: MISMATCH SUPPORTED\nAt least one clearly observable, reliable feature contradicts the\ntarget description in a way that viewpoint, occlusion, or lighting\ncannot reasonably explain.\n\nC: INSUFFICIENT EVIDENCE\nThe visible evidence is inadequate or ambiguous, so neither a match\nnor a mismatch is sufficiently supported.\n\n[Output]\nReturn exactly A, B, or C.\n"
+    },
+    "M12_Hex_Nut": {
+      "condition": "original inventory",
+      "system_prompt": "You compare a cropped image of a physical object with reference\ndescriptions derived from multiple views of one CAD model.\n\nJudge the association using only evidence visible in the image.\nThe descriptions define the target object; they do not establish\nthat the candidate is that object.\n\nReturn exactly one label: A, B, or C.\nDo not output an explanation or a numerical confidence.\n",
+      "user_prompt": "[Task]\nDetermine whether the candidate object in the attached crop is\nvisually consistent with the target CAD object.\n\n[Target CAD descriptions]\nThe following descriptions refer to the SAME object viewed from\ndifferent angles, not to different objects.\n\n- M12 hex nut: Gray hex nut with central hole\n- M12 hex nut: Gray hexagonal nut\n\n[Color and appearance]\nThe colors in the CAD descriptions accurately represent the physical\ntarget object. Use them as reliable reference information.\n\nCompare the candidate's visible colors, their spatial distribution,\nand their association with specific features or components.\n\nAllow reasonable appearance differences from lighting, shadows,\nand reflections. However, a clearly incompatible color on a visible\ncorresponding surface is evidence against a match.\n\nMatching color alone is insufficient when the shape or distinctive\nstructural features contradict the description.\n\n[Comparison rules]\n1. Compare the visible overall shape, relative proportions, and\n   distinctive features, such as holes, teeth, slots, protrusions,\n   and their spatial arrangement.\n\n2. Account for changes in viewpoint, perspective, lighting, and\n   partial occlusion. Features described from different CAD views\n   do not all need to be visible in this crop.\n\n3. Distinguish a feature that is not visible from a feature that is\n   visibly absent. Treat absence as a contradiction only when the\n   relevant surface or boundary is clearly visible at sufficient\n   image detail.\n\n4. Do not invent hidden features. Matching only a generic color or\n   basic shape is not enough when distinctive features cannot be\n   assessed.\n\n5. Judge whether one plausible view of the target object explains\n   the visible features together. Do not explain different features\n   using mutually incompatible object orientations.\n\n6. Evaluate the candidate object, not background pixels or nearby\n   objects. Do not infer absolute physical dimensions from crop\n   size alone.\n\n[Decision labels]\nA: MATCH SUPPORTED\nVisible distinctive features support the association, and there is\nno clear contradiction in the observable features.\n\nB: MISMATCH SUPPORTED\nAt least one clearly observable, reliable feature contradicts the\ntarget description in a way that viewpoint, occlusion, or lighting\ncannot reasonably explain.\n\nC: INSUFFICIENT EVIDENCE\nThe visible evidence is inadequate or ambiguous, so neither a match\nnor a mismatch is sufficiently supported.\n\n[Output]\nReturn exactly A, B, or C.\n"
+    },
+    "M16_Hex_Nut": {
+      "condition": "original inventory",
+      "system_prompt": "You compare a cropped image of a physical object with reference\ndescriptions derived from multiple views of one CAD model.\n\nJudge the association using only evidence visible in the image.\nThe descriptions define the target object; they do not establish\nthat the candidate is that object.\n\nReturn exactly one label: A, B, or C.\nDo not output an explanation or a numerical confidence.\n",
+      "user_prompt": "[Task]\nDetermine whether the candidate object in the attached crop is\nvisually consistent with the target CAD object.\n\n[Target CAD descriptions]\nThe following descriptions refer to the SAME object viewed from\ndifferent angles, not to different objects.\n\n- M16 hex nut: Gray hex nut with central opening\n- M16 hex nut: Gray hexagonal nut\n\n[Color and appearance]\nThe colors in the CAD descriptions accurately represent the physical\ntarget object. Use them as reliable reference information.\n\nCompare the candidate's visible colors, their spatial distribution,\nand their association with specific features or components.\n\nAllow reasonable appearance differences from lighting, shadows,\nand reflections. However, a clearly incompatible color on a visible\ncorresponding surface is evidence against a match.\n\nMatching color alone is insufficient when the shape or distinctive\nstructural features contradict the description.\n\n[Comparison rules]\n1. Compare the visible overall shape, relative proportions, and\n   distinctive features, such as holes, teeth, slots, protrusions,\n   and their spatial arrangement.\n\n2. Account for changes in viewpoint, perspective, lighting, and\n   partial occlusion. Features described from different CAD views\n   do not all need to be visible in this crop.\n\n3. Distinguish a feature that is not visible from a feature that is\n   visibly absent. Treat absence as a contradiction only when the\n   relevant surface or boundary is clearly visible at sufficient\n   image detail.\n\n4. Do not invent hidden features. Matching only a generic color or\n   basic shape is not enough when distinctive features cannot be\n   assessed.\n\n5. Judge whether one plausible view of the target object explains\n   the visible features together. Do not explain different features\n   using mutually incompatible object orientations.\n\n6. Evaluate the candidate object, not background pixels or nearby\n   objects. Do not infer absolute physical dimensions from crop\n   size alone.\n\n[Decision labels]\nA: MATCH SUPPORTED\nVisible distinctive features support the association, and there is\nno clear contradiction in the observable features.\n\nB: MISMATCH SUPPORTED\nAt least one clearly observable, reliable feature contradicts the\ntarget description in a way that viewpoint, occlusion, or lighting\ncannot reasonably explain.\n\nC: INSUFFICIENT EVIDENCE\nThe visible evidence is inadequate or ambiguous, so neither a match\nnor a mismatch is sufficiently supported.\n\n[Output]\nReturn exactly A, B, or C.\n"
+    },
+    "RGOCG16-50_16mm": {
+      "condition": "original name",
+      "system_prompt": "You compare a cropped image of a physical object with reference\ndescriptions derived from multiple views of one CAD model.\n\nJudge the association using only evidence visible in the image.\nThe descriptions define the target object; they do not establish\nthat the candidate is that object.\n\nReturn exactly one label: A, B, or C.\nDo not output an explanation or a numerical confidence.\n",
+      "user_prompt": "[Task]\nDetermine whether the candidate object in the attached crop is\nvisually consistent with the target CAD object.\n\n[Target CAD descriptions]\nThe following descriptions refer to the SAME object viewed from\ndifferent angles, not to different objects.\n\n- 16 mm round pin: Cylindrical pin\n- 16 mm round pin: Gray round pin\n- 16 mm round pin: Elongated cylindrical pin\n\n[Color and appearance]\nThe colors in the CAD descriptions accurately represent the physical\ntarget object. Use them as reliable reference information.\n\nCompare the candidate's visible colors, their spatial distribution,\nand their association with specific features or components.\n\nAllow reasonable appearance differences from lighting, shadows,\nand reflections. However, a clearly incompatible color on a visible\ncorresponding surface is evidence against a match.\n\nMatching color alone is insufficient when the shape or distinctive\nstructural features contradict the description.\n\n[Comparison rules]\n1. Compare the visible overall shape, relative proportions, and\n   distinctive features, such as holes, teeth, slots, protrusions,\n   and their spatial arrangement.\n\n2. Account for changes in viewpoint, perspective, lighting, and\n   partial occlusion. Features described from different CAD views\n   do not all need to be visible in this crop.\n\n3. Distinguish a feature that is not visible from a feature that is\n   visibly absent. Treat absence as a contradiction only when the\n   relevant surface or boundary is clearly visible at sufficient\n   image detail.\n\n4. Do not invent hidden features. Matching only a generic color or\n   basic shape is not enough when distinctive features cannot be\n   assessed.\n\n5. Judge whether one plausible view of the target object explains\n   the visible features together. Do not explain different features\n   using mutually incompatible object orientations.\n\n6. Evaluate the candidate object, not background pixels or nearby\n   objects. Do not infer absolute physical dimensions from crop\n   size alone.\n\n[Decision labels]\nA: MATCH SUPPORTED\nVisible distinctive features support the association, and there is\nno clear contradiction in the observable features.\n\nB: MISMATCH SUPPORTED\nAt least one clearly observable, reliable feature contradicts the\ntarget description in a way that viewpoint, occlusion, or lighting\ncannot reasonably explain.\n\nC: INSUFFICIENT EVIDENCE\nThe visible evidence is inadequate or ambiguous, so neither a match\nnor a mismatch is sufficiently supported.\n\n[Output]\nReturn exactly A, B, or C.\n"
+    },
+    "RGOCG12-50_12mm": {
+      "condition": "original name",
+      "system_prompt": "You compare a cropped image of a physical object with reference\ndescriptions derived from multiple views of one CAD model.\n\nJudge the association using only evidence visible in the image.\nThe descriptions define the target object; they do not establish\nthat the candidate is that object.\n\nReturn exactly one label: A, B, or C.\nDo not output an explanation or a numerical confidence.\n",
+      "user_prompt": "[Task]\nDetermine whether the candidate object in the attached crop is\nvisually consistent with the target CAD object.\n\n[Target CAD descriptions]\nThe following descriptions refer to the SAME object viewed from\ndifferent angles, not to different objects.\n\n- 12 mm round pin: Cylindrical pin\n- 12 mm round pin: Gray round pin\n- 12 mm round pin: Elongated cylindrical pin\n\n[Color and appearance]\nThe colors in the CAD descriptions accurately represent the physical\ntarget object. Use them as reliable reference information.\n\nCompare the candidate's visible colors, their spatial distribution,\nand their association with specific features or components.\n\nAllow reasonable appearance differences from lighting, shadows,\nand reflections. However, a clearly incompatible color on a visible\ncorresponding surface is evidence against a match.\n\nMatching color alone is insufficient when the shape or distinctive\nstructural features contradict the description.\n\n[Comparison rules]\n1. Compare the visible overall shape, relative proportions, and\n   distinctive features, such as holes, teeth, slots, protrusions,\n   and their spatial arrangement.\n\n2. Account for changes in viewpoint, perspective, lighting, and\n   partial occlusion. Features described from different CAD views\n   do not all need to be visible in this crop.\n\n3. Distinguish a feature that is not visible from a feature that is\n   visibly absent. Treat absence as a contradiction only when the\n   relevant surface or boundary is clearly visible at sufficient\n   image detail.\n\n4. Do not invent hidden features. Matching only a generic color or\n   basic shape is not enough when distinctive features cannot be\n   assessed.\n\n5. Judge whether one plausible view of the target object explains\n   the visible features together. Do not explain different features\n   using mutually incompatible object orientations.\n\n6. Evaluate the candidate object, not background pixels or nearby\n   objects. Do not infer absolute physical dimensions from crop\n   size alone.\n\n[Decision labels]\nA: MATCH SUPPORTED\nVisible distinctive features support the association, and there is\nno clear contradiction in the observable features.\n\nB: MISMATCH SUPPORTED\nAt least one clearly observable, reliable feature contradicts the\ntarget description in a way that viewpoint, occlusion, or lighting\ncannot reasonably explain.\n\nC: INSUFFICIENT EVIDENCE\nThe visible evidence is inadequate or ambiguous, so neither a match\nnor a mismatch is sufficiently supported.\n\n[Output]\nReturn exactly A, B, or C.\n"
+    },
+    "RGOCG8-50_8mm": {
+      "condition": "original name",
+      "system_prompt": "You compare a cropped image of a physical object with reference\ndescriptions derived from multiple views of one CAD model.\n\nJudge the association using only evidence visible in the image.\nThe descriptions define the target object; they do not establish\nthat the candidate is that object.\n\nReturn exactly one label: A, B, or C.\nDo not output an explanation or a numerical confidence.\n",
+      "user_prompt": "[Task]\nDetermine whether the candidate object in the attached crop is\nvisually consistent with the target CAD object.\n\n[Target CAD descriptions]\nThe following descriptions refer to the SAME object viewed from\ndifferent angles, not to different objects.\n\n- 8 mm round pin: Cylindrical pin\n- 8 mm round pin: Gray round pin\n- 8 mm round pin: Elongated cylindrical pin\n\n[Color and appearance]\nThe colors in the CAD descriptions accurately represent the physical\ntarget object. Use them as reliable reference information.\n\nCompare the candidate's visible colors, their spatial distribution,\nand their association with specific features or components.\n\nAllow reasonable appearance differences from lighting, shadows,\nand reflections. However, a clearly incompatible color on a visible\ncorresponding surface is evidence against a match.\n\nMatching color alone is insufficient when the shape or distinctive\nstructural features contradict the description.\n\n[Comparison rules]\n1. Compare the visible overall shape, relative proportions, and\n   distinctive features, such as holes, teeth, slots, protrusions,\n   and their spatial arrangement.\n\n2. Account for changes in viewpoint, perspective, lighting, and\n   partial occlusion. Features described from different CAD views\n   do not all need to be visible in this crop.\n\n3. Distinguish a feature that is not visible from a feature that is\n   visibly absent. Treat absence as a contradiction only when the\n   relevant surface or boundary is clearly visible at sufficient\n   image detail.\n\n4. Do not invent hidden features. Matching only a generic color or\n   basic shape is not enough when distinctive features cannot be\n   assessed.\n\n5. Judge whether one plausible view of the target object explains\n   the visible features together. Do not explain different features\n   using mutually incompatible object orientations.\n\n6. Evaluate the candidate object, not background pixels or nearby\n   objects. Do not infer absolute physical dimensions from crop\n   size alone.\n\n[Decision labels]\nA: MATCH SUPPORTED\nVisible distinctive features support the association, and there is\nno clear contradiction in the observable features.\n\nB: MISMATCH SUPPORTED\nAt least one clearly observable, reliable feature contradicts the\ntarget description in a way that viewpoint, occlusion, or lighting\ncannot reasonably explain.\n\nC: INSUFFICIENT EVIDENCE\nThe visible evidence is inadequate or ambiguous, so neither a match\nnor a mismatch is sufficiently supported.\n\n[Output]\nReturn exactly A, B, or C.\n"
+    },
+    "USB_Male": {
+      "condition": "shadow-aware cable descriptions",
+      "system_prompt": "You compare a cropped image of a physical object with reference\ndescriptions derived from multiple views of one CAD model.\n\nJudge the association using only evidence visible in the image.\nThe descriptions define the target object; they do not establish\nthat the candidate is that object.\n\nReturn exactly one label: A, B, or C.\nDo not output an explanation or a numerical confidence.\n",
+      "user_prompt": "[Task]\nDetermine whether the candidate object in the attached crop is\nvisually consistent with the target CAD object.\n\n[Target CAD descriptions]\nThe following descriptions refer to the SAME object viewed from\ndifferent angles, not to different objects.\n\n- USB male connector: black USB cable\n- USB male connector: black cable\n- USB male connector: long wire\n\n[Color and appearance]\nThe colors in the CAD descriptions accurately represent the physical\ntarget object. Use them as reliable reference information.\n\nCompare the candidate's visible colors, their spatial distribution,\nand their association with specific features or components.\n\nAllow reasonable appearance differences from lighting, shadows,\nand reflections. However, a clearly incompatible color on a visible\ncorresponding surface is evidence against a match.\n\nMatching color alone is insufficient when the shape or distinctive\nstructural features contradict the description.\n\nDifferent faces of the same object may appear much brighter or darker\nbecause of lighting, shadows, or reflections. Do not assume a dark face\nis a separate component or color marking. Compare the overall outline,\nstraight edges, and visible faces. If lighting prevents reliable\nidentification, return C.\n\n[Comparison rules]\n1. Compare the visible overall shape, relative proportions, and\n   distinctive features, such as holes, teeth, slots, protrusions,\n   and their spatial arrangement.\n\n2. Account for changes in viewpoint, perspective, lighting, and\n   partial occlusion. Features described from different CAD views\n   do not all need to be visible in this crop.\n\n3. Distinguish a feature that is not visible from a feature that is\n   visibly absent. Treat absence as a contradiction only when the\n   relevant surface or boundary is clearly visible at sufficient\n   image detail.\n\n4. Do not invent hidden features. Matching only a generic color or\n   basic shape is not enough when distinctive features cannot be\n   assessed.\n\n5. Judge whether one plausible view of the target object explains\n   the visible features together. Do not explain different features\n   using mutually incompatible object orientations.\n\n6. Evaluate the candidate object, not background pixels or nearby\n   objects. Do not infer absolute physical dimensions from crop\n   size alone.\n\n[Decision labels]\nA: MATCH SUPPORTED\nVisible distinctive features support the association, and there is\nno clear contradiction in the observable features.\n\nB: MISMATCH SUPPORTED\nAt least one clearly observable, reliable feature contradicts the\ntarget description in a way that viewpoint, occlusion, or lighting\ncannot reasonably explain.\n\nC: INSUFFICIENT EVIDENCE\nThe visible evidence is inadequate or ambiguous, so neither a match\nnor a mismatch is sufficiently supported.\n\n[Output]\nReturn exactly A, B, or C.\n"
+    },
+    "DSUB_Male": {
+      "condition": "original inventory",
+      "system_prompt": "You compare a cropped image of a physical object with reference\ndescriptions derived from multiple views of one CAD model.\n\nJudge the association using only evidence visible in the image.\nThe descriptions define the target object; they do not establish\nthat the candidate is that object.\n\nReturn exactly one label: A, B, or C.\nDo not output an explanation or a numerical confidence.\n",
+      "user_prompt": "[Task]\nDetermine whether the candidate object in the attached crop is\nvisually consistent with the target CAD object.\n\n[Target CAD descriptions]\nThe following descriptions refer to the SAME object viewed from\ndifferent angles, not to different objects.\n\n- DSUB male connector: black rectangle connector\n\n[Color and appearance]\nThe colors in the CAD descriptions accurately represent the physical\ntarget object. Use them as reliable reference information.\n\nCompare the candidate's visible colors, their spatial distribution,\nand their association with specific features or components.\n\nAllow reasonable appearance differences from lighting, shadows,\nand reflections. However, a clearly incompatible color on a visible\ncorresponding surface is evidence against a match.\n\nMatching color alone is insufficient when the shape or distinctive\nstructural features contradict the description.\n\n[Comparison rules]\n1. Compare the visible overall shape, relative proportions, and\n   distinctive features, such as holes, teeth, slots, protrusions,\n   and their spatial arrangement.\n\n2. Account for changes in viewpoint, perspective, lighting, and\n   partial occlusion. Features described from different CAD views\n   do not all need to be visible in this crop.\n\n3. Distinguish a feature that is not visible from a feature that is\n   visibly absent. Treat absence as a contradiction only when the\n   relevant surface or boundary is clearly visible at sufficient\n   image detail.\n\n4. Do not invent hidden features. Matching only a generic color or\n   basic shape is not enough when distinctive features cannot be\n   assessed.\n\n5. Judge whether one plausible view of the target object explains\n   the visible features together. Do not explain different features\n   using mutually incompatible object orientations.\n\n6. Evaluate the candidate object, not background pixels or nearby\n   objects. Do not infer absolute physical dimensions from crop\n   size alone.\n\n[Decision labels]\nA: MATCH SUPPORTED\nVisible distinctive features support the association, and there is\nno clear contradiction in the observable features.\n\nB: MISMATCH SUPPORTED\nAt least one clearly observable, reliable feature contradicts the\ntarget description in a way that viewpoint, occlusion, or lighting\ncannot reasonably explain.\n\nC: INSUFFICIENT EVIDENCE\nThe visible evidence is inadequate or ambiguous, so neither a match\nnor a mismatch is sufficiently supported.\n\n[Output]\nReturn exactly A, B, or C.\n"
+    }
+  },
+  "crops": {
+    "original": [
+      {
+        "identity": "Gear_Large",
+        "proposal_id": 0,
+        "crop_file": "shadow-pin-usb-trial\\crops\\candidate_000.png",
+        "crop_sha256": "8643de8c1b1dcf74dc92d04cdefcfdc0735be5d7df1bdc7bdc7e077aadca78b3",
+        "roi": {
+          "x1": 2487,
+          "y1": 2331,
+          "x2": 2756,
+          "y2": 2598
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "Gear_Medium",
+        "proposal_id": 4,
+        "crop_file": "shadow-pin-usb-trial\\crops\\candidate_004.png",
+        "crop_sha256": "32184c8966576de2b036c51d8d5e7cd940e019617b393dc6403bb6f08a234392",
+        "roi": {
+          "x1": 2064,
+          "y1": 2374,
+          "x2": 2243,
+          "y2": 2556
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "Gear_Small",
+        "proposal_id": 7,
+        "crop_file": "shadow-pin-usb-trial\\crops\\candidate_007.png",
+        "crop_sha256": "12582ccd34fdba48126c0e1e0d71701e3ab31413538cfcbedfd42b8adf7e792c",
+        "roi": {
+          "x1": 1637,
+          "y1": 2414,
+          "x2": 1733,
+          "y2": 2514
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "Waterproof_Male",
+        "proposal_id": 1,
+        "crop_file": "shadow-pin-usb-trial\\crops\\candidate_001.png",
+        "crop_sha256": "41b585482c19ce36d3222b4ce188fedb570a2c64e3d131c84b65485afb23e2f0",
+        "roi": {
+          "x1": 1111,
+          "y1": 2336,
+          "x2": 1302,
+          "y2": 2621
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "M12_Hex_Nut",
+        "proposal_id": 13,
+        "crop_file": "shadow-pin-usb-trial\\crops\\candidate_013.png",
+        "crop_sha256": "38c0f98390b534a6792efcbe2e21a4c07ceeeea957ea1c15c814989186114245",
+        "roi": {
+          "x1": 2112,
+          "y1": 1952,
+          "x2": 2201,
+          "y2": 2044
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "M16_Hex_Nut",
+        "proposal_id": 9,
+        "crop_file": "shadow-pin-usb-trial\\crops\\candidate_009.png",
+        "crop_sha256": "4ba340c5f9b0438cf39ee0b2a365c9fca0767eaad2c4a4642c4a0ade665bff5c",
+        "roi": {
+          "x1": 1622,
+          "y1": 1941,
+          "x2": 1742,
+          "y2": 2054
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "RGOCG16-50_16mm",
+        "proposal_id": 5,
+        "crop_file": "shadow-pin-usb-trial\\crops\\candidate_005.png",
+        "crop_sha256": "2bfbdaf2da2c79be29d256e75f2c8aaa2cb945a635fb500fdd25fd9e5a47a015",
+        "roi": {
+          "x1": 2563,
+          "y1": 1406,
+          "x2": 2720,
+          "y2": 1633
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "RGOCG12-50_12mm",
+        "proposal_id": 8,
+        "crop_file": "shadow-pin-usb-trial\\crops\\candidate_008.png",
+        "crop_sha256": "f7fe97d1f7e7adc98d48fb17d117f16f849894e3866bcd7707469350125ff6d1",
+        "roi": {
+          "x1": 1610,
+          "y1": 1410,
+          "x2": 1746,
+          "y2": 1628
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "RGOCG8-50_8mm",
+        "proposal_id": 11,
+        "crop_file": "shadow-pin-usb-trial\\crops\\candidate_011.png",
+        "crop_sha256": "7881f6ce4519d317e7889c544a7333e26886e42475e8b63c0556e60bc0ac04ae",
+        "roi": {
+          "x1": 1142,
+          "y1": 1414,
+          "x2": 1260,
+          "y2": 1626
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "USB_Male",
+        "proposal_id": 3,
+        "crop_file": "shadow-pin-usb-trial\\crops\\candidate_003.png",
+        "crop_sha256": "9655c4c73f92054fa731c1091211eb73e90cf928b613414b530d06f1a9f4647c",
+        "roi": {
+          "x1": 2006,
+          "y1": 189,
+          "x2": 2427,
+          "y2": 1147
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "DSUB_Male",
+        "proposal_id": 2,
+        "crop_file": "shadow-pin-usb-trial\\crops\\candidate_002.png",
+        "crop_sha256": "c494876a69ee4e893be510f226d6b6c3e9653d4b052ec114fbb8385c85d6a131",
+        "roi": {
+          "x1": 1472,
+          "y1": 838,
+          "x2": 1626,
+          "y2": 1147
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      }
+    ],
+    "state_101": [
+      {
+        "identity": "Gear_Large",
+        "proposal_id": 0,
+        "crop_file": "shadow-pin-usb-trial\\state_101\\crops\\candidate_000.png",
+        "crop_sha256": "051e75a5b0096989b516c484271d98c52e09d06625bc3ea201ac2f884e2c93a0",
+        "roi": {
+          "x1": 1596,
+          "y1": 842,
+          "x2": 1869,
+          "y2": 1129
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "Gear_Medium",
+        "proposal_id": 3,
+        "crop_file": "shadow-pin-usb-trial\\state_101\\crops\\candidate_003.png",
+        "crop_sha256": "e7ecdd04abe922e5d362f2904407adcbef08b8607f7d1cce909e4ade3e9c65a5",
+        "roi": {
+          "x1": 1625,
+          "y1": 2325,
+          "x2": 1804,
+          "y2": 2507
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "Gear_Small",
+        "proposal_id": 5,
+        "crop_file": "shadow-pin-usb-trial\\state_101\\crops\\candidate_005.png",
+        "crop_sha256": "ed6418c5d55144cdb439a1f7f42e39e3f0a71a284b9bf1a812a11671951db9fe",
+        "roi": {
+          "x1": 1663,
+          "y1": 1415,
+          "x2": 1761,
+          "y2": 1514
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "Waterproof_Male",
+        "proposal_id": 1,
+        "crop_file": "shadow-pin-usb-trial\\state_101\\crops\\candidate_001.png",
+        "crop_sha256": "8e27ec495e8bd49a326cc5c753e41d2240a99cc4d77374a337104a466e01f88f",
+        "roi": {
+          "x1": 1108,
+          "y1": 2345,
+          "x2": 1399,
+          "y2": 2533
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "M12_Hex_Nut",
+        "proposal_id": 12,
+        "crop_file": "shadow-pin-usb-trial\\state_101\\crops\\candidate_012.png",
+        "crop_sha256": "fc0054b5fbb5338ab9f90350cd4862942de04ae395620638929e2b1b38c1e229",
+        "roi": {
+          "x1": 669,
+          "y1": 1911,
+          "x2": 772,
+          "y2": 2001
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "M16_Hex_Nut",
+        "proposal_id": 8,
+        "crop_file": "shadow-pin-usb-trial\\state_101\\crops\\candidate_008.png",
+        "crop_sha256": "1c1870e789ce383e3b64a161e64f0093e715e0263666f4e81c66af34b957e0f0",
+        "roi": {
+          "x1": 1638,
+          "y1": 1917,
+          "x2": 1759,
+          "y2": 2028
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "RGOCG16-50_16mm",
+        "proposal_id": 4,
+        "crop_file": "shadow-pin-usb-trial\\state_101\\crops\\candidate_004.png",
+        "crop_sha256": "552c7b7003b70b464999fe0b15088e739e126bb17da93e39400520c81be1c324",
+        "roi": {
+          "x1": 2564,
+          "y1": 2304,
+          "x2": 2744,
+          "y2": 2510
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "RGOCG12-50_12mm",
+        "proposal_id": 7,
+        "crop_file": "shadow-pin-usb-trial\\state_101\\crops\\candidate_007.png",
+        "crop_sha256": "123f19e892e7db96ecab17804bf959635f80f30947116c2770dcab19b9e1892a",
+        "roi": {
+          "x1": 1179,
+          "y1": 1369,
+          "x2": 1265,
+          "y2": 1594
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "RGOCG8-50_8mm",
+        "proposal_id": 11,
+        "crop_file": "shadow-pin-usb-trial\\state_101\\crops\\candidate_011.png",
+        "crop_sha256": "3989b2e944636dc60976a725ca05eae1c3b96027dd47e7fd6182bc78c774ab48",
+        "roi": {
+          "x1": 2172,
+          "y1": 869,
+          "x2": 2235,
+          "y2": 1102
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "USB_Male",
+        "proposal_id": "recovered_cluster_5",
+        "crop_file": "shadow-pin-usb-trial\\state_101\\usb_rejected_cluster_5.png",
+        "crop_sha256": "7543f2ca9e48d4553584300362014c6f331ab16c9b5e3b3c0e4184e22a6d517c",
+        "roi": {
+          "x1": 21,
+          "y1": 2333,
+          "x2": 887,
+          "y2": 2728
+        },
+        "assisted_fallback": true,
+        "localization_method": "manually_verified_rejected_depth_cluster",
+        "rejection_reasons": [
+          "3d_aspect_ratio_above_maximum"
+        ]
+      },
+      {
+        "identity": "DSUB_Male",
+        "proposal_id": 2,
+        "crop_file": "shadow-pin-usb-trial\\state_101\\crops\\candidate_002.png",
+        "crop_sha256": "4b33b962ebb9c6ee75c0ce865988e91fcba2f1bdbb964dd35e709db436634a24",
+        "roi": {
+          "x1": 575,
+          "y1": 823,
+          "x2": 772,
+          "y2": 1134
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      }
+    ],
+    "state_202": [
+      {
+        "identity": "Gear_Large",
+        "proposal_id": 0,
+        "crop_file": "shadow-pin-usb-trial\\state_202\\crops\\candidate_000.png",
+        "crop_sha256": "5d23b69c2449fff305773def219e59a9d80d68f1142de6cae6476b6dda8231cf",
+        "roi": {
+          "x1": 2044,
+          "y1": 852,
+          "x2": 2319,
+          "y2": 1138
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "Gear_Medium",
+        "proposal_id": 4,
+        "crop_file": "shadow-pin-usb-trial\\state_202\\crops\\candidate_004.png",
+        "crop_sha256": "108195e8929e844a87a358e143fc8be89d43ee37e14f292c33dbb8ab3199825e",
+        "roi": {
+          "x1": 2093,
+          "y1": 1406,
+          "x2": 2276,
+          "y2": 1593
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "Gear_Small",
+        "proposal_id": 8,
+        "crop_file": "shadow-pin-usb-trial\\state_202\\crops\\candidate_008.png",
+        "crop_sha256": "1ba202f6a7dcb3dfb5dfcd5cb62a942310b21b59276bb4441319fd2102e2a13f",
+        "roi": {
+          "x1": 686,
+          "y1": 917,
+          "x2": 806,
+          "y2": 1024
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "Waterproof_Male",
+        "proposal_id": 2,
+        "crop_file": "shadow-pin-usb-trial\\state_202\\crops\\candidate_002.png",
+        "crop_sha256": "7cc62a5ff425def58574827d00781d4317eb510bf765d2165d2b375c4555a81c",
+        "roi": {
+          "x1": 1618,
+          "y1": 799,
+          "x2": 1773,
+          "y2": 1103
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "M12_Hex_Nut",
+        "proposal_id": 13,
+        "crop_file": "shadow-pin-usb-trial\\state_202\\crops\\candidate_013.png",
+        "crop_sha256": "3718dec057ac940d14b25b665ed81c8e846d2ffe0ea118f40903b6a5da604056",
+        "roi": {
+          "x1": 1198,
+          "y1": 2382,
+          "x2": 1290,
+          "y2": 2479
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "M16_Hex_Nut",
+        "proposal_id": 9,
+        "crop_file": "shadow-pin-usb-trial\\state_202\\crops\\candidate_009.png",
+        "crop_sha256": "0ba075552bcc00319db0033a5921c1693c2dd389f4f45ec5db2d02ec76429ef3",
+        "roi": {
+          "x1": 2609,
+          "y1": 2334,
+          "x2": 2729,
+          "y2": 2456
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "RGOCG16-50_16mm",
+        "proposal_id": 5,
+        "crop_file": "shadow-pin-usb-trial\\state_202\\crops\\candidate_005.png",
+        "crop_sha256": "c85b3a16f2ee10630cb2f8f1de795a4f7653eeb4dbefbe4387be155ffc8f6a9d",
+        "roi": {
+          "x1": 1125,
+          "y1": 1824,
+          "x2": 1322,
+          "y2": 2022
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "RGOCG12-50_12mm",
+        "proposal_id": 7,
+        "crop_file": "shadow-pin-usb-trial\\state_202\\crops\\candidate_007.png",
+        "crop_sha256": "bbb4a034468a62ce3f34a1a319fc879384d925839ada0d367263cbcbbff41d70",
+        "roi": {
+          "x1": 1686,
+          "y1": 2343,
+          "x2": 1796,
+          "y2": 2561
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "RGOCG8-50_8mm",
+        "proposal_id": 11,
+        "crop_file": "shadow-pin-usb-trial\\state_202\\crops\\candidate_011.png",
+        "crop_sha256": "ed49e017a0769fe65094309e267d7d685bb07b4725667e6832021ce33158fc67",
+        "roi": {
+          "x1": 2647,
+          "y1": 1365,
+          "x2": 2732,
+          "y2": 1586
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "USB_Male",
+        "proposal_id": 3,
+        "crop_file": "shadow-pin-usb-trial\\state_202\\crops\\candidate_003.png",
+        "crop_sha256": "a0c930dd9c5206a04601a466c9f68dc4c1e3f4ee1c0f97f37b0b950adec45985",
+        "roi": {
+          "x1": 869,
+          "y1": 153,
+          "x2": 1295,
+          "y2": 1108
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "DSUB_Male",
+        "proposal_id": 1,
+        "crop_file": "shadow-pin-usb-trial\\state_202\\crops\\candidate_001.png",
+        "crop_sha256": "7cc2d3860523df277d6407a141d1e6f5ac1825291a509806faae51c8b11dadd5",
+        "roi": {
+          "x1": 2074,
+          "y1": 1910,
+          "x2": 2355,
+          "y2": 2062
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      }
+    ],
+    "state_303": [
+      {
+        "identity": "Gear_Large",
+        "proposal_id": 0,
+        "crop_file": "shadow-pin-usb-trial\\state_303\\crops\\candidate_000.png",
+        "crop_sha256": "3334a7c27ecbce20a0d57b4f0c942261acbbda26e713d210fcce89e35b38b28e",
+        "roi": {
+          "x1": 1067,
+          "y1": 807,
+          "x2": 1348,
+          "y2": 1097
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "Gear_Medium",
+        "proposal_id": 3,
+        "crop_file": "shadow-pin-usb-trial\\state_303\\crops\\candidate_003.png",
+        "crop_sha256": "0264008996cc496e20e9692d5fd146e86bf33a1bb7ded63f53afc0e916d128ef",
+        "roi": {
+          "x1": 2577,
+          "y1": 1862,
+          "x2": 2766,
+          "y2": 2043
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "Gear_Small",
+        "proposal_id": 7,
+        "crop_file": "shadow-pin-usb-trial\\state_303\\crops\\candidate_007.png",
+        "crop_sha256": "a6cd20966d20d444c579237af1aaf1ad2879b7d4ba783c937f1ca7244ee9e529",
+        "roi": {
+          "x1": 1188,
+          "y1": 1396,
+          "x2": 1291,
+          "y2": 1492
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "Waterproof_Male",
+        "proposal_id": 1,
+        "crop_file": "shadow-pin-usb-trial\\state_303\\crops\\candidate_001.png",
+        "crop_sha256": "501944f5a366194deaf0627005d87557bb79cd97c1413a8f7396ce4a6b8a3e7f",
+        "roi": {
+          "x1": 2578,
+          "y1": 796,
+          "x2": 2825,
+          "y2": 1118
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "M12_Hex_Nut",
+        "proposal_id": 12,
+        "crop_file": "shadow-pin-usb-trial\\state_303\\crops\\candidate_012.png",
+        "crop_sha256": "baedfe7904344e7e4677127433e020ed849aa2b1eb60d26e01f65855ed1d0aca",
+        "roi": {
+          "x1": 2163,
+          "y1": 2366,
+          "x2": 2255,
+          "y2": 2461
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "M16_Hex_Nut",
+        "proposal_id": 9,
+        "crop_file": "shadow-pin-usb-trial\\state_303\\crops\\candidate_009.png",
+        "crop_sha256": "833d5826b6258166aa076165f38a3b094d64d204a81c4b806c996e3191b00983",
+        "roi": {
+          "x1": 2114,
+          "y1": 1891,
+          "x2": 2232,
+          "y2": 2009
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "RGOCG16-50_16mm",
+        "proposal_id": 4,
+        "crop_file": "shadow-pin-usb-trial\\state_303\\crops\\candidate_004.png",
+        "crop_sha256": "2e39713dfb973c1a397f75571d18003b6276e302abf6a15d46a7d8e0985e5dae",
+        "roi": {
+          "x1": 1572,
+          "y1": 1436,
+          "x2": 1798,
+          "y2": 1531
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "RGOCG12-50_12mm",
+        "proposal_id": 6,
+        "crop_file": "shadow-pin-usb-trial\\state_303\\crops\\candidate_006.png",
+        "crop_sha256": "19c2e56726b6c4c558e00423b8424cb9c8381da2b6403a2430431ec5bf3f6612",
+        "roi": {
+          "x1": 1171,
+          "y1": 1822,
+          "x2": 1276,
+          "y2": 2040
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "RGOCG8-50_8mm",
+        "proposal_id": 10,
+        "crop_file": "shadow-pin-usb-trial\\state_303\\crops\\candidate_010.png",
+        "crop_sha256": "b1cf506f7c610c52669f86cfc92c532b4c1f5b8a237342f66910a94489e03314",
+        "roi": {
+          "x1": 660,
+          "y1": 1889,
+          "x2": 879,
+          "y2": 1984
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      },
+      {
+        "identity": "USB_Male",
+        "proposal_id": "recovered_cluster_2",
+        "crop_file": "shadow-pin-usb-trial\\state_303\\usb_rejected_cluster_2.png",
+        "crop_sha256": "5a3874a9c4c9ea46017e36201d2d720bdf18ca97b04e8ef6860e4458139d0368",
+        "roi": {
+          "x1": 2072,
+          "y1": 1174,
+          "x2": 2979,
+          "y2": 1594
+        },
+        "assisted_fallback": true,
+        "localization_method": "manually_verified_rejected_depth_cluster",
+        "rejection_reasons": [
+          "3d_aspect_ratio_above_maximum"
+        ]
+      },
+      {
+        "identity": "DSUB_Male",
+        "proposal_id": 2,
+        "crop_file": "shadow-pin-usb-trial\\state_303\\crops\\candidate_002.png",
+        "crop_sha256": "951cf97dc3898e2a3029bf7b3818dace43fcdf8abc4c737bf166e9942e4e2383",
+        "roi": {
+          "x1": 1598,
+          "y1": 1872,
+          "x2": 1851,
+          "y2": 2098
+        },
+        "assisted_fallback": false,
+        "localization_method": "accepted_depth_rectangle"
+      }
+    ]
+  },
+  "immutable_inputs": {
+    "classification-score-charts\\local-model\\selected_prompts.json": "7e8554c598428bd91aebf9af059262590a2370234e1d1c051314e1d18a78191b",
+    "shadow-pin-usb-trial\\proposal_audit.json": "c3c74f72b3245a247a67fc3d0e8e9e39a1fd20de02dda1a6b63a42fa021746ca",
+    "shadow-pin-usb-trial\\scenes\\baseline\\wrist_rgb.png": "219fe2c17c721eb10c4c2a684314bec86be6a77e6c5909c020342fb342afba1e",
+    "shadow-pin-usb-trial\\crops\\candidate_000.png": "8643de8c1b1dcf74dc92d04cdefcfdc0735be5d7df1bdc7bdc7e077aadca78b3",
+    "shadow-pin-usb-trial\\crops\\candidate_004.png": "32184c8966576de2b036c51d8d5e7cd940e019617b393dc6403bb6f08a234392",
+    "shadow-pin-usb-trial\\crops\\candidate_007.png": "12582ccd34fdba48126c0e1e0d71701e3ab31413538cfcbedfd42b8adf7e792c",
+    "shadow-pin-usb-trial\\crops\\candidate_001.png": "41b585482c19ce36d3222b4ce188fedb570a2c64e3d131c84b65485afb23e2f0",
+    "shadow-pin-usb-trial\\crops\\candidate_013.png": "38c0f98390b534a6792efcbe2e21a4c07ceeeea957ea1c15c814989186114245",
+    "shadow-pin-usb-trial\\crops\\candidate_009.png": "4ba340c5f9b0438cf39ee0b2a365c9fca0767eaad2c4a4642c4a0ade665bff5c",
+    "shadow-pin-usb-trial\\crops\\candidate_005.png": "2bfbdaf2da2c79be29d256e75f2c8aaa2cb945a635fb500fdd25fd9e5a47a015",
+    "shadow-pin-usb-trial\\crops\\candidate_008.png": "f7fe97d1f7e7adc98d48fb17d117f16f849894e3866bcd7707469350125ff6d1",
+    "shadow-pin-usb-trial\\crops\\candidate_011.png": "7881f6ce4519d317e7889c544a7333e26886e42475e8b63c0556e60bc0ac04ae",
+    "shadow-pin-usb-trial\\crops\\candidate_003.png": "9655c4c73f92054fa731c1091211eb73e90cf928b613414b530d06f1a9f4647c",
+    "shadow-pin-usb-trial\\crops\\candidate_002.png": "c494876a69ee4e893be510f226d6b6c3e9653d4b052ec114fbb8385c85d6a131",
+    "shadow-pin-usb-trial\\state_101\\proposal_audit.json": "db6d0d922403e7305dc96035fa7ba116d47f29f31c3a7d2ae67b0a869575c989",
+    "shadow-pin-usb-trial\\state_101\\scenes\\baseline\\wrist_rgb.png": "7d05990d799e8feab0c23824c66ba240fb8adaef3a715c383399ffd52a41b4d1",
+    "shadow-pin-usb-trial\\state_101\\rejected_usb_clusters.json": "378ce9a2456414884976b54b185d6d083d733e1651da3b4fb58648cc5d906fe1",
+    "shadow-pin-usb-trial\\state_101\\crops\\candidate_000.png": "051e75a5b0096989b516c484271d98c52e09d06625bc3ea201ac2f884e2c93a0",
+    "shadow-pin-usb-trial\\state_101\\crops\\candidate_003.png": "e7ecdd04abe922e5d362f2904407adcbef08b8607f7d1cce909e4ade3e9c65a5",
+    "shadow-pin-usb-trial\\state_101\\crops\\candidate_005.png": "ed6418c5d55144cdb439a1f7f42e39e3f0a71a284b9bf1a812a11671951db9fe",
+    "shadow-pin-usb-trial\\state_101\\crops\\candidate_001.png": "8e27ec495e8bd49a326cc5c753e41d2240a99cc4d77374a337104a466e01f88f",
+    "shadow-pin-usb-trial\\state_101\\crops\\candidate_012.png": "fc0054b5fbb5338ab9f90350cd4862942de04ae395620638929e2b1b38c1e229",
+    "shadow-pin-usb-trial\\state_101\\crops\\candidate_008.png": "1c1870e789ce383e3b64a161e64f0093e715e0263666f4e81c66af34b957e0f0",
+    "shadow-pin-usb-trial\\state_101\\crops\\candidate_004.png": "552c7b7003b70b464999fe0b15088e739e126bb17da93e39400520c81be1c324",
+    "shadow-pin-usb-trial\\state_101\\crops\\candidate_007.png": "123f19e892e7db96ecab17804bf959635f80f30947116c2770dcab19b9e1892a",
+    "shadow-pin-usb-trial\\state_101\\crops\\candidate_011.png": "3989b2e944636dc60976a725ca05eae1c3b96027dd47e7fd6182bc78c774ab48",
+    "shadow-pin-usb-trial\\state_101\\usb_rejected_cluster_5.png": "7543f2ca9e48d4553584300362014c6f331ab16c9b5e3b3c0e4184e22a6d517c",
+    "shadow-pin-usb-trial\\state_101\\crops\\candidate_002.png": "4b33b962ebb9c6ee75c0ce865988e91fcba2f1bdbb964dd35e709db436634a24",
+    "shadow-pin-usb-trial\\state_202\\proposal_audit.json": "1ac0dc5bd957f087a72cd6a7a73f1bf2cecb43adb0aa3223a8f46d76b2c93b28",
+    "shadow-pin-usb-trial\\state_202\\scenes\\baseline\\wrist_rgb.png": "c8aa7524a49de8c73061f5b4bb03e55449a0d4cbdc137d8a3a99feba632e3178",
+    "shadow-pin-usb-trial\\state_202\\crops\\candidate_000.png": "5d23b69c2449fff305773def219e59a9d80d68f1142de6cae6476b6dda8231cf",
+    "shadow-pin-usb-trial\\state_202\\crops\\candidate_004.png": "108195e8929e844a87a358e143fc8be89d43ee37e14f292c33dbb8ab3199825e",
+    "shadow-pin-usb-trial\\state_202\\crops\\candidate_008.png": "1ba202f6a7dcb3dfb5dfcd5cb62a942310b21b59276bb4441319fd2102e2a13f",
+    "shadow-pin-usb-trial\\state_202\\crops\\candidate_002.png": "7cc62a5ff425def58574827d00781d4317eb510bf765d2165d2b375c4555a81c",
+    "shadow-pin-usb-trial\\state_202\\crops\\candidate_013.png": "3718dec057ac940d14b25b665ed81c8e846d2ffe0ea118f40903b6a5da604056",
+    "shadow-pin-usb-trial\\state_202\\crops\\candidate_009.png": "0ba075552bcc00319db0033a5921c1693c2dd389f4f45ec5db2d02ec76429ef3",
+    "shadow-pin-usb-trial\\state_202\\crops\\candidate_005.png": "c85b3a16f2ee10630cb2f8f1de795a4f7653eeb4dbefbe4387be155ffc8f6a9d",
+    "shadow-pin-usb-trial\\state_202\\crops\\candidate_007.png": "bbb4a034468a62ce3f34a1a319fc879384d925839ada0d367263cbcbbff41d70",
+    "shadow-pin-usb-trial\\state_202\\crops\\candidate_011.png": "ed49e017a0769fe65094309e267d7d685bb07b4725667e6832021ce33158fc67",
+    "shadow-pin-usb-trial\\state_202\\crops\\candidate_003.png": "a0c930dd9c5206a04601a466c9f68dc4c1e3f4ee1c0f97f37b0b950adec45985",
+    "shadow-pin-usb-trial\\state_202\\crops\\candidate_001.png": "7cc2d3860523df277d6407a141d1e6f5ac1825291a509806faae51c8b11dadd5",
+    "shadow-pin-usb-trial\\state_303\\proposal_audit.json": "335f9636def10cab053d158b0820c9be96b2f7488aa55d56a4d5bbc985640b57",
+    "shadow-pin-usb-trial\\state_303\\scenes\\baseline\\wrist_rgb.png": "b44f939a2a0a719e9cb4bdf10ecf50cefd2732bd5316978f0989ab4e5e006b32",
+    "shadow-pin-usb-trial\\state_303\\rejected_usb_clusters.json": "8984add57d14e71cf1edf7c17cb375397874ee9d3f5d3ae259519c622f09829f",
+    "shadow-pin-usb-trial\\state_303\\crops\\candidate_000.png": "3334a7c27ecbce20a0d57b4f0c942261acbbda26e713d210fcce89e35b38b28e",
+    "shadow-pin-usb-trial\\state_303\\crops\\candidate_003.png": "0264008996cc496e20e9692d5fd146e86bf33a1bb7ded63f53afc0e916d128ef",
+    "shadow-pin-usb-trial\\state_303\\crops\\candidate_007.png": "a6cd20966d20d444c579237af1aaf1ad2879b7d4ba783c937f1ca7244ee9e529",
+    "shadow-pin-usb-trial\\state_303\\crops\\candidate_001.png": "501944f5a366194deaf0627005d87557bb79cd97c1413a8f7396ce4a6b8a3e7f",
+    "shadow-pin-usb-trial\\state_303\\crops\\candidate_012.png": "baedfe7904344e7e4677127433e020ed849aa2b1eb60d26e01f65855ed1d0aca",
+    "shadow-pin-usb-trial\\state_303\\crops\\candidate_009.png": "833d5826b6258166aa076165f38a3b094d64d204a81c4b806c996e3191b00983",
+    "shadow-pin-usb-trial\\state_303\\crops\\candidate_004.png": "2e39713dfb973c1a397f75571d18003b6276e302abf6a15d46a7d8e0985e5dae",
+    "shadow-pin-usb-trial\\state_303\\crops\\candidate_006.png": "19c2e56726b6c4c558e00423b8424cb9c8381da2b6403a2430431ec5bf3f6612",
+    "shadow-pin-usb-trial\\state_303\\crops\\candidate_010.png": "b1cf506f7c610c52669f86cfc92c532b4c1f5b8a237342f66910a94489e03314",
+    "shadow-pin-usb-trial\\state_303\\usb_rejected_cluster_2.png": "5a3874a9c4c9ea46017e36201d2d720bdf18ca97b04e8ef6860e4458139d0368",
+    "shadow-pin-usb-trial\\state_303\\crops\\candidate_002.png": "951cf97dc3898e2a3029bf7b3818dace43fcdf8abc4c737bf166e9942e4e2383"
+  },
+  "scope": "11 targets x 11 observed crops x 4 fixed scenes; no new render views",
+  "expected_calls_per_model": 484,
+  "options": {
+    "temperature": 0,
+    "seed": 0,
+    "num_ctx": 4096,
+    "num_predict": 1,
+    "repeat_penalty": 1.0,
+    "presence_penalty": 0.0,
+    "frequency_penalty": 0.0,
+    "top_k": 0,
+    "top_p": 1.0,
+    "min_p": 0.0
+  },
+  "think": false,
+  "labels": {
+    "A": "match supported",
+    "B": "mismatch supported",
+    "C": "insufficient evidence"
+  },
+  "score": "exp(raw log probability of token A), not normalized over A/B/C",
+  "threshold_before_collection": null,
+  "fallback_policy": "USB in scenes 101/303: visually verified complete crop from a rejected depth cluster. Reference identity assisted cluster selection; not autonomous localization or SAM.",
+  "exclusions": [
+    "M8_Hex_Nut",
+    "KET16_Square_16mm",
+    "KET12_Square_12mm",
+    "KET8_Square_8mm"
+  ],
+  "ground_truth_policy": "Identity and ROI metadata are audit-only, never sent to the VLM. Exclusions are also applied to candidate analysis.",
+  "comparison_warning": "Previous 4B chart combines saved scene revisions. A strict model comparison requires 4B scores on these exact crop bytes and prompts."
+}

@@ -1,5 +1,26 @@
 # Human-Guided CAD Object Identification
 
+## Latest Classification Study: Start Here
+
+**2026-09-25 cloud handoff:** read the
+[four-scene VLM report](experiments/vlm_four_scene_20260925/README.md) for the
+latest classification experiments, exact prompts, input images, all 1,936 raw
+responses, portable CSV/JSON scores, charts and an offline verification script.
+The completed comparison uses Qwen3.5-4B, Qwen3.5-9B, GPT-6 Sol and Gemma 4 12B
+on the same 44 depth-localization RGB crops across four scenes.
+
+This newer study revisits raw A-token probability for human-assisted association.
+It does **not** use SAM3, DINOv2 or the geometric combined score during classification.
+Its report supersedes the older scope, scene inventory and claims below that the
+likelihood study is retired. The sections below document the earlier CAD/SAM3
+branch framework and retained software, not the current four-model experiment.
+
+The proposed catalog-name-and-color-only ablation has **not run**. No final model
+or deployment threshold has been validated. Cloud analysis should use the report
+and its versioned evidence rather than assume access to Windows/WSL directories.
+
+## Earlier CAD/SAM3 Framework
+
 Current direction, 2026-09-24: human-robot collaboration through operator-selected
 CAD views, local VLM descriptions, SAM3 text-prompted masks, and independent
 CAD-to-mask verification. We are evaluating locked-prompt per-object trials. This is a research

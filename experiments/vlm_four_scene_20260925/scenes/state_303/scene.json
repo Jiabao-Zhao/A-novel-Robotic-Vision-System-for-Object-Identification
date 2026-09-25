@@ -1,0 +1,871 @@
+{
+  "purpose": "Shadow-aware square-pin and USB trial",
+  "table_size_m": [
+    1.3,
+    1.0,
+    0.05
+  ],
+  "table_top_world_z_m": 0.0,
+  "floor_world_z_m": -0.85,
+  "table_height_m": 0.85,
+  "table_contact": {
+    "solref": [
+      0.006,
+      1.0
+    ],
+    "solimp": [
+      0.99,
+      0.99,
+      0.001
+    ],
+    "priority": 1
+  },
+  "camera": "robot0_eye_in_hand",
+  "image_shape": [
+    3840,
+    3840,
+    3
+  ],
+  "depth_unit": "m",
+  "catalog": {
+    "Gear_Large": {
+      "cad_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/simulation/nist_task_board_1/assets/meshes/Gear_Large_m.stl",
+      "scale_to_m": 1.0,
+      "extent_m": [
+        0.061994400024414066,
+        0.061994400024414066,
+        0.019999992370605468
+      ],
+      "source": "official NIST ATB1 STL",
+      "visual_rgba": [
+        0.92,
+        0.92,
+        0.88,
+        1.0
+      ],
+      "collision_model": "separate_lower_section_and_hub",
+      "cad_sha256": "2225778c5220fbc4d55b8a1fd5eba1ae9b0e6ff43068a115f92e98efdb8ce1d4",
+      "cad_up_axis": "Z",
+      "description": "Gear Large"
+    },
+    "Gear_Medium": {
+      "cad_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/simulation/nist_task_board_1/assets/meshes/Gear_Medium_m.stl",
+      "scale_to_m": 1.0,
+      "extent_m": [
+        0.04199592590332031,
+        0.04199592590332031,
+        0.019999992370605468
+      ],
+      "source": "official NIST ATB1 STL",
+      "visual_rgba": [
+        0.92,
+        0.92,
+        0.88,
+        1.0
+      ],
+      "collision_model": "separate_lower_section_and_hub",
+      "cad_sha256": "7cbd1ee354f20a2e92b206c7caec893e07f8f71f049cd9b1e6e65bf6e80f5c7e",
+      "cad_up_axis": "Z",
+      "description": "Gear Medium"
+    },
+    "Gear_Small": {
+      "cad_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/simulation/nist_task_board_1/assets/meshes/Gear_Small_m.stl",
+      "scale_to_m": 1.0,
+      "extent_m": [
+        0.021877609252929687,
+        0.021877593994140625,
+        0.019999992370605468
+      ],
+      "source": "official NIST ATB1 STL",
+      "visual_rgba": [
+        0.92,
+        0.92,
+        0.88,
+        1.0
+      ],
+      "collision_model": "separate_lower_section_and_hub",
+      "cad_sha256": "84b3404b0f0b9638a51066567006e3d322030341b26daa2427e9c2feaf539b9f",
+      "cad_up_axis": "Z",
+      "description": "Gear Small"
+    },
+    "Waterproof_Male": {
+      "cad_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/simulation/nist_task_board_1/assets/meshes/Waterproof_Male_m.stl",
+      "scale_to_m": 1.0,
+      "extent_m": [
+        0.06319999694824219,
+        0.0325,
+        0.03540000152587891
+      ],
+      "source": "official NIST ATB1 STL",
+      "visual_rgba": [
+        0.68,
+        0.7,
+        0.57,
+        1.0
+      ],
+      "cad_sha256": "148cb69db3e2c0ff839ad133a951de63226337467694f4e9622640eef0bf6e94",
+      "cad_up_axis": "Z",
+      "description": "Waterproof Male"
+    },
+    "M12_Hex_Nut": {
+      "cad_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/simulation/nist_task_board_1/assets/meshes/M12_Hex_Nut_m.stl",
+      "scale_to_m": 1.0,
+      "extent_m": [
+        0.021939300537109376,
+        0.019,
+        0.01
+      ],
+      "source": "official NIST ATB1 STL",
+      "visual_rgba": [
+        0.52,
+        0.57,
+        0.61,
+        1.0
+      ],
+      "cad_sha256": "c5ee3c1ce2c134df63e9c8f2712da211621e23c551e918c290a0b7a9a60d96ef",
+      "cad_up_axis": "Z",
+      "description": "M12 Hex Nut"
+    },
+    "M16_Hex_Nut": {
+      "cad_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/simulation/nist_task_board_1/assets/meshes/M16_Hex_Nut_m.stl",
+      "scale_to_m": 1.0,
+      "extent_m": [
+        0.027712810516357423,
+        0.024,
+        0.013000000000000001
+      ],
+      "source": "official NIST ATB1 STL",
+      "visual_rgba": [
+        0.52,
+        0.57,
+        0.61,
+        1.0
+      ],
+      "cad_sha256": "dcba7bb82a537b3a156b17cb3bb0fc83e723d89af7cc8086fe9ca5c8f776a799",
+      "cad_up_axis": "Z",
+      "description": "M16 Hex Nut"
+    },
+    "RGOCG16-50_16mm": {
+      "cad_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/simulation/nist_task_board_1/assets/meshes/RGOCG16-50_16mm_m.stl",
+      "scale_to_m": 1.0,
+      "extent_m": [
+        0.016,
+        0.01599608448892832,
+        0.05
+      ],
+      "source": "official NIST ATB1 STL",
+      "visual_rgba": [
+        0.52,
+        0.57,
+        0.61,
+        1.0
+      ],
+      "cad_sha256": "64365ae321316b6ce6a0f7619eeb1e76622e6b266521d83cf8dd68c6aff9183b",
+      "cad_up_axis": "Z",
+      "description": "RGOCG16-50 16mm"
+    },
+    "KET16_Square_16mm": {
+      "cad_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/simulation/nist_task_board_1/assets/meshes/KET16_Square_16mm_m.stl",
+      "scale_to_m": 1.0,
+      "extent_m": [
+        0.016,
+        0.01,
+        0.05
+      ],
+      "source": "official NIST ATB1 STL",
+      "visual_rgba": [
+        0.52,
+        0.57,
+        0.61,
+        1.0
+      ],
+      "cad_sha256": "ff6944b029ae00727bb0ccc1be9b3673d72a3939baf76626085b235f1276d656",
+      "cad_up_axis": "Z",
+      "description": "KET16 Square 16mm"
+    },
+    "RGOCG12-50_12mm": {
+      "cad_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/simulation/nist_task_board_1/assets/meshes/RGOCG12-50_12mm_m.stl",
+      "scale_to_m": 1.0,
+      "extent_m": [
+        0.012000000104308128,
+        0.011997063644230366,
+        0.05000000074505806
+      ],
+      "source": "official NIST ATB1 STL",
+      "visual_rgba": [
+        0.52,
+        0.57,
+        0.61,
+        1.0
+      ],
+      "cad_sha256": "926557cdfcd5a681d12a0988d71278db24ca1e1a5eb0eb9c5f3f38bcebecdba4",
+      "cad_up_axis": "Z",
+      "description": "Round pin 12mm"
+    },
+    "RGOCG8-50_8mm": {
+      "cad_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/simulation/nist_task_board_1/assets/meshes/RGOCG8-50_8mm_m.stl",
+      "scale_to_m": 1.0,
+      "extent_m": [
+        0.00800000037997961,
+        0.007998041808605194,
+        0.05000000074505806
+      ],
+      "source": "official NIST ATB1 STL",
+      "visual_rgba": [
+        0.52,
+        0.57,
+        0.61,
+        1.0
+      ],
+      "cad_sha256": "a65c00870f9b3d95506cd3b068384dc9bf9b022d293610ade7b5bfdab9a5e1c8",
+      "cad_up_axis": "Z",
+      "description": "Round pin 8mm"
+    },
+    "KET12_Square_12mm": {
+      "cad_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/simulation/nist_task_board_1/assets/meshes/KET12_Square_12mm_m.stl",
+      "scale_to_m": 1.0,
+      "extent_m": [
+        0.012000000104308128,
+        0.00800000037997961,
+        0.05000000074505806
+      ],
+      "source": "official NIST ATB1 STL",
+      "visual_rgba": [
+        0.52,
+        0.57,
+        0.61,
+        1.0
+      ],
+      "cad_sha256": "2fcfeaa3bebf69abd59e3f66c6e44b7b66c8fa8d51d374c573ce1aecb4c507bd",
+      "cad_up_axis": "Z",
+      "description": "Square pin 12mm"
+    },
+    "KET8_Square_8mm": {
+      "cad_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/simulation/nist_task_board_1/assets/meshes/KET8_Square_8mm_m.stl",
+      "scale_to_m": 1.0,
+      "extent_m": [
+        0.00800000037997961,
+        0.007000000216066837,
+        0.05000000074505806
+      ],
+      "source": "official NIST ATB1 STL",
+      "visual_rgba": [
+        0.52,
+        0.57,
+        0.61,
+        1.0
+      ],
+      "cad_sha256": "baf5217550190885066b1b1bec4189f771a5a4a89d24dfc5a910a85303062972",
+      "cad_up_axis": "Z",
+      "description": "Square pin 8mm"
+    },
+    "USB_Male": {
+      "cad_path": "/mnt/c/Users/Jiabao Zhao/Documents/Codex/2026-06-02/can-you-add-this-skill-to/usb-cable-workspace/usb_connector_with_cable.stl",
+      "cad_sha256": "935820b6df2259d48cc1220ef62da24c71f142fea42fa92f7a01636d4518e951",
+      "scale_to_m": 1.0,
+      "extent_m": [
+        0.20916503617355323,
+        0.09541476801325569,
+        0.008500000461935997
+      ],
+      "source": "NIST USB_Male connector plus procedural fixed-shape cable",
+      "visual_rgba": [
+        0.09,
+        0.1,
+        0.12,
+        1.0
+      ],
+      "cad_up_axis": "Z",
+      "description": "USB male connector with attached cable"
+    },
+    "DSUB_Male": {
+      "cad_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/simulation/nist_task_board_1/assets/meshes/DSUB_Male_m.stl",
+      "cad_sha256": "bc9b5de65fb77d672fcc3880499b0b084e28f7413be5be5b4cdcf9cd378fd191",
+      "scale_to_m": 1.0,
+      "extent_m": [
+        0.05900000047683716,
+        0.016,
+        0.04360000038146973
+      ],
+      "source": "official NIST ATB1 STL",
+      "visual_rgba": [
+        0.09,
+        0.1,
+        0.12,
+        1.0
+      ],
+      "cad_up_axis": "Z",
+      "description": "DSUB Male"
+    }
+  },
+  "placements": {
+    "Gear_Large": {
+      "xy_m": [
+        0.09173358816555192,
+        0.16091380030467362
+      ],
+      "yaw_deg": 124.4530187115061
+    },
+    "Gear_Medium": {
+      "xy_m": [
+        -0.13444781627033214,
+        -0.1740246610533948
+      ],
+      "yaw_deg": -84.87254717113655
+    },
+    "Gear_Small": {
+      "xy_m": [
+        -0.017855411474506158,
+        0.15535128683116034
+      ],
+      "yaw_deg": -176.48672987308902
+    },
+    "Waterproof_Male": {
+      "xy_m": [
+        0.08701495272685145,
+        -0.17257232450278992
+      ],
+      "yaw_deg": -13.339622381873369
+    },
+    "M12_Hex_Nut": {
+      "xy_m": [
+        -0.24291151692213397,
+        -0.06788854368061126
+      ],
+      "yaw_deg": 30.583393777958236
+    },
+    "M16_Hex_Nut": {
+      "xy_m": [
+        -0.13371716075651124,
+        -0.058535075798876145
+      ],
+      "yaw_deg": 64.70324027797429
+    },
+    "RGOCG16-50_16mm": {
+      "xy_m": [
+        -0.02703135256742164,
+        0.053433861509048414
+      ],
+      "yaw_deg": 108.22804086164723
+    },
+    "KET16_Square_16mm": {
+      "xy_m": [
+        -0.23868596677637516,
+        0.271092875825827
+      ],
+      "yaw_deg": 161.27479430964053
+    },
+    "RGOCG12-50_12mm": {
+      "xy_m": [
+        -0.12977210631575248,
+        0.16114166015278814
+      ],
+      "yaw_deg": -171.24237425187187
+    },
+    "RGOCG8-50_8mm": {
+      "xy_m": [
+        -0.13103827196095136,
+        0.2673656045004188
+      ],
+      "yaw_deg": 97.14640443938345
+    },
+    "KET12_Square_12mm": {
+      "xy_m": [
+        0.08452190612527473,
+        -0.06758054798170147
+      ],
+      "yaw_deg": -170.01418690410793
+    },
+    "KET8_Square_8mm": {
+      "xy_m": [
+        -0.030927319649476214,
+        0.26302508651898715
+      ],
+      "yaw_deg": -173.4883044605412
+    },
+    "USB_Male": {
+      "xy_m": [
+        -0.025967182992578407,
+        -0.06045044268077225
+      ],
+      "yaw_deg": -61.71414187885665
+    },
+    "DSUB_Male": {
+      "xy_m": [
+        -0.13954102916313763,
+        0.04297869101590987
+      ],
+      "yaw_deg": 115.56119948660591
+    }
+  },
+  "evaluation_only_object_poses": {
+    "Gear_Large": {
+      "position_world_m": [
+        0.09173358816555192,
+        0.16091380030467362,
+        0.010003794308182986
+      ],
+      "rotation_world": [
+        [
+          -0.16423881086253916,
+          -0.9864205983284311,
+          -0.00012727858859214763
+        ],
+        [
+          0.9864206007961094,
+          -0.16423882246335225,
+          8.672308935501104e-05
+        ],
+        [
+          -0.00010644952720563177,
+          -0.00011130692475755433,
+          0.9999999881396333
+        ]
+      ],
+      "mesh_bottom_world_z_m": -8.986642052524751e-07,
+      "image_bbox_xyxy": [
+        1063.9424120019796,
+        805.759749070742,
+        1350.4111421221842,
+        1100.2720529333203
+      ]
+    },
+    "Gear_Medium": {
+      "position_world_m": [
+        -0.13444781627033214,
+        -0.1740246610533948,
+        0.010009963576193047
+      ],
+      "rotation_world": [
+        [
+          0.3441095423105588,
+          0.9389294680527461,
+          0.00027733193919795245
+        ],
+        [
+          -0.9389293645330782,
+          0.344109638207306,
+          -0.0004531118475699059
+        ],
+        [
+          -0.0005208726592679468,
+          -0.00010447499095308778,
+          0.9999998588883144
+        ]
+      ],
+      "mesh_bottom_world_z_m": -9.200612066818242e-07,
+      "image_bbox_xyxy": [
+        2574.0837541895658,
+        1862.1018988661153,
+        2767.588626656847,
+        2045.6775127594228
+      ]
+    },
+    "Gear_Small": {
+      "position_world_m": [
+        -0.017855411474506158,
+        0.15535128683116034,
+        0.010011876818491942
+      ],
+      "rotation_world": [
+        [
+          -0.7252150661636728,
+          0.6885223266956066,
+          0.00033682471390487207
+        ],
+        [
+          -0.6885215947279655,
+          -0.7252148740322009,
+          0.0011832479529611968
+        ],
+        [
+          0.001058962926096111,
+          0.0006261981533332117,
+          0.9999992432364105
+        ]
+      ],
+      "mesh_bottom_world_z_m": -1.026058704590993e-06,
+      "image_bbox_xyxy": [
+        1187.388822419531,
+        1393.2529060242962,
+        1295.0402935608913,
+        1495.5852806985483
+      ]
+    },
+    "Waterproof_Male": {
+      "position_world_m": [
+        0.08701495272685145,
+        -0.17257232450278992,
+        0.017701174661641943
+      ],
+      "rotation_world": [
+        [
+          0.9181726252134276,
+          0.3961805483057233,
+          5.876103582717963e-05
+        ],
+        [
+          -0.39618055207541175,
+          0.9181726218322642,
+          8.169998856055356e-05
+        ],
+        [
+          -2.1584828062529697e-05,
+          -9.829467259108552e-05,
+          0.9999999949361263
+        ]
+      ],
+      "mesh_bottom_world_z_m": -8.903668414321497e-07,
+      "image_bbox_xyxy": [
+        2573.149480869015,
+        794.1003918919488,
+        2827.987915518255,
+        1119.2027464163962
+      ]
+    },
+    "M12_Hex_Nut": {
+      "position_world_m": [
+        -0.24291151692213397,
+        -0.06788854368061126,
+        0.005008396883732404
+      ],
+      "rotation_world": [
+        [
+          0.6998703241440231,
+          -0.71426990915711,
+          -0.0001620346696653197
+        ],
+        [
+          0.7142694747392672,
+          0.6998701179022909,
+          -0.0009672244437736837
+        ],
+        [
+          0.0008042625389516913,
+          0.0005611952665925119,
+          0.9999995191107051
+        ]
+      ],
+      "mesh_bottom_world_z_m": -9.151540782230405e-07,
+      "image_bbox_xyxy": [
+        2161.997381307744,
+        2364.395026539965,
+        2256.244214662237,
+        2462.753119151295
+      ]
+    },
+    "M16_Hex_Nut": {
+      "position_world_m": [
+        -0.13371716075651124,
+        -0.058535075798876145,
+        0.006509254152951056
+      ],
+      "rotation_world": [
+        [
+          -0.253812676213539,
+          -0.9672533895569358,
+          7.605221698166187e-05
+        ],
+        [
+          0.9672530635257793,
+          -0.25381252423929446,
+          0.0008447717278247519
+        ],
+        [
+          -0.0007978053119742504,
+          0.00028797551289217534,
+          0.9999996402883293
+        ]
+      ],
+      "mesh_bottom_world_z_m": -9.177727598201277e-07,
+      "image_bbox_xyxy": [
+        2113.2044003316264,
+        1891.5039423033263,
+        2233.965069340555,
+        2010.3657905823386
+      ]
+    },
+    "RGOCG16-50_16mm": {
+      "position_world_m": [
+        -0.02703135256742164,
+        0.053433861509048414,
+        0.008005938023728879
+      ],
+      "rotation_world": [
+        [
+          0.023492501049005993,
+          -0.9927453750065488,
+          0.11791828864756032
+        ],
+        [
+          -0.0031578862057718426,
+          0.117876563972002,
+          0.9930232340790753
+        ],
+        [
+          -0.9997190256012807,
+          -0.02370097190541831,
+          -0.00036576162281148905
+        ]
+      ],
+      "mesh_bottom_world_z_m": -9.329396642686338e-07,
+      "image_bbox_xyxy": [
+        1571.913294949079,
+        1436.4447103751,
+        1799.208512875479,
+        1532.5190151667468
+      ]
+    },
+    "KET16_Square_16mm": {
+      "position_world_m": [
+        -0.23868596677637516,
+        0.271092875825827,
+        0.008005575854802396
+      ],
+      "rotation_world": [
+        [
+          0.0002763840040406751,
+          -0.064971307559711,
+          -0.9978870942175091
+        ],
+        [
+          -1.7995051290374542e-05,
+          -0.9978871324924385,
+          0.06497130506767346
+        ],
+        [
+          -0.9999999616440296,
+          9.020562075079397e-17,
+          -0.0002769692032708604
+        ]
+      ],
+      "mesh_bottom_world_z_m": -9.052980260524507e-07,
+      "image_bbox_xyxy": [
+        718.4767625021668,
+        2284.0261990411477,
+        800.0574513633326,
+        2512.2384275256686
+      ]
+    },
+    "RGOCG12-50_12mm": {
+      "position_world_m": [
+        -0.12977210631575248,
+        0.16114166015278814,
+        0.006004731257913097
+      ],
+      "rotation_world": [
+        [
+          0.006862986653764169,
+          -0.2796174109508015,
+          -0.960086976740837
+        ],
+        [
+          0.022511605053632033,
+          -0.9598230650330764,
+          0.2797014684774104
+        ],
+        [
+          -0.9997230251685209,
+          -0.023532686282724036,
+          -0.0002926161638534541
+        ]
+      ],
+      "mesh_bottom_world_z_m": -9.454830684520188e-07,
+      "image_bbox_xyxy": [
+        1171.0717392052748,
+        1821.8570964156427,
+        1278.3627993298383,
+        2042.1893900908592
+      ]
+    },
+    "RGOCG8-50_8mm": {
+      "position_world_m": [
+        -0.13103827196095136,
+        0.2673656045004188,
+        0.004002766779202972
+      ],
+      "rotation_world": [
+        [
+          0.01975209187878571,
+          -0.9516381115737216,
+          0.3065856478487093
+        ],
+        [
+          -0.006560525615049662,
+          0.3065155047671606,
+          0.9518430568328935
+        ],
+        [
+          -0.9997833837237275,
+          -0.02081225450866564,
+          -0.00018892379480361932
+        ]
+      ],
+      "mesh_bottom_world_z_m": -9.388922565462324e-07,
+      "image_bbox_xyxy": [
+        657.9799581417982,
+        1889.1285510358005,
+        881.3043616715307,
+        1986.7333986293088
+      ]
+    },
+    "KET12_Square_12mm": {
+      "position_world_m": [
+        0.08452190612527473,
+        -0.06758054798170147,
+        0.0060004627970583055
+      ],
+      "rotation_world": [
+        [
+          5.188786816201496e-05,
+          0.42239383955935095,
+          -0.9064124015093562
+        ],
+        [
+          2.418007055807192e-05,
+          -0.906412402994525,
+          -0.422393838867253
+        ],
+        [
+          -0.9999999983614867,
+          3.608224830031759e-16,
+          -5.724532011075478e-05
+        ]
+      ],
+      "mesh_bottom_world_z_m": -8.996838080791228e-07,
+      "image_bbox_xyxy": [
+        2155.1811127585834,
+        866.5575311040915,
+        2283.4101803739227,
+        1099.856790594531
+      ]
+    },
+    "KET8_Square_8mm": {
+      "position_world_m": [
+        -0.030927319649476214,
+        0.26302508651898715,
+        0.004000049512657962
+      ],
+      "rotation_world": [
+        [
+          3.628149516160528e-05,
+          0.3666911411981294,
+          -0.9303427355821439
+        ],
+        [
+          1.430021684048488e-05,
+          -0.9303427362895965,
+          -0.36669114091928956
+        ],
+        [
+          -0.9999999992395785,
+          2.498001805406602e-16,
+          -3.899798831796808e-05
+        ]
+      ],
+      "mesh_bottom_world_z_m": -8.944254570597554e-07,
+      "image_bbox_xyxy": [
+        709.441593482036,
+        1392.0956875225647,
+        837.9906833735912,
+        1609.7633811990665
+      ]
+    },
+    "USB_Male": {
+      "position_world_m": [
+        -0.025967182992578407,
+        -0.06045044268077225,
+        0.0001
+      ],
+      "rotation_world": [
+        [
+          0.05731761213688297,
+          0.998355994292079,
+          0.0
+        ],
+        [
+          -0.998355994292079,
+          0.05731761213688297,
+          -0.0
+        ],
+        [
+          -0.0,
+          0.0,
+          0.9999999999999998
+        ]
+      ],
+      "mesh_bottom_world_z_m": 9.999999999999957e-05,
+      "image_bbox_xyxy": [
+        2071.5445608072996,
+        1174.2348052573839,
+        2980.0400435633856,
+        1595.2801176953376
+      ]
+    },
+    "DSUB_Male": {
+      "position_world_m": [
+        -0.13954102916313763,
+        0.04297869101590987,
+        0.021799161312361568
+      ],
+      "rotation_world": [
+        [
+          -0.6502598920524586,
+          -0.7597118353502635,
+          -4.081523066780345e-06
+        ],
+        [
+          0.7597118353612206,
+          -0.650259892043798,
+          -3.3576732356081134e-06
+        ],
+        [
+          -1.0318665244856026e-07,
+          -5.284141615866814e-06,
+          0.9999999999860336
+        ]
+      ],
+      "mesh_bottom_world_z_m": -8.829351792714879e-07,
+      "image_bbox_xyxy": [
+        1596.471016936604,
+        1869.7510552878193,
+        1851.6826200400978,
+        2104.561139744864
+      ]
+    }
+  },
+  "association_run": false,
+  "localization_run": false,
+  "limitations": [
+    "Inspection grid is not a benchmark split",
+    "LM-O drill and glue use baked source vertex colors; YCB-V drill retains its source UV texture",
+    "NIST materials are illustrative; BOP geometry uses published scale with mm-to-m conversion",
+    "Glue is upright; bottom-view descriptions and tip-down placement are excluded",
+    "Existing simplified collision geometry; no assembly mechanics validated",
+    "Ideal simulator depth does not reproduce metal-induced sensor failures"
+  ],
+  "scene_revision": "shadow-pin-usb-1",
+  "source_scene": "/mnt/c/Users/Jiabao Zhao/Documents/Codex/2026-06-02/can-you-add-this-skill-to/shadow-pin-usb-trial/state_303/initial_state_input",
+  "removed_targets": [
+    "M8_Hex_Nut"
+  ],
+  "added_targets": [],
+  "pose_change": {
+    "steps": 500,
+    "velocity_norm": 0.0,
+    "moving_targets": [],
+    "other_qpos_fixed": true
+  },
+  "camera_and_intrinsics_unchanged": true,
+  "square_pin_family": [
+    "KET16_Square_16mm",
+    "KET12_Square_12mm",
+    "KET8_Square_8mm",
+    "KET4_Square_4mm"
+  ],
+  "layout_seed": 303,
+  "resting_faces_preserved": true,
+  "placement_mode": "Fixed poses for vision only; no dynamics validation",
+  "retained_14_object_poses_unchanged": true,
+  "classification_run": false
+}

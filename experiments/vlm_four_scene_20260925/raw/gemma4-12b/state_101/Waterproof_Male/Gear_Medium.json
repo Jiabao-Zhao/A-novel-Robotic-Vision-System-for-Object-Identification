@@ -1,0 +1,270 @@
+{
+  "state": "state_101",
+  "target": "Waterproof_Male",
+  "identity": "Gear_Medium",
+  "crop_sha256": "e7ecdd04abe922e5d362f2904407adcbef08b8607f7d1cce909e4ade3e9c65a5",
+  "request": {
+    "model": "gemma4:12b",
+    "stream": false,
+    "think": false,
+    "logprobs": true,
+    "top_logprobs": 20,
+    "keep_alive": "10m",
+    "options": {
+      "temperature": 0,
+      "seed": 0,
+      "num_ctx": 4096,
+      "num_predict": 16,
+      "repeat_penalty": 1.0,
+      "presence_penalty": 0.0,
+      "frequency_penalty": 0.0,
+      "top_k": 0,
+      "top_p": 1.0,
+      "min_p": 0.0
+    },
+    "messages": [
+      {
+        "role": "system",
+        "content": "You compare a cropped image of a physical object with reference\ndescriptions derived from multiple views of one CAD model.\n\nJudge the association using only evidence visible in the image.\nThe descriptions define the target object; they do not establish\nthat the candidate is that object.\n\nReturn exactly one label: A, B, or C.\nDo not output an explanation or a numerical confidence.\n"
+      },
+      {
+        "role": "user",
+        "content": "[Task]\nDetermine whether the candidate object in the attached crop is\nvisually consistent with the target CAD object.\n\n[Target CAD descriptions]\nThe following descriptions refer to the SAME object viewed from\ndifferent angles, not to different objects.\n\n- Connector block: Connector block\n- Connector block: Rectangular connector with holes\n- Connector block: Electrical connector with round holes\n\n[Color and appearance]\nThe colors in the CAD descriptions accurately represent the physical\ntarget object. Use them as reliable reference information.\n\nCompare the candidate's visible colors, their spatial distribution,\nand their association with specific features or components.\n\nAllow reasonable appearance differences from lighting, shadows,\nand reflections. However, a clearly incompatible color on a visible\ncorresponding surface is evidence against a match.\n\nMatching color alone is insufficient when the shape or distinctive\nstructural features contradict the description.\n\n[Comparison rules]\n1. Compare the visible overall shape, relative proportions, and\n   distinctive features, such as holes, teeth, slots, protrusions,\n   and their spatial arrangement.\n\n2. Account for changes in viewpoint, perspective, lighting, and\n   partial occlusion. Features described from different CAD views\n   do not all need to be visible in this crop.\n\n3. Distinguish a feature that is not visible from a feature that is\n   visibly absent. Treat absence as a contradiction only when the\n   relevant surface or boundary is clearly visible at sufficient\n   image detail.\n\n4. Do not invent hidden features. Matching only a generic color or\n   basic shape is not enough when distinctive features cannot be\n   assessed.\n\n5. Judge whether one plausible view of the target object explains\n   the visible features together. Do not explain different features\n   using mutually incompatible object orientations.\n\n6. Evaluate the candidate object, not background pixels or nearby\n   objects. Do not infer absolute physical dimensions from crop\n   size alone.\n\n[Decision labels]\nA: MATCH SUPPORTED\nVisible distinctive features support the association, and there is\nno clear contradiction in the observable features.\n\nB: MISMATCH SUPPORTED\nAt least one clearly observable, reliable feature contradicts the\ntarget description in a way that viewpoint, occlusion, or lighting\ncannot reasonably explain.\n\nC: INSUFFICIENT EVIDENCE\nThe visible evidence is inadequate or ambiguous, so neither a match\nnor a mismatch is sufficiently supported.\n\n[Output]\nReturn exactly A, B, or C.\n",
+        "images": [
+          {
+            "file": "shadow-pin-usb-trial\\state_101\\crops\\candidate_003.png",
+            "sha256": "e7ecdd04abe922e5d362f2904407adcbef08b8607f7d1cce909e4ade3e9c65a5"
+          }
+        ]
+      }
+    ]
+  },
+  "response": {
+    "model": "gemma4:12b",
+    "created_at": "2026-09-25T16:15:56.2046255Z",
+    "message": {
+      "role": "assistant",
+      "content": "B"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "logprobs": [
+      {
+        "token": "B",
+        "logprob": -0.00010371745884185657,
+        "bytes": [
+          66
+        ],
+        "top_logprobs": [
+          {
+            "token": "B",
+            "logprob": -0.00010371745884185657,
+            "bytes": [
+              66
+            ]
+          },
+          {
+            "token": "A",
+            "logprob": -9.342127799987793,
+            "bytes": [
+              65
+            ]
+          },
+          {
+            "token": "<|channel>",
+            "logprob": -12.385945320129395,
+            "bytes": [
+              60,
+              124,
+              99,
+              104,
+              97,
+              110,
+              110,
+              101,
+              108,
+              62
+            ]
+          },
+          {
+            "token": "The",
+            "logprob": -12.499687194824219,
+            "bytes": [
+              84,
+              104,
+              101
+            ]
+          },
+          {
+            "token": "C",
+            "logprob": -12.92152214050293,
+            "bytes": [
+              67
+            ]
+          },
+          {
+            "token": "D",
+            "logprob": -13.751193046569824,
+            "bytes": [
+              68
+            ]
+          },
+          {
+            "token": "the",
+            "logprob": -13.909076690673828,
+            "bytes": [
+              116,
+              104,
+              101
+            ]
+          },
+          {
+            "token": "Care",
+            "logprob": -14.014572143554688,
+            "bytes": [
+              67,
+              97,
+              114,
+              101
+            ]
+          },
+          {
+            "token": "Based",
+            "logprob": -14.741868019104004,
+            "bytes": [
+              66,
+              97,
+              115,
+              101,
+              100
+            ]
+          },
+          {
+            "token": "1",
+            "logprob": -15.034700393676758,
+            "bytes": [
+              49
+            ]
+          },
+          {
+            "token": "_",
+            "logprob": -15.09549331665039,
+            "bytes": [
+              95
+            ]
+          },
+          {
+            "token": "M",
+            "logprob": -15.166818618774414,
+            "bytes": [
+              77
+            ]
+          },
+          {
+            "token": "Reference",
+            "logprob": -15.268891334533691,
+            "bytes": [
+              82,
+              101,
+              102,
+              101,
+              114,
+              101,
+              110,
+              99,
+              101
+            ]
+          },
+          {
+            "token": "**",
+            "logprob": -15.50649356842041,
+            "bytes": [
+              42,
+              42
+            ]
+          },
+          {
+            "token": "In",
+            "logprob": -15.614209175109863,
+            "bytes": [
+              73,
+              110
+            ]
+          },
+          {
+            "token": "Correct",
+            "logprob": -15.933259963989258,
+            "bytes": [
+              67,
+              111,
+              114,
+              114,
+              101,
+              99,
+              116
+            ]
+          },
+          {
+            "token": "Description",
+            "logprob": -15.959351539611816,
+            "bytes": [
+              68,
+              101,
+              115,
+              99,
+              114,
+              105,
+              112,
+              116,
+              105,
+              111,
+              110
+            ]
+          },
+          {
+            "token": "Decision",
+            "logprob": -16.12924575805664,
+            "bytes": [
+              68,
+              101,
+              99,
+              105,
+              115,
+              105,
+              111,
+              110
+            ]
+          },
+          {
+            "token": "Core",
+            "logprob": -16.180809020996094,
+            "bytes": [
+              67,
+              111,
+              114,
+              101
+            ]
+          },
+          {
+            "token": "Step",
+            "logprob": -16.216434478759766,
+            "bytes": [
+              83,
+              116,
+              101,
+              112
+            ]
+          }
+        ]
+      }
+    ],
+    "total_duration": 1268485300,
+    "load_duration": 1554400,
+    "prompt_eval_count": 686,
+    "prompt_eval_cached_count": 0,
+    "prompt_eval_duration": 1045438000,
+    "eval_count": 2,
+    "eval_duration": 76081000
+  },
+  "elapsed_seconds": 1.2700625999714248
+}

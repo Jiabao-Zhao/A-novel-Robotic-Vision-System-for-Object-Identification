@@ -1,0 +1,252 @@
+{
+  "state": "state_202",
+  "target": "Waterproof_Male",
+  "identity": "M16_Hex_Nut",
+  "crop_sha256": "0ba075552bcc00319db0033a5921c1693c2dd389f4f45ec5db2d02ec76429ef3",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "request": {
+    "model": "qwen3.5:9b",
+    "stream": false,
+    "think": false,
+    "logprobs": true,
+    "top_logprobs": 20,
+    "keep_alive": "10m",
+    "options": {
+      "temperature": 0,
+      "seed": 0,
+      "num_ctx": 4096,
+      "num_predict": 1,
+      "repeat_penalty": 1.0,
+      "presence_penalty": 0.0,
+      "frequency_penalty": 0.0,
+      "top_k": 0,
+      "top_p": 1.0,
+      "min_p": 0.0
+    },
+    "messages": [
+      {
+        "role": "system",
+        "content": "You compare a cropped image of a physical object with reference\ndescriptions derived from multiple views of one CAD model.\n\nJudge the association using only evidence visible in the image.\nThe descriptions define the target object; they do not establish\nthat the candidate is that object.\n\nReturn exactly one label: A, B, or C.\nDo not output an explanation or a numerical confidence.\n"
+      },
+      {
+        "role": "user",
+        "content": "[Task]\nDetermine whether the candidate object in the attached crop is\nvisually consistent with the target CAD object.\n\n[Target CAD descriptions]\nThe following descriptions refer to the SAME object viewed from\ndifferent angles, not to different objects.\n\n- Connector block: Connector block\n- Connector block: Rectangular connector with holes\n- Connector block: Electrical connector with round holes\n\n[Color and appearance]\nThe colors in the CAD descriptions accurately represent the physical\ntarget object. Use them as reliable reference information.\n\nCompare the candidate's visible colors, their spatial distribution,\nand their association with specific features or components.\n\nAllow reasonable appearance differences from lighting, shadows,\nand reflections. However, a clearly incompatible color on a visible\ncorresponding surface is evidence against a match.\n\nMatching color alone is insufficient when the shape or distinctive\nstructural features contradict the description.\n\n[Comparison rules]\n1. Compare the visible overall shape, relative proportions, and\n   distinctive features, such as holes, teeth, slots, protrusions,\n   and their spatial arrangement.\n\n2. Account for changes in viewpoint, perspective, lighting, and\n   partial occlusion. Features described from different CAD views\n   do not all need to be visible in this crop.\n\n3. Distinguish a feature that is not visible from a feature that is\n   visibly absent. Treat absence as a contradiction only when the\n   relevant surface or boundary is clearly visible at sufficient\n   image detail.\n\n4. Do not invent hidden features. Matching only a generic color or\n   basic shape is not enough when distinctive features cannot be\n   assessed.\n\n5. Judge whether one plausible view of the target object explains\n   the visible features together. Do not explain different features\n   using mutually incompatible object orientations.\n\n6. Evaluate the candidate object, not background pixels or nearby\n   objects. Do not infer absolute physical dimensions from crop\n   size alone.\n\n[Decision labels]\nA: MATCH SUPPORTED\nVisible distinctive features support the association, and there is\nno clear contradiction in the observable features.\n\nB: MISMATCH SUPPORTED\nAt least one clearly observable, reliable feature contradicts the\ntarget description in a way that viewpoint, occlusion, or lighting\ncannot reasonably explain.\n\nC: INSUFFICIENT EVIDENCE\nThe visible evidence is inadequate or ambiguous, so neither a match\nnor a mismatch is sufficiently supported.\n\n[Output]\nReturn exactly A, B, or C.\n",
+        "images": [
+          {
+            "file": "shadow-pin-usb-trial\\state_202\\crops\\candidate_009.png",
+            "sha256": "0ba075552bcc00319db0033a5921c1693c2dd389f4f45ec5db2d02ec76429ef3"
+          }
+        ]
+      }
+    ]
+  },
+  "response": {
+    "model": "qwen3.5:9b",
+    "created_at": "2026-09-25T15:51:11.2878624Z",
+    "message": {
+      "role": "assistant",
+      "content": "A"
+    },
+    "done": true,
+    "done_reason": "length",
+    "logprobs": [
+      {
+        "token": "A",
+        "logprob": -0.15862205624580383,
+        "bytes": [
+          65
+        ],
+        "top_logprobs": [
+          {
+            "token": "A",
+            "logprob": -0.15862205624580383,
+            "bytes": [
+              65
+            ]
+          },
+          {
+            "token": "C",
+            "logprob": -2.450637102127075,
+            "bytes": [
+              67
+            ]
+          },
+          {
+            "token": "B",
+            "logprob": -2.860278367996216,
+            "bytes": [
+              66
+            ]
+          },
+          {
+            "token": "Based",
+            "logprob": -6.381501197814941,
+            "bytes": [
+              66,
+              97,
+              115,
+              101,
+              100
+            ]
+          },
+          {
+            "token": "The",
+            "logprob": -6.759355068206787,
+            "bytes": [
+              84,
+              104,
+              101
+            ]
+          },
+          {
+            "token": "D",
+            "logprob": -9.06461238861084,
+            "bytes": [
+              68
+            ]
+          },
+          {
+            "token": " A",
+            "logprob": -10.072731971740723,
+            "bytes": [
+              32,
+              65
+            ]
+          },
+          {
+            "token": "<think>",
+            "logprob": -11.241053581237793,
+            "bytes": [
+              60,
+              116,
+              104,
+              105,
+              110,
+              107,
+              62
+            ]
+          },
+          {
+            "token": "Analysis",
+            "logprob": -11.560503005981445,
+            "bytes": [
+              65,
+              110,
+              97,
+              108,
+              121,
+              115,
+              105,
+              115
+            ]
+          },
+          {
+            "token": "R",
+            "logprob": -11.70110034942627,
+            "bytes": [
+              82
+            ]
+          },
+          {
+            "token": "</think>",
+            "logprob": -11.718634605407715,
+            "bytes": [
+              60,
+              47,
+              116,
+              104,
+              105,
+              110,
+              107,
+              62
+            ]
+          },
+          {
+            "token": "To",
+            "logprob": -11.75743579864502,
+            "bytes": [
+              84,
+              111
+            ]
+          },
+          {
+            "token": "**",
+            "logprob": -11.92223834991455,
+            "bytes": [
+              42,
+              42
+            ]
+          },
+          {
+            "token": "E",
+            "logprob": -11.930694580078125,
+            "bytes": [
+              69
+            ]
+          },
+          {
+            "token": " C",
+            "logprob": -12.006834983825684,
+            "bytes": [
+              32,
+              67
+            ]
+          },
+          {
+            "token": "S",
+            "logprob": -12.061738967895508,
+            "bytes": [
+              83
+            ]
+          },
+          {
+            "token": " B",
+            "logprob": -12.213723182678223,
+            "bytes": [
+              32,
+              66
+            ]
+          },
+          {
+            "token": "This",
+            "logprob": -12.292950630187988,
+            "bytes": [
+              84,
+              104,
+              105,
+              115
+            ]
+          },
+          {
+            "token": "Looking",
+            "logprob": -12.308201789855957,
+            "bytes": [
+              76,
+              111,
+              111,
+              107,
+              105,
+              110,
+              103
+            ]
+          },
+          {
+            "token": "M",
+            "logprob": -12.393238067626953,
+            "bytes": [
+              77
+            ]
+          }
+        ]
+      }
+    ],
+    "total_duration": 380619600,
+    "load_duration": 3678800,
+    "prompt_eval_count": 626,
+    "prompt_eval_cached_count": 107,
+    "prompt_eval_duration": 308500000,
+    "eval_count": 1,
+    "eval_duration": 1000
+  },
+  "elapsed_seconds": 0.3944300000439398
+}

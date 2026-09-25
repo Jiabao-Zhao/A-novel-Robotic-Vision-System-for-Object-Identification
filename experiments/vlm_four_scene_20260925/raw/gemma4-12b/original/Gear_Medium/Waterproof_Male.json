@@ -1,0 +1,226 @@
+{
+  "state": "original",
+  "target": "Gear_Medium",
+  "identity": "Waterproof_Male",
+  "crop_sha256": "41b585482c19ce36d3222b4ce188fedb570a2c64e3d131c84b65485afb23e2f0",
+  "request": {
+    "model": "gemma4:12b",
+    "stream": false,
+    "think": false,
+    "logprobs": true,
+    "top_logprobs": 20,
+    "keep_alive": "10m",
+    "options": {
+      "temperature": 0,
+      "seed": 0,
+      "num_ctx": 4096,
+      "num_predict": 16,
+      "repeat_penalty": 1.0,
+      "presence_penalty": 0.0,
+      "frequency_penalty": 0.0,
+      "top_k": 0,
+      "top_p": 1.0,
+      "min_p": 0.0
+    },
+    "messages": [
+      {
+        "role": "system",
+        "content": "You compare a cropped image of a physical object with reference\ndescriptions derived from multiple views of one CAD model.\n\nJudge the association using only evidence visible in the image.\nThe descriptions define the target object; they do not establish\nthat the candidate is that object.\n\nReturn exactly one label: A, B, or C.\nDo not output an explanation or a numerical confidence.\n"
+      },
+      {
+        "role": "user",
+        "content": "[Task]\nDetermine whether the candidate object in the attached crop is\nvisually consistent with the target CAD object.\n\n[Target CAD descriptions]\nThe following descriptions refer to the SAME object viewed from\ndifferent angles, not to different objects.\n\n- Medium gear: white gear with raised hub\n- Medium gear: white gear with central hole\n\n[Color and appearance]\nThe colors in the CAD descriptions accurately represent the physical\ntarget object. Use them as reliable reference information.\n\nCompare the candidate's visible colors, their spatial distribution,\nand their association with specific features or components.\n\nAllow reasonable appearance differences from lighting, shadows,\nand reflections. However, a clearly incompatible color on a visible\ncorresponding surface is evidence against a match.\n\nMatching color alone is insufficient when the shape or distinctive\nstructural features contradict the description.\n\n[Comparison rules]\n1. Compare the visible overall shape, relative proportions, and\n   distinctive features, such as holes, teeth, slots, protrusions,\n   and their spatial arrangement.\n\n2. Account for changes in viewpoint, perspective, lighting, and\n   partial occlusion. Features described from different CAD views\n   do not all need to be visible in this crop.\n\n3. Distinguish a feature that is not visible from a feature that is\n   visibly absent. Treat absence as a contradiction only when the\n   relevant surface or boundary is clearly visible at sufficient\n   image detail.\n\n4. Do not invent hidden features. Matching only a generic color or\n   basic shape is not enough when distinctive features cannot be\n   assessed.\n\n5. Judge whether one plausible view of the target object explains\n   the visible features together. Do not explain different features\n   using mutually incompatible object orientations.\n\n6. Evaluate the candidate object, not background pixels or nearby\n   objects. Do not infer absolute physical dimensions from crop\n   size alone.\n\n[Decision labels]\nA: MATCH SUPPORTED\nVisible distinctive features support the association, and there is\nno clear contradiction in the observable features.\n\nB: MISMATCH SUPPORTED\nAt least one clearly observable, reliable feature contradicts the\ntarget description in a way that viewpoint, occlusion, or lighting\ncannot reasonably explain.\n\nC: INSUFFICIENT EVIDENCE\nThe visible evidence is inadequate or ambiguous, so neither a match\nnor a mismatch is sufficiently supported.\n\n[Output]\nReturn exactly A, B, or C.\n",
+        "images": [
+          {
+            "file": "shadow-pin-usb-trial\\crops\\candidate_001.png",
+            "sha256": "41b585482c19ce36d3222b4ce188fedb570a2c64e3d131c84b65485afb23e2f0"
+          }
+        ]
+      }
+    ]
+  },
+  "response": {
+    "model": "gemma4:12b",
+    "created_at": "2026-09-25T16:14:10.6493696Z",
+    "message": {
+      "role": "assistant",
+      "content": "A"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "logprobs": [
+      {
+        "token": "A",
+        "logprob": -0.008974589407444,
+        "bytes": [
+          65
+        ],
+        "top_logprobs": [
+          {
+            "token": "A",
+            "logprob": -0.008974589407444,
+            "bytes": [
+              65
+            ]
+          },
+          {
+            "token": "B",
+            "logprob": -4.718430995941162,
+            "bytes": [
+              66
+            ]
+          },
+          {
+            "token": "C",
+            "logprob": -13.210705757141113,
+            "bytes": [
+              67
+            ]
+          },
+          {
+            "token": "<|channel>",
+            "logprob": -13.314173698425293,
+            "bytes": [
+              60,
+              124,
+              99,
+              104,
+              97,
+              110,
+              110,
+              101,
+              108,
+              62
+            ]
+          },
+          {
+            "token": "0",
+            "logprob": -14.56986141204834,
+            "bytes": [
+              48
+            ]
+          },
+          {
+            "token": "_",
+            "logprob": -15.454087257385254,
+            "bytes": [
+              95
+            ]
+          },
+          {
+            "token": "[",
+            "logprob": -15.610786437988281,
+            "bytes": [
+              91
+            ]
+          },
+          {
+            "token": "AA",
+            "logprob": -15.726217269897461,
+            "bytes": [
+              65,
+              65
+            ]
+          },
+          {
+            "token": "1",
+            "logprob": -15.8673677444458,
+            "bytes": [
+              49
+            ]
+          },
+          {
+            "token": "R",
+            "logprob": -16.021562576293945,
+            "bytes": [
+              82
+            ]
+          },
+          {
+            "token": "|",
+            "logprob": -16.109167098999023,
+            "bytes": [
+              124
+            ]
+          },
+          {
+            "token": "T",
+            "logprob": -16.23892593383789,
+            "bytes": [
+              84
+            ]
+          },
+          {
+            "token": "BB",
+            "logprob": -16.320138931274414,
+            "bytes": [
+              66,
+              66
+            ]
+          },
+          {
+            "token": "Y",
+            "logprob": -16.35015869140625,
+            "bytes": [
+              89
+            ]
+          },
+          {
+            "token": "Wait",
+            "logprob": -16.554405212402344,
+            "bytes": [
+              87,
+              97,
+              105,
+              116
+            ]
+          },
+          {
+            "token": "BA",
+            "logprob": -16.80552101135254,
+            "bytes": [
+              66,
+              65
+            ]
+          },
+          {
+            "token": "D",
+            "logprob": -16.824378967285156,
+            "bytes": [
+              68
+            ]
+          },
+          {
+            "token": "?",
+            "logprob": -17.03034210205078,
+            "bytes": [
+              63
+            ]
+          },
+          {
+            "token": "\\",
+            "logprob": -17.039995193481445,
+            "bytes": [
+              92
+            ]
+          },
+          {
+            "token": "I",
+            "logprob": -17.067270278930664,
+            "bytes": [
+              73
+            ]
+          }
+        ]
+      }
+    ],
+    "total_duration": 1220569000,
+    "load_duration": 2060500,
+    "prompt_eval_count": 675,
+    "prompt_eval_cached_count": 0,
+    "prompt_eval_duration": 1019772000,
+    "eval_count": 2,
+    "eval_duration": 77256000
+  },
+  "elapsed_seconds": 1.2217991999932565
+}

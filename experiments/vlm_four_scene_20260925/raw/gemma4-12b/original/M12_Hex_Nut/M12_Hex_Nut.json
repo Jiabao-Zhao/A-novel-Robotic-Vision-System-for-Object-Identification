@@ -1,0 +1,240 @@
+{
+  "state": "original",
+  "target": "M12_Hex_Nut",
+  "identity": "M12_Hex_Nut",
+  "crop_sha256": "38c0f98390b534a6792efcbe2e21a4c07ceeeea957ea1c15c814989186114245",
+  "request": {
+    "model": "gemma4:12b",
+    "stream": false,
+    "think": false,
+    "logprobs": true,
+    "top_logprobs": 20,
+    "keep_alive": "10m",
+    "options": {
+      "temperature": 0,
+      "seed": 0,
+      "num_ctx": 4096,
+      "num_predict": 16,
+      "repeat_penalty": 1.0,
+      "presence_penalty": 0.0,
+      "frequency_penalty": 0.0,
+      "top_k": 0,
+      "top_p": 1.0,
+      "min_p": 0.0
+    },
+    "messages": [
+      {
+        "role": "system",
+        "content": "You compare a cropped image of a physical object with reference\ndescriptions derived from multiple views of one CAD model.\n\nJudge the association using only evidence visible in the image.\nThe descriptions define the target object; they do not establish\nthat the candidate is that object.\n\nReturn exactly one label: A, B, or C.\nDo not output an explanation or a numerical confidence.\n"
+      },
+      {
+        "role": "user",
+        "content": "[Task]\nDetermine whether the candidate object in the attached crop is\nvisually consistent with the target CAD object.\n\n[Target CAD descriptions]\nThe following descriptions refer to the SAME object viewed from\ndifferent angles, not to different objects.\n\n- M12 hex nut: Gray hex nut with central hole\n- M12 hex nut: Gray hexagonal nut\n\n[Color and appearance]\nThe colors in the CAD descriptions accurately represent the physical\ntarget object. Use them as reliable reference information.\n\nCompare the candidate's visible colors, their spatial distribution,\nand their association with specific features or components.\n\nAllow reasonable appearance differences from lighting, shadows,\nand reflections. However, a clearly incompatible color on a visible\ncorresponding surface is evidence against a match.\n\nMatching color alone is insufficient when the shape or distinctive\nstructural features contradict the description.\n\n[Comparison rules]\n1. Compare the visible overall shape, relative proportions, and\n   distinctive features, such as holes, teeth, slots, protrusions,\n   and their spatial arrangement.\n\n2. Account for changes in viewpoint, perspective, lighting, and\n   partial occlusion. Features described from different CAD views\n   do not all need to be visible in this crop.\n\n3. Distinguish a feature that is not visible from a feature that is\n   visibly absent. Treat absence as a contradiction only when the\n   relevant surface or boundary is clearly visible at sufficient\n   image detail.\n\n4. Do not invent hidden features. Matching only a generic color or\n   basic shape is not enough when distinctive features cannot be\n   assessed.\n\n5. Judge whether one plausible view of the target object explains\n   the visible features together. Do not explain different features\n   using mutually incompatible object orientations.\n\n6. Evaluate the candidate object, not background pixels or nearby\n   objects. Do not infer absolute physical dimensions from crop\n   size alone.\n\n[Decision labels]\nA: MATCH SUPPORTED\nVisible distinctive features support the association, and there is\nno clear contradiction in the observable features.\n\nB: MISMATCH SUPPORTED\nAt least one clearly observable, reliable feature contradicts the\ntarget description in a way that viewpoint, occlusion, or lighting\ncannot reasonably explain.\n\nC: INSUFFICIENT EVIDENCE\nThe visible evidence is inadequate or ambiguous, so neither a match\nnor a mismatch is sufficiently supported.\n\n[Output]\nReturn exactly A, B, or C.\n",
+        "images": [
+          {
+            "file": "shadow-pin-usb-trial\\crops\\candidate_013.png",
+            "sha256": "38c0f98390b534a6792efcbe2e21a4c07ceeeea957ea1c15c814989186114245"
+          }
+        ]
+      }
+    ]
+  },
+  "response": {
+    "model": "gemma4:12b",
+    "created_at": "2026-09-25T16:14:25.5714919Z",
+    "message": {
+      "role": "assistant",
+      "content": "A"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "logprobs": [
+      {
+        "token": "A",
+        "logprob": -1.6808651707833633e-05,
+        "bytes": [
+          65
+        ],
+        "top_logprobs": [
+          {
+            "token": "A",
+            "logprob": -1.6808651707833633e-05,
+            "bytes": [
+              65
+            ]
+          },
+          {
+            "token": "B",
+            "logprob": -11.011344909667969,
+            "bytes": [
+              66
+            ]
+          },
+          {
+            "token": "<|channel>",
+            "logprob": -15.199065208435059,
+            "bytes": [
+              60,
+              124,
+              99,
+              104,
+              97,
+              110,
+              110,
+              101,
+              108,
+              62
+            ]
+          },
+          {
+            "token": "1",
+            "logprob": -17.228282928466797,
+            "bytes": [
+              49
+            ]
+          },
+          {
+            "token": "C",
+            "logprob": -17.66277503967285,
+            "bytes": [
+              67
+            ]
+          },
+          {
+            "token": "_",
+            "logprob": -17.787649154663086,
+            "bytes": [
+              95
+            ]
+          },
+          {
+            "token": "R",
+            "logprob": -17.929935455322266,
+            "bytes": [
+              82
+            ]
+          },
+          {
+            "token": "T",
+            "logprob": -18.137420654296875,
+            "bytes": [
+              84
+            ]
+          },
+          {
+            "token": "**",
+            "logprob": -18.184804916381836,
+            "bytes": [
+              42,
+              42
+            ]
+          },
+          {
+            "token": "0",
+            "logprob": -18.38282585144043,
+            "bytes": [
+              48
+            ]
+          },
+          {
+            "token": "D",
+            "logprob": -18.744836807250977,
+            "bytes": [
+              68
+            ]
+          },
+          {
+            "token": "AA",
+            "logprob": -18.968915939331055,
+            "bytes": [
+              65,
+              65
+            ]
+          },
+          {
+            "token": "a",
+            "logprob": -19.073286056518555,
+            "bytes": [
+              97
+            ]
+          },
+          {
+            "token": "Wait",
+            "logprob": -19.166152954101562,
+            "bytes": [
+              87,
+              97,
+              105,
+              116
+            ]
+          },
+          {
+            "token": "@",
+            "logprob": -19.176910400390625,
+            "bytes": [
+              64
+            ]
+          },
+          {
+            "token": "[",
+            "logprob": -19.215166091918945,
+            "bytes": [
+              91
+            ]
+          },
+          {
+            "token": "P",
+            "logprob": -19.46291160583496,
+            "bytes": [
+              80
+            ]
+          },
+          {
+            "token": "Analysis",
+            "logprob": -19.57061195373535,
+            "bytes": [
+              65,
+              110,
+              97,
+              108,
+              121,
+              115,
+              105,
+              115
+            ]
+          },
+          {
+            "token": "Reference",
+            "logprob": -19.584569931030273,
+            "bytes": [
+              82,
+              101,
+              102,
+              101,
+              114,
+              101,
+              110,
+              99,
+              101
+            ]
+          },
+          {
+            "token": ".",
+            "logprob": -19.61628532409668,
+            "bytes": [
+              46
+            ]
+          }
+        ]
+      }
+    ],
+    "total_duration": 864892300,
+    "load_duration": 2154600,
+    "prompt_eval_count": 684,
+    "prompt_eval_cached_count": 173,
+    "prompt_eval_duration": 611423000,
+    "eval_count": 2,
+    "eval_duration": 92112000
+  },
+  "elapsed_seconds": 0.8665858999593183
+}
