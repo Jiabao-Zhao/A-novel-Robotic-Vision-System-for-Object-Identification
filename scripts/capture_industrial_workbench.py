@@ -12,16 +12,33 @@ from simulation.industrial_workbench import (
     ROOT, TABLE_SIZE_M, TABLE_TOP_Z_M, FLOOR_Z_M, prepare_catalog,
     preview_placements, configure_scene,
 )
-from simulation.wrist_cluster import CAMERA, make_environment
+from simulation.wrist_cluster import CAMERA, SEED, OBSERVATION_CAMERA_POSITION_M, make_environment
 
 
 OUTPUT = ROOT / "outputs/simulation/industrial_workbench"
 IMAGE_SIZE = 3840
 
 
+def prepare_observation(environment, seed=SEED):
+    """Move to the existing observation view using robot/camera calibration only."""
+    from robosuite.utils.transform_utils import quat2mat
+    from simulation.libero_control import OPEN_GRIPPER, hold_gripper, move_eef_to_pose
+    from simulation.libero_sensor import LiberoRGBDSensor
+
+    raw = environment.reset(seed=seed)
+    environment.set_control_mode('relative')
+    raw = hold_gripper(environment, raw, OPEN_GRIPPER, 'settle', 30)
+    observation = LiberoRGBDSensor(environment, CAMERA).capture(raw)
+    pose = np.eye(4)
+    pose[:3, :3] = quat2mat(raw['robot0_eef_quat'])
+    pose[:3, 3] = raw['robot0_eef_pos'] + np.array(OBSERVATION_CAMERA_POSITION_M) - observation.world_T_camera[:3, 3]
+    raw = move_eef_to_pose(environment, raw, pose, OPEN_GRIPPER, 'wrist_observation_pose')
+    raw = hold_gripper(environment, raw, OPEN_GRIPPER, 'settle_observation_pose', 20)
+    return raw
+
+
 def main():
     import open3d as o3d
-    from scripts.run_wrist_cluster import prepare_observation
     from robosuite.utils.camera_utils import (
         get_camera_extrinsic_matrix, get_camera_intrinsic_matrix, get_real_depth_map,
     )

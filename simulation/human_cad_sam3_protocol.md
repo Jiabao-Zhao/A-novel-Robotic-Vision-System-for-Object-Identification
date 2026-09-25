@@ -1,83 +1,77 @@
-# Human-guided CAD / SAM3 experiment decisions
+# Current Human-Guided CAD / SAM3 Protocol
 
-Status: revised scene and asset preparation; the complete scoring experiment has
-not yet been run on this scene. Historical captures and reports remain unchanged.
+This document supersedes the earlier pooled/deduplicated proposal protocol and
+the SAM3 >0.8 gate. The full method, equations, source map and local artifact
+locations are in the root [README](../README.md).
 
-## Products
+## Fixed Decisions
 
-Retain the three NIST gears, three hex nuts, Waterproof Male, DSUB Male, round
-pin, and rectangular pin. Add official BOP LM-O drill (8), LM-O glue bottle (11),
-and YCB-V power drill (15): 13 objects in total. Exclude spacer, bearing, pulley,
-Cable Shark, BNC Male, and USB Male from this experiment. The later screwdriver
-and tape-measure demonstration assets are not part of this original-scene revision.
+- Keep the approved 13-object industrial workbench and native metric CAD assets.
+- The operator determines useful CAD render count/angles, task intent and quantity.
+  Gear top/bottom views and nut top/side views are distinct branches. Revision 4
+  removed all gear side-oblique views and set both waterproof-male side elevations
+  to zero degrees. The glue
+  bottle excludes bottom views. Both drills retain only the two approved views.
+- Send one CAD image per request to local Qwen3.5-4B using the locked user prompt
+  in `docs/cad_view_prompt.txt`. Generate one description per view. The five-word
+  rule is retained as a soft instruction: keep overlength descriptions verbatim and
+  score them normally, without trimming, rejecting, or automatically re-prompting.
+  The latest user-authorized rule prohibits numeric feature counts (digits or
+  words), with `Gray rectangular panel with ten circular holes` as a bad example.
+  Do not change any other wording or examples; notify the user of accidental changes.
+  Historical multi-image prompts/results remain historical, not the current template.
+- Query SAM3 separately for each description, reusing its scene embedding. Do not
+  concatenate descriptions and do not merge duplicate masks across branches.
+- For every branch, compare each mask only to that branch's corresponding CAD view
+  with DINOv2 CLS, foreground patches and projected mask/depth penalties.
+- The gear and remaining-product trials use SAM3 confidence strictly >0.5 for
+  exported/scored masks; no NMS or cross-branch merging. Raw tensors retain the
+  internal query slots. The waterproof-only four-side trial instead uses >0.4.
+  This cutoff prunes expensive downstream work, not target correctness or final
+  acceptance, and does not reduce the 200 internal SAM3 slots. Record counts and
+  stage times; verify useful candidates survive. Historical ungated trials remain ungated. Preserve
+  null/unavailable statuses for structural failures; no invented scores.
+- Fit CAD translation with fixed branch orientation and native scale. No estimated
+  table penetration filter, no external-occluder carving, no ground-truth pose input.
+- Use equal mean observation-only/CAD-only/depth penalties and the documented
+  `(global + patch + r * geometry) / (2 + r)` fusion. Depth residual scale is 5 mm.
+- Rank inside each branch. Winner masks must agree on one instance (IoU >0.8) for
+  the existing agreement decision. Multiple plausible instances for a singular
+  request, disagreement or no usable candidate requires human clarification.
 
-`python -m scripts.capture_industrial_workbench` saves a new timestamped capture.
-Source BOP dimensions are converted from millimetres to metres without resizing.
-LM-O vertex colors are baked into textures; the YCB-V texture is retained.
-The LM-O drill rests on its side. The glue bottle rests upright, nozzle up.
+## Evidence and Next Work
 
-## Human and VLM roles
+The new remaining-product batch uses the same locked prompt and score computation
+for the other ten products and all 25 approved CAD views (50 branches across two
+scenes per target). The second scene is a target-only world-vertical yaw180 turn,
+with the same resting face, fixed other objects and fixed calibration. This is not
+a bottom flip; the glue bottle stays upright. Symmetric parts can remain visually
+equivalent. Save raw descriptions unchanged, all retained per-mask component scores,
+zero-detection branches and clarification decisions under `remaining-product-trial`
+in the local workspace. No weights, final acceptance gate or CAD views are changed.
 
-The operator supplies task intent and quantity, chooses useful CAD description
-views, reviews descriptions, and resolves ambiguous physical instances at runtime.
-View selection should reflect feasible tabletop poses, not a fixed all-sides list.
-The glue bottle excludes the bottom view and tip-down placement. Front, side, and
-upper-oblique views are proposed, but the operator has not fixed their exact angles
-or count. A supported side-resting pose could be added later; do not assume every
-product must always be upright. Description views and matching templates are
-separate sets, both subject to the experiment's support/visibility assumptions.
+The later `waterproof-all-sides-trial` uses the authorized no-count prompt and
+exactly four approved directions: Top, Bottom, Side A and Side /180. No additional
+end-face tests. All four descriptions query each scene independently, giving
+16 branches and 49 fully scored masks at >0.4. Side A is a residual-motion
+diagnostic, not a settled pose; the other three pass the checks. Four branches
+are empty due to the erroneous sofa description, and all scenes require
+clarification. A post-hoc >0.5 filter on the same outputs would retain 37 masks
+but remove a correct Side A/04A candidate at 0.4406. Do not equate lower confidence
+with uselessness. The top scene is frozen, but both prompt and pruning cutoff
+changed versus the prior experiment, so this is not a prompt-only ablation.
 
-Use independent short VLM descriptions as separate SAM3 queries, reusing the scene
-embedding. Pool candidate hypotheses and deduplicate repeated physical instances,
-not different objects. Never concatenate the phrases into a single query for this
-protocol. SAM3 score >0.8 is an exploratory proposal cutoff, not target correctness.
-Preserve lower-score outputs for candidate-recall diagnostics.
+The completed batch covers 13 targets and 34 views. The later ungated run covers
+only 21 previously uncomputed branches, not every branch. The active statistics
+must retain that distinction. Post-hoc bbox IoU >=0.5 assigns audit labels only;
+an unresolved label is not automatically an incorrect object or poor-quality mask.
 
-## Restored descriptors and fusion
+No final SAM3/combined gate or score weighting is validated. Tune one object and
+one controlled factor at a time, beginning with the large-gear side-view failure.
+Keep raw prompts, output, masks and score components. Validate on different poses
+and scenes before claiming generalization. Prompt optimization is not permission
+to change the scoring equation or the approved CAD views silently.
 
-Restore frozen DINOv2 global CLS and foreground patch descriptors for CAD/candidate
-comparison. Existing reusable code: `scripts/sam6d_patch_matching.py` and the local
-`dinov2_vitl14` feature path in `scripts/run_surface_verification.py`.
-
-The proposed SAM6D starting fusion is:
-
-    S = (S_semantic + S_appearance + r_visible * S_geometry) / (2 + r_visible)
-
-Do not silently reuse the historical comparator's 0.25/0.25/0.50 weights. Do not
-change historical experiment scripts or results just to declare this new protocol.
-SAM6D top-five semantic aggregation needs at least five matching templates; the
-operator's two or three VLM description views must not be mistaken for this bank.
-
-## Recovered image-space penalty
-
-Source: cloud conversation "CAD Based Classification Methods", conversation
-`6aa80c4e-8a90-83ea-a5af-0c68440fab82`, turn
-`b0297f08-6865-464c-a98f-4ed4810ef9e9`.
-
-For observed mask O and aligned visible CAD mask C, U = O union C:
-
-    P_obs = |O minus C| / |U|
-    P_cad = |C minus O| / |U|
-    P_depth = mean(clip(abs(D_obs - D_cad) / sigma_d, 0, 1)) on O intersect C
-    S_geometry = 1 - (P_obs + P_cad + P_depth) / 3
-
-This retrieved version is evaluated in the 2D image plane but includes a depth
-residual. It is not a pure silhouette-only equation. The existing implementation
-is `equal_penalty_scores` in `scripts/surface_verification.py`, with sigma_d=5 mm.
-It excludes external occlusion and invalid depth; the target's own pixels cannot
-excuse a wrong CAD depth as occlusion. No overlap yields an unavailable score.
-Do not substitute a 3D nearest-neighbor penalty or silently remove the depth term.
-
-If a mask-only variant is requested explicitly, the symmetric-difference penalty
-P_obs + P_cad equals 1 - mask IoU. It must be labeled as a separate ablation.
-The historical one-third weighting compresses the shape contribution; thresholds
-must be evaluated, not interpreted as probabilities.
-
-## Decision and evaluation
-
-Retain distinct candidates through verification. No passing candidate means reject
-or clarify; multiple passing candidates for a singular request mean ask the human.
-Plural requests require quantity/selection constraints. A lone high-scoring mask
-is not proof of correct identity. Keep raw component scores and view provenance.
-No score, acceptance threshold, or expected accuracy has been validated on this
-revised easier object set. It is a development scene, not a representative benchmark.
+The broader VLM task-extraction/dialogue and cosine CAD-retrieval stages are the
+intended runtime design; the present controlled tests use known CAD targets.
+The clarification decision is not yet a full deployed human interaction loop.

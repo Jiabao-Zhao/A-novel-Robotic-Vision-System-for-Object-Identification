@@ -17,6 +17,30 @@ PRODUCTS = {
 }
 
 
+def texture_coordinates(path, vertex_count):
+    """Read the per-vertex texture coordinates in the official ASCII YCB PLYs."""
+    from PIL import Image
+
+    with path.open() as stream:
+        header = []
+        while True:
+            line = stream.readline().strip()
+            header.append(line)
+            if line == 'end_header':
+                break
+        assert 'format ascii 1.0' in header
+        begin = header.index(f'element vertex {vertex_count}') + 1
+        properties = []
+        for line in header[begin:]:
+            if not line.startswith('property '):
+                break
+            properties.append(line.split()[-1])
+        uv = np.loadtxt(stream, max_rows=vertex_count,
+                        usecols=[properties.index('texture_u'), properties.index('texture_v')])
+        filename = next(line.split()[-1] for line in header if line.startswith('comment TextureFile'))
+    return uv, np.asarray(Image.open(path.parent / filename).convert('RGB'))
+
+
 def vertex_color_texture(mesh):
     """Bake interpolated PLY vertex colors into padded per-triangle UV tiles."""
     import open3d as o3d
@@ -42,7 +66,6 @@ def vertex_color_texture(mesh):
 
 def prepare_products():
     import open3d as o3d
-    from scripts.show_bop_model_catalogs import texture_coordinates
 
     catalog = {}
     for name, (dataset, object_id, description) in PRODUCTS.items():
