@@ -2,6 +2,24 @@
 
 ## Latest Classification Study: Start Here
 
+**2026-09-26: the newer [local family-association ablation](experiments/family_association_20260926/README.md)
+is now versioned**, with 1,452 new Qwen4B/Qwen9B/Gemma calls and direct comparisons
+against the unchanged baseline. It changes the prompt and descriptions to
+product-family association. It is not the unrun name-and-color-only proposal.
+
+Results created in the external Windows experiment workspace are not automatically
+visible to Git. Export reviewed family-ablation evidence into this checkout with:
+
+```powershell
+python tools/publish_family_results.py --workspace "C:/Users/Jiabao Zhao/Documents/Codex/2026-06-02/can-you-add-this-skill-to" --repo . --name family_association_YYYYMMDD
+python tools/verify_family_results.py experiments/family_association_YYYYMMDD
+```
+
+Use a new folder name for each completed revision. The exporter preserves existing
+folders and does not commit or push; review, commit and push the exported files
+to make them available to GPT Cloud. Reviewed results under `experiments/` are
+trackable; runtime outputs, weights, caches and credentials remain excluded.
+
 **2026-09-25 cloud handoff:** read the
 [four-scene VLM report](experiments/vlm_four_scene_20260925/README.md) for the
 latest classification experiments, exact prompts, input images, all 1,936 raw

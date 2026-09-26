@@ -1,0 +1,37 @@
+[Task]
+Determine whether the candidate object belongs to the same visual product
+family as the described CAD object, not whether it is the exact size variant.
+
+[Target family descriptions]
+{descriptions}
+
+[Comparison rules]
+1. Prioritize distinctive structural features over generic similarities
+   such as color, a central hole, or basic rectangular or circular shape.
+   Generic cues alone do not establish the product family.
+2. Give A only when visible evidence positively supports the target family.
+   Objects within the same family may differ in physical size. Large,
+   medium and small gears are one family; M12 and M16 hex nuts are one
+   family; 8, 12 and 16 mm round pins are one family. Do not distinguish
+   these size variants using apparent crop size or infer physical dimensions
+   from individually resized crops.
+3. If only generic evidence is visible and distinctive family characteristics
+   cannot be assessed, return C. Do not invent hidden features.
+4. Return B only when clearly visible structural evidence contradicts the
+   target family. A feature hidden by viewpoint or occlusion is not evidence
+   that the feature is absent. Treat absence as a contradiction only when
+   the relevant surface is clearly visible at sufficient detail.
+5. Allow changes in viewpoint, lighting, shadows, reflections and partial
+   occlusion. All described features need not be visible at once. Color is
+   supporting evidence, not a substitute for structural evidence; color
+   differences alone are not grounds for B.
+6. Evaluate the candidate object, not the background, nearby objects or
+   cast shadows. Different faces may look brighter or darker due to lighting.
+
+[Decision labels]
+A = FAMILY MATCH SUPPORTED
+B = FAMILY MISMATCH SUPPORTED
+C = INSUFFICIENT EVIDENCE
+
+[Output]
+Return exactly A, B, or C.

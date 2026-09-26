@@ -1,0 +1,240 @@
+{
+  "state": "state_101",
+  "target": "M12_Hex_Nut",
+  "identity": "RGOCG16-50_16mm",
+  "crop_sha256": "552c7b7003b70b464999fe0b15088e739e126bb17da93e39400520c81be1c324",
+  "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+  "request": {
+    "model": "qwen3.5:4b",
+    "stream": false,
+    "think": false,
+    "logprobs": true,
+    "top_logprobs": 20,
+    "keep_alive": "10m",
+    "options": {
+      "temperature": 0,
+      "seed": 0,
+      "num_ctx": 4096,
+      "num_predict": 1,
+      "repeat_penalty": 1.0,
+      "presence_penalty": 0.0,
+      "frequency_penalty": 0.0,
+      "top_k": 0,
+      "top_p": 1.0,
+      "min_p": 0.0
+    },
+    "messages": [
+      {
+        "role": "system",
+        "content": "You compare a cropped image of a physical object with short descriptions\nof a target CAD object's visual product family.\n\nJudge family association using only evidence visible in the image.\nThe descriptions define the target family; they do not establish\nthat the candidate belongs to that family.\n\nReturn exactly one label: A, B, or C.\nDo not output an explanation or a numerical confidence.\n"
+      },
+      {
+        "role": "user",
+        "content": "[Task]\nDetermine whether the candidate object belongs to the same visual product\nfamily as the described CAD object, not whether it is the exact size variant.\n\n[Target family descriptions]\n- Gray hexagonal nut with central through-hole\n- Six flat outer sides with no perimeter teeth\n\n[Comparison rules]\n1. Prioritize distinctive structural features over generic similarities\n   such as color, a central hole, or basic rectangular or circular shape.\n   Generic cues alone do not establish the product family.\n2. Give A only when visible evidence positively supports the target family.\n   Objects within the same family may differ in physical size. Large,\n   medium and small gears are one family; M12 and M16 hex nuts are one\n   family; 8, 12 and 16 mm round pins are one family. Do not distinguish\n   these size variants using apparent crop size or infer physical dimensions\n   from individually resized crops.\n3. If only generic evidence is visible and distinctive family characteristics\n   cannot be assessed, return C. Do not invent hidden features.\n4. Return B only when clearly visible structural evidence contradicts the\n   target family. A feature hidden by viewpoint or occlusion is not evidence\n   that the feature is absent. Treat absence as a contradiction only when\n   the relevant surface is clearly visible at sufficient detail.\n5. Allow changes in viewpoint, lighting, shadows, reflections and partial\n   occlusion. All described features need not be visible at once. Color is\n   supporting evidence, not a substitute for structural evidence; color\n   differences alone are not grounds for B.\n6. Evaluate the candidate object, not the background, nearby objects or\n   cast shadows. Different faces may look brighter or darker due to lighting.\n\n[Decision labels]\nA = FAMILY MATCH SUPPORTED\nB = FAMILY MISMATCH SUPPORTED\nC = INSUFFICIENT EVIDENCE\n\n[Output]\nReturn exactly A, B, or C.\n",
+        "images": [
+          {
+            "file": "shadow-pin-usb-trial\\state_101\\crops\\candidate_004.png",
+            "sha256": "552c7b7003b70b464999fe0b15088e739e126bb17da93e39400520c81be1c324"
+          }
+        ]
+      }
+    ]
+  },
+  "response": {
+    "model": "qwen3.5:4b",
+    "created_at": "2026-09-25T22:07:48.4708796Z",
+    "message": {
+      "role": "assistant",
+      "content": "C"
+    },
+    "done": true,
+    "done_reason": "length",
+    "logprobs": [
+      {
+        "token": "C",
+        "logprob": -0.15313272178173065,
+        "bytes": [
+          67
+        ],
+        "top_logprobs": [
+          {
+            "token": "C",
+            "logprob": -0.15313272178173065,
+            "bytes": [
+              67
+            ]
+          },
+          {
+            "token": "B",
+            "logprob": -2.3384850025177,
+            "bytes": [
+              66
+            ]
+          },
+          {
+            "token": "A",
+            "logprob": -3.1089508533477783,
+            "bytes": [
+              65
+            ]
+          },
+          {
+            "token": "The",
+            "logprob": -7.457761287689209,
+            "bytes": [
+              84,
+              104,
+              101
+            ]
+          },
+          {
+            "token": "D",
+            "logprob": -10.040522575378418,
+            "bytes": [
+              68
+            ]
+          },
+          {
+            "token": "<think>",
+            "logprob": -10.304932594299316,
+            "bytes": [
+              60,
+              116,
+              104,
+              105,
+              110,
+              107,
+              62
+            ]
+          },
+          {
+            "token": "c",
+            "logprob": -10.438292503356934,
+            "bytes": [
+              99
+            ]
+          },
+          {
+            "token": "To",
+            "logprob": -10.768841743469238,
+            "bytes": [
+              84,
+              111
+            ]
+          },
+          {
+            "token": "None",
+            "logprob": -11.31817626953125,
+            "bytes": [
+              78,
+              111,
+              110,
+              101
+            ]
+          },
+          {
+            "token": "Based",
+            "logprob": -11.638311386108398,
+            "bytes": [
+              66,
+              97,
+              115,
+              101,
+              100
+            ]
+          },
+          {
+            "token": "R",
+            "logprob": -11.967135429382324,
+            "bytes": [
+              82
+            ]
+          },
+          {
+            "token": "No",
+            "logprob": -12.146129608154297,
+            "bytes": [
+              78,
+              111
+            ]
+          },
+          {
+            "token": "3",
+            "logprob": -12.21323013305664,
+            "bytes": [
+              51
+            ]
+          },
+          {
+            "token": "Image",
+            "logprob": -12.285677909851074,
+            "bytes": [
+              73,
+              109,
+              97,
+              103,
+              101
+            ]
+          },
+          {
+            "token": "G",
+            "logprob": -12.422643661499023,
+            "bytes": [
+              71
+            ]
+          },
+          {
+            "token": "N",
+            "logprob": -12.608515739440918,
+            "bytes": [
+              78
+            ]
+          },
+          {
+            "token": "X",
+            "logprob": -12.63582706451416,
+            "bytes": [
+              88
+            ]
+          },
+          {
+            "token": "Looking",
+            "logprob": -12.686930656433105,
+            "bytes": [
+              76,
+              111,
+              111,
+              107,
+              105,
+              110,
+              103
+            ]
+          },
+          {
+            "token": "T",
+            "logprob": -12.704340934753418,
+            "bytes": [
+              84
+            ]
+          },
+          {
+            "token": "If",
+            "logprob": -12.72004222869873,
+            "bytes": [
+              73,
+              102
+            ]
+          }
+        ]
+      }
+    ],
+    "total_duration": 384004200,
+    "load_duration": 1031200,
+    "prompt_eval_count": 548,
+    "prompt_eval_cached_count": 81,
+    "prompt_eval_duration": 231404000,
+    "eval_count": 1,
+    "eval_duration": 1000
+  },
+  "elapsed_seconds": 0.38515489996643737
+}
