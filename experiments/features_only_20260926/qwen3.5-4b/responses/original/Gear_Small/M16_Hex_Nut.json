@@ -1,0 +1,242 @@
+{
+  "state": "original",
+  "target": "Gear_Small",
+  "identity": "M16_Hex_Nut",
+  "crop_sha256": "4ba340c5f9b0438cf39ee0b2a365c9fca0767eaad2c4a4642c4a0ade665bff5c",
+  "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+  "request": {
+    "model": "qwen3.5:4b",
+    "stream": false,
+    "think": false,
+    "logprobs": true,
+    "top_logprobs": 20,
+    "keep_alive": "10m",
+    "options": {
+      "temperature": 0,
+      "seed": 0,
+      "num_ctx": 4096,
+      "num_predict": 1,
+      "repeat_penalty": 1.0,
+      "presence_penalty": 0.0,
+      "frequency_penalty": 0.0,
+      "top_k": 0,
+      "top_p": 1.0,
+      "min_p": 0.0
+    },
+    "messages": [
+      {
+        "role": "system",
+        "content": "You compare visible physical features in a candidate image with a supplied physical description. Return exactly one label: A, B, or C. Do not explain your answer.\n"
+      },
+      {
+        "role": "user",
+        "content": "[Task]\nGiven the cropped candidate image and the physical description below, determine whether the visible candidate features are consistent with the target feature configuration.\n\n[Physical description]\n- White circular body with repeated teeth along the outer perimeter.\n- Central circular opening with a raised central region around it.\n\n[Comparison rules]\n- Compare physical appearance, geometry, feature arrangement, and spatial relationships.\n- Distinctive structural configurations matter more than generic color or basic shape.\n- A visible matching feature supports association; a clearly contradictory visible feature supports mismatch.\n- If a distinguishing feature is hidden, occluded, or too unclear to evaluate, do not treat it as absent.\n- Do not infer hidden features, function, product identity, or physical dimensions from crop size.\n- Allow reasonable changes in viewpoint, lighting, shadows, and partial occlusion.\n\n[Output]\nReturn exactly one label:\nA = target feature configuration supported\nB = target feature configuration contradicted\nC = insufficient visible evidence\n",
+        "images": [
+          {
+            "file": "shadow-pin-usb-trial\\crops\\candidate_009.png",
+            "sha256": "4ba340c5f9b0438cf39ee0b2a365c9fca0767eaad2c4a4642c4a0ade665bff5c"
+          }
+        ]
+      }
+    ]
+  },
+  "response": {
+    "model": "qwen3.5:4b",
+    "created_at": "2026-09-26T20:30:44.3752581Z",
+    "message": {
+      "role": "assistant",
+      "content": "A"
+    },
+    "done": true,
+    "done_reason": "length",
+    "logprobs": [
+      {
+        "token": "A",
+        "logprob": -0.5055084228515625,
+        "bytes": [
+          65
+        ],
+        "top_logprobs": [
+          {
+            "token": "A",
+            "logprob": -0.5055084228515625,
+            "bytes": [
+              65
+            ]
+          },
+          {
+            "token": "B",
+            "logprob": -1.4746952056884766,
+            "bytes": [
+              66
+            ]
+          },
+          {
+            "token": "C",
+            "logprob": -1.790298581123352,
+            "bytes": [
+              67
+            ]
+          },
+          {
+            "token": "The",
+            "logprob": -7.074241638183594,
+            "bytes": [
+              84,
+              104,
+              101
+            ]
+          },
+          {
+            "token": "To",
+            "logprob": -10.7857666015625,
+            "bytes": [
+              84,
+              111
+            ]
+          },
+          {
+            "token": "D",
+            "logprob": -11.553105354309082,
+            "bytes": [
+              68
+            ]
+          },
+          {
+            "token": " A",
+            "logprob": -11.868902206420898,
+            "bytes": [
+              32,
+              65
+            ]
+          },
+          {
+            "token": "a",
+            "logprob": -12.095796585083008,
+            "bytes": [
+              97
+            ]
+          },
+          {
+            "token": "c",
+            "logprob": -12.13720703125,
+            "bytes": [
+              99
+            ]
+          },
+          {
+            "token": "CA",
+            "logprob": -12.209999084472656,
+            "bytes": [
+              67,
+              65
+            ]
+          },
+          {
+            "token": "<think>",
+            "logprob": -12.261381149291992,
+            "bytes": [
+              60,
+              116,
+              104,
+              105,
+              110,
+              107,
+              62
+            ]
+          },
+          {
+            "token": "An",
+            "logprob": -12.334386825561523,
+            "bytes": [
+              65,
+              110
+            ]
+          },
+          {
+            "token": "AC",
+            "logprob": -12.390624046325684,
+            "bytes": [
+              65,
+              67
+            ]
+          },
+          {
+            "token": "Let",
+            "logprob": -12.410639762878418,
+            "bytes": [
+              76,
+              101,
+              116
+            ]
+          },
+          {
+            "token": "None",
+            "logprob": -12.422197341918945,
+            "bytes": [
+              78,
+              111,
+              110,
+              101
+            ]
+          },
+          {
+            "token": "We",
+            "logprob": -12.446956634521484,
+            "bytes": [
+              87,
+              101
+            ]
+          },
+          {
+            "token": "Looking",
+            "logprob": -12.462257385253906,
+            "bytes": [
+              76,
+              111,
+              111,
+              107,
+              105,
+              110,
+              103
+            ]
+          },
+          {
+            "token": "G",
+            "logprob": -12.493246078491211,
+            "bytes": [
+              71
+            ]
+          },
+          {
+            "token": "BC",
+            "logprob": -12.549068450927734,
+            "bytes": [
+              66,
+              67
+            ]
+          },
+          {
+            "token": "Based",
+            "logprob": -12.609426498413086,
+            "bytes": [
+              66,
+              97,
+              115,
+              101,
+              100
+            ]
+          }
+        ]
+      }
+    ],
+    "total_duration": 51769800,
+    "load_duration": 1607000,
+    "prompt_eval_count": 274,
+    "prompt_eval_cached_count": 270,
+    "prompt_eval_duration": 44422000,
+    "eval_count": 1,
+    "eval_duration": 1000
+  },
+  "elapsed_seconds": 0.053018199978396297
+}

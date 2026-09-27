@@ -2,23 +2,32 @@
 
 ## Latest Classification Study: Start Here
 
+**2026-09-27 publication: start with the [features-only association results](experiments/features_only_20260926/README.md).**
+This separate condition contains 1,452 new local calls on the same four scenes,
+with no category names or target IDs in model-visible text. It compares directly
+with the family-association condition below. Raw P(A), model settings and crops
+are unchanged. Both older experiments remain intact.
+
 **2026-09-26: the newer [local family-association ablation](experiments/family_association_20260926/README.md)
 is now versioned**, with 1,452 new Qwen4B/Qwen9B/Gemma calls and direct comparisons
 against the unchanged baseline. It changes the prompt and descriptions to
 product-family association. It is not the unrun name-and-color-only proposal.
 
 Results created in the external Windows experiment workspace are not automatically
-visible to Git. Export reviewed family-ablation evidence into this checkout with:
+visible to Git. Export reviewed features-only evidence into this checkout with:
 
 ```powershell
-python tools/publish_family_results.py --workspace "C:/Users/Jiabao Zhao/Documents/Codex/2026-06-02/can-you-add-this-skill-to" --repo . --name family_association_YYYYMMDD
-python tools/verify_family_results.py experiments/family_association_YYYYMMDD
+python tools/publish_family_results.py --condition features --workspace "C:/Users/Jiabao Zhao/Documents/Codex/2026-06-02/can-you-add-this-skill-to" --repo . --name features_only_YYYYMMDD
+python tools/verify_family_results.py experiments/features_only_YYYYMMDD
 ```
 
 Use a new folder name for each completed revision. The exporter preserves existing
 folders and does not commit or push; review, commit and push the exported files
 to make them available to GPT Cloud. Reviewed results under `experiments/` are
 trackable; runtime outputs, weights, caches and credentials remain excluded.
+Use `--condition family` to export a family-association trial with the same tool.
+The `.gitignore` rules already permit reviewed CSV, JSON, PNG and PDF results;
+external workspace files must first be exported here to appear in GitHub Desktop.
 
 **2026-09-25 cloud handoff:** read the
 [four-scene VLM report](experiments/vlm_four_scene_20260925/README.md) for the

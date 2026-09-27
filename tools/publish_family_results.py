@@ -1,4 +1,4 @@
-"""Export the local family ablation into a Git-trackable evidence directory.
+"""Export a local family or features-only ablation into Git-trackable evidence.
 
 Does not commit or push. Run from any directory; only Python stdlib is required.
 """
@@ -28,12 +28,18 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--workspace',type=Path,required=True)
     parser.add_argument('--repo',type=Path,required=True)
-    parser.add_argument('--name',default='family_association_20260926')
+    parser.add_argument('--condition',choices=['family','features'],default='family')
+    parser.add_argument('--name',help='New evidence folder; existing folders are never overwritten.')
     args=parser.parse_args()
+    if args.name is None:
+        args.name='features_only_20260926' if args.condition=='features' else 'family_association_20260926'
     assert re.fullmatch(r'[a-z][a-z0-9_]+',args.name)
     workspace=args.workspace.resolve();repo=args.repo.resolve()
-    source=workspace/'family-association-ablation'
-    baseline=repo/'experiments/vlm_four_scene_20260925'
+    features=args.condition=='features'
+    source=workspace/('features-only-ablation' if features else 'family-association-ablation')
+    baseline_name='family_association_20260926' if features else 'vlm_four_scene_20260925'
+    baseline=repo/'experiments'/baseline_name
+    original=repo/'experiments/vlm_four_scene_20260925'
     dest=repo/'experiments'/args.name
     assert baseline.is_dir(),'Publish the matched baseline first.'
     assert not dest.exists(),'Use a new name; never overwrite published evidence.'
@@ -45,7 +51,9 @@ def main():
         assert sha(workspace/path)==expected,path
     for path,expected in validation['raw_response_hashes'].items():
         assert sha(workspace/path)==expected,path
-    mapping={r['source']:'../vlm_four_scene_20260925/'+r['file'] for r in read(baseline/'file_index.json')}
+    mapping={r['source'].replace('\\','/'):'../vlm_four_scene_20260925/'+r['file'] for r in read(original/'file_index.json')}
+    if features:
+        mapping.update({'family-association-ablation/'+r['source']:'../'+baseline_name+'/'+r['file'] for r in read(baseline/'file_index.json')})
     def relocate(value):
         if isinstance(value,dict):
             return {k:relocate(v) for k,v in value.items()}
@@ -53,7 +61,7 @@ def main():
             return [relocate(v) for v in value]
         if isinstance(value,str):
             normalized=value.replace('\\','/')
-            if normalized.startswith('family-association-ablation/'):
+            if normalized.startswith(source.name+'/'):
                 return normalized.split('/',1)[1]
             return mapping.get(normalized,value)
         return value
@@ -80,7 +88,10 @@ def main():
                           source_sha256=sha(p),published_sha256=sha(out),raw_bytes_preserved=raw))
     published={k:relocate(v) for k,v in manifest.items() if k not in ('immutable_inputs',)}
     published['source_manifest']='provenance/manifest.json'
-    published['path_policy']='Canonical table paths are relative to this folder; baseline crops and records are in ../vlm_four_scene_20260925. Raw records/provenance preserve original local paths.'
+    published['baseline_package']='../'+baseline_name
+    published['condition']='features_only' if features else 'family_ablation'
+    published['baseline_condition']='family_association' if features else 'baseline'
+    published['path_policy']='Canonical table paths are relative to this folder. Baseline records and input crops are referenced in sibling evidence folders. Raw records/provenance preserve original local paths.'
     save(dest/'manifest.json',published)
     save(dest/'file_index.json',index)
     (dest/'.gitattributes').write_text('# Preserve evidence hashes across operating systems.\n* -text\n',encoding='utf-8',newline='\n')
@@ -105,14 +116,46 @@ portable crop/response link. `provenance/` holds original local scripts and mani
 not portable inference entry points. No cloud/API rerun was performed.
 
 From the repository root, run:
-`python tools/verify_family_results.py experiments/family_association_20260926`
+`python tools/verify_family_results.py experiments/PACKAGE_NAME`
 
 This offline check needs no models, credentials, GPU, or third-party packages.
 Read the limitations below before selecting a threshold; no setting was deployed.
 
 '''
+    if features:
+        header='''## GitHub / GPT Cloud Entry Point
+
+This is the **features-only association condition**, compared directly with the
+[unchanged family-association condition](../family_association_20260926/README.md).
+The [earlier four-model baseline](../vlm_four_scene_20260925/README.md) is also preserved.
+
+- [All paired-condition scores](all_scores_comparison.json), [paired differences](paired_scores.csv).
+- [Exact model-visible prompts](selected_prompts.json), [physical descriptions](descriptions.json).
+- [Per-family results](per_family_metrics.csv), [threshold sweeps](threshold_sweep.csv).
+- [Matched false-match operating points](matched_false_match_operating_points.csv).
+- [Specific confusion pairs](known_failure_pairs.csv), [top unrelated matches](top_unrelated_pairs.csv).
+- [Threshold chart](threshold_comparison.png), [matched-rate chart](family_retention_vs_false_matches.png).
+- [Qwen4B heatmaps](qwen3.5-4b/four_scene_heatmaps.pdf), [Qwen9B heatmaps](qwen3.5-9b/four_scene_heatmaps.pdf), [Gemma heatmaps](gemma4-12b/four_scene_heatmaps.pdf).
+
+All 1,452 new raw responses are included. Canonical table paths resolve from this
+folder; baseline responses and the 44 unchanged input crops are referenced from
+the sibling experiment folders, without duplication. Names in tables and charts
+are evaluation metadata only, not model-visible text. Raw records and files in
+`provenance/` preserve their original local paths and bytes. The provenance scripts
+document the local experiment; they are not portable inference entry points.
+
+Run this offline verification from the repository root:
+`python tools/verify_family_results.py experiments/PACKAGE_NAME`
+
+No models, credentials, GPU, or network are needed for verification. No inference
+was rerun during publication. No acceptance threshold or model was deployed.
+The local ZIP is intentionally excluded; its evidence is available as individual
+versioned files here. Use the repository verifier above, not the local-workspace
+verification commands quoted later in the original report.
+
+'''
     title,rest=text.split('\n',1)
-    report.write_text(title+'\n\n'+header.replace('family_association_20260926',args.name)+rest,encoding='utf-8',newline='\n')
+    report.write_text(title+'\n\n'+header.replace('PACKAGE_NAME',args.name)+rest,encoding='utf-8',newline='\n')
     forbidden=re.compile(r'\bsk-(?:proj-|svcacct-)?[A-Za-z0-9_-]{20,}|\bgh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|-----BEGIN .*PRIVATE KEY-----')
     hashes={}
     for p in dest.rglob('*'):
