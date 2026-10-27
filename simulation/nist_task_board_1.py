@@ -188,16 +188,13 @@ def add_board_scene(model, mesh_dir, dimensions, parts=PARTS, placements=None):
 class NistTaskBoardEnvironment(LiberoTaskEnvironment):
     """Reuse the RGB-D bridge and robot controls for a custom board scene."""
 
-    def __init__(self, image_size=768, parts=PARTS, placements=None, overhead_view=False, common_parts=(),
+    def __init__(self, image_size=768, parts=PARTS, placements=None, overhead_view=False,
                  camera_names=("agentview", "robot0_eye_in_hand"), additional_scene=None):
         if not parts or len(set(parts)) != len(parts) or not set(parts).issubset(PARTS):
             raise ValueError("NIST scene requires distinct known component names.")
-        active_parts = (*parts, *common_parts)
-        if len(set(active_parts)) != len(active_parts):
-            raise ValueError("Scene component names must be distinct.")
-        if placements is not None and set(placements) != set(active_parts):
+        if placements is not None and set(placements) != set(parts):
             raise ValueError("Every selected NIST component needs one scenario placement.")
-        self.active_parts = active_parts
+        self.active_parts = tuple(parts)
         self.rendering_backend = configure_mujoco_rendering()
         from libero.libero.envs import OffScreenRenderEnv
         from libero.libero.envs.bddl_base_domain import TASK_MAPPING, register_problem
@@ -210,27 +207,6 @@ class NistTaskBoardEnvironment(LiberoTaskEnvironment):
             def _load_model(self):
                 super()._load_model()
                 add_board_scene(self.model, mesh_dir, dimensions, parts, placements)
-                if common_parts:
-                    from libero.libero.envs.objects import get_object_fn
-                    from scipy.spatial.transform import Rotation
-
-                    for name in common_parts:
-                        obj = get_object_fn(name)(name=f"mixed_{name}")
-                        body = obj.get_obj()
-                        body.set("name", f"nist_part_{name}")
-                        placement = placements[name]
-                        rotation = Rotation.identity()
-                        axes = (obj.rotation if isinstance(obj.rotation, dict) else
-                                {obj.rotation_axis: obj.rotation})
-                        for axis, angles in axes.items():
-                            if angles[0] != angles[1]:
-                                raise ValueError("Mixed-scene assets require a fixed supplied base orientation.")
-                            rotation = Rotation.from_euler(axis, angles[0]) * rotation
-                        rotation = Rotation.from_euler("z", placement["yaw_deg"], degrees=True) * rotation
-                        body.set("quat", _values(rotation.as_quat()[[3, 0, 1, 2]]))
-                        body.set("pos", _values([*placement["xy_m"], FLOOR_Z_M - obj.bottom_offset[2] + .001]))
-                        self.model.merge_assets(obj)
-                        self.model.worldbody.append(body)
                 if additional_scene is not None:
                     additional_scene(self.model)
                 if overhead_view:

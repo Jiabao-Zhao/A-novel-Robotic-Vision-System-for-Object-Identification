@@ -1,0 +1,273 @@
+n3 dimension setup
+['objdump', '-d', '-C', '--no-show-raw-insn', '--start-address=0x58264', '--stop-address=0x58317', '/home/jiabao/.venvs/lerobot-libero/lib/python3.12/site-packages/scipy/spatial/_ckdtree.cpython-312-x86_64-linux-gnu.so']
+
+/home/jiabao/.venvs/lerobot-libero/lib/python3.12/site-packages/scipy/spatial/_ckdtree.cpython-312-x86_64-linux-gnu.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000058264 <void query_single_point<MinkowskiDistP2>(ckdtree const*, double*, long*, double const*, long const*, long, long, double, double, double)+0x6a4>:
+   58264:	movq   $0x0,0x10(%rsp)
+   5826d:	mov    (%rsp),%rcx
+   58271:	movq   $0xc,0xc8(%rsp)
+   5827d:	lea    -0x4(%rcx),%rax
+   58281:	mov    %rax,%r13
+   58284:	and    $0xfffffffffffffffc,%rax
+   58288:	shr    $0x2,%r13
+   5828c:	lea    0x4(%rax),%rsi
+   58290:	xor    %eax,%eax
+   58292:	add    $0x1,%r13
+   58296:	cmp    $0x3,%rcx
+   5829a:	mov    %rsi,0x78(%rsp)
+   5829f:	cmovg  %rsi,%rax
+   582a3:	mov    %rax,%rdi
+   582a6:	mov    %rax,0x108(%rsp)
+   582ae:	mov    %rcx,%rax
+   582b1:	sub    %rdi,%rax
+   582b4:	cmp    %rdi,%rcx
+   582b7:	mov    $0x1,%ecx
+   582bc:	cmovg  %rax,%rcx
+   582c0:	setle  %dl
+   582c3:	cmp    $0x1,%rax
+   582c7:	sete   %al
+   582ca:	xor    %r12d,%r12d
+   582cd:	or     %eax,%edx
+   582cf:	lea    0x0(%rbp,%rdi,8),%rax
+   582d4:	mov    %rcx,0x168(%rsp)
+   582dc:	mov    %rax,0x110(%rsp)
+   582e4:	mov    0x58(%rsp),%rax
+   582e9:	mov    %dl,0x107(%rsp)
+   582f0:	mov    %rax,0x60(%rsp)
+   582f5:	mov    0x120(%rsp),%rax
+   582fd:	mov    %rax,0x178(%rsp)
+   58305:	mov    %rcx,%rax
+   58308:	and    $0xfffffffffffffffe,%rax
+   5830c:	add    %rdi,%rax
+   5830f:	mov    %rax,0x148(%rsp)
+
+
+leaf distance branch and ordered products/adds
+['objdump', '-d', '-C', '--no-show-raw-insn', '--start-address=0x589e0', '--stop-address=0x58b16', '/home/jiabao/.venvs/lerobot-libero/lib/python3.12/site-packages/scipy/spatial/_ckdtree.cpython-312-x86_64-linux-gnu.so']
+
+/home/jiabao/.venvs/lerobot-libero/lib/python3.12/site-packages/scipy/spatial/_ckdtree.cpython-312-x86_64-linux-gnu.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000000589e0 <void query_single_point<MinkowskiDistP2>(ckdtree const*, double*, long*, double const*, long const*, long, long, double, double, double)+0xe20>:
+   589e0:	mov    (%rsp),%rax
+   589e4:	mov    (%rcx,%r14,8),%r8
+   589e8:	mov    %rax,%rdi
+   589eb:	imul   %r8,%rdi
+   589ef:	lea    (%r11,%rdi,8),%rsi
+   589f3:	cmp    $0x3,%rax
+   589f7:	jle    58d48 <void query_single_point<MinkowskiDistP2>(ckdtree const*, double*, long*, double const*, long const*, long, long, double, double, double)+0x1188>
+   589fd:	pxor   %xmm2,%xmm2
+   58a01:	xor    %eax,%eax
+   58a03:	xor    %edx,%edx
+   58a05:	movapd %xmm2,%xmm3
+   58a09:	data16 cs nopw 0x0(%rax,%rax,1)
+   58a14:	data16 cs nopw 0x0(%rax,%rax,1)
+   58a1f:	data16 cs nopw 0x0(%rax,%rax,1)
+   58a2a:	data16 cs nopw 0x0(%rax,%rax,1)
+   58a35:	data16 cs nopw 0x0(%rax,%rax,1)
+   58a40:	movupd (%rsi,%rax,1),%xmm1
+   58a45:	movupd 0x0(%rbp,%rax,1),%xmm7
+   58a4b:	add    $0x1,%rdx
+   58a4f:	movupd 0x10(%rsi,%rax,1),%xmm0
+   58a55:	movupd 0x10(%rbp,%rax,1),%xmm6
+   58a5b:	add    $0x20,%rax
+   58a5f:	subpd  %xmm7,%xmm1
+   58a63:	subpd  %xmm6,%xmm0
+   58a67:	mulpd  %xmm1,%xmm1
+   58a6b:	mulpd  %xmm0,%xmm0
+   58a6f:	addpd  %xmm1,%xmm3
+   58a73:	addpd  %xmm0,%xmm2
+   58a77:	cmp    %r13,%rdx
+   58a7a:	jb     58a40 <void query_single_point<MinkowskiDistP2>(ckdtree const*, double*, long*, double const*, long const*, long, long, double, double, double)+0xe80>
+   58a7c:	movapd %xmm3,%xmm5
+   58a80:	mov    0x78(%rsp),%rdx
+   58a85:	unpckhpd %xmm5,%xmm5
+   58a89:	movapd %xmm5,%xmm0
+   58a8d:	addsd  %xmm3,%xmm0
+   58a91:	addsd  %xmm2,%xmm0
+   58a95:	unpckhpd %xmm2,%xmm2
+   58a99:	addsd  %xmm2,%xmm0
+   58a9d:	cmp    %rdx,(%rsp)
+   58aa1:	jle    58b06 <void query_single_point<MinkowskiDistP2>(ckdtree const*, double*, long*, double const*, long const*, long, long, double, double, double)+0xf46>
+   58aa3:	cmpb   $0x0,0x107(%rsp)
+   58aab:	mov    0x108(%rsp),%rax
+   58ab3:	jne    58af3 <void query_single_point<MinkowskiDistP2>(ckdtree const*, double*, long*, double const*, long const*, long, long, double, double, double)+0xf33>
+   58ab5:	add    %rax,%rdi
+   58ab8:	mov    0x110(%rsp),%rax
+   58ac0:	cmpq   $0x0,0x50(%rsp)
+   58ac6:	movupd (%r11,%rdi,8),%xmm1
+   58acc:	movupd (%rax),%xmm4
+   58ad0:	subpd  %xmm4,%xmm1
+   58ad4:	movaps %xmm4,0x20(%rsp)
+   58ad9:	mulpd  %xmm1,%xmm1
+   58add:	addsd  %xmm1,%xmm0
+   58ae1:	unpckhpd %xmm1,%xmm1
+   58ae5:	addsd  %xmm1,%xmm0
+   58ae9:	je     58b06 <void query_single_point<MinkowskiDistP2>(ckdtree const*, double*, long*, double const*, long const*, long, long, double, double, double)+0xf46>
+   58aeb:	mov    0x148(%rsp),%rax
+   58af3:	movsd  (%rsi,%rax,8),%xmm1
+   58af8:	subsd  0x0(%rbp,%rax,8),%xmm1
+   58afe:	mulsd  %xmm1,%xmm1
+   58b02:	addsd  %xmm1,%xmm0
+   58b06:	movsd  0x18(%rsp),%xmm5
+   58b0c:	comisd %xmm0,%xmm5
+   58b10:	jbe    58be0 <void query_single_point<MinkowskiDistP2>(ckdtree const*, double*, long*, double const*, long const*, long, long, double, double, double)+0x1020>
+
+
+n<=3 positive-zero initialization
+['objdump', '-d', '-C', '--no-show-raw-insn', '--start-address=0x58d48', '--stop-address=0x58d58', '/home/jiabao/.venvs/lerobot-libero/lib/python3.12/site-packages/scipy/spatial/_ckdtree.cpython-312-x86_64-linux-gnu.so']
+
+/home/jiabao/.venvs/lerobot-libero/lib/python3.12/site-packages/scipy/spatial/_ckdtree.cpython-312-x86_64-linux-gnu.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000058d48 <void query_single_point<MinkowskiDistP2>(ckdtree const*, double*, long*, double const*, long const*, long, long, double, double, double)+0x1188>:
+   58d48:	cmpq   $0x0,(%rsp)
+   58d4d:	pxor   %xmm0,%xmm0
+   58d51:	jg     58aa3 <void query_single_point<MinkowskiDistP2>(ckdtree const*, double*, long*, double const*, long const*, long, long, double, double, double)+0xee3>
+   58d57:	.byte 0xe9
+
+
+box update subtract then add
+['objdump', '-d', '-C', '--no-show-raw-insn', '--start-address=0x587d0', '--stop-address=0x587f9', '/home/jiabao/.venvs/lerobot-libero/lib/python3.12/site-packages/scipy/spatial/_ckdtree.cpython-312-x86_64-linux-gnu.so']
+
+/home/jiabao/.venvs/lerobot-libero/lib/python3.12/site-packages/scipy/spatial/_ckdtree.cpython-312-x86_64-linux-gnu.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000000587d0 <void query_single_point<MinkowskiDistP2>(ckdtree const*, double*, long*, double const*, long const*, long, long, double, double, double)+0xc10>:
+   587d0:	movapd %xmm2,%xmm0
+   587d4:	subsd  (%rdi),%xmm0
+   587d8:	addsd  %xmm1,%xmm0
+   587dc:	jmp    586f6 <void query_single_point<MinkowskiDistP2>(ckdtree const*, double*, long*, double const*, long const*, long, long, double, double, double)+0xb36>
+   587e1:	nopl   0x0(%rax)
+   587e8:	movapd %xmm3,%xmm0
+   587ec:	subsd  (%rsi),%xmm0
+   587f0:	addsd  %xmm1,%xmm0
+   587f4:	jmp    58605 <void query_single_point<MinkowskiDistP2>(ckdtree const*, double*, long*, double const*, long const*, long, long, double, double, double)+0xa45>
+
+
+nonnegative final sqrt
+['objdump', '-d', '-C', '--no-show-raw-insn', '--start-address=0x595f4', '--stop-address=0x5963a', '/home/jiabao/.venvs/lerobot-libero/lib/python3.12/site-packages/scipy/spatial/_ckdtree.cpython-312-x86_64-linux-gnu.so']
+
+/home/jiabao/.venvs/lerobot-libero/lib/python3.12/site-packages/scipy/spatial/_ckdtree.cpython-312-x86_64-linux-gnu.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000000595f4 <void query_single_point<MinkowskiDistP2>(ckdtree const*, double*, long*, double const*, long const*, long, long, double, double, double)+0x1a34>:
+   595f4:	mov    0x0(%rbp,%r12,8),%rax
+   595f9:	cmp    %r13,%rax
+   595fc:	jg     595d5 <void query_single_point<MinkowskiDistP2>(ckdtree const*, double*, long*, double const*, long const*, long, long, double, double, double)+0x1a15>
+   595fe:	sub    $0x1,%rax
+   59602:	shl    $0x4,%rax
+   59606:	add    %rdx,%rax
+   59609:	movsd  (%rax),%xmm1
+   5960d:	mov    0x8(%rax),%rax
+   59611:	ucomisd %xmm2,%xmm1
+   59615:	movapd %xmm1,%xmm0
+   59619:	mov    %rax,(%rbx,%r12,8)
+   5961d:	xorpd  %xmm3,%xmm0
+   59621:	ja     59b94 <void query_single_point<MinkowskiDistP2>(ckdtree const*, double*, long*, double const*, long const*, long, long, double, double, double)+0x1fd4>
+   59627:	sqrtsd %xmm0,%xmm0
+   5962b:	movsd  %xmm0,(%r14,%r12,8)
+   59631:	add    $0x1,%r12
+   59635:	cmp    %r12,%r15
+   59638:	jg     595f4 <void query_single_point<MinkowskiDistP2>(ckdtree const*, double*, long*, double const*, long const*, long, long, double, double, double)+0x1a34>
+
+
+SSE41 contiguous float64 sqrt
+['objdump', '-d', '-C', '--no-show-raw-insn', '--start-address=0x375411', '--stop-address=0x3754e0', '/home/jiabao/.venvs/lerobot-libero/lib/python3.12/site-packages/numpy/_core/_multiarray_umath.cpython-312-x86_64-linux-gnu.so']
+
+/home/jiabao/.venvs/lerobot-libero/lib/python3.12/site-packages/numpy/_core/_multiarray_umath.cpython-312-x86_64-linux-gnu.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000375411 <DOUBLE_sqrt_SSE41+0x91>:
+  375411:	mov    %r8,%rdi
+  375414:	mov    %rsi,%rdx
+  375417:	mov    %rcx,%rax
+  37541a:	cmp    $0x7,%r8
+  37541e:	jle    375482 <DOUBLE_sqrt_SSE41+0x102>
+  375420:	movupd (%rax),%xmm4
+  375424:	sub    $0x8,%rdi
+  375428:	add    $0x40,%rax
+  37542c:	add    $0x40,%rdx
+  375430:	movupd -0x30(%rax),%xmm5
+  375435:	movupd -0x20(%rax),%xmm6
+  37543a:	movupd -0x10(%rax),%xmm7
+  37543f:	sqrtpd %xmm4,%xmm3
+  375443:	movups %xmm3,-0x40(%rdx)
+  375447:	sqrtpd %xmm5,%xmm2
+  37544b:	sqrtpd %xmm6,%xmm1
+  37544f:	movups %xmm2,-0x30(%rdx)
+  375453:	sqrtpd %xmm7,%xmm0
+  375457:	movups %xmm1,-0x20(%rdx)
+  37545b:	movups %xmm0,-0x10(%rdx)
+  37545f:	cmp    $0x7,%rdi
+  375463:	jg     375420 <DOUBLE_sqrt_SSE41+0xa0>
+  375465:	sub    $0x8,%r8
+  375469:	mov    %r8,%rax
+  37546c:	and    $0x7,%r8d
+  375470:	shr    $0x3,%rax
+  375474:	add    $0x1,%rax
+  375478:	shl    $0x6,%rax
+  37547c:	add    %rax,%rcx
+  37547f:	add    %rax,%rsi
+  375482:	cmp    $0x1,%r8
+  375486:	jle    37562e <DOUBLE_sqrt_SSE41+0x2ae>
+  37548c:	movupd (%rcx),%xmm6
+  375490:	lea    -0x2(%r8),%rax
+  375494:	sqrtpd %xmm6,%xmm0
+  375498:	movups %xmm0,(%rsi)
+  37549b:	cmp    $0x1,%rax
+  37549f:	jle    3754c1 <DOUBLE_sqrt_SSE41+0x141>
+  3754a1:	movupd 0x10(%rcx),%xmm7
+  3754a6:	sqrtpd %xmm7,%xmm0
+  3754aa:	movups %xmm0,0x10(%rsi)
+  3754ae:	cmp    $0x5,%r8
+  3754b2:	jle    3754c1 <DOUBLE_sqrt_SSE41+0x141>
+  3754b4:	movupd 0x20(%rcx),%xmm6
+  3754b9:	sqrtpd %xmm6,%xmm0
+  3754bd:	movups %xmm0,0x20(%rsi)
+  3754c1:	mov    %rax,%rdx
+  3754c4:	and    $0x1,%eax
+  3754c7:	shr    %rdx
+  3754ca:	mov    %rax,%r8
+  3754cd:	lea    0x1(%rdx),%rax
+  3754d1:	shl    $0x4,%rax
+  3754d5:	add    %rax,%rcx
+  3754d8:	add    %rax,%rsi
+  3754db:	jmp    37562e <DOUBLE_sqrt_SSE41+0x2ae>
+
+
+SSE41 single-element tail sqrt
+['objdump', '-d', '-C', '--no-show-raw-insn', '--start-address=0x37562e', '--stop-address=0x37564b', '/home/jiabao/.venvs/lerobot-libero/lib/python3.12/site-packages/numpy/_core/_multiarray_umath.cpython-312-x86_64-linux-gnu.so']
+
+/home/jiabao/.venvs/lerobot-libero/lib/python3.12/site-packages/numpy/_core/_multiarray_umath.cpython-312-x86_64-linux-gnu.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000037562e <DOUBLE_sqrt_SSE41+0x2ae>:
+  37562e:	cmp    $0x1,%r8
+  375632:	jne    375640 <DOUBLE_sqrt_SSE41+0x2c0>
+  375634:	movq   (%rcx),%xmm0
+  375638:	sqrtpd %xmm0,%xmm0
+  37563c:	movq   %xmm0,(%rsi)
+  375640:	pop    %rbx
+  375641:	pop    %rbp
+  375642:	pop    %r12
+  375644:	pop    %r13
+  375646:	pop    %r14
+  375648:	pop    %r15
+  37564a:	ret    

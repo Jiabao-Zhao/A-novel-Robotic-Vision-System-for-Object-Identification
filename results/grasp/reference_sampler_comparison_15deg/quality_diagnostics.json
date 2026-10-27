@@ -1,0 +1,5365 @@
+{
+  "source_run": "outputs/cad_grasp_method_comparison_20261026/comparison/20261026T203838Z",
+  "analysis": "Read-only audit of saved candidate checks; no generation, validation rerun, simulation or physical trial.",
+  "definition": "For each passing pose alpha=max over both selected first-contact witnesses of acos(clamp(normal_alignment,-1,1)), in degrees. Family counts use existing family_id; thresholds1/3/5deg are descriptive diagnostics, not newly validated acceptance limits.",
+  "important_limits": [
+    "normal_alignment describes a selected CAD triangle witness, not the entire pad contact patch or force distribution.",
+    "Native sampled-pair tilt before horizontal projection is different from actual first-contact normal error after the Panda adapter.",
+    "Selected-witness transverse separation does not prove absent shared support, instability or displacement: a pad may have multiple simultaneous contacts.",
+    "No friction coefficient, force balance, disturbance robustness, in-hand motion or assembly precision is measured.",
+    "95/96 is modeled candidate availability for12CADparts across8placements; it is not a pickup-success rate or an all14parts result."
+  ],
+  "aggregates": [
+    {
+      "method": "one_budget512",
+      "recovered_placements": 9,
+      "placements_with_candidate_at_1deg": 6,
+      "placements_with_candidate_at_3deg": 9,
+      "placements_with_candidate_at_5deg": 9,
+      "strict_native_projection1_recovery": 4
+    },
+    {
+      "method": "graspkit_512",
+      "recovered_placements": 9,
+      "placements_with_candidate_at_1deg": 3,
+      "placements_with_candidate_at_3deg": 9,
+      "placements_with_candidate_at_5deg": 9,
+      "strict_native_projection1_recovery": 5
+    }
+  ],
+  "remaining_one_budget512_missing": [
+    {
+      "method": "one_budget512",
+      "scene": "N06",
+      "part": "RGOCG8-50_8mm",
+      "native_pairs": 503,
+      "sparse_pairs": 9,
+      "families": 0,
+      "passing_poses": 0,
+      "primary_runtime_component_s": 0.10188127400004987,
+      "protocol_available": {
+        "midpoint_proj1": false,
+        "midpoint_proj15": false,
+        "panda_table_proj1": false,
+        "panda_table_proj15": false
+      },
+      "rejection_counts": {
+        "proposed_contact_outside_inner_pad": 18
+      }
+    }
+  ],
+  "rows": [
+    {
+      "method": "one_budget512",
+      "placement": "N00/BNC_Male",
+      "passing_poses": 6,
+      "passing_pair_families": 3,
+      "best_max_normal_error_deg": 1.8049716201821704,
+      "worst_max_normal_error_deg": 3.089223739690258,
+      "families_at_1deg": 0,
+      "families_at_3deg": 1,
+      "families_at_5deg": 3,
+      "best_alignment_candidate": {
+        "id": "U00011",
+        "family": "PAIR0003",
+        "normal_error_deg": 1.8049716201821704,
+        "individual_normal_errors_deg": [
+          1.8049716201821704,
+          1.8049716201801507
+        ],
+        "projection_deg": 9.99519319205924,
+        "mismatch_um": 0.0,
+        "selected_witness_transverse_offset_mm": 0.40059585760990296
+      },
+      "max_mismatch_um": 1.0252153825728723,
+      "max_selected_witness_transverse_offset_mm": 0.4789622364895155,
+      "candidate_metrics": [
+        {
+          "id": "U00007",
+          "family": "PAIR0002",
+          "normal_error_deg": 3.089223739690258,
+          "individual_normal_errors_deg": [
+            3.089223739690258,
+            3.0892224296586583
+          ],
+          "projection_deg": 4.3748601784268955,
+          "mismatch_um": 1.0252153825728723,
+          "selected_witness_transverse_offset_mm": 0.4789622364895155
+        },
+        {
+          "id": "U00008",
+          "family": "PAIR0002",
+          "normal_error_deg": 3.089223739690258,
+          "individual_normal_errors_deg": [
+            3.0892224296586583,
+            3.089223739690258
+          ],
+          "projection_deg": 4.3748601784268955,
+          "mismatch_um": 1.0252153825728723,
+          "selected_witness_transverse_offset_mm": 0.4789622364895155
+        },
+        {
+          "id": "U00011",
+          "family": "PAIR0003",
+          "normal_error_deg": 1.8049716201821704,
+          "individual_normal_errors_deg": [
+            1.8049716201821704,
+            1.8049716201801507
+          ],
+          "projection_deg": 9.99519319205924,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.40059585760990296
+        },
+        {
+          "id": "U00012",
+          "family": "PAIR0003",
+          "normal_error_deg": 1.8049716201821704,
+          "individual_normal_errors_deg": [
+            1.8049716201801507,
+            1.8049716201821704
+          ],
+          "projection_deg": 9.99519319205924,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.40059585760990296
+        },
+        {
+          "id": "U00039",
+          "family": "PAIR0010",
+          "normal_error_deg": 3.089042116879663,
+          "individual_normal_errors_deg": [
+            1.8049715994275464,
+            3.089042116879663
+          ],
+          "projection_deg": 4.907255629929867,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.4252306108283732
+        },
+        {
+          "id": "U00040",
+          "family": "PAIR0010",
+          "normal_error_deg": 3.089042116879663,
+          "individual_normal_errors_deg": [
+            3.089042116879663,
+            1.8049715994275464
+          ],
+          "projection_deg": 4.907255629929867,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.4252306108283732
+        }
+      ]
+    },
+    {
+      "method": "one_budget512",
+      "placement": "N01/BNC_Male",
+      "passing_poses": 10,
+      "passing_pair_families": 5,
+      "best_max_normal_error_deg": 1.838026299115286,
+      "worst_max_normal_error_deg": 4.071380224931511,
+      "families_at_1deg": 0,
+      "families_at_3deg": 1,
+      "families_at_5deg": 5,
+      "best_alignment_candidate": {
+        "id": "U00063",
+        "family": "PAIR0016",
+        "normal_error_deg": 1.838026299115286,
+        "individual_normal_errors_deg": [
+          0.7946996029827964,
+          1.838026299115286
+        ],
+        "projection_deg": 10.716002593780676,
+        "mismatch_um": 1.2964116910645085,
+        "selected_witness_transverse_offset_mm": 4.027655756130292
+      },
+      "max_mismatch_um": 1.6377053313372525,
+      "max_selected_witness_transverse_offset_mm": 4.114153987836205,
+      "candidate_metrics": [
+        {
+          "id": "U00019",
+          "family": "PAIR0005",
+          "normal_error_deg": 4.071380224931511,
+          "individual_normal_errors_deg": [
+            1.8685301893061494,
+            4.071380224931511
+          ],
+          "projection_deg": 13.371571490993617,
+          "mismatch_um": 1.6377053313372525,
+          "selected_witness_transverse_offset_mm": 0.41264089290291495
+        },
+        {
+          "id": "U00020",
+          "family": "PAIR0005",
+          "normal_error_deg": 4.071380224931511,
+          "individual_normal_errors_deg": [
+            4.071380224931511,
+            1.8685301893061494
+          ],
+          "projection_deg": 13.371571490993617,
+          "mismatch_um": 1.6377053313372525,
+          "selected_witness_transverse_offset_mm": 0.41264089290291495
+        },
+        {
+          "id": "U00039",
+          "family": "PAIR0010",
+          "normal_error_deg": 3.0956228916697475,
+          "individual_normal_errors_deg": [
+            1.8600655925562115,
+            3.0956228916697475
+          ],
+          "projection_deg": 3.1624568435109723,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.114153987836205
+        },
+        {
+          "id": "U00040",
+          "family": "PAIR0010",
+          "normal_error_deg": 3.0956228916697475,
+          "individual_normal_errors_deg": [
+            3.0956228916697475,
+            1.8600655925562115
+          ],
+          "projection_deg": 3.1624568435109723,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.114153987836205
+        },
+        {
+          "id": "U00047",
+          "family": "PAIR0012",
+          "normal_error_deg": 3.12026284126264,
+          "individual_normal_errors_deg": [
+            3.12026284126264,
+            3.1187646586191673
+          ],
+          "projection_deg": 14.611705931132636,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.984888598758429
+        },
+        {
+          "id": "U00048",
+          "family": "PAIR0012",
+          "normal_error_deg": 3.12026284126264,
+          "individual_normal_errors_deg": [
+            3.1187646586191673,
+            3.12026284126264
+          ],
+          "projection_deg": 14.611705931132636,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.984888598758429
+        },
+        {
+          "id": "U00059",
+          "family": "PAIR0015",
+          "normal_error_deg": 3.1081360691983404,
+          "individual_normal_errors_deg": [
+            3.1081360691983404,
+            0.6765212841634314
+          ],
+          "projection_deg": 12.060897882796247,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.3194521354350055
+        },
+        {
+          "id": "U00060",
+          "family": "PAIR0015",
+          "normal_error_deg": 3.1081360691983404,
+          "individual_normal_errors_deg": [
+            0.6765212841634314,
+            3.1081360691983404
+          ],
+          "projection_deg": 12.060897882796247,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.3194521354350055
+        },
+        {
+          "id": "U00063",
+          "family": "PAIR0016",
+          "normal_error_deg": 1.838026299115286,
+          "individual_normal_errors_deg": [
+            0.7946996029827964,
+            1.838026299115286
+          ],
+          "projection_deg": 10.716002593780676,
+          "mismatch_um": 1.2964116910645085,
+          "selected_witness_transverse_offset_mm": 4.027655756130292
+        },
+        {
+          "id": "U00064",
+          "family": "PAIR0016",
+          "normal_error_deg": 1.838026299115286,
+          "individual_normal_errors_deg": [
+            1.838026299115286,
+            0.7946996029827964
+          ],
+          "projection_deg": 10.716002593780676,
+          "mismatch_um": 1.2964116910645085,
+          "selected_witness_transverse_offset_mm": 4.027655756130292
+        }
+      ]
+    },
+    {
+      "method": "one_budget512",
+      "placement": "N01/Gear_Large",
+      "passing_poses": 40,
+      "passing_pair_families": 20,
+      "best_max_normal_error_deg": 0.0012948872780820095,
+      "worst_max_normal_error_deg": 10.09627340830516,
+      "families_at_1deg": 1,
+      "families_at_3deg": 5,
+      "families_at_5deg": 8,
+      "best_alignment_candidate": {
+        "id": "U00091",
+        "family": "PAIR0023",
+        "normal_error_deg": 0.0012948872780820095,
+        "individual_normal_errors_deg": [
+          0.0012948867151530115,
+          0.0012948872780820095
+        ],
+        "projection_deg": 0.0012948871684199516,
+        "mismatch_um": 0.0,
+        "selected_witness_transverse_offset_mm": 0.21481723033131708
+      },
+      "max_mismatch_um": 4.2896285814969515,
+      "max_selected_witness_transverse_offset_mm": 4.287681530242131,
+      "candidate_metrics": [
+        {
+          "id": "U00043",
+          "family": "PAIR0011",
+          "normal_error_deg": 8.778523109071754,
+          "individual_normal_errors_deg": [
+            8.778523109071754,
+            2.9999751096640104
+          ],
+          "projection_deg": 0.0011368829826984826,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.660366774012596
+        },
+        {
+          "id": "U00044",
+          "family": "PAIR0011",
+          "normal_error_deg": 8.778523109071754,
+          "individual_normal_errors_deg": [
+            2.9999751096640104,
+            8.778523109071754
+          ],
+          "projection_deg": 0.0011368829826984826,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.660366774012596
+        },
+        {
+          "id": "U00087",
+          "family": "PAIR0022",
+          "normal_error_deg": 1.4394666835539693,
+          "individual_normal_errors_deg": [
+            1.2027377545566929,
+            1.4394666835539693
+          ],
+          "projection_deg": 0.0005910276468682662,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.5743437005059087
+        },
+        {
+          "id": "U00088",
+          "family": "PAIR0022",
+          "normal_error_deg": 1.4394666835539693,
+          "individual_normal_errors_deg": [
+            1.4394666835539693,
+            1.2027377545566929
+          ],
+          "projection_deg": 0.0005910276468682662,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.5743437005059087
+        },
+        {
+          "id": "U00091",
+          "family": "PAIR0023",
+          "normal_error_deg": 0.0012948872780820095,
+          "individual_normal_errors_deg": [
+            0.0012948867151530115,
+            0.0012948872780820095
+          ],
+          "projection_deg": 0.0012948871684199516,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.21481723033131708
+        },
+        {
+          "id": "U00092",
+          "family": "PAIR0023",
+          "normal_error_deg": 0.0012948872780820095,
+          "individual_normal_errors_deg": [
+            0.0012948872780820095,
+            0.0012948867151530115
+          ],
+          "projection_deg": 0.0012948871684199516,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.21481723033131708
+        },
+        {
+          "id": "U00107",
+          "family": "PAIR0027",
+          "normal_error_deg": 9.676958822376955,
+          "individual_normal_errors_deg": [
+            9.257115996236806,
+            9.676958822376955
+          ],
+          "projection_deg": 0.0010385315728227292,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.8802417762935074
+        },
+        {
+          "id": "U00108",
+          "family": "PAIR0027",
+          "normal_error_deg": 9.676958822376955,
+          "individual_normal_errors_deg": [
+            9.676958822376955,
+            9.257115996236806
+          ],
+          "projection_deg": 0.0010385315728227292,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.8802417762935074
+        },
+        {
+          "id": "U00119",
+          "family": "PAIR0030",
+          "normal_error_deg": 4.141139017583078,
+          "individual_normal_errors_deg": [
+            1.8592093482637675,
+            4.141139017583078
+          ],
+          "projection_deg": 0.0005124092248157352,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.2146377987365649
+        },
+        {
+          "id": "U00120",
+          "family": "PAIR0030",
+          "normal_error_deg": 4.141139017583078,
+          "individual_normal_errors_deg": [
+            4.141139017583078,
+            1.8592093482637675
+          ],
+          "projection_deg": 0.0005124092248157352,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.2146377987365649
+        },
+        {
+          "id": "U00131",
+          "family": "PAIR0033",
+          "normal_error_deg": 7.183771341132235,
+          "individual_normal_errors_deg": [
+            7.183771341132235,
+            7.010592373563179
+          ],
+          "projection_deg": 0.001575487917505252,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.0036453401435663
+        },
+        {
+          "id": "U00132",
+          "family": "PAIR0033",
+          "normal_error_deg": 7.183771341132235,
+          "individual_normal_errors_deg": [
+            7.010592373563179,
+            7.183771341132235
+          ],
+          "projection_deg": 0.001575487917505252,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.0036453401435663
+        },
+        {
+          "id": "U00135",
+          "family": "PAIR0034",
+          "normal_error_deg": 2.1470816908389,
+          "individual_normal_errors_deg": [
+            2.1470816908389,
+            1.8218427443111056
+          ],
+          "projection_deg": 0.0014544181940166219,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.9225106137504577
+        },
+        {
+          "id": "U00136",
+          "family": "PAIR0034",
+          "normal_error_deg": 2.1470816908389,
+          "individual_normal_errors_deg": [
+            1.8218427443111056,
+            2.1470816908389
+          ],
+          "projection_deg": 0.0014544181940166219,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.9225106137504577
+        },
+        {
+          "id": "U00167",
+          "family": "PAIR0042",
+          "normal_error_deg": 9.526092615683357,
+          "individual_normal_errors_deg": [
+            9.526092615683357,
+            2.0812065997337164
+          ],
+          "projection_deg": 0.0015813884994425435,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6925980747427892
+        },
+        {
+          "id": "U00168",
+          "family": "PAIR0042",
+          "normal_error_deg": 9.526092615683357,
+          "individual_normal_errors_deg": [
+            2.0812065997337164,
+            9.526092615683357
+          ],
+          "projection_deg": 0.0015813884994425435,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6925980747427892
+        },
+        {
+          "id": "U00183",
+          "family": "PAIR0046",
+          "normal_error_deg": 10.09627340830516,
+          "individual_normal_errors_deg": [
+            1.829641460045798,
+            10.09627340830516
+          ],
+          "projection_deg": 0.00018926275445427126,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.9657106901560892
+        },
+        {
+          "id": "U00184",
+          "family": "PAIR0046",
+          "normal_error_deg": 10.09627340830516,
+          "individual_normal_errors_deg": [
+            10.09627340830516,
+            1.829641460045798
+          ],
+          "projection_deg": 0.00018926275445427126,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.9657106901560892
+        },
+        {
+          "id": "U00207",
+          "family": "PAIR0052",
+          "normal_error_deg": 10.07872847894843,
+          "individual_normal_errors_deg": [
+            10.07872847894843,
+            1.8354891405408107
+          ],
+          "projection_deg": 0.0015418176534060656,
+          "mismatch_um": 4.2896285814969515,
+          "selected_witness_transverse_offset_mm": 4.287681530242131
+        },
+        {
+          "id": "U00208",
+          "family": "PAIR0052",
+          "normal_error_deg": 10.07872847894843,
+          "individual_normal_errors_deg": [
+            1.8354891405408107,
+            10.07872847894843
+          ],
+          "projection_deg": 0.0015418176534060656,
+          "mismatch_um": 4.2896285814969515,
+          "selected_witness_transverse_offset_mm": 4.287681530242131
+        },
+        {
+          "id": "U00227",
+          "family": "PAIR0057",
+          "normal_error_deg": 3.783252947410653,
+          "individual_normal_errors_deg": [
+            1.5061201494162235,
+            3.783252947410653
+          ],
+          "projection_deg": 0.0006944721404112447,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.0008255246138226573
+        },
+        {
+          "id": "U00228",
+          "family": "PAIR0057",
+          "normal_error_deg": 3.783252947410653,
+          "individual_normal_errors_deg": [
+            3.783252947410653,
+            1.5061201494162235
+          ],
+          "projection_deg": 0.0006944721404112447,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.0008255246138226573
+        },
+        {
+          "id": "U00231",
+          "family": "PAIR0058",
+          "normal_error_deg": 1.8256014727131165,
+          "individual_normal_errors_deg": [
+            1.7547899129988482,
+            1.8256014727131165
+          ],
+          "projection_deg": 0.0013563418364675032,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.004797839876626168
+        },
+        {
+          "id": "U00232",
+          "family": "PAIR0058",
+          "normal_error_deg": 1.8256014727131165,
+          "individual_normal_errors_deg": [
+            1.8256014727131165,
+            1.7547899129988482
+          ],
+          "projection_deg": 0.0013563418364675032,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.004797839876626168
+        },
+        {
+          "id": "U00239",
+          "family": "PAIR0060",
+          "normal_error_deg": 6.911171953513235,
+          "individual_normal_errors_deg": [
+            6.911171953513235,
+            6.727230188198656
+          ],
+          "projection_deg": 0.001157536851105855,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7420209043438811
+        },
+        {
+          "id": "U00240",
+          "family": "PAIR0060",
+          "normal_error_deg": 6.911171953513235,
+          "individual_normal_errors_deg": [
+            6.727230188198656,
+            6.911171953513235
+          ],
+          "projection_deg": 0.001157536851105855,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7420209043438811
+        },
+        {
+          "id": "U00247",
+          "family": "PAIR0062",
+          "normal_error_deg": 6.781215554405933,
+          "individual_normal_errors_deg": [
+            6.781215554405933,
+            0.0012638341815125898
+          ],
+          "projection_deg": 0.0012638343156293902,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.8179073173859287
+        },
+        {
+          "id": "U00248",
+          "family": "PAIR0062",
+          "normal_error_deg": 6.781215554405933,
+          "individual_normal_errors_deg": [
+            0.0012638341815125898,
+            6.781215554405933
+          ],
+          "projection_deg": 0.0012638343156293902,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.8179073173859287
+        },
+        {
+          "id": "U00271",
+          "family": "PAIR0068",
+          "normal_error_deg": 1.1700797909650793,
+          "individual_normal_errors_deg": [
+            1.039895528742921,
+            1.1700797909650793
+          ],
+          "projection_deg": 0.001420948587539683,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.0033952046241221504
+        },
+        {
+          "id": "U00272",
+          "family": "PAIR0068",
+          "normal_error_deg": 1.1700797909650793,
+          "individual_normal_errors_deg": [
+            1.1700797909650793,
+            1.039895528742921
+          ],
+          "projection_deg": 0.001420948587539683,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.0033952046241221504
+        },
+        {
+          "id": "U00283",
+          "family": "PAIR0071",
+          "normal_error_deg": 9.349505453512121,
+          "individual_normal_errors_deg": [
+            0.0008135553479821715,
+            9.349505453512121
+          ],
+          "projection_deg": 0.0008135556543887145,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.1933887685656104
+        },
+        {
+          "id": "U00284",
+          "family": "PAIR0071",
+          "normal_error_deg": 9.349505453512121,
+          "individual_normal_errors_deg": [
+            9.349505453512121,
+            0.0008135553479821715
+          ],
+          "projection_deg": 0.0008135556543887145,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.1933887685656104
+        },
+        {
+          "id": "U00387",
+          "family": "PAIR0097",
+          "normal_error_deg": 9.455130106822862,
+          "individual_normal_errors_deg": [
+            9.455130106822862,
+            9.211805394526335
+          ],
+          "projection_deg": 0.0005137919338926545,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.5995129223793761
+        },
+        {
+          "id": "U00388",
+          "family": "PAIR0097",
+          "normal_error_deg": 9.455130106822862,
+          "individual_normal_errors_deg": [
+            9.211805394526335,
+            9.455130106822862
+          ],
+          "projection_deg": 0.0005137919338926545,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.5995129223793761
+        },
+        {
+          "id": "U00391",
+          "family": "PAIR0098",
+          "normal_error_deg": 9.432177255618713,
+          "individual_normal_errors_deg": [
+            9.432177255618713,
+            9.224496001290554
+          ],
+          "projection_deg": 0.00019157243867598385,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.4996569777141944
+        },
+        {
+          "id": "U00392",
+          "family": "PAIR0098",
+          "normal_error_deg": 9.432177255618713,
+          "individual_normal_errors_deg": [
+            9.224496001290554,
+            9.432177255618713
+          ],
+          "projection_deg": 0.00019157243867598385,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.4996569777141944
+        },
+        {
+          "id": "U00407",
+          "family": "PAIR0102",
+          "normal_error_deg": 6.348255242891926,
+          "individual_normal_errors_deg": [
+            6.334181495795112,
+            6.348255242891926
+          ],
+          "projection_deg": 0.0010157465008309328,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.3588789502674943
+        },
+        {
+          "id": "U00408",
+          "family": "PAIR0102",
+          "normal_error_deg": 6.348255242891926,
+          "individual_normal_errors_deg": [
+            6.348255242891926,
+            6.334181495795112
+          ],
+          "projection_deg": 0.0010157465008309328,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.3588789502674943
+        },
+        {
+          "id": "U00415",
+          "family": "PAIR0104",
+          "normal_error_deg": 4.16145368917311,
+          "individual_normal_errors_deg": [
+            1.8410060633176786,
+            4.16145368917311
+          ],
+          "projection_deg": 0.0013295063534748866,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.261727940088233
+        },
+        {
+          "id": "U00416",
+          "family": "PAIR0104",
+          "normal_error_deg": 4.16145368917311,
+          "individual_normal_errors_deg": [
+            4.16145368917311,
+            1.8410060633176786
+          ],
+          "projection_deg": 0.0013295063534748866,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.261727940088233
+        }
+      ]
+    },
+    {
+      "method": "one_budget512",
+      "placement": "N03/BNC_Male",
+      "passing_poses": 10,
+      "passing_pair_families": 5,
+      "best_max_normal_error_deg": 0.752981455124539,
+      "worst_max_normal_error_deg": 4.182979971512255,
+      "families_at_1deg": 1,
+      "families_at_3deg": 2,
+      "families_at_5deg": 5,
+      "best_alignment_candidate": {
+        "id": "U00075",
+        "family": "PAIR0019",
+        "normal_error_deg": 0.752981455124539,
+        "individual_normal_errors_deg": [
+          0.7507312021366728,
+          0.752981455124539
+        ],
+        "projection_deg": 12.006513992247626,
+        "mismatch_um": 1.631734191384973,
+        "selected_witness_transverse_offset_mm": 4.031275254030298
+      },
+      "max_mismatch_um": 1.631734191384973,
+      "max_selected_witness_transverse_offset_mm": 4.062079845254403,
+      "candidate_metrics": [
+        {
+          "id": "U00023",
+          "family": "PAIR0006",
+          "normal_error_deg": 1.7302682708607569,
+          "individual_normal_errors_deg": [
+            1.6889683780717386,
+            1.7302682708607569
+          ],
+          "projection_deg": 14.362905961262657,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.4334904764365046
+        },
+        {
+          "id": "U00024",
+          "family": "PAIR0006",
+          "normal_error_deg": 1.7302682708607569,
+          "individual_normal_errors_deg": [
+            1.7302682708607569,
+            1.6889683780717386
+          ],
+          "projection_deg": 14.362905961262657,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.4334904764365046
+        },
+        {
+          "id": "U00043",
+          "family": "PAIR0011",
+          "normal_error_deg": 4.182979971512255,
+          "individual_normal_errors_deg": [
+            0.7285701973770818,
+            4.182979971512255
+          ],
+          "projection_deg": 7.388895079000722,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.9742870992413364
+        },
+        {
+          "id": "U00044",
+          "family": "PAIR0011",
+          "normal_error_deg": 4.182979971512255,
+          "individual_normal_errors_deg": [
+            4.182979971512255,
+            0.7285701973770818
+          ],
+          "projection_deg": 7.388895079000722,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.9742870992413364
+        },
+        {
+          "id": "U00047",
+          "family": "PAIR0012",
+          "normal_error_deg": 3.081043373627337,
+          "individual_normal_errors_deg": [
+            3.081043373627337,
+            1.73342131629979
+          ],
+          "projection_deg": 14.84058730816757,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.062079845254403
+        },
+        {
+          "id": "U00048",
+          "family": "PAIR0012",
+          "normal_error_deg": 3.081043373627337,
+          "individual_normal_errors_deg": [
+            1.73342131629979,
+            3.081043373627337
+          ],
+          "projection_deg": 14.84058730816757,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.062079845254403
+        },
+        {
+          "id": "U00075",
+          "family": "PAIR0019",
+          "normal_error_deg": 0.752981455124539,
+          "individual_normal_errors_deg": [
+            0.7507312021366728,
+            0.752981455124539
+          ],
+          "projection_deg": 12.006513992247626,
+          "mismatch_um": 1.631734191384973,
+          "selected_witness_transverse_offset_mm": 4.031275254030298
+        },
+        {
+          "id": "U00076",
+          "family": "PAIR0019",
+          "normal_error_deg": 0.752981455124539,
+          "individual_normal_errors_deg": [
+            0.752981455124539,
+            0.7507312021366728
+          ],
+          "projection_deg": 12.006513992247626,
+          "mismatch_um": 1.631734191384973,
+          "selected_witness_transverse_offset_mm": 4.031275254030298
+        },
+        {
+          "id": "U00079",
+          "family": "PAIR0020",
+          "normal_error_deg": 3.201709731290402,
+          "individual_normal_errors_deg": [
+            0.7591794677962144,
+            3.201709731290402
+          ],
+          "projection_deg": 14.991862180256497,
+          "mismatch_um": 1.0250691272074146,
+          "selected_witness_transverse_offset_mm": 2.5024139468338586
+        },
+        {
+          "id": "U00080",
+          "family": "PAIR0020",
+          "normal_error_deg": 3.201709731290402,
+          "individual_normal_errors_deg": [
+            3.201709731290402,
+            0.7591794677962144
+          ],
+          "projection_deg": 14.991862180256497,
+          "mismatch_um": 1.0250691272074146,
+          "selected_witness_transverse_offset_mm": 2.5024139468338586
+        }
+      ]
+    },
+    {
+      "method": "one_budget512",
+      "placement": "N03/Gear_Large",
+      "passing_poses": 38,
+      "passing_pair_families": 19,
+      "best_max_normal_error_deg": 0.0008563830597770836,
+      "worst_max_normal_error_deg": 10.09627367671866,
+      "families_at_1deg": 1,
+      "families_at_3deg": 5,
+      "families_at_5deg": 7,
+      "best_alignment_candidate": {
+        "id": "U00091",
+        "family": "PAIR0023",
+        "normal_error_deg": 0.0008563830597770836,
+        "individual_normal_errors_deg": [
+          0.0008563830597770836,
+          0.0008563830597770836
+        ],
+        "projection_deg": 0.0008563822472937151,
+        "mismatch_um": 0.0,
+        "selected_witness_transverse_offset_mm": 0.21481470357398336
+      },
+      "max_mismatch_um": 4.2896285814969515,
+      "max_selected_witness_transverse_offset_mm": 4.068666885987523,
+      "candidate_metrics": [
+        {
+          "id": "U00043",
+          "family": "PAIR0011",
+          "normal_error_deg": 8.960228941211357,
+          "individual_normal_errors_deg": [
+            3.0007573654251574,
+            8.960228941211357
+          ],
+          "projection_deg": 0.001056771690019119,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6238674669399139
+        },
+        {
+          "id": "U00044",
+          "family": "PAIR0011",
+          "normal_error_deg": 8.960228941211357,
+          "individual_normal_errors_deg": [
+            8.960228941211357,
+            3.0007573654251574
+          ],
+          "projection_deg": 0.001056771690019119,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6238674669399139
+        },
+        {
+          "id": "U00087",
+          "family": "PAIR0022",
+          "normal_error_deg": 1.4394672633874481,
+          "individual_normal_errors_deg": [
+            1.2027405132792717,
+            1.4394672633874481
+          ],
+          "projection_deg": 0.0014527756714025712,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.5743441633053106
+        },
+        {
+          "id": "U00088",
+          "family": "PAIR0022",
+          "normal_error_deg": 1.4394672633874481,
+          "individual_normal_errors_deg": [
+            1.4394672633874481,
+            1.2027405132792717
+          ],
+          "projection_deg": 0.0014527756714025712,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.5743441633053106
+        },
+        {
+          "id": "U00091",
+          "family": "PAIR0023",
+          "normal_error_deg": 0.0008563830597770836,
+          "individual_normal_errors_deg": [
+            0.0008563830597770836,
+            0.0008563830597770836
+          ],
+          "projection_deg": 0.0008563822472937151,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.21481470357398336
+        },
+        {
+          "id": "U00092",
+          "family": "PAIR0023",
+          "normal_error_deg": 0.0008563830597770836,
+          "individual_normal_errors_deg": [
+            0.0008563830597770836,
+            0.0008563830597770836
+          ],
+          "projection_deg": 0.0008563822472937151,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.21481470357398336
+        },
+        {
+          "id": "U00107",
+          "family": "PAIR0027",
+          "normal_error_deg": 9.676958777157036,
+          "individual_normal_errors_deg": [
+            9.676958777157036,
+            9.257116040029066
+          ],
+          "projection_deg": 0.0012515182539381314,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.0048358982572965
+        },
+        {
+          "id": "U00108",
+          "family": "PAIR0027",
+          "normal_error_deg": 9.676958777157036,
+          "individual_normal_errors_deg": [
+            9.257116040029066,
+            9.676958777157036
+          ],
+          "projection_deg": 0.0012515182539381314,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.0048358982572965
+        },
+        {
+          "id": "U00115",
+          "family": "PAIR0029",
+          "normal_error_deg": 4.141139243948792,
+          "individual_normal_errors_deg": [
+            4.141139243948792,
+            0.041253306417955486
+          ],
+          "projection_deg": 0.0015333298564399066,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.5327692623726006
+        },
+        {
+          "id": "U00116",
+          "family": "PAIR0029",
+          "normal_error_deg": 4.141139243948792,
+          "individual_normal_errors_deg": [
+            0.041253306417955486,
+            4.141139243948792
+          ],
+          "projection_deg": 0.0015333298564399066,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.5327692623726006
+        },
+        {
+          "id": "U00127",
+          "family": "PAIR0032",
+          "normal_error_deg": 7.18377133599033,
+          "individual_normal_errors_deg": [
+            7.18377133599033,
+            7.0105919786512185
+          ],
+          "projection_deg": 6.740547051498194E-05,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7221853154264729
+        },
+        {
+          "id": "U00128",
+          "family": "PAIR0032",
+          "normal_error_deg": 7.18377133599033,
+          "individual_normal_errors_deg": [
+            7.0105919786512185,
+            7.18377133599033
+          ],
+          "projection_deg": 6.740547051498194E-05,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7221853154264729
+        },
+        {
+          "id": "U00131",
+          "family": "PAIR0033",
+          "normal_error_deg": 2.1470809398448605,
+          "individual_normal_errors_deg": [
+            1.8218423293878767,
+            2.1470809398448605
+          ],
+          "projection_deg": 0.000694197530167253,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.9292701368928655
+        },
+        {
+          "id": "U00132",
+          "family": "PAIR0033",
+          "normal_error_deg": 2.1470809398448605,
+          "individual_normal_errors_deg": [
+            2.1470809398448605,
+            1.8218423293878767
+          ],
+          "projection_deg": 0.000694197530167253,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.9292701368928655
+        },
+        {
+          "id": "U00175",
+          "family": "PAIR0044",
+          "normal_error_deg": 10.09627367671866,
+          "individual_normal_errors_deg": [
+            10.09627367671866,
+            1.8296421519741692
+          ],
+          "projection_deg": 0.001592988528869932,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.068666885987523
+        },
+        {
+          "id": "U00176",
+          "family": "PAIR0044",
+          "normal_error_deg": 10.09627367671866,
+          "individual_normal_errors_deg": [
+            1.8296421519741692,
+            10.09627367671866
+          ],
+          "projection_deg": 0.001592988528869932,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.068666885987523
+        },
+        {
+          "id": "U00199",
+          "family": "PAIR0050",
+          "normal_error_deg": 10.078728172006555,
+          "individual_normal_errors_deg": [
+            10.078728172006555,
+            2.390236255314347
+          ],
+          "projection_deg": 0.00028439430705325754,
+          "mismatch_um": 4.2896285814969515,
+          "selected_witness_transverse_offset_mm": 3.088905051150852
+        },
+        {
+          "id": "U00200",
+          "family": "PAIR0050",
+          "normal_error_deg": 10.078728172006555,
+          "individual_normal_errors_deg": [
+            2.390236255314347,
+            10.078728172006555
+          ],
+          "projection_deg": 0.00028439430705325754,
+          "mismatch_um": 4.2896285814969515,
+          "selected_witness_transverse_offset_mm": 3.088905051150852
+        },
+        {
+          "id": "U00223",
+          "family": "PAIR0056",
+          "normal_error_deg": 6.5309347217877765,
+          "individual_normal_errors_deg": [
+            3.7832531334624173,
+            6.5309347217877765
+          ],
+          "projection_deg": 0.001465757086186713,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.304172779078111
+        },
+        {
+          "id": "U00224",
+          "family": "PAIR0056",
+          "normal_error_deg": 6.5309347217877765,
+          "individual_normal_errors_deg": [
+            6.5309347217877765,
+            3.7832531334624173
+          ],
+          "projection_deg": 0.001465757086186713,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.304172779078111
+        },
+        {
+          "id": "U00227",
+          "family": "PAIR0057",
+          "normal_error_deg": 1.8256015087084712,
+          "individual_normal_errors_deg": [
+            1.8256015087084712,
+            1.754789571998309
+          ],
+          "projection_deg": 0.0008834871532839901,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.004670472075207021
+        },
+        {
+          "id": "U00228",
+          "family": "PAIR0057",
+          "normal_error_deg": 1.8256015087084712,
+          "individual_normal_errors_deg": [
+            1.754789571998309,
+            1.8256015087084712
+          ],
+          "projection_deg": 0.0008834871532839901,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.004670472075207021
+        },
+        {
+          "id": "U00235",
+          "family": "PAIR0059",
+          "normal_error_deg": 6.911171992524944,
+          "individual_normal_errors_deg": [
+            6.727230231635699,
+            6.911171992524944
+          ],
+          "projection_deg": 0.0011408980628446078,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7404365129718049
+        },
+        {
+          "id": "U00236",
+          "family": "PAIR0059",
+          "normal_error_deg": 6.911171992524944,
+          "individual_normal_errors_deg": [
+            6.911171992524944,
+            6.727230231635699
+          ],
+          "projection_deg": 0.0011408980628446078,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7404365129718049
+        },
+        {
+          "id": "U00243",
+          "family": "PAIR0061",
+          "normal_error_deg": 6.781215556459314,
+          "individual_normal_errors_deg": [
+            0.0010178077671637333,
+            6.781215556459314
+          ],
+          "projection_deg": 0.0010178082224778205,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.8409148589300326
+        },
+        {
+          "id": "U00244",
+          "family": "PAIR0061",
+          "normal_error_deg": 6.781215556459314,
+          "individual_normal_errors_deg": [
+            6.781215556459314,
+            0.0010178077671637333
+          ],
+          "projection_deg": 0.0010178082224778205,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.8409148589300326
+        },
+        {
+          "id": "U00259",
+          "family": "PAIR0065",
+          "normal_error_deg": 1.1700791337120307,
+          "individual_normal_errors_deg": [
+            1.0398926714576937,
+            1.1700791337120307
+          ],
+          "projection_deg": 0.0006350345457798127,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.003080829364769678
+        },
+        {
+          "id": "U00260",
+          "family": "PAIR0065",
+          "normal_error_deg": 1.1700791337120307,
+          "individual_normal_errors_deg": [
+            1.1700791337120307,
+            1.0398926714576937
+          ],
+          "projection_deg": 0.0006350345457798127,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.003080829364769678
+        },
+        {
+          "id": "U00271",
+          "family": "PAIR0068",
+          "normal_error_deg": 9.417683143404755,
+          "individual_normal_errors_deg": [
+            9.417683143404755,
+            0.0013307954167484596
+          ],
+          "projection_deg": 0.0013307952659028185,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7403979263076351
+        },
+        {
+          "id": "U00272",
+          "family": "PAIR0068",
+          "normal_error_deg": 9.417683143404755,
+          "individual_normal_errors_deg": [
+            0.0013307954167484596,
+            9.417683143404755
+          ],
+          "projection_deg": 0.0013307952659028185,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7403979263076351
+        },
+        {
+          "id": "U00371",
+          "family": "PAIR0093",
+          "normal_error_deg": 9.524818103840774,
+          "individual_normal_errors_deg": [
+            9.21180535867618,
+            9.524818103840774
+          ],
+          "projection_deg": 0.0014854038354477188,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.1825920801181995
+        },
+        {
+          "id": "U00372",
+          "family": "PAIR0093",
+          "normal_error_deg": 9.524818103840774,
+          "individual_normal_errors_deg": [
+            9.524818103840774,
+            9.21180535867618
+          ],
+          "projection_deg": 0.0014854038354477188,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.1825920801181995
+        },
+        {
+          "id": "U00375",
+          "family": "PAIR0094",
+          "normal_error_deg": 9.293093151983076,
+          "individual_normal_errors_deg": [
+            9.293093151983076,
+            9.224495956615508
+          ],
+          "projection_deg": 0.0015750975746920228,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.3136968340217319
+        },
+        {
+          "id": "U00376",
+          "family": "PAIR0094",
+          "normal_error_deg": 9.293093151983076,
+          "individual_normal_errors_deg": [
+            9.224495956615508,
+            9.293093151983076
+          ],
+          "projection_deg": 0.0015750975746920228,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.3136968340217319
+        },
+        {
+          "id": "U00391",
+          "family": "PAIR0098",
+          "normal_error_deg": 6.348255313677974,
+          "individual_normal_errors_deg": [
+            6.334181082298741,
+            6.348255313677974
+          ],
+          "projection_deg": 0.001176170510803383,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.965908688512485
+        },
+        {
+          "id": "U00392",
+          "family": "PAIR0098",
+          "normal_error_deg": 6.348255313677974,
+          "individual_normal_errors_deg": [
+            6.348255313677974,
+            6.334181082298741
+          ],
+          "projection_deg": 0.001176170510803383,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.965908688512485
+        },
+        {
+          "id": "U00399",
+          "family": "PAIR0100",
+          "normal_error_deg": 4.161453620881007,
+          "individual_normal_errors_deg": [
+            4.161453620881007,
+            1.8410057752019364
+          ],
+          "projection_deg": 0.0009257849932168561,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.2607198137766888
+        },
+        {
+          "id": "U00400",
+          "family": "PAIR0100",
+          "normal_error_deg": 4.161453620881007,
+          "individual_normal_errors_deg": [
+            1.8410057752019364,
+            4.161453620881007
+          ],
+          "projection_deg": 0.0009257849932168561,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.2607198137766888
+        }
+      ]
+    },
+    {
+      "method": "one_budget512",
+      "placement": "N04/BNC_Male",
+      "passing_poses": 8,
+      "passing_pair_families": 4,
+      "best_max_normal_error_deg": 1.6771426400918161,
+      "worst_max_normal_error_deg": 4.142637317536115,
+      "families_at_1deg": 0,
+      "families_at_3deg": 3,
+      "families_at_5deg": 4,
+      "best_alignment_candidate": {
+        "id": "U00063",
+        "family": "PAIR0016",
+        "normal_error_deg": 1.6771426400918161,
+        "individual_normal_errors_deg": [
+          1.6771426400918161,
+          0.7764647138150227
+        ],
+        "projection_deg": 13.113296672660377,
+        "mismatch_um": 0.0,
+        "selected_witness_transverse_offset_mm": 1.170548902345781
+      },
+      "max_mismatch_um": 0.0,
+      "max_selected_witness_transverse_offset_mm": 4.067470095938793,
+      "candidate_metrics": [
+        {
+          "id": "U00007",
+          "family": "PAIR0002",
+          "normal_error_deg": 4.142637317536115,
+          "individual_normal_errors_deg": [
+            4.142637317536115,
+            0.8104450558599907
+          ],
+          "projection_deg": 14.100006271762588,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.212039562469689
+        },
+        {
+          "id": "U00008",
+          "family": "PAIR0002",
+          "normal_error_deg": 4.142637317536115,
+          "individual_normal_errors_deg": [
+            0.8104450558599907,
+            4.142637317536115
+          ],
+          "projection_deg": 14.100006271762588,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.212039562469689
+        },
+        {
+          "id": "U00039",
+          "family": "PAIR0010",
+          "normal_error_deg": 1.6838396768389017,
+          "individual_normal_errors_deg": [
+            1.6838396768389017,
+            0.8016709616982288
+          ],
+          "projection_deg": 11.23885841786968,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.067470095938793
+        },
+        {
+          "id": "U00040",
+          "family": "PAIR0010",
+          "normal_error_deg": 1.6838396768389017,
+          "individual_normal_errors_deg": [
+            0.8016709616982288,
+            1.6838396768389017
+          ],
+          "projection_deg": 11.23885841786968,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.067470095938793
+        },
+        {
+          "id": "U00063",
+          "family": "PAIR0016",
+          "normal_error_deg": 1.6771426400918161,
+          "individual_normal_errors_deg": [
+            1.6771426400918161,
+            0.7764647138150227
+          ],
+          "projection_deg": 13.113296672660377,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.170548902345781
+        },
+        {
+          "id": "U00064",
+          "family": "PAIR0016",
+          "normal_error_deg": 1.6771426400918161,
+          "individual_normal_errors_deg": [
+            0.7764647138150227,
+            1.6771426400918161
+          ],
+          "projection_deg": 13.113296672660377,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.170548902345781
+        },
+        {
+          "id": "U00083",
+          "family": "PAIR0021",
+          "normal_error_deg": 2.7641981534796716,
+          "individual_normal_errors_deg": [
+            2.7641981534796716,
+            2.589292903937909
+          ],
+          "projection_deg": 6.324191667847316,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.8230458957458393
+        },
+        {
+          "id": "U00084",
+          "family": "PAIR0021",
+          "normal_error_deg": 2.7641981534796716,
+          "individual_normal_errors_deg": [
+            2.589292903937909,
+            2.7641981534796716
+          ],
+          "projection_deg": 6.324191667847316,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.8230458957458393
+        }
+      ]
+    },
+    {
+      "method": "one_budget512",
+      "placement": "N05/Gear_Large",
+      "passing_poses": 38,
+      "passing_pair_families": 19,
+      "best_max_normal_error_deg": 0.0011924048615324584,
+      "worst_max_normal_error_deg": 10.096273367653364,
+      "families_at_1deg": 2,
+      "families_at_3deg": 5,
+      "families_at_5deg": 7,
+      "best_alignment_candidate": {
+        "id": "U00091",
+        "family": "PAIR0023",
+        "normal_error_deg": 0.0011924048615324584,
+        "individual_normal_errors_deg": [
+          0.0011924048615324584,
+          0.001192404555877242
+        ],
+        "projection_deg": 0.0011924044801872634,
+        "mismatch_um": 0.0,
+        "selected_witness_transverse_offset_mm": 0.21481657932722273
+      },
+      "max_mismatch_um": 4.2896285814969515,
+      "max_selected_witness_transverse_offset_mm": 4.282415518368972,
+      "candidate_metrics": [
+        {
+          "id": "U00043",
+          "family": "PAIR0011",
+          "normal_error_deg": 8.778523173722405,
+          "individual_normal_errors_deg": [
+            2.99997514825715,
+            8.778523173722405
+          ],
+          "projection_deg": 0.0013266930706877448,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.658591370189525
+        },
+        {
+          "id": "U00044",
+          "family": "PAIR0011",
+          "normal_error_deg": 8.778523173722405,
+          "individual_normal_errors_deg": [
+            8.778523173722405,
+            2.99997514825715
+          ],
+          "projection_deg": 0.0013266930706877448,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.658591370189525
+        },
+        {
+          "id": "U00087",
+          "family": "PAIR0022",
+          "normal_error_deg": 1.4394673442302146,
+          "individual_normal_errors_deg": [
+            1.4394673442302146,
+            1.2027376817903874
+          ],
+          "projection_deg": 0.0015187294733231404,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.5743441526061623
+        },
+        {
+          "id": "U00088",
+          "family": "PAIR0022",
+          "normal_error_deg": 1.4394673442302146,
+          "individual_normal_errors_deg": [
+            1.2027376817903874,
+            1.4394673442302146
+          ],
+          "projection_deg": 0.0015187294733231404,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.5743441526061623
+        },
+        {
+          "id": "U00091",
+          "family": "PAIR0023",
+          "normal_error_deg": 0.0011924048615324584,
+          "individual_normal_errors_deg": [
+            0.0011924048615324584,
+            0.001192404555877242
+          ],
+          "projection_deg": 0.0011924044801872634,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.21481657932722273
+        },
+        {
+          "id": "U00092",
+          "family": "PAIR0023",
+          "normal_error_deg": 0.0011924048615324584,
+          "individual_normal_errors_deg": [
+            0.001192404555877242,
+            0.0011924048615324584
+          ],
+          "projection_deg": 0.0011924044801872634,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.21481657932722273
+        },
+        {
+          "id": "U00107",
+          "family": "PAIR0027",
+          "normal_error_deg": 9.26631779462357,
+          "individual_normal_errors_deg": [
+            9.26631779462357,
+            9.085049588181144
+          ],
+          "projection_deg": 0.000822450498698034,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9858652833635256
+        },
+        {
+          "id": "U00108",
+          "family": "PAIR0027",
+          "normal_error_deg": 9.26631779462357,
+          "individual_normal_errors_deg": [
+            9.085049588181144,
+            9.26631779462357
+          ],
+          "projection_deg": 0.000822450498698034,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9858652833635256
+        },
+        {
+          "id": "U00115",
+          "family": "PAIR0029",
+          "normal_error_deg": 2.66849794391432,
+          "individual_normal_errors_deg": [
+            1.8592097277390875,
+            2.66849794391432
+          ],
+          "projection_deg": 0.0012462354695359158,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.5570655594297613
+        },
+        {
+          "id": "U00116",
+          "family": "PAIR0029",
+          "normal_error_deg": 2.66849794391432,
+          "individual_normal_errors_deg": [
+            2.66849794391432,
+            1.8592097277390875
+          ],
+          "projection_deg": 0.0012462354695359158,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.5570655594297613
+        },
+        {
+          "id": "U00127",
+          "family": "PAIR0032",
+          "normal_error_deg": 7.183771280309662,
+          "individual_normal_errors_deg": [
+            7.0105920692000465,
+            7.183771280309662
+          ],
+          "projection_deg": 0.0005564706617039421,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7997421118154819
+        },
+        {
+          "id": "U00128",
+          "family": "PAIR0032",
+          "normal_error_deg": 7.183771280309662,
+          "individual_normal_errors_deg": [
+            7.183771280309662,
+            7.0105920692000465
+          ],
+          "projection_deg": 0.0005564706617039421,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7997421118154819
+        },
+        {
+          "id": "U00131",
+          "family": "PAIR0033",
+          "normal_error_deg": 2.1470804606707645,
+          "individual_normal_errors_deg": [
+            2.1470804606707645,
+            1.8218421934398672
+          ],
+          "projection_deg": 0.00018044466887883834,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.937169027845293
+        },
+        {
+          "id": "U00132",
+          "family": "PAIR0033",
+          "normal_error_deg": 2.1470804606707645,
+          "individual_normal_errors_deg": [
+            1.8218421934398672,
+            2.1470804606707645
+          ],
+          "projection_deg": 0.00018044466887883834,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.937169027845293
+        },
+        {
+          "id": "U00179",
+          "family": "PAIR0045",
+          "normal_error_deg": 10.096273367653364,
+          "individual_normal_errors_deg": [
+            1.8296420074758215,
+            10.096273367653364
+          ],
+          "projection_deg": 0.0014024326428551059,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.885562091648341
+        },
+        {
+          "id": "U00180",
+          "family": "PAIR0045",
+          "normal_error_deg": 10.096273367653364,
+          "individual_normal_errors_deg": [
+            10.096273367653364,
+            1.8296420074758215
+          ],
+          "projection_deg": 0.0014024326428551059,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.885562091648341
+        },
+        {
+          "id": "U00203",
+          "family": "PAIR0051",
+          "normal_error_deg": 10.078728285483892,
+          "individual_normal_errors_deg": [
+            1.8354886175401042,
+            10.078728285483892
+          ],
+          "projection_deg": 0.0007450259730036395,
+          "mismatch_um": 4.2896285814969515,
+          "selected_witness_transverse_offset_mm": 4.282415518368972
+        },
+        {
+          "id": "U00204",
+          "family": "PAIR0051",
+          "normal_error_deg": 10.078728285483892,
+          "individual_normal_errors_deg": [
+            10.078728285483892,
+            1.8354886175401042
+          ],
+          "projection_deg": 0.0007450259730036395,
+          "mismatch_um": 4.2896285814969515,
+          "selected_witness_transverse_offset_mm": 4.282415518368972
+        },
+        {
+          "id": "U00223",
+          "family": "PAIR0056",
+          "normal_error_deg": 6.350587779533537,
+          "individual_normal_errors_deg": [
+            3.816732190292578,
+            6.350587779533537
+          ],
+          "projection_deg": 0.0011270679642446035,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.0029607516588829237
+        },
+        {
+          "id": "U00224",
+          "family": "PAIR0056",
+          "normal_error_deg": 6.350587779533537,
+          "individual_normal_errors_deg": [
+            6.350587779533537,
+            3.816732190292578
+          ],
+          "projection_deg": 0.0011270679642446035,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.0029607516588829237
+        },
+        {
+          "id": "U00227",
+          "family": "PAIR0057",
+          "normal_error_deg": 6.989737307921601,
+          "individual_normal_errors_deg": [
+            6.989737307921601,
+            1.8256020917863969
+          ],
+          "projection_deg": 0.00038494201461299646,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7953771765191799
+        },
+        {
+          "id": "U00228",
+          "family": "PAIR0057",
+          "normal_error_deg": 6.989737307921601,
+          "individual_normal_errors_deg": [
+            1.8256020917863969,
+            6.989737307921601
+          ],
+          "projection_deg": 0.00038494201461299646,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7953771765191799
+        },
+        {
+          "id": "U00235",
+          "family": "PAIR0059",
+          "normal_error_deg": 6.911171627611127,
+          "individual_normal_errors_deg": [
+            6.911171627611127,
+            6.727230471718037
+          ],
+          "projection_deg": 0.0006835758580948742,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6718064657895849
+        },
+        {
+          "id": "U00236",
+          "family": "PAIR0059",
+          "normal_error_deg": 6.911171627611127,
+          "individual_normal_errors_deg": [
+            6.727230471718037,
+            6.911171627611127
+          ],
+          "projection_deg": 0.0006835758580948742,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6718064657895849
+        },
+        {
+          "id": "U00243",
+          "family": "PAIR0061",
+          "normal_error_deg": 0.00141830871202813,
+          "individual_normal_errors_deg": [
+            0.00141830871202813,
+            0.0005372488964759469
+          ],
+          "projection_deg": 0.0005372476304816331,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.21403540453958197
+        },
+        {
+          "id": "U00244",
+          "family": "PAIR0061",
+          "normal_error_deg": 0.00141830871202813,
+          "individual_normal_errors_deg": [
+            0.0005372488964759469,
+            0.00141830871202813
+          ],
+          "projection_deg": 0.0005372476304816331,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.21403540453958197
+        },
+        {
+          "id": "U00263",
+          "family": "PAIR0066",
+          "normal_error_deg": 3.6991371805164808,
+          "individual_normal_errors_deg": [
+            3.6991371805164808,
+            1.0398946396031226
+          ],
+          "projection_deg": 0.0010288547346245574,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.56134991134699
+        },
+        {
+          "id": "U00264",
+          "family": "PAIR0066",
+          "normal_error_deg": 3.6991371805164808,
+          "individual_normal_errors_deg": [
+            1.0398946396031226,
+            3.6991371805164808
+          ],
+          "projection_deg": 0.0010288547346245574,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.56134991134699
+        },
+        {
+          "id": "U00275",
+          "family": "PAIR0069",
+          "normal_error_deg": 9.349505423322425,
+          "individual_normal_errors_deg": [
+            9.349505423322425,
+            0.0014766518113220916
+          ],
+          "projection_deg": 0.0014766519601515794,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9623809794968451
+        },
+        {
+          "id": "U00276",
+          "family": "PAIR0069",
+          "normal_error_deg": 9.349505423322425,
+          "individual_normal_errors_deg": [
+            0.0014766518113220916,
+            9.349505423322425
+          ],
+          "projection_deg": 0.0014766519601515794,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9623809794968451
+        },
+        {
+          "id": "U00375",
+          "family": "PAIR0094",
+          "normal_error_deg": 9.455130109529433,
+          "individual_normal_errors_deg": [
+            9.211805373601313,
+            9.455130109529433
+          ],
+          "projection_deg": 0.0015244239721132645,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.2113418986147275
+        },
+        {
+          "id": "U00376",
+          "family": "PAIR0094",
+          "normal_error_deg": 9.455130109529433,
+          "individual_normal_errors_deg": [
+            9.455130109529433,
+            9.211805373601313
+          ],
+          "projection_deg": 0.0015244239721132645,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.2113418986147275
+        },
+        {
+          "id": "U00379",
+          "family": "PAIR0095",
+          "normal_error_deg": 9.486618149880835,
+          "individual_normal_errors_deg": [
+            9.43217721608555,
+            9.486618149880835
+          ],
+          "projection_deg": 0.0015055752317038235,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.2529994897569474
+        },
+        {
+          "id": "U00380",
+          "family": "PAIR0095",
+          "normal_error_deg": 9.486618149880835,
+          "individual_normal_errors_deg": [
+            9.486618149880835,
+            9.43217721608555
+          ],
+          "projection_deg": 0.0015055752317038235,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.2529994897569474
+        },
+        {
+          "id": "U00395",
+          "family": "PAIR0099",
+          "normal_error_deg": 6.334181601401135,
+          "individual_normal_errors_deg": [
+            2.9995017207522605,
+            6.334181601401135
+          ],
+          "projection_deg": 0.0013982327281499357,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.801257562034994
+        },
+        {
+          "id": "U00396",
+          "family": "PAIR0099",
+          "normal_error_deg": 6.334181601401135,
+          "individual_normal_errors_deg": [
+            6.334181601401135,
+            2.9995017207522605
+          ],
+          "projection_deg": 0.0013982327281499357,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.801257562034994
+        },
+        {
+          "id": "U00403",
+          "family": "PAIR0101",
+          "normal_error_deg": 4.161453530490981,
+          "individual_normal_errors_deg": [
+            1.841005603217787,
+            4.161453530490981
+          ],
+          "projection_deg": 0.0004321826344094376,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.2574909312176026
+        },
+        {
+          "id": "U00404",
+          "family": "PAIR0101",
+          "normal_error_deg": 4.161453530490981,
+          "individual_normal_errors_deg": [
+            4.161453530490981,
+            1.841005603217787
+          ],
+          "projection_deg": 0.0004321826344094376,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.2574909312176026
+        }
+      ]
+    },
+    {
+      "method": "one_budget512",
+      "placement": "N06/BNC_Male",
+      "passing_poses": 10,
+      "passing_pair_families": 5,
+      "best_max_normal_error_deg": 0.7536395652748642,
+      "worst_max_normal_error_deg": 4.189825265972846,
+      "families_at_1deg": 1,
+      "families_at_3deg": 3,
+      "families_at_5deg": 5,
+      "best_alignment_candidate": {
+        "id": "U00075",
+        "family": "PAIR0019",
+        "normal_error_deg": 0.7536395652748642,
+        "individual_normal_errors_deg": [
+          0.7513898994102167,
+          0.7536395652748642
+        ],
+        "projection_deg": 12.005868667006148,
+        "mismatch_um": 1.631734191384973,
+        "selected_witness_transverse_offset_mm": 4.031372595933197
+      },
+      "max_mismatch_um": 1.631734191384973,
+      "max_selected_witness_transverse_offset_mm": 4.045886216556412,
+      "candidate_metrics": [
+        {
+          "id": "U00023",
+          "family": "PAIR0006",
+          "normal_error_deg": 4.189825265972846,
+          "individual_normal_errors_deg": [
+            1.688363351967164,
+            4.189825265972846
+          ],
+          "projection_deg": 14.363546184928898,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.4266044184521829
+        },
+        {
+          "id": "U00024",
+          "family": "PAIR0006",
+          "normal_error_deg": 4.189825265972846,
+          "individual_normal_errors_deg": [
+            4.189825265972846,
+            1.688363351967164
+          ],
+          "projection_deg": 14.363546184928898,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.4266044184521829
+        },
+        {
+          "id": "U00043",
+          "family": "PAIR0011",
+          "normal_error_deg": 4.182342954034527,
+          "individual_normal_errors_deg": [
+            0.7292174347352989,
+            4.182342954034527
+          ],
+          "projection_deg": 7.389536681955056,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.9729438055162625
+        },
+        {
+          "id": "U00044",
+          "family": "PAIR0011",
+          "normal_error_deg": 4.182342954034527,
+          "individual_normal_errors_deg": [
+            4.182342954034527,
+            0.7292174347352989
+          ],
+          "projection_deg": 7.389536681955056,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.9729438055162625
+        },
+        {
+          "id": "U00047",
+          "family": "PAIR0012",
+          "normal_error_deg": 1.7328190993472972,
+          "individual_normal_errors_deg": [
+            1.6897168465641783,
+            1.7328190993472972
+          ],
+          "projection_deg": 14.84122743456834,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.045886216556412
+        },
+        {
+          "id": "U00048",
+          "family": "PAIR0012",
+          "normal_error_deg": 1.7328190993472972,
+          "individual_normal_errors_deg": [
+            1.7328190993472972,
+            1.6897168465641783
+          ],
+          "projection_deg": 14.84122743456834,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.045886216556412
+        },
+        {
+          "id": "U00075",
+          "family": "PAIR0019",
+          "normal_error_deg": 0.7536395652748642,
+          "individual_normal_errors_deg": [
+            0.7513898994102167,
+            0.7536395652748642
+          ],
+          "projection_deg": 12.005868667006148,
+          "mismatch_um": 1.631734191384973,
+          "selected_witness_transverse_offset_mm": 4.031372595933197
+        },
+        {
+          "id": "U00076",
+          "family": "PAIR0019",
+          "normal_error_deg": 0.7536395652748642,
+          "individual_normal_errors_deg": [
+            0.7536395652748642,
+            0.7513898994102167
+          ],
+          "projection_deg": 12.005868667006148,
+          "mismatch_um": 1.631734191384973,
+          "selected_witness_transverse_offset_mm": 4.031372595933197
+        },
+        {
+          "id": "U00079",
+          "family": "PAIR0020",
+          "normal_error_deg": 1.7332612619333891,
+          "individual_normal_errors_deg": [
+            1.6893935804544,
+            1.7332612619333891
+          ],
+          "projection_deg": 14.992502275762906,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.538171930017934
+        },
+        {
+          "id": "U00080",
+          "family": "PAIR0020",
+          "normal_error_deg": 1.7332612619333891,
+          "individual_normal_errors_deg": [
+            1.7332612619333891,
+            1.6893935804544
+          ],
+          "projection_deg": 14.992502275762906,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.538171930017934
+        }
+      ]
+    },
+    {
+      "method": "one_budget512",
+      "placement": "N07/Gear_Large",
+      "passing_poses": 38,
+      "passing_pair_families": 19,
+      "best_max_normal_error_deg": 0.00013991472050752876,
+      "worst_max_normal_error_deg": 10.096273638811603,
+      "families_at_1deg": 1,
+      "families_at_3deg": 5,
+      "families_at_5deg": 7,
+      "best_alignment_candidate": {
+        "id": "U00091",
+        "family": "PAIR0023",
+        "normal_error_deg": 0.00013991472050752876,
+        "individual_normal_errors_deg": [
+          0.00013991472050752876,
+          0.00013991472050752876
+        ],
+        "projection_deg": 0.00013991391474130763,
+        "mismatch_um": 0.0,
+        "selected_witness_transverse_offset_mm": 0.21481274084622923
+      },
+      "max_mismatch_um": 4.2896285814969515,
+      "max_selected_witness_transverse_offset_mm": 4.062654458938028,
+      "candidate_metrics": [
+        {
+          "id": "U00043",
+          "family": "PAIR0011",
+          "normal_error_deg": 8.960228899072154,
+          "individual_normal_errors_deg": [
+            3.00075721667025,
+            8.960228899072154
+          ],
+          "projection_deg": 0.0003970062005455227,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.0919719597553923
+        },
+        {
+          "id": "U00044",
+          "family": "PAIR0011",
+          "normal_error_deg": 8.960228899072154,
+          "individual_normal_errors_deg": [
+            8.960228899072154,
+            3.00075721667025
+          ],
+          "projection_deg": 0.0003970062005455227,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.0919719597553923
+        },
+        {
+          "id": "U00087",
+          "family": "PAIR0022",
+          "normal_error_deg": 1.439466883536182,
+          "individual_normal_errors_deg": [
+            1.2027396503720829,
+            1.439466883536182
+          ],
+          "projection_deg": 0.0010187553209677633,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.5743439207434933
+        },
+        {
+          "id": "U00088",
+          "family": "PAIR0022",
+          "normal_error_deg": 1.439466883536182,
+          "individual_normal_errors_deg": [
+            1.439466883536182,
+            1.2027396503720829
+          ],
+          "projection_deg": 0.0010187553209677633,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.5743439207434933
+        },
+        {
+          "id": "U00091",
+          "family": "PAIR0023",
+          "normal_error_deg": 0.00013991472050752876,
+          "individual_normal_errors_deg": [
+            0.00013991472050752876,
+            0.00013991472050752876
+          ],
+          "projection_deg": 0.00013991391474130763,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.21481274084622923
+        },
+        {
+          "id": "U00092",
+          "family": "PAIR0023",
+          "normal_error_deg": 0.00013991472050752876,
+          "individual_normal_errors_deg": [
+            0.00013991472050752876,
+            0.00013991472050752876
+          ],
+          "projection_deg": 0.00013991391474130763,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.21481274084622923
+        },
+        {
+          "id": "U00107",
+          "family": "PAIR0027",
+          "normal_error_deg": 9.676958796447785,
+          "individual_normal_errors_deg": [
+            9.676958796447785,
+            9.257116039503696
+          ],
+          "projection_deg": 0.0016308258131037677,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.197769286228193
+        },
+        {
+          "id": "U00108",
+          "family": "PAIR0027",
+          "normal_error_deg": 9.676958796447785,
+          "individual_normal_errors_deg": [
+            9.257116039503696,
+            9.676958796447785
+          ],
+          "projection_deg": 0.0016308258131037677,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.197769286228193
+        },
+        {
+          "id": "U00115",
+          "family": "PAIR0029",
+          "normal_error_deg": 4.141139301333159,
+          "individual_normal_errors_deg": [
+            0.0412569625648196,
+            4.141139301333159
+          ],
+          "projection_deg": 0.0016281958310295406,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.353860188961663
+        },
+        {
+          "id": "U00116",
+          "family": "PAIR0029",
+          "normal_error_deg": 4.141139301333159,
+          "individual_normal_errors_deg": [
+            4.141139301333159,
+            0.0412569625648196
+          ],
+          "projection_deg": 0.0016281958310295406,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.353860188961663
+        },
+        {
+          "id": "U00127",
+          "family": "PAIR0032",
+          "normal_error_deg": 7.183771310150849,
+          "individual_normal_errors_deg": [
+            7.183771310150849,
+            7.01059213467355
+          ],
+          "projection_deg": 0.0007061203344992422,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.8234651756480856
+        },
+        {
+          "id": "U00128",
+          "family": "PAIR0032",
+          "normal_error_deg": 7.183771310150849,
+          "individual_normal_errors_deg": [
+            7.01059213467355,
+            7.183771310150849
+          ],
+          "projection_deg": 0.0007061203344992422,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.8234651756480856
+        },
+        {
+          "id": "U00131",
+          "family": "PAIR0033",
+          "normal_error_deg": 2.147081518272532,
+          "individual_normal_errors_deg": [
+            1.821842689593649,
+            2.147081518272532
+          ],
+          "projection_deg": 0.001332060435258126,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.9235915389889167
+        },
+        {
+          "id": "U00132",
+          "family": "PAIR0033",
+          "normal_error_deg": 2.147081518272532,
+          "individual_normal_errors_deg": [
+            2.147081518272532,
+            1.821842689593649
+          ],
+          "projection_deg": 0.001332060435258126,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.9235915389889167
+        },
+        {
+          "id": "U00175",
+          "family": "PAIR0044",
+          "normal_error_deg": 10.096273638811603,
+          "individual_normal_errors_deg": [
+            1.829642072919168,
+            10.096273638811603
+          ],
+          "projection_deg": 0.0015245791733446352,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.062654458938028
+        },
+        {
+          "id": "U00176",
+          "family": "PAIR0044",
+          "normal_error_deg": 10.096273638811603,
+          "individual_normal_errors_deg": [
+            10.096273638811603,
+            1.829642072919168
+          ],
+          "projection_deg": 0.0015245791733446352,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.062654458938028
+        },
+        {
+          "id": "U00199",
+          "family": "PAIR0050",
+          "normal_error_deg": 10.078728276748222,
+          "individual_normal_errors_deg": [
+            10.078728276748222,
+            2.390236269125778
+          ],
+          "projection_deg": 0.0004946101661742387,
+          "mismatch_um": 4.2896285814969515,
+          "selected_witness_transverse_offset_mm": 2.161322136290674
+        },
+        {
+          "id": "U00200",
+          "family": "PAIR0050",
+          "normal_error_deg": 10.078728276748222,
+          "individual_normal_errors_deg": [
+            2.390236269125778,
+            10.078728276748222
+          ],
+          "projection_deg": 0.0004946101661742387,
+          "mismatch_um": 4.2896285814969515,
+          "selected_witness_transverse_offset_mm": 2.161322136290674
+        },
+        {
+          "id": "U00219",
+          "family": "PAIR0055",
+          "normal_error_deg": 6.5309347469545616,
+          "individual_normal_errors_deg": [
+            6.5309347469545616,
+            3.783253231776186
+          ],
+          "projection_deg": 0.0016560355221435822,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.18699763819363532
+        },
+        {
+          "id": "U00220",
+          "family": "PAIR0055",
+          "normal_error_deg": 6.5309347469545616,
+          "individual_normal_errors_deg": [
+            3.783253231776186,
+            6.5309347469545616
+          ],
+          "projection_deg": 0.0016560355221435822,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.18699763819363532
+        },
+        {
+          "id": "U00223",
+          "family": "PAIR0056",
+          "normal_error_deg": 1.8256015285493452,
+          "individual_normal_errors_deg": [
+            1.8256015285493452,
+            1.754789952667712
+          ],
+          "projection_deg": 0.0014545461118669553,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.004830720189772542
+        },
+        {
+          "id": "U00224",
+          "family": "PAIR0056",
+          "normal_error_deg": 1.8256015285493452,
+          "individual_normal_errors_deg": [
+            1.754789952667712,
+            1.8256015285493452
+          ],
+          "projection_deg": 0.0014545461118669553,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.004830720189772542
+        },
+        {
+          "id": "U00231",
+          "family": "PAIR0058",
+          "normal_error_deg": 9.25176672848262,
+          "individual_normal_errors_deg": [
+            9.25176672848262,
+            6.911172145845338
+          ],
+          "projection_deg": 0.0015892678367260677,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.129190588172656
+        },
+        {
+          "id": "U00232",
+          "family": "PAIR0058",
+          "normal_error_deg": 9.25176672848262,
+          "individual_normal_errors_deg": [
+            6.911172145845338,
+            9.25176672848262
+          ],
+          "projection_deg": 0.0015892678367260677,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.129190588172656
+        },
+        {
+          "id": "U00239",
+          "family": "PAIR0060",
+          "normal_error_deg": 6.78121564764441,
+          "individual_normal_errors_deg": [
+            0.001530312276496012,
+            6.78121564764441
+          ],
+          "projection_deg": 0.0015303122704614274,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7960514757213653
+        },
+        {
+          "id": "U00240",
+          "family": "PAIR0060",
+          "normal_error_deg": 6.78121564764441,
+          "individual_normal_errors_deg": [
+            6.78121564764441,
+            0.001530312276496012
+          ],
+          "projection_deg": 0.0015303122704614274,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7960514757213653
+        },
+        {
+          "id": "U00259",
+          "family": "PAIR0065",
+          "normal_error_deg": 1.1700789478290532,
+          "individual_normal_errors_deg": [
+            1.039893256876916,
+            1.1700789478290532
+          ],
+          "projection_deg": 0.00012047937611680515,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.0030151670834443565
+        },
+        {
+          "id": "U00260",
+          "family": "PAIR0065",
+          "normal_error_deg": 1.1700789478290532,
+          "individual_normal_errors_deg": [
+            1.1700789478290532,
+            1.039893256876916
+          ],
+          "projection_deg": 0.00012047937611680515,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.0030151670834443565
+        },
+        {
+          "id": "U00271",
+          "family": "PAIR0068",
+          "normal_error_deg": 9.417683021384093,
+          "individual_normal_errors_deg": [
+            9.417683021384093,
+            0.0008007700463700357
+          ],
+          "projection_deg": 0.000800769780067925,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.716109183370371
+        },
+        {
+          "id": "U00272",
+          "family": "PAIR0068",
+          "normal_error_deg": 9.417683021384093,
+          "individual_normal_errors_deg": [
+            0.0008007700463700357,
+            9.417683021384093
+          ],
+          "projection_deg": 0.000800769780067925,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.716109183370371
+        },
+        {
+          "id": "U00371",
+          "family": "PAIR0093",
+          "normal_error_deg": 9.524818109483226,
+          "individual_normal_errors_deg": [
+            9.21180534138962,
+            9.524818109483226
+          ],
+          "projection_deg": 0.0010856835866690556,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9714517585297989
+        },
+        {
+          "id": "U00372",
+          "family": "PAIR0093",
+          "normal_error_deg": 9.524818109483226,
+          "individual_normal_errors_deg": [
+            9.524818109483226,
+            9.21180534138962
+          ],
+          "projection_deg": 0.0010856835866690556,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9714517585297989
+        },
+        {
+          "id": "U00375",
+          "family": "PAIR0094",
+          "normal_error_deg": 9.293093127276103,
+          "individual_normal_errors_deg": [
+            9.293093127276103,
+            9.224495960688598
+          ],
+          "projection_deg": 0.0013231521008899626,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.1955759494265277
+        },
+        {
+          "id": "U00376",
+          "family": "PAIR0094",
+          "normal_error_deg": 9.293093127276103,
+          "individual_normal_errors_deg": [
+            9.224495960688598,
+            9.293093127276103
+          ],
+          "projection_deg": 0.0013231521008899626,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.1955759494265277
+        },
+        {
+          "id": "U00391",
+          "family": "PAIR0098",
+          "normal_error_deg": 6.348255223550417,
+          "individual_normal_errors_deg": [
+            6.334181116412385,
+            6.348255223550417
+          ],
+          "projection_deg": 0.0005633266532122531,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.8762541719183234
+        },
+        {
+          "id": "U00392",
+          "family": "PAIR0098",
+          "normal_error_deg": 6.348255223550417,
+          "individual_normal_errors_deg": [
+            6.348255223550417,
+            6.334181116412385
+          ],
+          "projection_deg": 0.0005633266532122531,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.8762541719183234
+        },
+        {
+          "id": "U00399",
+          "family": "PAIR0100",
+          "normal_error_deg": 4.161453779058309,
+          "individual_normal_errors_deg": [
+            4.161453779058309,
+            1.8410061383851342
+          ],
+          "projection_deg": 0.0014795219572442371,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.2621081182641218
+        },
+        {
+          "id": "U00400",
+          "family": "PAIR0100",
+          "normal_error_deg": 4.161453779058309,
+          "individual_normal_errors_deg": [
+            1.8410061383851342,
+            4.161453779058309
+          ],
+          "projection_deg": 0.0014795219572442371,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.2621081182641218
+        }
+      ]
+    },
+    {
+      "method": "graspkit_512",
+      "placement": "N00/BNC_Male",
+      "passing_poses": 12,
+      "passing_pair_families": 6,
+      "best_max_normal_error_deg": 0.001597023942864953,
+      "worst_max_normal_error_deg": 4.303190366655439,
+      "families_at_1deg": 2,
+      "families_at_3deg": 2,
+      "families_at_5deg": 6,
+      "best_alignment_candidate": {
+        "id": "U00003",
+        "family": "PAIR0001",
+        "normal_error_deg": 0.001597023942864953,
+        "individual_normal_errors_deg": [
+          0.001597023942864953,
+          0.001597023942864953
+        ],
+        "projection_deg": 0.001597023923344575,
+        "mismatch_um": 1.7315771692685833,
+        "selected_witness_transverse_offset_mm": 4.597410340678085
+      },
+      "max_mismatch_um": 1.7315771692685833,
+      "max_selected_witness_transverse_offset_mm": 4.597410340678085,
+      "candidate_metrics": [
+        {
+          "id": "U00003",
+          "family": "PAIR0001",
+          "normal_error_deg": 0.001597023942864953,
+          "individual_normal_errors_deg": [
+            0.001597023942864953,
+            0.001597023942864953
+          ],
+          "projection_deg": 0.001597023923344575,
+          "mismatch_um": 1.7315771692685833,
+          "selected_witness_transverse_offset_mm": 4.597410340678085
+        },
+        {
+          "id": "U00004",
+          "family": "PAIR0001",
+          "normal_error_deg": 0.001597023942864953,
+          "individual_normal_errors_deg": [
+            0.001597023942864953,
+            0.001597023942864953
+          ],
+          "projection_deg": 0.001597023923344575,
+          "mismatch_um": 1.7315771692685833,
+          "selected_witness_transverse_offset_mm": 4.597410340678085
+        },
+        {
+          "id": "U00015",
+          "family": "PAIR0004",
+          "normal_error_deg": 4.303190366655439,
+          "individual_normal_errors_deg": [
+            4.303190366655439,
+            1.8049716197384724
+          ],
+          "projection_deg": 13.374164007512155,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.40588599200570585
+        },
+        {
+          "id": "U00016",
+          "family": "PAIR0004",
+          "normal_error_deg": 4.303190366655439,
+          "individual_normal_errors_deg": [
+            1.8049716197384724,
+            4.303190366655439
+          ],
+          "projection_deg": 13.374164007512155,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.40588599200570585
+        },
+        {
+          "id": "U00023",
+          "family": "PAIR0006",
+          "normal_error_deg": 4.303190212196905,
+          "individual_normal_errors_deg": [
+            4.303190212196905,
+            1.8049716077531863
+          ],
+          "projection_deg": 10.836006985643566,
+          "mismatch_um": 1.2890791428622066,
+          "selected_witness_transverse_offset_mm": 0.49116160383563595
+        },
+        {
+          "id": "U00024",
+          "family": "PAIR0006",
+          "normal_error_deg": 4.303190212196905,
+          "individual_normal_errors_deg": [
+            1.8049716077531863,
+            4.303190212196905
+          ],
+          "projection_deg": 10.836006985643566,
+          "mismatch_um": 1.2890791428622066,
+          "selected_witness_transverse_offset_mm": 0.49116160383563595
+        },
+        {
+          "id": "U00035",
+          "family": "PAIR0009",
+          "normal_error_deg": 3.089055070077142,
+          "individual_normal_errors_deg": [
+            0.5241304349745243,
+            3.089055070077142
+          ],
+          "projection_deg": 13.56903269050695,
+          "mismatch_um": 1.5605297538946739,
+          "selected_witness_transverse_offset_mm": 1.8235682537871594
+        },
+        {
+          "id": "U00036",
+          "family": "PAIR0009",
+          "normal_error_deg": 3.089055070077142,
+          "individual_normal_errors_deg": [
+            3.089055070077142,
+            0.5241304349745243
+          ],
+          "projection_deg": 13.56903269050695,
+          "mismatch_um": 1.5605297538946739,
+          "selected_witness_transverse_offset_mm": 1.8235682537871594
+        },
+        {
+          "id": "U00039",
+          "family": "PAIR0010",
+          "normal_error_deg": 0.524390462009045,
+          "individual_normal_errors_deg": [
+            0.524390462009045,
+            0.5243904620034847
+          ],
+          "projection_deg": 9.605103076094002,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.236034851308865
+        },
+        {
+          "id": "U00040",
+          "family": "PAIR0010",
+          "normal_error_deg": 0.524390462009045,
+          "individual_normal_errors_deg": [
+            0.5243904620034847,
+            0.524390462009045
+          ],
+          "projection_deg": 9.605103076094002,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.236034851308865
+        },
+        {
+          "id": "U00059",
+          "family": "PAIR0015",
+          "normal_error_deg": 3.0892234266618686,
+          "individual_normal_errors_deg": [
+            3.0892227719995327,
+            3.0892234266618686
+          ],
+          "projection_deg": 8.303464201768339,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.4475516003332978
+        },
+        {
+          "id": "U00060",
+          "family": "PAIR0015",
+          "normal_error_deg": 3.0892234266618686,
+          "individual_normal_errors_deg": [
+            3.0892234266618686,
+            3.0892227719995327
+          ],
+          "projection_deg": 8.303464201768339,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.4475516003332978
+        }
+      ]
+    },
+    {
+      "method": "graspkit_512",
+      "placement": "N01/BNC_Male",
+      "passing_poses": 10,
+      "passing_pair_families": 5,
+      "best_max_normal_error_deg": 0.7712927663439463,
+      "worst_max_normal_error_deg": 4.1581494614788905,
+      "families_at_1deg": 1,
+      "families_at_3deg": 3,
+      "families_at_5deg": 5,
+      "best_alignment_candidate": {
+        "id": "U00035",
+        "family": "PAIR0009",
+        "normal_error_deg": 0.7712927663439463,
+        "individual_normal_errors_deg": [
+          0.7712927663439463,
+          0.6420322427074042
+        ],
+        "projection_deg": 1.1227131720931318,
+        "mismatch_um": 0.0,
+        "selected_witness_transverse_offset_mm": 3.444721395536894
+      },
+      "max_mismatch_um": 0.0,
+      "max_selected_witness_transverse_offset_mm": 4.070772765322108,
+      "candidate_metrics": [
+        {
+          "id": "U00015",
+          "family": "PAIR0004",
+          "normal_error_deg": 1.8624764975863994,
+          "individual_normal_errors_deg": [
+            1.8624764975863994,
+            0.6454894644827975
+          ],
+          "projection_deg": 5.698549091031753,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.5591211625049664
+        },
+        {
+          "id": "U00016",
+          "family": "PAIR0004",
+          "normal_error_deg": 1.8624764975863994,
+          "individual_normal_errors_deg": [
+            0.6454894644827975,
+            1.8624764975863994
+          ],
+          "projection_deg": 5.698549091031753,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.5591211625049664
+        },
+        {
+          "id": "U00023",
+          "family": "PAIR0006",
+          "normal_error_deg": 4.1581494614788905,
+          "individual_normal_errors_deg": [
+            4.1581494614788905,
+            1.8456121001144408
+          ],
+          "projection_deg": 10.767860653305464,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.070772765322108
+        },
+        {
+          "id": "U00024",
+          "family": "PAIR0006",
+          "normal_error_deg": 4.1581494614788905,
+          "individual_normal_errors_deg": [
+            1.8456121001144408,
+            4.1581494614788905
+          ],
+          "projection_deg": 10.767860653305464,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.070772765322108
+        },
+        {
+          "id": "U00035",
+          "family": "PAIR0009",
+          "normal_error_deg": 0.7712927663439463,
+          "individual_normal_errors_deg": [
+            0.7712927663439463,
+            0.6420322427074042
+          ],
+          "projection_deg": 1.1227131720931318,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.444721395536894
+        },
+        {
+          "id": "U00036",
+          "family": "PAIR0009",
+          "normal_error_deg": 0.7712927663439463,
+          "individual_normal_errors_deg": [
+            0.6420322427074042,
+            0.7712927663439463
+          ],
+          "projection_deg": 1.1227131720931318,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.444721395536894
+        },
+        {
+          "id": "U00039",
+          "family": "PAIR0010",
+          "normal_error_deg": 1.868101268793542,
+          "individual_normal_errors_deg": [
+            1.868101268793542,
+            0.658803846694655
+          ],
+          "projection_deg": 9.565542191430982,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.067612299735208
+        },
+        {
+          "id": "U00040",
+          "family": "PAIR0010",
+          "normal_error_deg": 1.868101268793542,
+          "individual_normal_errors_deg": [
+            0.658803846694655,
+            1.868101268793542
+          ],
+          "projection_deg": 9.565542191430982,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.067612299735208
+        },
+        {
+          "id": "U00059",
+          "family": "PAIR0015",
+          "normal_error_deg": 3.101890288155364,
+          "individual_normal_errors_deg": [
+            3.101890288155364,
+            1.8338836101001639
+          ],
+          "projection_deg": 6.963880604492872,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.051856549505064
+        },
+        {
+          "id": "U00060",
+          "family": "PAIR0015",
+          "normal_error_deg": 3.101890288155364,
+          "individual_normal_errors_deg": [
+            1.8338836101001639,
+            3.101890288155364
+          ],
+          "projection_deg": 6.963880604492872,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.051856549505064
+        }
+      ]
+    },
+    {
+      "method": "graspkit_512",
+      "placement": "N01/Gear_Large",
+      "passing_poses": 36,
+      "passing_pair_families": 18,
+      "best_max_normal_error_deg": 1.1469307120819303,
+      "worst_max_normal_error_deg": 9.746101870169426,
+      "families_at_1deg": 0,
+      "families_at_3deg": 3,
+      "families_at_5deg": 4,
+      "best_alignment_candidate": {
+        "id": "U00039",
+        "family": "PAIR0010",
+        "normal_error_deg": 1.1469307120819303,
+        "individual_normal_errors_deg": [
+          1.1469307120819303,
+          1.1171796221466443
+        ],
+        "projection_deg": 0.0014858109878192291,
+        "mismatch_um": 0.0,
+        "selected_witness_transverse_offset_mm": 0.002844225597987876
+      },
+      "max_mismatch_um": 0.0,
+      "max_selected_witness_transverse_offset_mm": 3.180389508172052,
+      "candidate_metrics": [
+        {
+          "id": "U00023",
+          "family": "PAIR0006",
+          "normal_error_deg": 6.78410512117103,
+          "individual_normal_errors_deg": [
+            6.784104909891952,
+            6.78410512117103
+          ],
+          "projection_deg": 0.0006191310197089247,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.666522147828618
+        },
+        {
+          "id": "U00024",
+          "family": "PAIR0006",
+          "normal_error_deg": 6.78410512117103,
+          "individual_normal_errors_deg": [
+            6.78410512117103,
+            6.784104909891952
+          ],
+          "projection_deg": 0.0006191310197089247,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.666522147828618
+        },
+        {
+          "id": "U00027",
+          "family": "PAIR0007",
+          "normal_error_deg": 7.026922764173021,
+          "individual_normal_errors_deg": [
+            7.026917222741488,
+            7.026922764173021
+          ],
+          "projection_deg": 0.0014338962171236483,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7922065804770011
+        },
+        {
+          "id": "U00028",
+          "family": "PAIR0007",
+          "normal_error_deg": 7.026922764173021,
+          "individual_normal_errors_deg": [
+            7.026922764173021,
+            7.026917222741488
+          ],
+          "projection_deg": 0.0014338962171236483,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7922065804770011
+        },
+        {
+          "id": "U00039",
+          "family": "PAIR0010",
+          "normal_error_deg": 1.1469307120819303,
+          "individual_normal_errors_deg": [
+            1.1469307120819303,
+            1.1171796221466443
+          ],
+          "projection_deg": 0.0014858109878192291,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.002844225597987876
+        },
+        {
+          "id": "U00040",
+          "family": "PAIR0010",
+          "normal_error_deg": 1.1469307120819303,
+          "individual_normal_errors_deg": [
+            1.1171796221466443,
+            1.1469307120819303
+          ],
+          "projection_deg": 0.0014858109878192291,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.002844225597987876
+        },
+        {
+          "id": "U00043",
+          "family": "PAIR0011",
+          "normal_error_deg": 6.347663003457575,
+          "individual_normal_errors_deg": [
+            6.3347737351962135,
+            6.347663003457575
+          ],
+          "projection_deg": 0.0010157339694869347,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.487376187198769
+        },
+        {
+          "id": "U00044",
+          "family": "PAIR0011",
+          "normal_error_deg": 6.347663003457575,
+          "individual_normal_errors_deg": [
+            6.347663003457575,
+            6.3347737351962135
+          ],
+          "projection_deg": 0.0010157339694869347,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.487376187198769
+        },
+        {
+          "id": "U00051",
+          "family": "PAIR0013",
+          "normal_error_deg": 6.85774329616674,
+          "individual_normal_errors_deg": [
+            6.85774329616674,
+            6.80117371253735
+          ],
+          "projection_deg": 0.00019144912097057248,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7184073881924397
+        },
+        {
+          "id": "U00052",
+          "family": "PAIR0013",
+          "normal_error_deg": 6.85774329616674,
+          "individual_normal_errors_deg": [
+            6.80117371253735,
+            6.85774329616674
+          ],
+          "projection_deg": 0.00019144912097057248,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7184073881924397
+        },
+        {
+          "id": "U00055",
+          "family": "PAIR0014",
+          "normal_error_deg": 6.985289544602388,
+          "individual_normal_errors_deg": [
+            0.0032468535827722723,
+            6.985289544602388
+          ],
+          "projection_deg": 0.0009080577308918683,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9148679653224155
+        },
+        {
+          "id": "U00056",
+          "family": "PAIR0014",
+          "normal_error_deg": 6.985289544602388,
+          "individual_normal_errors_deg": [
+            6.985289544602388,
+            0.0032468535827722723
+          ],
+          "projection_deg": 0.0009080577308918683,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9148679653224155
+        },
+        {
+          "id": "U00059",
+          "family": "PAIR0015",
+          "normal_error_deg": 1.6607130126670735,
+          "individual_normal_errors_deg": [
+            1.6607130126670735,
+            1.6352113475836434
+          ],
+          "projection_deg": 0.0015413673527752347,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.0023138722017610877
+        },
+        {
+          "id": "U00060",
+          "family": "PAIR0015",
+          "normal_error_deg": 1.6607130126670735,
+          "individual_normal_errors_deg": [
+            1.6352113475836434,
+            1.6607130126670735
+          ],
+          "projection_deg": 0.0015413673527752347,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.0023138722017610877
+        },
+        {
+          "id": "U00067",
+          "family": "PAIR0017",
+          "normal_error_deg": 8.901399668340698,
+          "individual_normal_errors_deg": [
+            8.735261699172955,
+            8.901399668340698
+          ],
+          "projection_deg": 0.0014856883843729313,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.581745756154819
+        },
+        {
+          "id": "U00068",
+          "family": "PAIR0017",
+          "normal_error_deg": 8.901399668340698,
+          "individual_normal_errors_deg": [
+            8.901399668340698,
+            8.735261699172955
+          ],
+          "projection_deg": 0.0014856883843729313,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.581745756154819
+        },
+        {
+          "id": "U00079",
+          "family": "PAIR0020",
+          "normal_error_deg": 9.404949835210896,
+          "individual_normal_errors_deg": [
+            9.40494980081503,
+            9.404949835210896
+          ],
+          "projection_deg": 0.0001391024516495404,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.5574468880129777
+        },
+        {
+          "id": "U00080",
+          "family": "PAIR0020",
+          "normal_error_deg": 9.404949835210896,
+          "individual_normal_errors_deg": [
+            9.404949835210896,
+            9.40494980081503
+          ],
+          "projection_deg": 0.0001391024516495404,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.5574468880129777
+        },
+        {
+          "id": "U00083",
+          "family": "PAIR0021",
+          "normal_error_deg": 9.746101870169426,
+          "individual_normal_errors_deg": [
+            9.513829314642155,
+            9.746101870169426
+          ],
+          "projection_deg": 0.0011575995393176524,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9968281044404118
+        },
+        {
+          "id": "U00084",
+          "family": "PAIR0021",
+          "normal_error_deg": 9.746101870169426,
+          "individual_normal_errors_deg": [
+            9.746101870169426,
+            9.513829314642155
+          ],
+          "projection_deg": 0.0011575995393176524,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9968281044404118
+        },
+        {
+          "id": "U00095",
+          "family": "PAIR0024",
+          "normal_error_deg": 9.30147140513445,
+          "individual_normal_errors_deg": [
+            0.00284468615602371,
+            9.30147140513445
+          ],
+          "projection_deg": 0.0006674065299651431,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.621241172384057
+        },
+        {
+          "id": "U00096",
+          "family": "PAIR0024",
+          "normal_error_deg": 9.30147140513445,
+          "individual_normal_errors_deg": [
+            9.30147140513445,
+            0.00284468615602371
+          ],
+          "projection_deg": 0.0006674065299651431,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.621241172384057
+        },
+        {
+          "id": "U00099",
+          "family": "PAIR0025",
+          "normal_error_deg": 9.510653916241333,
+          "individual_normal_errors_deg": [
+            9.510653916241333,
+            2.082965268636061
+          ],
+          "projection_deg": 0.00046359503496907947,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.4721674063514543
+        },
+        {
+          "id": "U00100",
+          "family": "PAIR0025",
+          "normal_error_deg": 9.510653916241333,
+          "individual_normal_errors_deg": [
+            2.082965268636061,
+            9.510653916241333
+          ],
+          "projection_deg": 0.00046359503496907947,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.4721674063514543
+        },
+        {
+          "id": "U00103",
+          "family": "PAIR0026",
+          "normal_error_deg": 6.261683368877985,
+          "individual_normal_errors_deg": [
+            1.4041990378341254,
+            6.261683368877985
+          ],
+          "projection_deg": 0.0015575408457912379,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.530030276521914
+        },
+        {
+          "id": "U00104",
+          "family": "PAIR0026",
+          "normal_error_deg": 6.261683368877985,
+          "individual_normal_errors_deg": [
+            6.261683368877985,
+            1.4041990378341254
+          ],
+          "projection_deg": 0.0015575408457912379,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.530030276521914
+        },
+        {
+          "id": "U00115",
+          "family": "PAIR0029",
+          "normal_error_deg": 6.851366889114665,
+          "individual_normal_errors_deg": [
+            6.851366889114665,
+            0.0019188531835367035
+          ],
+          "projection_deg": 0.0012948647227312936,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7365924925439994
+        },
+        {
+          "id": "U00116",
+          "family": "PAIR0029",
+          "normal_error_deg": 6.851366889114665,
+          "individual_normal_errors_deg": [
+            0.0019188531835367035,
+            6.851366889114665
+          ],
+          "projection_deg": 0.0012948647227312936,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7365924925439994
+        },
+        {
+          "id": "U00119",
+          "family": "PAIR0030",
+          "normal_error_deg": 1.9221089436848402,
+          "individual_normal_errors_deg": [
+            1.9221089436848402,
+            0.0018892654659520456
+          ],
+          "projection_deg": 0.0003546402956637332,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.21845529393501076
+        },
+        {
+          "id": "U00120",
+          "family": "PAIR0030",
+          "normal_error_deg": 1.9221089436848402,
+          "individual_normal_errors_deg": [
+            0.0018892654659520456,
+            1.9221089436848402
+          ],
+          "projection_deg": 0.0003546402956637332,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.21845529393501076
+        },
+        {
+          "id": "U00147",
+          "family": "PAIR0037",
+          "normal_error_deg": 7.184083369216396,
+          "individual_normal_errors_deg": [
+            7.184083369216396,
+            7.010904401629655
+          ],
+          "projection_deg": 0.0015754871604387736,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9435855700984127
+        },
+        {
+          "id": "U00148",
+          "family": "PAIR0037",
+          "normal_error_deg": 7.184083369216396,
+          "individual_normal_errors_deg": [
+            7.010904401629655,
+            7.184083369216396
+          ],
+          "projection_deg": 0.0015754871604387736,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9435855700984127
+        },
+        {
+          "id": "U00151",
+          "family": "PAIR0038",
+          "normal_error_deg": 6.90935147458945,
+          "individual_normal_errors_deg": [
+            6.839587688646954,
+            6.90935147458945
+          ],
+          "projection_deg": 0.001077809755604672,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7155408565862349
+        },
+        {
+          "id": "U00152",
+          "family": "PAIR0038",
+          "normal_error_deg": 6.90935147458945,
+          "individual_normal_errors_deg": [
+            6.90935147458945,
+            6.839587688646954
+          ],
+          "projection_deg": 0.001077809755604672,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7155408565862349
+        },
+        {
+          "id": "U00163",
+          "family": "PAIR0041",
+          "normal_error_deg": 3.027150392660491,
+          "individual_normal_errors_deg": [
+            0.9163225979609382,
+            3.027150392660491
+          ],
+          "projection_deg": 5.563766111339677E-05,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.180389508172052
+        },
+        {
+          "id": "U00164",
+          "family": "PAIR0041",
+          "normal_error_deg": 3.027150392660491,
+          "individual_normal_errors_deg": [
+            3.027150392660491,
+            0.9163225979609382
+          ],
+          "projection_deg": 5.563766111339677E-05,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.180389508172052
+        }
+      ]
+    },
+    {
+      "method": "graspkit_512",
+      "placement": "N03/BNC_Male",
+      "passing_poses": 10,
+      "passing_pair_families": 5,
+      "best_max_normal_error_deg": 1.68118935314907,
+      "worst_max_normal_error_deg": 4.179071487925769,
+      "families_at_1deg": 0,
+      "families_at_3deg": 2,
+      "families_at_5deg": 5,
+      "best_alignment_candidate": {
+        "id": "U00039",
+        "family": "PAIR0010",
+        "normal_error_deg": 1.68118935314907,
+        "individual_normal_errors_deg": [
+          1.68118935314907,
+          0.7588742371441621
+        ],
+        "projection_deg": 13.583975869006881,
+        "mismatch_um": 1.636313976677295,
+        "selected_witness_transverse_offset_mm": 3.9764407528606283
+      },
+      "max_mismatch_um": 1.636313976677295,
+      "max_selected_witness_transverse_offset_mm": 4.009242024897032,
+      "candidate_metrics": [
+        {
+          "id": "U00015",
+          "family": "PAIR0004",
+          "normal_error_deg": 3.2058210140750427,
+          "individual_normal_errors_deg": [
+            0.7525674655805754,
+            3.2058210140750427
+          ],
+          "projection_deg": 12.89178679155443,
+          "mismatch_um": 1.4634882357436596,
+          "selected_witness_transverse_offset_mm": 0.6471922159217645
+        },
+        {
+          "id": "U00016",
+          "family": "PAIR0004",
+          "normal_error_deg": 3.2058210140750427,
+          "individual_normal_errors_deg": [
+            3.2058210140750427,
+            0.7525674655805754
+          ],
+          "projection_deg": 12.89178679155443,
+          "mismatch_um": 1.4634882357436596,
+          "selected_witness_transverse_offset_mm": 0.6471922159217645
+        },
+        {
+          "id": "U00023",
+          "family": "PAIR0006",
+          "normal_error_deg": 3.196581692857999,
+          "individual_normal_errors_deg": [
+            1.6785307511139647,
+            3.196581692857999
+          ],
+          "projection_deg": 9.921256596774683,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.009242024897032
+        },
+        {
+          "id": "U00024",
+          "family": "PAIR0006",
+          "normal_error_deg": 3.196581692857999,
+          "individual_normal_errors_deg": [
+            3.196581692857999,
+            1.6785307511139647
+          ],
+          "projection_deg": 9.921256596774683,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.009242024897032
+        },
+        {
+          "id": "U00039",
+          "family": "PAIR0010",
+          "normal_error_deg": 1.68118935314907,
+          "individual_normal_errors_deg": [
+            1.68118935314907,
+            0.7588742371441621
+          ],
+          "projection_deg": 13.583975869006881,
+          "mismatch_um": 1.636313976677295,
+          "selected_witness_transverse_offset_mm": 3.9764407528606283
+        },
+        {
+          "id": "U00040",
+          "family": "PAIR0010",
+          "normal_error_deg": 1.68118935314907,
+          "individual_normal_errors_deg": [
+            0.7588742371441621,
+            1.68118935314907
+          ],
+          "projection_deg": 13.583975869006881,
+          "mismatch_um": 1.636313976677295,
+          "selected_witness_transverse_offset_mm": 3.9764407528606283
+        },
+        {
+          "id": "U00043",
+          "family": "PAIR0011",
+          "normal_error_deg": 1.717853618942966,
+          "individual_normal_errors_deg": [
+            0.7299912435648076,
+            1.717853618942966
+          ],
+          "projection_deg": 7.929152676836397,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.9847241691659825
+        },
+        {
+          "id": "U00044",
+          "family": "PAIR0011",
+          "normal_error_deg": 1.717853618942966,
+          "individual_normal_errors_deg": [
+            1.717853618942966,
+            0.7299912435648076
+          ],
+          "projection_deg": 7.929152676836397,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.9847241691659825
+        },
+        {
+          "id": "U00059",
+          "family": "PAIR0015",
+          "normal_error_deg": 4.179071487925769,
+          "individual_normal_errors_deg": [
+            4.179071487925769,
+            0.733873557800708
+          ],
+          "projection_deg": 7.820115275481195,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.979291799065551
+        },
+        {
+          "id": "U00060",
+          "family": "PAIR0015",
+          "normal_error_deg": 4.179071487925769,
+          "individual_normal_errors_deg": [
+            0.733873557800708,
+            4.179071487925769
+          ],
+          "projection_deg": 7.820115275481195,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.979291799065551
+        }
+      ]
+    },
+    {
+      "method": "graspkit_512",
+      "placement": "N03/Gear_Large",
+      "passing_poses": 36,
+      "passing_pair_families": 18,
+      "best_max_normal_error_deg": 1.6607131178053476,
+      "worst_max_normal_error_deg": 9.74610182724507,
+      "families_at_1deg": 0,
+      "families_at_3deg": 1,
+      "families_at_5deg": 1,
+      "best_alignment_candidate": {
+        "id": "U00060",
+        "family": "PAIR0015",
+        "normal_error_deg": 1.6607131178053476,
+        "individual_normal_errors_deg": [
+          1.6607131178053476,
+          1.6352106980773038
+        ],
+        "projection_deg": 0.00042892996633816274,
+        "mismatch_um": 0.0,
+        "selected_witness_transverse_offset_mm": 0.0016933504921974648
+      },
+      "max_mismatch_um": 0.0,
+      "max_selected_witness_transverse_offset_mm": 2.6205873693821404,
+      "candidate_metrics": [
+        {
+          "id": "U00023",
+          "family": "PAIR0006",
+          "normal_error_deg": 6.784105375416326,
+          "individual_normal_errors_deg": [
+            6.784105375416326,
+            6.784104867298953
+          ],
+          "projection_deg": 0.0014969875548267568,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7925335112442041
+        },
+        {
+          "id": "U00024",
+          "family": "PAIR0006",
+          "normal_error_deg": 6.784105375416326,
+          "individual_normal_errors_deg": [
+            6.784104867298953,
+            6.784105375416326
+          ],
+          "projection_deg": 0.0014969875548267568,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7925335112442041
+        },
+        {
+          "id": "U00027",
+          "family": "PAIR0007",
+          "normal_error_deg": 7.026922510508794,
+          "individual_normal_errors_deg": [
+            7.026922510508794,
+            7.026917175306577
+          ],
+          "projection_deg": 0.0007396495024059727,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7260471880585739
+        },
+        {
+          "id": "U00028",
+          "family": "PAIR0007",
+          "normal_error_deg": 7.026922510508794,
+          "individual_normal_errors_deg": [
+            7.026917175306577,
+            7.026922510508794
+          ],
+          "projection_deg": 0.0007396495024059727,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7260471880585739
+        },
+        {
+          "id": "U00039",
+          "family": "PAIR0010",
+          "normal_error_deg": 6.348736463805799,
+          "individual_normal_errors_deg": [
+            6.339618535815613,
+            6.348736463805799
+          ],
+          "projection_deg": 0.0004782139679522836,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.248054896108148
+        },
+        {
+          "id": "U00040",
+          "family": "PAIR0010",
+          "normal_error_deg": 6.348736463805799,
+          "individual_normal_errors_deg": [
+            6.348736463805799,
+            6.339618535815613
+          ],
+          "projection_deg": 0.0004782139679522836,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.248054896108148
+        },
+        {
+          "id": "U00043",
+          "family": "PAIR0011",
+          "normal_error_deg": 6.347663074250029,
+          "individual_normal_errors_deg": [
+            6.33477332173869,
+            6.347663074250029
+          ],
+          "projection_deg": 0.0011761816830018253,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.3579714574793282
+        },
+        {
+          "id": "U00044",
+          "family": "PAIR0011",
+          "normal_error_deg": 6.347663074250029,
+          "individual_normal_errors_deg": [
+            6.347663074250029,
+            6.33477332173869
+          ],
+          "projection_deg": 0.0011761816830018253,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.3579714574793282
+        },
+        {
+          "id": "U00051",
+          "family": "PAIR0013",
+          "normal_error_deg": 6.857743460906638,
+          "individual_normal_errors_deg": [
+            6.857743460906638,
+            1.8705262459277006
+          ],
+          "projection_deg": 0.001575118453225652,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.35989169731061815
+        },
+        {
+          "id": "U00052",
+          "family": "PAIR0013",
+          "normal_error_deg": 6.857743460906638,
+          "individual_normal_errors_deg": [
+            1.8705262459277006,
+            6.857743460906638
+          ],
+          "projection_deg": 0.001575118453225652,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.35989169731061815
+        },
+        {
+          "id": "U00055",
+          "family": "PAIR0014",
+          "normal_error_deg": 6.985289657247334,
+          "individual_normal_errors_deg": [
+            0.0023473329118365843,
+            6.985289657247334
+          ],
+          "projection_deg": 0.0013484840835826615,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.8709828339949603
+        },
+        {
+          "id": "U00056",
+          "family": "PAIR0014",
+          "normal_error_deg": 6.985289657247334,
+          "individual_normal_errors_deg": [
+            6.985289657247334,
+            0.0023473329118365843
+          ],
+          "projection_deg": 0.0013484840835826615,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.8709828339949603
+        },
+        {
+          "id": "U00059",
+          "family": "PAIR0015",
+          "normal_error_deg": 1.6607131178053476,
+          "individual_normal_errors_deg": [
+            1.6352106980773038,
+            1.6607131178053476
+          ],
+          "projection_deg": 0.00042892996633816274,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.0016933504921974648
+        },
+        {
+          "id": "U00060",
+          "family": "PAIR0015",
+          "normal_error_deg": 1.6607131178053476,
+          "individual_normal_errors_deg": [
+            1.6607131178053476,
+            1.6352106980773038
+          ],
+          "projection_deg": 0.00042892996633816274,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.0016933504921974648
+        },
+        {
+          "id": "U00067",
+          "family": "PAIR0017",
+          "normal_error_deg": 8.90139953143449,
+          "individual_normal_errors_deg": [
+            8.735261559610635,
+            8.90139953143449
+          ],
+          "projection_deg": 0.00047855856097111404,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.5499730813457315
+        },
+        {
+          "id": "U00068",
+          "family": "PAIR0017",
+          "normal_error_deg": 8.90139953143449,
+          "individual_normal_errors_deg": [
+            8.90139953143449,
+            8.735261559610635
+          ],
+          "projection_deg": 0.00047855856097111404,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.5499730813457315
+        },
+        {
+          "id": "U00079",
+          "family": "PAIR0020",
+          "normal_error_deg": 9.361369021403506,
+          "individual_normal_errors_deg": [
+            9.361369021403506,
+            0.0030257193572439675
+          ],
+          "projection_deg": 0.0015959519375309647,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9635174633281516
+        },
+        {
+          "id": "U00080",
+          "family": "PAIR0020",
+          "normal_error_deg": 9.361369021403506,
+          "individual_normal_errors_deg": [
+            0.0030257193572439675,
+            9.361369021403506
+          ],
+          "projection_deg": 0.0015959519375309647,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9635174633281516
+        },
+        {
+          "id": "U00083",
+          "family": "PAIR0021",
+          "normal_error_deg": 9.74610182724507,
+          "individual_normal_errors_deg": [
+            9.74610182724507,
+            9.513829359583848
+          ],
+          "projection_deg": 0.0011408330296836175,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.98699189516537
+        },
+        {
+          "id": "U00084",
+          "family": "PAIR0021",
+          "normal_error_deg": 9.74610182724507,
+          "individual_normal_errors_deg": [
+            9.513829359583848,
+            9.74610182724507
+          ],
+          "projection_deg": 0.0011408330296836175,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.98699189516537
+        },
+        {
+          "id": "U00095",
+          "family": "PAIR0024",
+          "normal_error_deg": 9.35014697886296,
+          "individual_normal_errors_deg": [
+            9.35014697886296,
+            0.0030089478616292286
+          ],
+          "projection_deg": 0.0014158154074971946,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.8323880386227198
+        },
+        {
+          "id": "U00096",
+          "family": "PAIR0024",
+          "normal_error_deg": 9.35014697886296,
+          "individual_normal_errors_deg": [
+            0.0030089478616292286,
+            9.35014697886296
+          ],
+          "projection_deg": 0.0014158154074971946,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.8323880386227198
+        },
+        {
+          "id": "U00099",
+          "family": "PAIR0025",
+          "normal_error_deg": 9.510654143015453,
+          "individual_normal_errors_deg": [
+            2.0829652935853216,
+            9.510654143015453
+          ],
+          "projection_deg": 0.0015470503949435136,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.5342457755907015
+        },
+        {
+          "id": "U00100",
+          "family": "PAIR0025",
+          "normal_error_deg": 9.510654143015453,
+          "individual_normal_errors_deg": [
+            9.510654143015453,
+            2.0829652935853216
+          ],
+          "projection_deg": 0.0015470503949435136,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.5342457755907015
+        },
+        {
+          "id": "U00103",
+          "family": "PAIR0026",
+          "normal_error_deg": 6.261683348158195,
+          "individual_normal_errors_deg": [
+            6.261683348158195,
+            1.4041982348703084
+          ],
+          "projection_deg": 0.000349332913791985,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.5300296758941396
+        },
+        {
+          "id": "U00104",
+          "family": "PAIR0026",
+          "normal_error_deg": 6.261683348158195,
+          "individual_normal_errors_deg": [
+            1.4041982348703084,
+            6.261683348158195
+          ],
+          "projection_deg": 0.000349332913791985,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.5300296758941396
+        },
+        {
+          "id": "U00115",
+          "family": "PAIR0029",
+          "normal_error_deg": 6.916953366646652,
+          "individual_normal_errors_deg": [
+            1.9291907857549742,
+            6.916953366646652
+          ],
+          "projection_deg": 0.0008564155733552564,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7686182250378689
+        },
+        {
+          "id": "U00116",
+          "family": "PAIR0029",
+          "normal_error_deg": 6.916953366646652,
+          "individual_normal_errors_deg": [
+            6.916953366646652,
+            1.9291907857549742
+          ],
+          "projection_deg": 0.0008564155733552564,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7686182250378689
+        },
+        {
+          "id": "U00119",
+          "family": "PAIR0030",
+          "normal_error_deg": 7.0603759441788165,
+          "individual_normal_errors_deg": [
+            1.9221106233812761,
+            7.0603759441788165
+          ],
+          "projection_deg": 0.0015386749956980874,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6666064199018822
+        },
+        {
+          "id": "U00120",
+          "family": "PAIR0030",
+          "normal_error_deg": 7.0603759441788165,
+          "individual_normal_errors_deg": [
+            7.0603759441788165,
+            1.9221106233812761
+          ],
+          "projection_deg": 0.0015386749956980874,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6666064199018822
+        },
+        {
+          "id": "U00147",
+          "family": "PAIR0037",
+          "normal_error_deg": 7.184083364075376,
+          "individual_normal_errors_deg": [
+            7.184083364075376,
+            7.010904006734036
+          ],
+          "projection_deg": 6.741416195901379E-05,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7098911736671529
+        },
+        {
+          "id": "U00148",
+          "family": "PAIR0037",
+          "normal_error_deg": 7.184083364075376,
+          "individual_normal_errors_deg": [
+            7.010904006734036,
+            7.184083364075376
+          ],
+          "projection_deg": 6.741416195901379E-05,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7098911736671529
+        },
+        {
+          "id": "U00151",
+          "family": "PAIR0038",
+          "normal_error_deg": 6.909351103617318,
+          "individual_normal_errors_deg": [
+            6.839587999619212,
+            6.909351103617318
+          ],
+          "projection_deg": 0.0011179844510658995,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6828685547777079
+        },
+        {
+          "id": "U00152",
+          "family": "PAIR0038",
+          "normal_error_deg": 6.909351103617318,
+          "individual_normal_errors_deg": [
+            6.909351103617318,
+            6.839587999619212
+          ],
+          "projection_deg": 0.0011179844510658995,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6828685547777079
+        },
+        {
+          "id": "U00163",
+          "family": "PAIR0041",
+          "normal_error_deg": 8.85280304246164,
+          "individual_normal_errors_deg": [
+            6.3049937644814555,
+            8.85280304246164
+          ],
+          "projection_deg": 0.0015972887376948903,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.6205873693821404
+        },
+        {
+          "id": "U00164",
+          "family": "PAIR0041",
+          "normal_error_deg": 8.85280304246164,
+          "individual_normal_errors_deg": [
+            8.85280304246164,
+            6.3049937644814555
+          ],
+          "projection_deg": 0.0015972887376948903,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.6205873693821404
+        }
+      ]
+    },
+    {
+      "method": "graspkit_512",
+      "placement": "N04/BNC_Male",
+      "passing_poses": 12,
+      "passing_pair_families": 6,
+      "best_max_normal_error_deg": 0.7880663386468594,
+      "worst_max_normal_error_deg": 4.13264034753864,
+      "families_at_1deg": 1,
+      "families_at_3deg": 2,
+      "families_at_5deg": 6,
+      "best_alignment_candidate": {
+        "id": "U00039",
+        "family": "PAIR0010",
+        "normal_error_deg": 0.7880663386468594,
+        "individual_normal_errors_deg": [
+          0.781037926077895,
+          0.7880663386468594
+        ],
+        "projection_deg": 8.405126596950748,
+        "mismatch_um": 0.0,
+        "selected_witness_transverse_offset_mm": 3.9522487409609206
+      },
+      "max_mismatch_um": 1.2964204718600436,
+      "max_selected_witness_transverse_offset_mm": 4.016338362791497,
+      "candidate_metrics": [
+        {
+          "id": "U00015",
+          "family": "PAIR0004",
+          "normal_error_deg": 4.132426298688269,
+          "individual_normal_errors_deg": [
+            4.132426298688269,
+            3.219035318363975
+          ],
+          "projection_deg": 1.2778135470769814,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.46271041124934176
+        },
+        {
+          "id": "U00016",
+          "family": "PAIR0004",
+          "normal_error_deg": 4.132426298688269,
+          "individual_normal_errors_deg": [
+            3.219035318363975,
+            4.132426298688269
+          ],
+          "projection_deg": 1.2778135470769814,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.46271041124934176
+        },
+        {
+          "id": "U00023",
+          "family": "PAIR0006",
+          "normal_error_deg": 4.13264034753864,
+          "individual_normal_errors_deg": [
+            4.13264034753864,
+            0.7766115667082024
+          ],
+          "projection_deg": 2.224654117744762,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.610152520636701
+        },
+        {
+          "id": "U00024",
+          "family": "PAIR0006",
+          "normal_error_deg": 4.13264034753864,
+          "individual_normal_errors_deg": [
+            0.7766115667082024,
+            4.13264034753864
+          ],
+          "projection_deg": 2.224654117744762,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.610152520636701
+        },
+        {
+          "id": "U00039",
+          "family": "PAIR0010",
+          "normal_error_deg": 0.7880663386468594,
+          "individual_normal_errors_deg": [
+            0.781037926077895,
+            0.7880663386468594
+          ],
+          "projection_deg": 8.405126596950748,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.9522487409609206
+        },
+        {
+          "id": "U00040",
+          "family": "PAIR0010",
+          "normal_error_deg": 0.7880663386468594,
+          "individual_normal_errors_deg": [
+            0.7880663386468594,
+            0.781037926077895
+          ],
+          "projection_deg": 8.405126596950748,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.9522487409609206
+        },
+        {
+          "id": "U00047",
+          "family": "PAIR0012",
+          "normal_error_deg": 1.68580239243409,
+          "individual_normal_errors_deg": [
+            0.7952382511129812,
+            1.68580239243409
+          ],
+          "projection_deg": 10.567896540787515,
+          "mismatch_um": 1.2964204718600436,
+          "selected_witness_transverse_offset_mm": 4.016338362791497
+        },
+        {
+          "id": "U00048",
+          "family": "PAIR0012",
+          "normal_error_deg": 1.68580239243409,
+          "individual_normal_errors_deg": [
+            1.68580239243409,
+            0.7952382511129812
+          ],
+          "projection_deg": 10.567896540787515,
+          "mismatch_um": 1.2964204718600436,
+          "selected_witness_transverse_offset_mm": 4.016338362791497
+        },
+        {
+          "id": "U00063",
+          "family": "PAIR0016",
+          "normal_error_deg": 3.222467809424091,
+          "individual_normal_errors_deg": [
+            3.222467809424091,
+            0.7848270786950308
+          ],
+          "projection_deg": 6.182111910718817,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.014654705439714
+        },
+        {
+          "id": "U00064",
+          "family": "PAIR0016",
+          "normal_error_deg": 3.222467809424091,
+          "individual_normal_errors_deg": [
+            0.7848270786950308,
+            3.222467809424091
+          ],
+          "projection_deg": 6.182111910718817,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.014654705439714
+        },
+        {
+          "id": "U00067",
+          "family": "PAIR0017",
+          "normal_error_deg": 3.2207208150589297,
+          "individual_normal_errors_deg": [
+            3.2207208150589297,
+            1.6781121856457148
+          ],
+          "projection_deg": 3.635072181898705,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6645912753562256
+        },
+        {
+          "id": "U00068",
+          "family": "PAIR0017",
+          "normal_error_deg": 3.2207208150589297,
+          "individual_normal_errors_deg": [
+            1.6781121856457148,
+            3.2207208150589297
+          ],
+          "projection_deg": 3.635072181898705,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6645912753562256
+        }
+      ]
+    },
+    {
+      "method": "graspkit_512",
+      "placement": "N05/Gear_Large",
+      "passing_poses": 36,
+      "passing_pair_families": 18,
+      "best_max_normal_error_deg": 1.6607133181105067,
+      "worst_max_normal_error_deg": 9.513829541077389,
+      "families_at_1deg": 0,
+      "families_at_3deg": 1,
+      "families_at_5deg": 2,
+      "best_alignment_candidate": {
+        "id": "U00060",
+        "family": "PAIR0015",
+        "normal_error_deg": 1.6607133181105067,
+        "individual_normal_errors_deg": [
+          1.6352106310895622,
+          1.6607133181105067
+        ],
+        "projection_deg": 9.02826463903418E-05,
+        "mismatch_um": 0.0,
+        "selected_witness_transverse_offset_mm": 0.001638825155849607
+      },
+      "max_mismatch_um": 0.0,
+      "max_selected_witness_transverse_offset_mm": 3.1785976942909575,
+      "candidate_metrics": [
+        {
+          "id": "U00023",
+          "family": "PAIR0006",
+          "normal_error_deg": 6.7841052537382245,
+          "individual_normal_errors_deg": [
+            6.7841052537382245,
+            6.7841048531045
+          ],
+          "projection_deg": 0.0011793803297753215,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.788880951499081
+        },
+        {
+          "id": "U00024",
+          "family": "PAIR0006",
+          "normal_error_deg": 6.7841052537382245,
+          "individual_normal_errors_deg": [
+            6.7841048531045,
+            6.7841052537382245
+          ],
+          "projection_deg": 0.0011793803297753215,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.788880951499081
+        },
+        {
+          "id": "U00027",
+          "family": "PAIR0007",
+          "normal_error_deg": 7.026922330663155,
+          "individual_normal_errors_deg": [
+            7.026917284412866,
+            7.026922330663155
+          ],
+          "projection_deg": 0.0002285976823226181,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6799215698077379
+        },
+        {
+          "id": "U00028",
+          "family": "PAIR0007",
+          "normal_error_deg": 7.026922330663155,
+          "individual_normal_errors_deg": [
+            7.026922330663155,
+            7.026917284412866
+          ],
+          "projection_deg": 0.0002285976823226181,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6799215698077379
+        },
+        {
+          "id": "U00039",
+          "family": "PAIR0010",
+          "normal_error_deg": 6.34873651725316,
+          "individual_normal_errors_deg": [
+            6.34873651725316,
+            1.1469301406815904
+          ],
+          "projection_deg": 0.000905307075237334,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.5140986581676237
+        },
+        {
+          "id": "U00040",
+          "family": "PAIR0010",
+          "normal_error_deg": 6.34873651725316,
+          "individual_normal_errors_deg": [
+            1.1469301406815904,
+            6.34873651725316
+          ],
+          "projection_deg": 0.000905307075237334,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.5140986581676237
+        },
+        {
+          "id": "U00043",
+          "family": "PAIR0011",
+          "normal_error_deg": 6.347663111496776,
+          "individual_normal_errors_deg": [
+            6.347663111496776,
+            6.33477384079621
+          ],
+          "projection_deg": 0.0013982390464957683,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.4052659451714852
+        },
+        {
+          "id": "U00044",
+          "family": "PAIR0011",
+          "normal_error_deg": 6.347663111496776,
+          "individual_normal_errors_deg": [
+            6.33477384079621,
+            6.347663111496776
+          ],
+          "projection_deg": 0.0013982390464957683,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.4052659451714852
+        },
+        {
+          "id": "U00051",
+          "family": "PAIR0013",
+          "normal_error_deg": 6.857743459048988,
+          "individual_normal_errors_deg": [
+            6.857743459048988,
+            6.801173876326838
+          ],
+          "projection_deg": 0.0015055556766810866,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6918267512477032
+        },
+        {
+          "id": "U00052",
+          "family": "PAIR0013",
+          "normal_error_deg": 6.857743459048988,
+          "individual_normal_errors_deg": [
+            6.801173876326838,
+            6.857743459048988
+          ],
+          "projection_deg": 0.0015055556766810866,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6918267512477032
+        },
+        {
+          "id": "U00055",
+          "family": "PAIR0014",
+          "normal_error_deg": 6.9852895921606,
+          "individual_normal_errors_deg": [
+            0.0032594928778153197,
+            6.9852895921606
+          ],
+          "projection_deg": 0.0009523953135571933,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.663223395674355
+        },
+        {
+          "id": "U00056",
+          "family": "PAIR0014",
+          "normal_error_deg": 6.9852895921606,
+          "individual_normal_errors_deg": [
+            6.9852895921606,
+            0.0032594928778153197
+          ],
+          "projection_deg": 0.0009523953135571933,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.663223395674355
+        },
+        {
+          "id": "U00059",
+          "family": "PAIR0015",
+          "normal_error_deg": 1.6607133181105067,
+          "individual_normal_errors_deg": [
+            1.6607133181105067,
+            1.6352106310895622
+          ],
+          "projection_deg": 9.02826463903418E-05,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.001638825155849607
+        },
+        {
+          "id": "U00060",
+          "family": "PAIR0015",
+          "normal_error_deg": 1.6607133181105067,
+          "individual_normal_errors_deg": [
+            1.6352106310895622,
+            1.6607133181105067
+          ],
+          "projection_deg": 9.02826463903418E-05,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.001638825155849607
+        },
+        {
+          "id": "U00067",
+          "family": "PAIR0017",
+          "normal_error_deg": 8.901399557221534,
+          "individual_normal_errors_deg": [
+            8.901399557221534,
+            8.73526158664812
+          ],
+          "projection_deg": 0.0009055848101031263,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.5646600601767795
+        },
+        {
+          "id": "U00068",
+          "family": "PAIR0017",
+          "normal_error_deg": 8.901399557221534,
+          "individual_normal_errors_deg": [
+            8.73526158664812,
+            8.901399557221534
+          ],
+          "projection_deg": 0.0009055848101031263,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.5646600601767795
+        },
+        {
+          "id": "U00079",
+          "family": "PAIR0020",
+          "normal_error_deg": 9.35651754790012,
+          "individual_normal_errors_deg": [
+            9.35651754790012,
+            0.002937164005596756
+          ],
+          "projection_deg": 0.0014208995972963352,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9205552165488468
+        },
+        {
+          "id": "U00080",
+          "family": "PAIR0020",
+          "normal_error_deg": 9.35651754790012,
+          "individual_normal_errors_deg": [
+            0.002937164005596756,
+            9.35651754790012
+          ],
+          "projection_deg": 0.0014208995972963352,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9205552165488468
+        },
+        {
+          "id": "U00083",
+          "family": "PAIR0021",
+          "normal_error_deg": 9.513829541077389,
+          "individual_normal_errors_deg": [
+            9.513829541077389,
+            9.332989173279262
+          ],
+          "projection_deg": 0.0006834964980426607,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.6411418943842195
+        },
+        {
+          "id": "U00084",
+          "family": "PAIR0021",
+          "normal_error_deg": 9.513829541077389,
+          "individual_normal_errors_deg": [
+            9.332989173279262,
+            9.513829541077389
+          ],
+          "projection_deg": 0.0006834964980426607,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.6411418943842195
+        },
+        {
+          "id": "U00095",
+          "family": "PAIR0024",
+          "normal_error_deg": 9.301471625986355,
+          "individual_normal_errors_deg": [
+            9.301471625986355,
+            0.0031501401509944024
+          ],
+          "projection_deg": 0.0015087905058627632,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6485652662223295
+        },
+        {
+          "id": "U00096",
+          "family": "PAIR0024",
+          "normal_error_deg": 9.301471625986355,
+          "individual_normal_errors_deg": [
+            0.0031501401509944024,
+            9.301471625986355
+          ],
+          "projection_deg": 0.0015087905058627632,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6485652662223295
+        },
+        {
+          "id": "U00099",
+          "family": "PAIR0025",
+          "normal_error_deg": 9.200977033091489,
+          "individual_normal_errors_deg": [
+            0.0012747889842322482,
+            9.200977033091489
+          ],
+          "projection_deg": 0.001274151401462492,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.8077819287456993
+        },
+        {
+          "id": "U00100",
+          "family": "PAIR0025",
+          "normal_error_deg": 9.200977033091489,
+          "individual_normal_errors_deg": [
+            9.200977033091489,
+            0.0012747889842322482
+          ],
+          "projection_deg": 0.001274151401462492,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.8077819287456993
+        },
+        {
+          "id": "U00107",
+          "family": "PAIR0027",
+          "normal_error_deg": 6.261683381314535,
+          "individual_normal_errors_deg": [
+            1.4041981877721863,
+            6.261683381314535
+          ],
+          "projection_deg": 0.00016840466904011935,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.5300296261701254
+        },
+        {
+          "id": "U00108",
+          "family": "PAIR0027",
+          "normal_error_deg": 6.261683381314535,
+          "individual_normal_errors_deg": [
+            6.261683381314535,
+            1.4041981877721863
+          ],
+          "projection_deg": 0.00016840466904011935,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.5300296261701254
+        },
+        {
+          "id": "U00119",
+          "family": "PAIR0030",
+          "normal_error_deg": 6.8513669117139235,
+          "individual_normal_errors_deg": [
+            0.0018512411595496133,
+            6.8513669117139235
+          ],
+          "projection_deg": 0.0011924280160988327,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.74422330079714
+        },
+        {
+          "id": "U00120",
+          "family": "PAIR0030",
+          "normal_error_deg": 6.8513669117139235,
+          "individual_normal_errors_deg": [
+            6.8513669117139235,
+            0.0018512411595496133
+          ],
+          "projection_deg": 0.0011924280160988327,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.74422330079714
+        },
+        {
+          "id": "U00123",
+          "family": "PAIR0031",
+          "normal_error_deg": 6.725796708951684,
+          "individual_normal_errors_deg": [
+            0.0024008667512642294,
+            6.725796708951684
+          ],
+          "projection_deg": 0.0015233451233309207,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7979661035096198
+        },
+        {
+          "id": "U00124",
+          "family": "PAIR0031",
+          "normal_error_deg": 6.725796708951684,
+          "individual_normal_errors_deg": [
+            6.725796708951684,
+            0.0024008667512642294
+          ],
+          "projection_deg": 0.0015233451233309207,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7979661035096198
+        },
+        {
+          "id": "U00151",
+          "family": "PAIR0038",
+          "normal_error_deg": 7.184083308395486,
+          "individual_normal_errors_deg": [
+            7.010904097281042,
+            7.184083308395486
+          ],
+          "projection_deg": 0.0005564783999729716,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7720298271203654
+        },
+        {
+          "id": "U00152",
+          "family": "PAIR0038",
+          "normal_error_deg": 7.184083308395486,
+          "individual_normal_errors_deg": [
+            7.184083308395486,
+            7.010904097281042
+          ],
+          "projection_deg": 0.0005564783999729716,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7720298271203654
+        },
+        {
+          "id": "U00155",
+          "family": "PAIR0039",
+          "normal_error_deg": 6.909351531678697,
+          "individual_normal_errors_deg": [
+            6.909351531678697,
+            6.839587656349574
+          ],
+          "projection_deg": 0.0013643210177843432,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.737509914580986
+        },
+        {
+          "id": "U00156",
+          "family": "PAIR0039",
+          "normal_error_deg": 6.909351531678697,
+          "individual_normal_errors_deg": [
+            6.839587656349574,
+            6.909351531678697
+          ],
+          "projection_deg": 0.0013643210177843432,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.737509914580986
+        },
+        {
+          "id": "U00167",
+          "family": "PAIR0042",
+          "normal_error_deg": 3.027150724615656,
+          "individual_normal_errors_deg": [
+            0.9163237551141215,
+            3.027150724615656
+          ],
+          "projection_deg": 0.0014483295755114783,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.1785976942909575
+        },
+        {
+          "id": "U00168",
+          "family": "PAIR0042",
+          "normal_error_deg": 3.027150724615656,
+          "individual_normal_errors_deg": [
+            3.027150724615656,
+            0.9163237551141215
+          ],
+          "projection_deg": 0.0014483295755114783,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.1785976942909575
+        }
+      ]
+    },
+    {
+      "method": "graspkit_512",
+      "placement": "N06/BNC_Male",
+      "passing_poses": 10,
+      "passing_pair_families": 5,
+      "best_max_normal_error_deg": 1.6805685033448285,
+      "worst_max_normal_error_deg": 4.178428359150676,
+      "families_at_1deg": 0,
+      "families_at_3deg": 2,
+      "families_at_5deg": 5,
+      "best_alignment_candidate": {
+        "id": "U00039",
+        "family": "PAIR0010",
+        "normal_error_deg": 1.6805685033448285,
+        "individual_normal_errors_deg": [
+          1.6805685033448285,
+          0.7595372032466721
+        ],
+        "projection_deg": 13.583330229894155,
+        "mismatch_um": 1.6363139766790296,
+        "selected_witness_transverse_offset_mm": 3.975902294826754
+      },
+      "max_mismatch_um": 1.6363139766790296,
+      "max_selected_witness_transverse_offset_mm": 4.007279402951559,
+      "candidate_metrics": [
+        {
+          "id": "U00015",
+          "family": "PAIR0004",
+          "normal_error_deg": 3.206476869809735,
+          "individual_normal_errors_deg": [
+            1.677453178554191,
+            3.206476869809735
+          ],
+          "projection_deg": 12.891141290634936,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7064509163004481
+        },
+        {
+          "id": "U00016",
+          "family": "PAIR0004",
+          "normal_error_deg": 3.206476869809735,
+          "individual_normal_errors_deg": [
+            3.206476869809735,
+            1.677453178554191
+          ],
+          "projection_deg": 12.891141290634936,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7064509163004481
+        },
+        {
+          "id": "U00023",
+          "family": "PAIR0006",
+          "normal_error_deg": 3.197226478021862,
+          "individual_normal_errors_deg": [
+            1.6779071403189476,
+            3.197226478021862
+          ],
+          "projection_deg": 9.921897706439623,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.007279402951559
+        },
+        {
+          "id": "U00024",
+          "family": "PAIR0006",
+          "normal_error_deg": 3.197226478021862,
+          "individual_normal_errors_deg": [
+            3.197226478021862,
+            1.6779071403189476
+          ],
+          "projection_deg": 9.921897706439623,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 4.007279402951559
+        },
+        {
+          "id": "U00039",
+          "family": "PAIR0010",
+          "normal_error_deg": 1.6805685033448285,
+          "individual_normal_errors_deg": [
+            1.6805685033448285,
+            0.7595372032466721
+          ],
+          "projection_deg": 13.583330229894155,
+          "mismatch_um": 1.6363139766790296,
+          "selected_witness_transverse_offset_mm": 3.975902294826754
+        },
+        {
+          "id": "U00040",
+          "family": "PAIR0010",
+          "normal_error_deg": 1.6805685033448285,
+          "individual_normal_errors_deg": [
+            0.7595372032466721,
+            1.6805685033448285
+          ],
+          "projection_deg": 13.583330229894155,
+          "mismatch_um": 1.6363139766790296,
+          "selected_witness_transverse_offset_mm": 3.975902294826754
+        },
+        {
+          "id": "U00043",
+          "family": "PAIR0011",
+          "normal_error_deg": 1.7172242438586012,
+          "individual_normal_errors_deg": [
+            0.7306392254598637,
+            1.7172242438586012
+          ],
+          "projection_deg": 7.929794175121965,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.97472373122855
+        },
+        {
+          "id": "U00044",
+          "family": "PAIR0011",
+          "normal_error_deg": 1.7172242438586012,
+          "individual_normal_errors_deg": [
+            1.7172242438586012,
+            0.7306392254598637
+          ],
+          "projection_deg": 7.929794175121965,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.97472373122855
+        },
+        {
+          "id": "U00059",
+          "family": "PAIR0015",
+          "normal_error_deg": 4.178428359150676,
+          "individual_normal_errors_deg": [
+            4.178428359150676,
+            0.7345234898051338
+          ],
+          "projection_deg": 7.8194707675753365,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.978409597848255
+        },
+        {
+          "id": "U00060",
+          "family": "PAIR0015",
+          "normal_error_deg": 4.178428359150676,
+          "individual_normal_errors_deg": [
+            0.7345234898051338,
+            4.178428359150676
+          ],
+          "projection_deg": 7.8194707675753365,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 3.978409597848255
+        }
+      ]
+    },
+    {
+      "method": "graspkit_512",
+      "placement": "N07/Gear_Large",
+      "passing_poses": 36,
+      "passing_pair_families": 18,
+      "best_max_normal_error_deg": 1.6607129385362056,
+      "worst_max_normal_error_deg": 9.746101832255725,
+      "families_at_1deg": 0,
+      "families_at_3deg": 1,
+      "families_at_5deg": 1,
+      "best_alignment_candidate": {
+        "id": "U00060",
+        "family": "PAIR0015",
+        "normal_error_deg": 1.6607129385362056,
+        "individual_normal_errors_deg": [
+          1.6607129385362056,
+          1.6352110494622438
+        ],
+        "projection_deg": 0.0011358374909629517,
+        "mismatch_um": 0.0,
+        "selected_witness_transverse_offset_mm": 0.00202780632756568
+      },
+      "max_mismatch_um": 0.0,
+      "max_selected_witness_transverse_offset_mm": 2.621871218281542,
+      "candidate_metrics": [
+        {
+          "id": "U00023",
+          "family": "PAIR0006",
+          "normal_error_deg": 6.784105455959234,
+          "individual_normal_errors_deg": [
+            6.78410489741033,
+            6.784105455959234
+          ],
+          "projection_deg": 0.0016474532327942885,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.8031236371010007
+        },
+        {
+          "id": "U00024",
+          "family": "PAIR0006",
+          "normal_error_deg": 6.784105455959234,
+          "individual_normal_errors_deg": [
+            6.784105455959234,
+            6.78410489741033
+          ],
+          "projection_deg": 0.0016474532327942885,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.8031236371010007
+        },
+        {
+          "id": "U00027",
+          "family": "PAIR0007",
+          "normal_error_deg": 7.026922699381394,
+          "individual_normal_errors_deg": [
+            7.026922699381394,
+            7.026917179107936
+          ],
+          "projection_deg": 0.0013629451462243123,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7839031629194146
+        },
+        {
+          "id": "U00028",
+          "family": "PAIR0007",
+          "normal_error_deg": 7.026922699381394,
+          "individual_normal_errors_deg": [
+            7.026917179107936,
+            7.026922699381394
+          ],
+          "projection_deg": 0.0013629451462243123,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7839031629194146
+        },
+        {
+          "id": "U00039",
+          "family": "PAIR0010",
+          "normal_error_deg": 6.348736432434953,
+          "individual_normal_errors_deg": [
+            1.1469297923273085,
+            6.348736432434953
+          ],
+          "projection_deg": 0.00029306421264537787,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9795073920971524
+        },
+        {
+          "id": "U00040",
+          "family": "PAIR0010",
+          "normal_error_deg": 6.348736432434953,
+          "individual_normal_errors_deg": [
+            6.348736432434953,
+            1.1469297923273085
+          ],
+          "projection_deg": 0.00029306421264537787,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9795073920971524
+        },
+        {
+          "id": "U00043",
+          "family": "PAIR0011",
+          "normal_error_deg": 8.751983444683226,
+          "individual_normal_errors_deg": [
+            6.334773355848062,
+            8.751983444683226
+          ],
+          "projection_deg": 0.0005633427982005829,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6866740484202795
+        },
+        {
+          "id": "U00044",
+          "family": "PAIR0011",
+          "normal_error_deg": 8.751983444683226,
+          "individual_normal_errors_deg": [
+            8.751983444683226,
+            6.334773355848062
+          ],
+          "projection_deg": 0.0005633427982005829,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6866740484202795
+        },
+        {
+          "id": "U00051",
+          "family": "PAIR0013",
+          "normal_error_deg": 6.857743392364241,
+          "individual_normal_errors_deg": [
+            6.857743392364241,
+            1.8705259218264476
+          ],
+          "projection_deg": 0.001323230889932019,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.3707558015956403
+        },
+        {
+          "id": "U00052",
+          "family": "PAIR0013",
+          "normal_error_deg": 6.857743392364241,
+          "individual_normal_errors_deg": [
+            1.8705259218264476,
+            6.857743392364241
+          ],
+          "projection_deg": 0.001323230889932019,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.3707558015956403
+        },
+        {
+          "id": "U00055",
+          "family": "PAIR0014",
+          "normal_error_deg": 9.158994786723499,
+          "individual_normal_errors_deg": [
+            9.158994786723499,
+            6.985289706544076
+          ],
+          "projection_deg": 0.0016545239631983815,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6304208233055001
+        },
+        {
+          "id": "U00056",
+          "family": "PAIR0014",
+          "normal_error_deg": 9.158994786723499,
+          "individual_normal_errors_deg": [
+            6.985289706544076,
+            9.158994786723499
+          ],
+          "projection_deg": 0.0016545239631983815,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6304208233055001
+        },
+        {
+          "id": "U00059",
+          "family": "PAIR0015",
+          "normal_error_deg": 1.6607129385362056,
+          "individual_normal_errors_deg": [
+            1.6352110494622438,
+            1.6607129385362056
+          ],
+          "projection_deg": 0.0011358374909629517,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.00202780632756568
+        },
+        {
+          "id": "U00060",
+          "family": "PAIR0015",
+          "normal_error_deg": 1.6607129385362056,
+          "individual_normal_errors_deg": [
+            1.6607129385362056,
+            1.6352110494622438
+          ],
+          "projection_deg": 0.0011358374909629517,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.00202780632756568
+        },
+        {
+          "id": "U00067",
+          "family": "PAIR0017",
+          "normal_error_deg": 8.901399544346635,
+          "individual_normal_errors_deg": [
+            8.735261572069088,
+            8.901399544346635
+          ],
+          "projection_deg": 0.00029269467566804856,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.555422938704467
+        },
+        {
+          "id": "U00068",
+          "family": "PAIR0017",
+          "normal_error_deg": 8.901399544346635,
+          "individual_normal_errors_deg": [
+            8.901399544346635,
+            8.735261572069088
+          ],
+          "projection_deg": 0.00029269467566804856,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.555422938704467
+        },
+        {
+          "id": "U00079",
+          "family": "PAIR0020",
+          "normal_error_deg": 9.361369038103083,
+          "individual_normal_errors_deg": [
+            0.0029776359313011926,
+            9.361369038103083
+          ],
+          "projection_deg": 0.0015028327468377357,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9896744088308959
+        },
+        {
+          "id": "U00080",
+          "family": "PAIR0020",
+          "normal_error_deg": 9.361369038103083,
+          "individual_normal_errors_deg": [
+            9.361369038103083,
+            0.0029776359313011926
+          ],
+          "projection_deg": 0.0015028327468377357,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.9896744088308959
+        },
+        {
+          "id": "U00083",
+          "family": "PAIR0021",
+          "normal_error_deg": 9.746101832255725,
+          "individual_normal_errors_deg": [
+            9.746101832255725,
+            9.513829357561587
+          ],
+          "projection_deg": 0.0015892398647185848,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.224357213883068
+        },
+        {
+          "id": "U00084",
+          "family": "PAIR0021",
+          "normal_error_deg": 9.746101832255725,
+          "individual_normal_errors_deg": [
+            9.513829357561587,
+            9.746101832255725
+          ],
+          "projection_deg": 0.0015892398647185848,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 1.224357213883068
+        },
+        {
+          "id": "U00095",
+          "family": "PAIR0024",
+          "normal_error_deg": 9.350146868383847,
+          "individual_normal_errors_deg": [
+            9.350146868383847,
+            9.301471274646575
+          ],
+          "projection_deg": 0.0009483484660412215,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7289025470462446
+        },
+        {
+          "id": "U00096",
+          "family": "PAIR0024",
+          "normal_error_deg": 9.350146868383847,
+          "individual_normal_errors_deg": [
+            9.301471274646575,
+            9.350146868383847
+          ],
+          "projection_deg": 0.0009483484660412215,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7289025470462446
+        },
+        {
+          "id": "U00099",
+          "family": "PAIR0025",
+          "normal_error_deg": 9.510654185248873,
+          "individual_normal_errors_deg": [
+            9.510654185248873,
+            2.0829652916012047
+          ],
+          "projection_deg": 0.001616777702077278,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.5390362667056529
+        },
+        {
+          "id": "U00100",
+          "family": "PAIR0025",
+          "normal_error_deg": 9.510654185248873,
+          "individual_normal_errors_deg": [
+            2.0829652916012047,
+            9.510654185248873
+          ],
+          "projection_deg": 0.001616777702077278,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.5390362667056529
+        },
+        {
+          "id": "U00103",
+          "family": "PAIR0026",
+          "normal_error_deg": 6.2616833083697,
+          "individual_normal_errors_deg": [
+            6.2616833083697,
+            1.4041986147938057
+          ],
+          "projection_deg": 0.001072132061669273,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.5300299805166473
+        },
+        {
+          "id": "U00104",
+          "family": "PAIR0026",
+          "normal_error_deg": 6.2616833083697,
+          "individual_normal_errors_deg": [
+            1.4041986147938057,
+            6.2616833083697
+          ],
+          "projection_deg": 0.001072132061669273,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.5300299805166473
+        },
+        {
+          "id": "U00115",
+          "family": "PAIR0029",
+          "normal_error_deg": 6.8513667952647594,
+          "individual_normal_errors_deg": [
+            6.8513667952647594,
+            0.0014229689405873545
+          ],
+          "projection_deg": 0.00013995480623279835,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.8995136501706343
+        },
+        {
+          "id": "U00116",
+          "family": "PAIR0029",
+          "normal_error_deg": 6.8513667952647594,
+          "individual_normal_errors_deg": [
+            0.0014229689405873545,
+            6.8513667952647594
+          ],
+          "projection_deg": 0.00013995480623279835,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.8995136501706343
+        },
+        {
+          "id": "U00119",
+          "family": "PAIR0030",
+          "normal_error_deg": 7.060375893313822,
+          "individual_normal_errors_deg": [
+            1.9221101832157834,
+            7.060375893313822
+          ],
+          "projection_deg": 0.0012110403225745513,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6994683977058062
+        },
+        {
+          "id": "U00120",
+          "family": "PAIR0030",
+          "normal_error_deg": 7.060375893313822,
+          "individual_normal_errors_deg": [
+            7.060375893313822,
+            1.9221101832157834
+          ],
+          "projection_deg": 0.0012110403225745513,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6994683977058062
+        },
+        {
+          "id": "U00147",
+          "family": "PAIR0037",
+          "normal_error_deg": 7.184083338237113,
+          "individual_normal_errors_deg": [
+            7.184083338237113,
+            7.010904162749613
+          ],
+          "projection_deg": 0.0007061121504061396,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7914803068714179
+        },
+        {
+          "id": "U00148",
+          "family": "PAIR0037",
+          "normal_error_deg": 7.184083338237113,
+          "individual_normal_errors_deg": [
+            7.010904162749613,
+            7.184083338237113
+          ],
+          "projection_deg": 0.0007061121504061396,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.7914803068714179
+        },
+        {
+          "id": "U00151",
+          "family": "PAIR0038",
+          "normal_error_deg": 6.909351136701428,
+          "individual_normal_errors_deg": [
+            6.839587832661725,
+            6.909351136701428
+          ],
+          "projection_deg": 0.00048079971556409026,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6679064870321368
+        },
+        {
+          "id": "U00152",
+          "family": "PAIR0038",
+          "normal_error_deg": 6.909351136701428,
+          "individual_normal_errors_deg": [
+            6.909351136701428,
+            6.839587832661725
+          ],
+          "projection_deg": 0.00048079971556409026,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 0.6679064870321368
+        },
+        {
+          "id": "U00163",
+          "family": "PAIR0041",
+          "normal_error_deg": 8.852803039220003,
+          "individual_normal_errors_deg": [
+            8.852803039220003,
+            6.304993773160802
+          ],
+          "projection_deg": 0.001463415511144554,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.621871218281542
+        },
+        {
+          "id": "U00164",
+          "family": "PAIR0041",
+          "normal_error_deg": 8.852803039220003,
+          "individual_normal_errors_deg": [
+            6.304993773160802,
+            8.852803039220003
+          ],
+          "projection_deg": 0.001463415511144554,
+          "mismatch_um": 0.0,
+          "selected_witness_transverse_offset_mm": 2.621871218281542
+        }
+      ]
+    }
+  ],
+  "source_hashes": [
+    {
+      "path": "outputs\\cad_grasp_method_comparison_20261026\\comparison\\20261026T203838Z\\cases\\one_budget512\\N00\\BNC_Male\\candidate_checks.json",
+      "sha256": "42eef2ba3a821cb921d8523cf16ad0e2ed8a4e5e74056d342fa581cd41d8db5d"
+    },
+    {
+      "path": "outputs\\cad_grasp_method_comparison_20261026\\comparison\\20261026T203838Z\\cases\\one_budget512\\N01\\BNC_Male\\candidate_checks.json",
+      "sha256": "09799e6d50070f2e722064ae5b1c3d56661856aa76a31997666302890a07b3fa"
+    },
+    {
+      "path": "outputs\\cad_grasp_method_comparison_20261026\\comparison\\20261026T203838Z\\cases\\one_budget512\\N01\\Gear_Large\\candidate_checks.json",
+      "sha256": "a6db198696b005f01efacc55b934558b504aee3af2d8e778d2def424fb6243a3"
+    },
+    {
+      "path": "outputs\\cad_grasp_method_comparison_20261026\\comparison\\20261026T203838Z\\cases\\one_budget512\\N03\\BNC_Male\\candidate_checks.json",
+      "sha256": "6f534812ef386ab79b4edc9d11e2324ccf5c581be139b646f0e32a7cc7d3d335"
+    },
+    {
+      "path": "outputs\\cad_grasp_method_comparison_20261026\\comparison\\20261026T203838Z\\cases\\one_budget512\\N03\\Gear_Large\\candidate_checks.json",
+      "sha256": "d97e11e3021fd8e7e1b05532eab0326a63143c4ab2e07a75311eed0166d5e3fd"
+    },
+    {
+      "path": "outputs\\cad_grasp_method_comparison_20261026\\comparison\\20261026T203838Z\\cases\\one_budget512\\N04\\BNC_Male\\candidate_checks.json",
+      "sha256": "5dc00c3c2f15f5696f408bfc0242b6b2843b6bc27ea822129438fd3cba66fa39"
+    },
+    {
+      "path": "outputs\\cad_grasp_method_comparison_20261026\\comparison\\20261026T203838Z\\cases\\one_budget512\\N05\\Gear_Large\\candidate_checks.json",
+      "sha256": "585c05fac16b813e8aa7c9371a454cfed77d2c34127653f2d9a74d0edb00233c"
+    },
+    {
+      "path": "outputs\\cad_grasp_method_comparison_20261026\\comparison\\20261026T203838Z\\cases\\one_budget512\\N06\\BNC_Male\\candidate_checks.json",
+      "sha256": "6f1a80ecb1789f4df726bb684d8d21e1a4c37bfe44b9f9075a08cc7d71545651"
+    },
+    {
+      "path": "outputs\\cad_grasp_method_comparison_20261026\\comparison\\20261026T203838Z\\cases\\one_budget512\\N07\\Gear_Large\\candidate_checks.json",
+      "sha256": "1e1b5ea88c425cfd7d939876eee8d4219ae7d7dbb06f9c268853762901b028e7"
+    },
+    {
+      "path": "outputs\\cad_grasp_method_comparison_20261026\\comparison\\20261026T203838Z\\cases\\graspkit_512\\N00\\BNC_Male\\candidate_checks.json",
+      "sha256": "677c42912a7e916cb0a22c0cc4fbf6956b42f080b4e3e301141991efd47a438a"
+    },
+    {
+      "path": "outputs\\cad_grasp_method_comparison_20261026\\comparison\\20261026T203838Z\\cases\\graspkit_512\\N01\\BNC_Male\\candidate_checks.json",
+      "sha256": "2ab7d3d282e35cafdcc4f5f2501286b0cc2916b4b384df4d93015731b2490ad5"
+    },
+    {
+      "path": "outputs\\cad_grasp_method_comparison_20261026\\comparison\\20261026T203838Z\\cases\\graspkit_512\\N01\\Gear_Large\\candidate_checks.json",
+      "sha256": "f6f654bfd3cd15e3348fc75a20309eda918b5f7a58aaec3f0faff2a70fa4ff76"
+    },
+    {
+      "path": "outputs\\cad_grasp_method_comparison_20261026\\comparison\\20261026T203838Z\\cases\\graspkit_512\\N03\\BNC_Male\\candidate_checks.json",
+      "sha256": "fc28c02a92506de2bdf780f6054c7ae125b28a22f4ba51190edad03c178de166"
+    },
+    {
+      "path": "outputs\\cad_grasp_method_comparison_20261026\\comparison\\20261026T203838Z\\cases\\graspkit_512\\N03\\Gear_Large\\candidate_checks.json",
+      "sha256": "4e282f5151a406950fc67c963c81dec27260f4ece535f700aa764611f4c98c33"
+    },
+    {
+      "path": "outputs\\cad_grasp_method_comparison_20261026\\comparison\\20261026T203838Z\\cases\\graspkit_512\\N04\\BNC_Male\\candidate_checks.json",
+      "sha256": "8d08e2b96c7331718cb2417ea5e192cbefd1838d594cf7c11270b1b96349e145"
+    },
+    {
+      "path": "outputs\\cad_grasp_method_comparison_20261026\\comparison\\20261026T203838Z\\cases\\graspkit_512\\N05\\Gear_Large\\candidate_checks.json",
+      "sha256": "b0827c6bf1a701924ad9280c0c172df656d347068498eeae946a482f80825022"
+    },
+    {
+      "path": "outputs\\cad_grasp_method_comparison_20261026\\comparison\\20261026T203838Z\\cases\\graspkit_512\\N06\\BNC_Male\\candidate_checks.json",
+      "sha256": "395d2ff6d0654c7875dc0440d7e64e4c91b776f139b218b7e0b08de2c6aae9fa"
+    },
+    {
+      "path": "outputs\\cad_grasp_method_comparison_20261026\\comparison\\20261026T203838Z\\cases\\graspkit_512\\N07\\Gear_Large\\candidate_checks.json",
+      "sha256": "07715a818c5d0f4c0c618dcb843af3fc35a6cb8aa198e293a72cf7088506668c"
+    }
+  ]
+}

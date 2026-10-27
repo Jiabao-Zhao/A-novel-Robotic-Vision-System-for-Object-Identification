@@ -1,0 +1,37 @@
+{
+  "method": "sam6d",
+  "official_revision": "1c2543b3b6faa1f1d81b3c7291f8b371d71e50c2",
+  "native_source_receipt_sha256": "b9240f87f7621041379b73d66b5387b4de2c330b15dc3fb64686b16e8298b3dd",
+  "runner_sha256": "65ffe2889b572aee790e34288acde22cec6f5045ef712e6f9a976f9895ab693b",
+  "inputs_sha256": "236d4d887491e5b488defdb1459e5b9803b8f0f86a97acb33b955628ff9883dc",
+  "reference_bank_sha256": "dd2365e1eb777694fcc677c142f168573c945d032467bab484f912fff1aa2727",
+  "SAM_checkpoint_sha256": "a7bf3b02f3ebf1267aba913ff637d9a2d5c33d3173bb679e46d9f338c26f262e",
+  "DINO_checkpoint_sha256": "d5383ea8f4877b2472eb973e0fd72d557c7da5d3611bd527ceeb1d7162cbf428",
+  "scene_input": "Raw complete RGB-D and intrinsic matrices only; no crops, masks, poses or extrinsics",
+  "catalogue": "All 12 native metric CAD identities supplied simultaneously",
+  "proposal_config": {
+    "stability_score_thresh": 0.85,
+    "box_nms_thresh": 0.7,
+    "min_mask_region_area": 0,
+    "pred_iou_thresh": 0.88
+  },
+  "proposal_width": 640,
+  "native_points_per_batch": 64,
+  "actual_points_per_batch": 8,
+  "descriptor_batch": 2,
+  "descriptor": "Official frozen non-register DINOv2 ViT-L/14 FP32",
+  "reference_variant": "Released Pyrender route with 42 CAD-only canonical templates; native BOPTemplate preprocessing",
+  "final_mask_export": "Official BOP force_binary_mask default: soft resized mask >0",
+  "execution_adjustments": [
+    "SAM point decoder batches reduced64to8, with unchanged sampling grid/filter thresholds.",
+    "Official SAM native-resolution bilinear mask upsampling is executed in chunks and copied to CPU.",
+    "Official descriptor preprocessing/encoding in proposal batches2 to avoid replicating full RGB for every proposal.",
+    "SAM-6D geometric projection uses official functions on CPU in proposal chunks2; native all-proposal IoU guard is preserved.",
+    "A singleton geometry chunk is duplicated solely for the upstream squeeze API, then its duplicate discarded.",
+    "Meters provided directly using depth_scale1000; original CAD points are already meters, so no mm division."
+  ],
+  "torch_version": "2.11.0+cu130",
+  "GPU": "NVIDIA GeForce RTX 3060 Ti",
+  "simulator_labels_or_poses_read": false,
+  "fixed_scene_proposals": false
+}

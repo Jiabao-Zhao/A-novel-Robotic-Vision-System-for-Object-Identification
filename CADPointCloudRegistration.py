@@ -1,9 +1,10 @@
 import json
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 import numpy as np
 import open3d as o3d
+from scipy.spatial import cKDTree
 
 
 @dataclass
@@ -14,10 +15,7 @@ class CADRegistrationConfig:
     cad_mm_extent_threshold_m: float = 1.0
     yaw_step_deg: float = 10.0
     constrained_iterations: int = 12
-    xy_step_m: float = 0.003
-    yaw_step_refine_deg: float = 3.0
-    min_xy_step_m: float = 0.00025
-    min_yaw_step_refine_deg: float = 0.25
+    icp_rmse_tolerance_m: float = 1e-8
     random_seed: int = 0
 
 
@@ -248,7 +246,8 @@ class CADPointCloudRegistration:
             "constrained_rmse_m": selected["rmse_m"],
             "icp_fitness": None,
             "icp_inlier_rmse": selected["rmse_m"],
-            "method": "tabletop-constrained x-y-yaw CAD alignment",
+            "method": "tabletop-constrained point-to-point ICP",
+            "registration_config": asdict(self.config),
             "frame": "observed camera frame",
             "transform_direction": "CAD frame to observed camera frame",
         }
@@ -343,80 +342,91 @@ class CADPointCloudRegistration:
         return transform
 
     def refine_xy_yaw(self, cad_cloud, observed_cloud, table, initial_transform):
-        """
-        Constrained ICP-like local search.
+        """Alternate nearest matches and a continuous table-plane rigid fit.
 
-        The update is limited to table-x translation, table-y translation, and
-        yaw around the table normal. Z/contact, roll, and pitch are not allowed
-        to drift during refinement.
+        Each update jointly solves x/y translation and yaw for fixed matches.
+        Rotation about the table normal and in-plane translation preserve every
+        CAD point's signed table height, including its existing contact.
+        Voxel samples stay fixed inside ICP. The historical revoxelized RMSE
+        selects the best visited pose; it need not decrease on every ICP update.
         """
+        for cloud in (cad_cloud, observed_cloud):
+            if cloud.is_empty() or not np.isfinite(np.asarray(cloud.points)).all():
+                raise ValueError("Constrained ICP requires nonempty, finite point clouds.")
         transform = np.asarray(initial_transform, dtype=float).copy()
-        cad_center = np.asarray(
-            cad_cloud.get_axis_aligned_bounding_box().get_center(),
-            dtype=float,
-        )
-        xy_step = float(self.config.xy_step_m)
-        yaw_step = np.deg2rad(float(self.config.yaw_step_refine_deg))
-        best_rmse = self.observed_to_cad_rmse(cad_cloud, observed_cloud, transform)
+        observed = np.asarray(observed_cloud.voxel_down_sample(self.config.voxel_size_m).points)
+        basis = np.column_stack((table["x_axis"], table["y_axis"]))
+        cad = np.asarray(self.transformed_cad_for_evaluation(cad_cloud, transform).points).copy()
+
+        distances, indices = cKDTree(cad).query(observed)
+        fit_rmse = best_rmse = float(np.sqrt(np.mean(distances ** 2)))
+        best_transform = transform.copy()
+        history = [best_rmse]
+        fit_history = [fit_rmse]
+        selected_iteration = 0
         iterations = 0
-
-        while iterations < int(self.config.constrained_iterations):
+        stop_reason = "iteration_limit"
+        for _ in range(int(self.config.constrained_iterations)):
             iterations += 1
-            improved = False
-            translation_proposals = [
-                self.delta_transform(table["x_axis"] * xy_step, np.eye(3)),
-                self.delta_transform(-table["x_axis"] * xy_step, np.eye(3)),
-                self.delta_transform(table["y_axis"] * xy_step, np.eye(3)),
-                self.delta_transform(-table["y_axis"] * xy_step, np.eye(3)),
-            ]
-            for delta in translation_proposals:
-                candidate = delta @ transform
-                rmse = self.observed_to_cad_rmse(cad_cloud, observed_cloud, candidate)
-                if rmse < best_rmse:
-                    transform = candidate
-                    best_rmse = rmse
-                    improved = True
+            matched = cad[indices]
+            cad_center, observed_center = matched.mean(axis=0), observed.mean(axis=0)
+            source_xy = (matched - cad_center) @ basis
+            target_xy = (observed - observed_center) @ basis
+            # Closed-form SO(2) least squares, with no scale or reflection.
+            cross = np.sum(source_xy[:, 0] * target_xy[:, 1]
+                           - source_xy[:, 1] * target_xy[:, 0])
+            dot = np.sum(source_xy * target_xy)
+            angle = np.arctan2(cross, dot) if cross != 0 or dot != 0 else 0.0
+            rotation = self.rotation_about_axis(table["normal"], angle)
+            delta = self.rotation_about_point_transform(rotation, cad_center)
+            delta[:3, 3] += basis @ (basis.T @ (observed_center - cad_center))
+            candidate = delta @ transform
+            candidate_cad = self.transform_points(cad, delta[:3, :3], delta[:3, 3])
+            distances, candidate_indices = cKDTree(candidate_cad).query(observed)
+            candidate_fit_rmse = float(np.sqrt(np.mean(distances ** 2)))
+            if candidate_fit_rmse > fit_rmse:
+                stop_reason = "no_icp_improvement"
+                break
+            improvement = fit_rmse - candidate_fit_rmse
+            transform, cad, indices = candidate, candidate_cad, candidate_indices
+            fit_rmse = candidate_fit_rmse
+            fit_history.append(fit_rmse)
+            rmse = self.observed_to_cad_rmse(cad_cloud, observed_cloud, transform)
+            history.append(rmse)
+            if rmse < best_rmse:
+                best_transform, best_rmse = transform.copy(), rmse
+                selected_iteration = iterations
+            if improvement <= self.config.icp_rmse_tolerance_m:
+                stop_reason = "rmse_tolerance"
+                break
 
-            for angle in (yaw_step, -yaw_step):
-                pivot = self.transform_points(
-                    cad_center.reshape(1, 3),
-                    transform[:3, :3],
-                    transform[:3, 3],
-                )[0]
-                rotation = self.rotation_about_axis(table["normal"], angle)
-                delta = self.rotation_about_point_transform(rotation, pivot)
-                candidate = delta @ transform
-                rmse = self.observed_to_cad_rmse(cad_cloud, observed_cloud, candidate)
-                if rmse < best_rmse:
-                    transform = candidate
-                    best_rmse = rmse
-                    improved = True
-
-            if not improved:
-                xy_step *= 0.5
-                yaw_step *= 0.5
-                if (
-                    xy_step < self.config.min_xy_step_m
-                    and np.rad2deg(yaw_step) < self.config.min_yaw_step_refine_deg
-                ):
-                    break
-
-        return transform, {
+        return best_transform, {
             "rmse_m": float(best_rmse),
+            "initial_rmse_m": history[0],
+            "rmse_history_m": history,
+            "icp_rmse_history_m": fit_history,
+            "selected_iteration": selected_iteration,
             "score_direction": "observed_surface_to_cad_surface",
             "iterations": int(iterations),
+            "correspondence_count": len(observed),
+            "stop_reason": stop_reason,
             "degrees_of_freedom": "table_x, table_y, yaw_about_table_normal",
-            "yaw_refinement": "constrained local search",
+            "yaw_refinement": "continuous constrained point-to-point ICP",
+            "sampling": "fixed voxel samples for ICP; revoxelized CAD for ranking",
         }
 
-    def observed_to_cad_rmse(self, cad_cloud, observed_cloud, transform):
-        """Measure how well the observed partial surface is supported by the CAD surface."""
+    def transformed_cad_for_evaluation(self, cad_cloud, transform):
         cad_eval = o3d.geometry.PointCloud(cad_cloud)
         cad_eval.transform(transform)
         cad_eval = cad_eval.voxel_down_sample(self.config.voxel_size_m)
-        observed_eval = observed_cloud.voxel_down_sample(self.config.voxel_size_m)
         if cad_eval.is_empty():
             cad_eval = o3d.geometry.PointCloud(cad_cloud).transform(transform)
+        return cad_eval
+
+    def observed_to_cad_rmse(self, cad_cloud, observed_cloud, transform):
+        """Measure how well the observed partial surface is supported by the CAD surface."""
+        cad_eval = self.transformed_cad_for_evaluation(cad_cloud, transform)
+        observed_eval = observed_cloud.voxel_down_sample(self.config.voxel_size_m)
         if observed_eval.is_empty():
             observed_eval = observed_cloud
         distances = np.asarray(observed_eval.compute_point_cloud_distance(cad_eval), dtype=float)

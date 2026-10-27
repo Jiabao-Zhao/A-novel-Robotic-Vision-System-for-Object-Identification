@@ -1,0 +1,59 @@
+{
+  "original_sources": {
+    "experiments/fmb_four_scene_20261001/capture_scenes.py": "24068bf9e9dda2c7325877f1adb43ac88c11af0295e804370921f83e633e6821",
+    "experiments/calibration_size_orientation_20261005/capture_scenes.py": "d75fc5dc5903c7722e570833e51500f91a58398086b5f99d7cc61a7d00db0215",
+    "experiments/nist12_direct_cad_vlm_20261019/capture_inputs.py": "1fe03a98a6c10c35e34294d350cda0a33ed8d75ad941188b72abdef146f475f0"
+  },
+  "extracted_module": "simulation/nist_capture.py",
+  "unchanged_function_ast_sha256": {
+    "read": "06ed9c7ddb9928a0e05adca44592bb20b8057d68956bea295444fecc4994dcfd",
+    "save": "5a2d9ab60789cfe1a6311c00626718502206f92b5c3fa86ed37cf81152f67439",
+    "digest": "ade7866af06119a8246b4b8502af2297585be1330a24d3ac0bfb62be0c8e43e2",
+    "vertices": "4d74390011c41d5eaab8c0063bd30ce0c08fec4bf2a3e4198a17ccec34fb1b3c",
+    "audit_roi": "683b70830fc05bc46670402cf7e520e36141064248d6a23621bae510ccf8ca21",
+    "hull_center": "52a10a65dee931fffadb4d62505fd159077c57869e7ad41215bda524f9ba3b3e",
+    "supported_pose": "e668d21d7fce9d0eb76412002ddd3742039614adbea4f9483ff2dab1fe2648ca",
+    "rest_options": "f23949140c8d892feb53a0ac34f7c0e2ed6eda2e06c691aad50adc174edd1786",
+    "separated": "95c164f8df3f2d6186db2fc66f096ff5e5bd73bef483304f1202f7ac5bb7e900"
+  },
+  "intentional_changes": [
+    "NIST-only layout: removed unused FMB placement branch",
+    "localize takes explicit output/raw directories; same copied parameter values",
+    "MuJoCo/Open3D/localizer imports are delayed until an explicit operation"
+  ],
+  "no_scene_or_model_executed": true,
+  "module_sha256": "f41ce573774dcab6a4c0b03280d2f0db9ced7bbdb23828c3ff95e639820bfd80",
+  "test_file": "tests/test_nist_capture.py",
+  "test_source_sha256": "dd1417b8ccac8c480e5a2233293d8e388fa027963b5ddbdcfc4274048fde6cce",
+  "unchanged_functions_verified": 9,
+  "layout_exact_after_removing_only_fmb_branch": true,
+  "localization_config_exact_to_retained_N00": true,
+  "focused_tests": {
+    "passed": 5,
+    "execution": "mocked/synthetic only",
+    "native_fits": 0,
+    "model_calls": 0
+  },
+  "final_sources_sha256": {
+    "simulation/nist_capture.py": "f41ce573774dcab6a4c0b03280d2f0db9ced7bbdb23828c3ff95e639820bfd80",
+    "simulation/nist_task_board_1.py": "404a83d670afba7a0b971cc928d5a514c1469e53b23f257164610dbdb88a6982",
+    "tests/test_nist_capture.py": "dd1417b8ccac8c480e5a2233293d8e388fa027963b5ddbdcfc4274048fde6cce",
+    "tests/test_nist_task_board.py": "74954b47913cf86e2626f0a0b3fd97fc23c2e1d7ae0895e939cf21ea0385b98c",
+    "tests/test_local_generation_backend.py": "1d363c83b51e3eb9151f93127a8d298883f05fbb36a3687a311674ae7debbb58",
+    "experiments/nist12_robustness_20261024/capture/render_scenes.py": "f5f6ba3cd43ac5b9fa4e7b5a61075a0d266e6abc3b1d9a63e3ef0a4384a26115",
+    "experiments/nist12_robustness_20261024/capture/render_scenes_initial.py": "ac773d9ce635dc9040c203a8a8377ea889d8e17e0c9921281f99a8c4037c182e"
+  },
+  "nist_only_selection_validation": {
+    "passed": 3,
+    "integration_skipped": 4,
+    "household_injection_removed": true
+  },
+  "unchanged_shared_bridge_checks": {
+    "env_passed": 5,
+    "sensor_passed": 6,
+    "control_passed": 8,
+    "control_errors": 8,
+    "control_error_reason": "Windows test runtime lacks robosuite; original control source unchanged"
+  },
+  "retained_generation_tests_passed": 8
+}

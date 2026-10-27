@@ -1,0 +1,107 @@
+{
+  "scene_id": "R00__depth_noise_2mm",
+  "proposal_id": 0,
+  "target": "Gear_Large",
+  "raw_observed_points": 2094540,
+  "native_voxel_points": 1279564,
+  "native_voxel_signature": {
+    "dtype": "<f8",
+    "shape": [
+      1279564,
+      3
+    ],
+    "sha256": "b564cff9785c8946e2739dc6fe7afc705807cbec86247741fac75e9d1130790b"
+  },
+  "observation_key": "c4e7b9f19647feae38b0e4cd8698e422e99e3ffa9bb41042863f8da76ec82fa6",
+  "sample_rule": "ids=floor(arange262144*native_voxel_count/262144); nested query strides16/4/1.",
+  "maximum_distinct_query_rows": 262144,
+  "transform": "Saved predicted nominal R00 CAD1/proposal0 geometry pose, not a simulator pose.",
+  "T_camera_from_cad": [
+    [
+      0.3563349453434297,
+      -0.9343582860581592,
+      -1.245051015143182e-06,
+      0.09409402539370582
+    ],
+    [
+      -0.9139421586225093,
+      -0.3485485976306183,
+      -0.207902875839071,
+      0.015360667847532707
+    ],
+    [
+      0.19425534077477213,
+      0.07408419780346957,
+      -0.9781494743730578,
+      0.626476619108034
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "frame": "queries are in native CAD coordinates; observations in camera metres",
+  "sources": {
+    "experiments/nist12_robustness_20261024/evaluation/fp32_certificate_audit/prepare_dense_queries.py": "b0b5381770752e03b1f51acd65c81ecc1cf2822bd9d19d6b5150f315116b9cc4",
+    "experiments/nist12_robustness_20261024/geometry/run_depth.py": "3d5797f1ebf18270425dee10b3a4b73a7696ffb317b9255eaafe4b07526faba6",
+    "experiments/nist12_qwen_clip_reranking_20261023/depth_verification_20261023/geometry.py": "bf3120854a2fe0682d3c9723b1e6786b1150bda74e783550d41eb83c9e80b4cc",
+    "experiments/nist12_robustness_20261024/depth_stress_manifest.json": "5e382432d5be97ad312deabbf3462b36bf6e708bb19e4adbb25cb778a6ee78aa",
+    "experiments/nist12_robustness_20261024/catalog.json": "b8f4b6aaa23ee0d1d5aea3af6d4ff7d05d4dac86f1f691e0c3098a49671a30d8",
+    "experiments/nist12_robustness_20261024/geometry/localization/R00__depth_noise_2mm/localization.json": "0fc13f3f7fd918f933c20030f17a34bf0606da4c662b85f1b4df22ab96e7ce2d",
+    "experiments/nist12_robustness_20261024/inputs/R00__depth_noise_2mm/depth.npy": "06fa18762e6092f63eacce140c668eea8143edcd46e5231fff52a40f93427e13",
+    "experiments/nist12_robustness_20261024/inputs/R00/intrinsics.npy": "e8a1ef31e321aaeec64bf9d33b59a06569f177fe739f5445b52141059e65905f",
+    "experiments/nist12_fullscene_benchmarks_20261023/cad_assets/Gear_Large.stl": "2225778c5220fbc4d55b8a1fd5eba1ae9b0e6ff43068a115f92e98efdb8ce1d4",
+    "experiments/nist12_robustness_20261024/geometry/fits/2a/2ae9e963e1f146d8a54d1b735d4323d241066513fd4381b8b74aa23d2fe7628c.json": "a31120a286ef83ac4a6304f838137a03dd60226068725bc8d887914a2a1e536b"
+  },
+  "output_signatures": {
+    "cad_points": {
+      "dtype": "<f8",
+      "shape": [
+        10651,
+        3
+      ],
+      "sha256": "76ec16a241a5594cfa60611be3e10f6c3cd2b5dd87e0e459991326a8726cd57a"
+    },
+    "queries": {
+      "dtype": "<f8",
+      "shape": [
+        262144,
+        3
+      ],
+      "sha256": "d172bc9e54d8bcc3982376cd31637ff759b6c0818deeb556dacad85bd121098a"
+    },
+    "sample_ids": {
+      "dtype": "<i8",
+      "shape": [
+        262144
+      ],
+      "sha256": "70e5c314c5064b91c12fc827a8acaf366ce1e48f653c685dbdf0edce47b94373"
+    },
+    "observed_camera_points": {
+      "dtype": "<f8",
+      "shape": [
+        262144,
+        3
+      ],
+      "sha256": "0f27bcf14049c02819b620583288bd203fa52fa30e8f724cfb99691d410246b4"
+    }
+  },
+  "output_file_sha256": {
+    "cad_points.npy": "7f65845b79373da2180761ed7c026b873601f6f4c47c77e372495e32f08e8b7e",
+    "observed_camera_points.npy": "ddf62c4fdfac0bdd5d5a9ad7e696db8f73ca6d106d72c4e079e5e459fcc45d10",
+    "queries.npy": "4dfa023bbe906f98c1c62783fd75915b8cd64a396577f9129143bb0b564834e8",
+    "sample_ids.npy": "3ce866c3f947d48b36afce7ee85564c84b13bcf36af110f92be2dfb7db0d9dd1"
+  },
+  "preprocessing_seconds": 4.264955226997699,
+  "initial_rss_bytes": 68988928,
+  "peak_rss_bytes": 664502272,
+  "incremental_peak_rss_bytes": 595513344,
+  "additional_address_space_limit_bytes": 738197504,
+  "Torch_imported": false,
+  "CUDA_used": false,
+  "pose_fits": 0,
+  "model_calls": 0,
+  "accuracy_annotations_read": false
+}

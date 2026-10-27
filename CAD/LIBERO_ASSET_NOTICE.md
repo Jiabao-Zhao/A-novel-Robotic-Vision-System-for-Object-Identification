@@ -1,8 +1,11 @@
 # LIBERO CAD asset provenance
 
-The LIBERO CAD catalog does not redistribute simulator meshes. At runtime,
-`simulation.libero_cad` resolves each installed asset from the current LeRobot /
-LIBERO cache beneath `~/.cache/libero/assets`.
+This is a historical provenance notice for the retired LIBERO-object experiments.
+The catalog and `simulation.libero_cad` resolver were removed in the October 27
+NIST-only cleanup. The third-party meshes below are not redistributed here;
+required simulator assets remain in the installed LeRobot/LIBERO cache beneath
+`~/.cache/libero/assets`. Current NIST assets are described separately in
+[NIST_ASSET_NOTICE.md](NIST_ASSET_NOTICE.md).
 
 All ten LIBERO-Object target meshes listed below come from the
 [NVIDIA HOPE dataset](https://github.com/swtyree/hope-dataset), distributed by
@@ -29,6 +32,5 @@ per-object scale is applied when loading a CAD prior.
 
 Because these are the same meshes used to create the rendered simulator
 objects, results must be labeled as an **exact simulator CAD prior** condition.
-The pipeline selects a prior from the VLM semantic classification and never
-reads simulator object identity, instance transform, segmentation, or
-ground-truth pose.
+The retired experimental pipeline selected a prior from VLM semantic
+classification. That method is not the current CAD/depth framework.

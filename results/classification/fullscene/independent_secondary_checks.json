@@ -1,0 +1,98 @@
+{
+  "case_images_verified": 485,
+  "case_image_mapping_complete": true,
+  "all_primary_metrics_unchanged": true,
+  "interpretation": "Conditional diagnostics use audit labels after prediction locking; they are not deployment performance or common-proposal experiments.",
+  "input_per_task_sha256": "dc543bd39c7334b16fe2caf2a810c7ff7824f6c2fa0d17cb409b52bf83e2549e",
+  "diagnostics": {
+    "ours": {
+      "all_requests": 96,
+      "correct": 74,
+      "status_counts": {
+        "ok": 78,
+        "unavailable": 18
+      },
+      "raw_target_box_recall_count": 96,
+      "conditional_correct_given_available_depth_decision": 0.9487179487179487
+    },
+    "cnos": {
+      "all_requests": 96,
+      "correct": 28,
+      "status_counts": {
+        "ok": 65,
+        "no_retained_detection": 31
+      },
+      "raw_target_box_recall_count": 78,
+      "target_box_survives_native_filter_count": 34,
+      "correct_among_surviving_target_boxes": 28,
+      "conditional_correct_given_target_box_survives": 0.8235294117647058
+    },
+    "sam6d_rgb": {
+      "all_requests": 96,
+      "correct": 35,
+      "status_counts": {
+        "ok": 71,
+        "no_retained_detection": 25
+      },
+      "raw_target_box_recall_count": 87,
+      "target_box_survives_native_filter_count": 41,
+      "correct_among_surviving_target_boxes": 35,
+      "conditional_correct_given_target_box_survives": 0.8536585365853658
+    },
+    "sam6d_rgbd": {
+      "all_requests": 96,
+      "correct": 36,
+      "status_counts": {
+        "ok": 71,
+        "no_retained_detection": 25
+      },
+      "raw_target_box_recall_count": 87,
+      "target_box_survives_native_filter_count": 41,
+      "correct_among_surviving_target_boxes": 36,
+      "conditional_correct_given_target_box_survives": 0.8780487804878049
+    },
+    "nids_basic": {
+      "all_requests": 96,
+      "correct": 0,
+      "status_counts": {
+        "unavailable_reference_features": 96
+      },
+      "classification_comparison_available": false
+    },
+    "nids_basic_finite_templates": {
+      "all_requests": 96,
+      "correct": 41,
+      "status_counts": {
+        "ok": 49,
+        "no_retained_detection": 47
+      },
+      "raw_target_box_recall_count": 96,
+      "target_box_survives_native_filter_count": 50,
+      "correct_among_surviving_target_boxes": 41,
+      "conditional_correct_given_target_box_survives": 0.82
+    },
+    "noctis": {
+      "all_requests": 96,
+      "correct": 38,
+      "status_counts": {
+        "ok": 60,
+        "no_retained_detection": 36
+      },
+      "raw_target_box_recall_count": 96,
+      "target_box_survives_native_filter_count": 50,
+      "correct_among_surviving_target_boxes": 38,
+      "conditional_correct_given_target_box_survives": 0.76
+    },
+    "nemo": {
+      "all_requests": 96,
+      "correct": 31,
+      "status_counts": {
+        "ok": 96
+      },
+      "CAD_conditioned_target_box_before_area_filter_count": 83,
+      "CAD_conditioned_target_box_after_area_filter_count": 83,
+      "conditional_correct_given_requested_CAD_mask_contains_target_box": 0.37349397590361444,
+      "conditional_area_filter_lost_target_tasks": []
+    }
+  }
+}

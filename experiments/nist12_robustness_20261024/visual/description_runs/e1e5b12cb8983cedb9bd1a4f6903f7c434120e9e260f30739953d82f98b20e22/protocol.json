@@ -1,0 +1,41 @@
+{
+  "qwen": {
+    "model_key": "qwen",
+    "model": "qwen3.5:9b",
+    "model_files": {},
+    "controls": {
+      "model": "qwen3.5:9b",
+      "stream": false,
+      "think": false,
+      "logprobs": false,
+      "keep_alive": "10m",
+      "options": {
+        "temperature": 0,
+        "seed": 0,
+        "num_ctx": 4096,
+        "num_predict": 1536,
+        "repeat_penalty": 1.0,
+        "presence_penalty": 0.0,
+        "frequency_penalty": 0.0,
+        "top_k": 0,
+        "top_p": 1.0,
+        "min_p": 0.0
+      },
+      "expected_model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "expected_runtime_version": "0.40.4"
+    },
+    "context_capacity": 4096,
+    "expected_backend_build": null
+  },
+  "prompts": {
+    "keywords": "This image shows a single object. Please describe its attributes following these rules:\n1. The format should be: <COLOR> its color </COLOR> <SHAPE> its shape </SHAPE> <MATERIAL> its material </MATERIAL>.\n2. For each attribute, only include the descriptive words. For example, if you describe the color as \"yellow surface with brown spots\", please simplify it to \"yellow, brown\".\n3. Do not describe minor parts of the object. For example, if the picture shows a red apple with a small green stem, the color description should be \"red\" rather than \"red, green\".\nHere are three example outputs for your reference:\n1. <COLOR> red, yellow </COLOR> <SHAPE> round </SHAPE> <MATERIAL> organic </MATERIAL>.\n2. <COLOR> silver </COLOR> <SHAPE> elongated, round </SHAPE> <MATERIAL> metal, plastic </MATERIAL>.\n3. <COLOR> blue </COLOR> <SHAPE> cylindrical </SHAPE> <MATERIAL> aluminum </MATERIAL>.\nNow please describe the object shown in the image.\n",
+    "phrases": "This image shows a single object. Please describe its attributes following the format: <COLOR> its color </COLOR> <SHAPE> its shape </SHAPE> <MATERIAL> its material </MATERIAL>.\nHere are four example outputs for your reference:\n1. <COLOR> green on top and yellow on the bottom </COLOR> <SHAPE> rectangular prism </SHAPE> <MATERIAL> sponge </MATERIAL>.\n2. <COLOR> white </COLOR> <SHAPE> cylindrical with a flip-top lid </SHAPE> <MATERIAL> plastic </MATERIAL>.\n3. <COLOR> blue </COLOR> <SHAPE> flat with an elongated handle and slotted flipper </SHAPE> <MATERIAL> plastic or metal </MATERIAL>.\n4. <COLOR> brown cap and white stem </COLOR> <SHAPE> typical mushroom shape with a rounded cap and cylindrical stem </SHAPE> <MATERIAL> organic fungus </MATERIAL>.\nNow please describe the object shown in the image.\n"
+  },
+  "system": "",
+  "wrapper_sha256": "8a663d91660087046258bb696291caae3641e42b27e71171acfdaf5ab001686f",
+  "input_sha256": "e1e5b12cb8983cedb9bd1a4f6903f7c434120e9e260f30739953d82f98b20e22",
+  "source_sha256": "ae1a76744bd2eed914ce1485173c1b29434bca0bb5020412ccf17d80d9c911e4",
+  "model_frozen": true,
+  "training": false,
+  "reuse": "Only exact image hash, frozen prompt and generation controls; verbatim raw output retained."
+}

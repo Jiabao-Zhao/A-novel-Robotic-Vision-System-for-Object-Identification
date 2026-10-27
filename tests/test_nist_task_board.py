@@ -2,12 +2,33 @@
 
 import importlib.util
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 
 from simulation.nist_task_board_1 import (
     ASSET_DIR, BOARD_BOTTOM_Z_M, BOARD_CENTER_XY_M, FLOOR_Z_M, NistTaskBoardEnvironment, PARTS,
 )
+
+
+class NistSelectionValidationTests(unittest.TestCase):
+    def test_non_nist_and_duplicate_parts_fail_before_simulator_setup(self):
+        with patch('simulation.nist_task_board_1.configure_mujoco_rendering',
+                   side_effect=AssertionError('simulator setup must not run')):
+            for parts in [(), ('cream_cheese',), ('Gear_Large', 'Gear_Large')]:
+                with self.subTest(parts=parts), self.assertRaisesRegex(ValueError, 'known component'):
+                    NistTaskBoardEnvironment(parts=parts)
+
+    def test_placements_must_cover_only_the_selected_nist_parts(self):
+        with patch('simulation.nist_task_board_1.configure_mujoco_rendering',
+                   side_effect=AssertionError('simulator setup must not run')):
+            for placements in [{}, {'cream_cheese': {}}, {'Gear_Large': {}, 'M16_Hex_Nut': {}}]:
+                with self.subTest(placements=placements), self.assertRaisesRegex(ValueError, 'Every selected NIST'):
+                    NistTaskBoardEnvironment(parts=('Gear_Large',), placements=placements)
+
+    def test_household_injection_option_is_removed(self):
+        with self.assertRaisesRegex(TypeError, 'common_parts'):
+            NistTaskBoardEnvironment(common_parts=('cream_cheese',))
 
 
 @unittest.skipUnless(importlib.util.find_spec("libero") and (ASSET_DIR / "stl.zip").is_file(),

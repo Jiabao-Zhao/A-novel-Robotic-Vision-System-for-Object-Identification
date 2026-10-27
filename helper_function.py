@@ -500,8 +500,8 @@ class CADRetrieval:
         m* = arg max over m_k in M [ max over q_i in Q sim(E(q_i), E(t_k)) ]
 
     M is the CAD model library, m_k is one CAD model record, t_k is the
-    combined text metadata for m_k, Q is the expanded query set from the VLM
-    classification result, E(.) is an embedding function, sim(.) is cosine
+    combined text metadata for m_k, Q is the user's target request and optional
+    query alternatives, E(.) is an embedding function, sim(.) is cosine
     similarity, and m* is the selected CAD model.
     """
 

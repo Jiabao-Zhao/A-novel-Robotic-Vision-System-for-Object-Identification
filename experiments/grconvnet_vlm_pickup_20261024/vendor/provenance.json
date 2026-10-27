@@ -1,0 +1,63 @@
+{
+  "upstream_repository": "https://github.com/skumra/robotic-grasping",
+  "upstream_commit": "183c6f68c44c1c7ff0f07707e2db6fcfd6840d2d",
+  "retrieved_utc": "2026-10-24T13:38:29.868988+00:00",
+  "scope": "Official Cornell RGB-D pretrained checkpoint referenced by released OWG; no training.",
+  "paper_difference": "Published OWG describes Jacquard-pretrained proposals; its released PyBullet code defaults to this Cornell RGB-D checkpoint.",
+  "source_files": {
+    "LICENSE": {
+      "url": "https://raw.githubusercontent.com/skumra/robotic-grasping/183c6f68c44c1c7ff0f07707e2db6fcfd6840d2d/LICENSE",
+      "sha256": "07809e1c6ba70e7027376faf131a5792bfe2f8acedc1b48a373ddfca8a964708",
+      "size_bytes": 3177
+    },
+    "inference/models/grconvnet3.py": {
+      "url": "https://raw.githubusercontent.com/skumra/robotic-grasping/183c6f68c44c1c7ff0f07707e2db6fcfd6840d2d/inference/models/grconvnet3.py",
+      "sha256": "8fbdf124cd7710a1a3f50121dcec583a919d109900bb23010995ad4a8ed87b81",
+      "size_bytes": 3403
+    },
+    "inference/models/grasp_model.py": {
+      "url": "https://raw.githubusercontent.com/skumra/robotic-grasping/183c6f68c44c1c7ff0f07707e2db6fcfd6840d2d/inference/models/grasp_model.py",
+      "sha256": "daf687ffaa19340d598f63f72234eece016367e7442a2acb8c9ebf0e774809fe",
+      "size_bytes": 1950
+    },
+    "inference/post_process.py": {
+      "url": "https://raw.githubusercontent.com/skumra/robotic-grasping/183c6f68c44c1c7ff0f07707e2db6fcfd6840d2d/inference/post_process.py",
+      "sha256": "a03721d4b9ad610cc2debe76e2104519ca5ad5fe217d7ea0b9a243e3d9c185a7",
+      "size_bytes": 872
+    },
+    "utils/data/camera_data.py": {
+      "url": "https://raw.githubusercontent.com/skumra/robotic-grasping/183c6f68c44c1c7ff0f07707e2db6fcfd6840d2d/utils/data/camera_data.py",
+      "sha256": "a86d4d964b2581a599116a2e423b84d0e6e06f6f8e33b867d6add7d32f1ea363",
+      "size_bytes": 2820
+    },
+    "utils/dataset_processing/image.py": {
+      "url": "https://raw.githubusercontent.com/skumra/robotic-grasping/183c6f68c44c1c7ff0f07707e2db6fcfd6840d2d/utils/dataset_processing/image.py",
+      "sha256": "3c4a3f404f823bb1925337ea67558a6d75acb7c3fbae0da28b1b44f36679ba11",
+      "size_bytes": 7201
+    },
+    "utils/dataset_processing/grasp.py": {
+      "url": "https://raw.githubusercontent.com/skumra/robotic-grasping/183c6f68c44c1c7ff0f07707e2db6fcfd6840d2d/utils/dataset_processing/grasp.py",
+      "sha256": "f2fb917e547ea808e84375410f63c21e2333e8cc17ba8aa51992ada4af221648",
+      "size_bytes": 13922
+    }
+  },
+  "checkpoint": {
+    "url": "https://raw.githubusercontent.com/skumra/robotic-grasping/183c6f68c44c1c7ff0f07707e2db6fcfd6840d2d/trained-models/cornell-randsplit-rgbd-grconvnet3-drop1-ch32/epoch_19_iou_0.98",
+    "relative_path": "outputs/grconvnet_vlm_pickup_20261024/model/cornell_rgbd_grconvnet3_ch32_epoch19.pt",
+    "sha256": "e6c03afc0f8266d29ec92141088cc6a557215fabc2681d4ca5a162f451853d28",
+    "size_bytes": 7640481
+  },
+  "safe_state_dict": {
+    "relative_path": "outputs/grconvnet_vlm_pickup_20261024/model/cornell_rgbd_grconvnet3_ch32_epoch19_state_dict.pt",
+    "sha256": "e21ca5ec7599c76e1ba65ace1fc59238806007e4146b1b1df67cc28ce04d7292",
+    "architecture": {
+      "input_channels": 4,
+      "output_channels": 1,
+      "channel_size": 32,
+      "dropout": true,
+      "prob": 0.1
+    },
+    "conversion": "Explicit trusted official Module pickle load, CPU; then state_dict saved. Inference loads only this state_dict with weights_only=True.",
+    "reason": "PyTorch weights-only loader rejected the legacy checkpoint's persistent storage format."
+  }
+}

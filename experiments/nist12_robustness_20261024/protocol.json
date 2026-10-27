@@ -1,0 +1,103 @@
+{
+  "created_utc": "2026-10-24T13:50:15.402056+00:00",
+  "frozen_before_new_capture_and_model_inference": true,
+  "scope": "Supplied CAD to scene instance classification; no robot execution or trained motor policy.",
+  "capture": {
+    "layout_count": 20,
+    "seed_base": 6821040,
+    "support_clearance_m": 0.0,
+    "catalog_file": "experiments/nist12_robustness_20261024/catalog.json",
+    "paired_conditions": [
+      "light_shadow",
+      "background",
+      "finish",
+      "camera_far",
+      "resolution_low",
+      "occlusion_light",
+      "occlusion_heavy",
+      "absent",
+      "duplicate"
+    ],
+    "paired_layout_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "condition_target_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "placement": "CAD-only supported static poses, no dynamic settling; no ground-truth-based scene acceptance.",
+    "gripper_exclusion": "Robot and gripper geometry omitted in all newly rendered scenes, identically for every method."
+  },
+  "depth_stress": {
+    "base_condition": "nominal",
+    "additive_noise_sigma_m": [
+      0.001,
+      0.002,
+      0.005
+    ],
+    "missing_depth_fractions": [
+      0.1,
+      0.3
+    ],
+    "scale_factors": [
+      0.99,
+      1.01
+    ],
+    "seed_base": 84204,
+    "generation": "Noise applied to full observed depth, no object masks. Missing pixels occur in spatial blocks, including boundaries. Re-run localization for primary pipeline."
+  },
+  "arms": [
+    "clip_only",
+    "clip_top5_depth",
+    "depth_all",
+    "size_only"
+  ],
+  "CLIP": "Unchanged four-term image/text mean and maximum over existing20CADviews. Frozen pretrained CLIP and two original Qwen keywords/phrases prompts from prior CLIP study.",
+  "CLIP_top_k": 5,
+  "Qwen": "Local qwen3.5:9b only, exact previous generation controls; preserve raw outputs and no content/length retries.",
+  "localization": "Previous voxel2mm/plane2mm/DBSCAN20mm/min50 cluster parameters, no forced object count, no simulator extrinsics/poses/masks.",
+  "fit": "Frozen zero-contact native-scale CAD support-face/36yaw initialization and x/y/yaw ICP, same full-union/depth score. No penetration rejection or external-occluder carving.",
+  "availability": "Rank available candidate scores; preserve each unavailable candidate. No usable candidates or exact highest-score tie within1e-12 gives unavailable/ambiguous. An unavailable distractor does not veto valid competitors.",
+  "size_control": "Minimum-area table-plane footprint long/short dimensions and maximum observed table-relative height, compare bestCADsupport. Score=1-mean(min(abs(dimension difference)/0.005m,1)); no fitted scale.",
+  "absence_duplicates": "Primary ranker and separately declared development-calibrated plausibility diagnostic; no held-out threshold tuning. Correct class localization and singular-request ambiguity reported separately.",
+  "real_data": "20 cached real T-LESS frames, deterministic first available RGB-D frame per scene, all30CADs onboarding; exact selection and conversion frozen separately before inference. Not full BOP benchmark.",
+  "new_query_CADs": "Four female connector CADs not previously queried in searched JSON; previously present asfixtures, not globally unseen assets. Dedicated cohort frozen before inference.",
+  "evaluation": "Freeze predictions before reading audit labels. Identity/boxIoU>=0.5 primary; maskIoU,proposalrecall,CLIPrecall@5,wrongsize/wrongfamily,unavailable,rejection and ambiguity separately. Paired effects and scene-cluster bootstrap intervals.",
+  "training": "No weight updates, paid APIs, GPT calls, global environment edits, physical robot/camera operation.",
+  "source_protection": {
+    "active_CAD_prompt_sha256": "180dc9df66ab2cbd0b9b8057a054314bc1252d74b47db9d5dc98a15c391d2019",
+    "prior_geometry_sha256": "bf3120854a2fe0682d3c9723b1e6786b1150bda74e783550d41eb83c9e80b4cc",
+    "keywords_prompt_sha256": "5de1ffac3473f55e94e9938ea65d2a9a2cc1a3a6d0e921bbd9a59a995162e45c",
+    "phrases_prompt_sha256": "ab7ee3a3902ab71b0a12f5261c325ca0c4391c4338d0407ea8a8b28868fd02aa"
+  },
+  "resource_policy": "GPU sequential model ownership, CPU geometry16workers when memory safe. Reuse exact observation/CAD computations across paired RGB-only conditions; execution optimizations require reference parity checks."
+}

@@ -1,0 +1,73 @@
+{
+  "repository": "https://github.com/DexForce/EmbodiChain",
+  "commit": "bb2b65e0de1ccc486e022e57a6a56d8ddd78e969",
+  "source_path": "embodichain/toolkits/graspkit/pg_grasp/antipodal_sampler.py",
+  "source_url": "https://github.com/DexForce/EmbodiChain/blob/bb2b65e0de1ccc486e022e57a6a56d8ddd78e969/embodichain/toolkits/graspkit/pg_grasp/antipodal_sampler.py",
+  "source_git_blob_sha1": "3ab15669000c579eb5c4e6fdecb3810905c3dac7",
+  "license": "Apache-2.0",
+  "license_git_blob_sha1": "b8d50b19d0e0506cb267d01e85835ac934f855e3",
+  "upstream_notice_present": false,
+  "adaptation": "Only two upstream utility imports are replaced by local dataclasses.dataclass and standard-library logging helpers. The source algorithm is unchanged.",
+  "requires": [
+    "numpy",
+    "open3d",
+    "torch"
+  ],
+  "model_weights_required": false,
+  "training_required": false,
+  "manual_part_grasps_required": false,
+  "output": "N x 2 x 3 float32 contact pairs in input mesh frame, metres",
+  "runtime_validation": "Passed local WSL synthetic-box smoke test: 256 finite contact pairs, all within mesh bounds and configured width limits; no physical robot or model inference.",
+  "files": [
+    {
+      "path": "__init__.py",
+      "sha256": "9b40ed98ee53a625fb906a29ed81d79bb4a06cde081475378f24064be5bb7037",
+      "bytes": 207
+    },
+    {
+      "path": "_compat.py",
+      "sha256": "3ac0dbdf25adde6384048d9c0fd3daa5337654b9061cfd75b94a0a9c66037755",
+      "bytes": 453
+    },
+    {
+      "path": "antipodal_sampler.py",
+      "sha256": "4afb7088168153d95e2bd8db439a5f40235bd2499959b938046be8d5839e88ee",
+      "bytes": 17995
+    },
+    {
+      "path": "LICENSE.txt",
+      "sha256": "0e03d9c309205f8f650b58157f30eef0e3f61ee08ea81d8e33157c5a33aff299",
+      "bytes": 11353
+    },
+    {
+      "path": "NOTICE.txt",
+      "sha256": "d79bee5400a79ff3d88b8c3a9d9479fd505e60d6fc4130935ef92bc71872772d",
+      "bytes": 1034
+    },
+    {
+      "path": "README.md",
+      "sha256": "dd976ce0b8e45248f1e93075b48e782f4e9a53a111f893617ace547cbbc37428",
+      "bytes": 1890
+    },
+    {
+      "path": "upstream/antipodal_sampler.py",
+      "sha256": "fa2bcafd8ddcf0dbc80df9826e8d37e5a1dfd6c51c45b3ea9f8423a248484768",
+      "bytes": 18033
+    }
+  ],
+  "validation_runtime": {
+    "python": "/home/jiabao/.venvs/lerobot-libero/bin/python",
+    "numpy": "2.2.6",
+    "torch": "2.11.0+cu130",
+    "open3d": "0.19.0",
+    "box_dimensions_m": [
+      0.03,
+      0.02,
+      0.01
+    ],
+    "n_sample": 128,
+    "pairs": 256,
+    "min_width_m": 0.009999871253967285,
+    "max_width_m": 0.03000009059906006
+  }
+}

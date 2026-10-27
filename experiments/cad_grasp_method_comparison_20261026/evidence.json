@@ -1,0 +1,328 @@
+{
+  "review_date": "2026-10-26",
+  "scope": "Primary-source literature and released-source inspection for training-free CAD grasp generation; not execution evidence.",
+  "authoring_agent": "industrial_grasp_literature",
+  "recommendations": [
+    {
+      "method": "GPG",
+      "reason": "Independent geometric baseline; source makes the shared-bounds contact-support check inspectable.",
+      "execution_status": "Not executed by this literature subtask; C++ PCL/Eigen stack not established installed."
+    },
+    {
+      "method": "F-GPG",
+      "reason": "Released assembly-specific geometric candidate generator, BSD-2-Clause.",
+      "execution_status": "Not executed; requires ROS/catkin/PCL/FCL and scale-specific configuration."
+    },
+    {
+      "method": "Fabrica geometric grasp stage",
+      "reason": "Modern analytic mesh/Panda candidate generation, MIT, separable from learned controller.",
+      "execution_status": "Not executed; trimesh/FCL unavailable in stated current environment."
+    },
+    {
+      "method": "EmbodiChain GraspKit",
+      "reason": "Open3D/Torch geometric leaf matches installed libraries.",
+      "execution_status": "Separate comparison work owns upstream execution results; source version must be recorded."
+    }
+  ],
+  "methods": [
+    {
+      "id": "gpg",
+      "title": "Grasp Pose Generator / geometric portion of High Precision Grasp Pose Detection in Dense Clutter",
+      "year": 2016,
+      "training": "Geometric generator is training-free; full GPD classification must be distinguished.",
+      "input": "3D point cloud and normals; CAD-sampled input is an adapter choice.",
+      "nist_evaluation_verified": false,
+      "license": "BSD-2-Clause",
+      "dependencies": [
+        "C++",
+        "PCL>=1.7",
+        "Eigen>=3",
+        "CMake"
+      ],
+      "generation": "Local frames, hand rotations, feasible finger placements and deeper insertion of fingers.",
+      "reduction": "No universal 12-grasp shortlist established by this source.",
+      "shared_region": "Transverse Y/Z bounding-interval overlap plus >=12 normal-qualified samples per side in shared rectangle; not exact projected polygon intersection.",
+      "parameters": {
+        "normal_cone_degrees": 5,
+        "minimum_samples_each_side": 12,
+        "extremal_band_m": 0.003
+      },
+      "source_blobs": {
+        "src/gpg/grasp_set.cpp": "b089c4b17b1be4b8dd8edba87cea653bed239cb0",
+        "cfg/params.cfg": "55b8efc514a18da940701335d50f713cdf63f11b"
+      },
+      "sources": [
+        "https://github.com/atenpas/gpg",
+        "https://github.com/atenpas/gpg/blob/master/src/gpg/antipodal.cpp",
+        "https://github.com/atenpas/gpg/blob/master/src/gpg/grasp_set.cpp",
+        "https://arxiv.org/abs/1603.01564"
+      ]
+    },
+    {
+      "id": "fgpg",
+      "title": "Rigid Grasp Candidate Generation for Assembly Tasks",
+      "authors": [
+        "Suhan Park",
+        "Jiyeong Baek",
+        "Seungyeon Kim",
+        "Jaeheung Park"
+      ],
+      "year": 2020,
+      "training": "Geometric/training-free.",
+      "input": "Triangle mesh STL and gripper dimensions.",
+      "evaluation": "Author release targets furniture assembly; no NIST-object evaluation verified.",
+      "nist_evaluation_verified": false,
+      "license": "BSD-2-Clause",
+      "dependencies": [
+        "ROS Melodic/catkin",
+        "PCL>=1.8",
+        "Eigen3",
+        "FCL",
+        "yaml-cpp",
+        "C++17"
+      ],
+      "generation": "Geometry mode samples offset lines near triangle edges and ray/plane pairs opposing surfaces; random surface mode also supplied.",
+      "reduction": "Reject gripper/target collisions and width failures, then pose distance/angle duplicate suppression.",
+      "shared_region": "No exact local shared-pad polygon check found in inspected generator.",
+      "parameters": {
+        "point_distance_m": 0.025,
+        "gripper_depth_m": 0.0135,
+        "gripper_depth_epsilon_m": 0.0035,
+        "same_distance_m": 0.01,
+        "same_angle_rad": 0.3141592,
+        "opposing_normal_sum_norm_threshold": 0.6
+      },
+      "caveat": "Furniture-scale sampling parameters must be converted/adapted to our meter-native small parts; this is not proof default code handles round NIST pins.",
+      "source_tree": "e15d28b48421054a6ad90bd2761fa67070e377fe",
+      "source_blobs": {
+        "src/grasp_point_generator.cpp": "931e19a66975774ebde3b1204fe4d255d2b6a877",
+        "config/options.yaml": "9e4b48ab2daf9069f1a5db20ff36b849967dbea5",
+        "CMakeLists.txt": "b40dc59c5fb34fc8f38edce51fd35d440ee72414",
+        "include/fgpg/grap_data.h": "fdc9b56badb3d9e8bd381b863b3476c401955caa"
+      },
+      "sources": [
+        "https://ieeexplore.ieee.org/abstract/document/9158930",
+        "https://github.com/psh117/fgpg",
+        "https://github.com/psh117/fgpg/blob/master/src/grasp_point_generator.cpp",
+        "https://github.com/psh117/fgpg/blob/master/config/options.yaml"
+      ]
+    },
+    {
+      "id": "fabrica",
+      "title": "Fabrica: Dual-Arm Assembly of General Multi-Part Objects via Integrated Planning and Learning",
+      "year": 2025,
+      "training": "Grasp-generation stage analytic; full contact-rich assembly controller uses learning.",
+      "input": "Full triangle meshes; Panda gripper supported.",
+      "evaluation": "General multi-part assembly; no NIST task-board evaluation verified.",
+      "nist_evaluation_verified": false,
+      "license": "MIT",
+      "dependencies": [
+        "NumPy",
+        "SciPy",
+        "trimesh",
+        "FCL for trimesh CollisionManager",
+        "project helpers; additional full-stack dependencies excluded from leaf-only claim"
+      ],
+      "generation": "Random surface points, inward normal rays, opposing-normal dot>0.95, ground/contact-clearance sphere checks, rotation around contact-pair axis.",
+      "reduction": "KD-tree sparsity on both pair endpoints, midpoint-to-mesh-centroid ordering; optional final cap randomly subsamples feasible grasps.",
+      "separate_sequence_score": "Lexicographic supported holding (maximize), grasp switches (minimize), moving-part torque proxy (minimize), relative hand angle times holding contact count (maximize). Torque proxy uses CAD contact positions, COM and normalized disassembly direction; not measured in-hand or assembly precision.",
+      "shared_region": "No exact shared-pad polygon overlap in inspected leaf.",
+      "caveats": [
+        "Asset-scale defaults such as clearance=1.0 and ray inset=0.05 cannot be interpreted as meters in our scene.",
+        "Pair generation has an unbounded while loop and a no-pairs TODO; a bounded adapter must disclose that change.",
+        "Whole-framework installation and RL training are not necessary to read/adapt analytic leaf, but no leaf execution occurred in literature subtask."
+      ],
+      "source_blobs": {
+        "planning/robot/util_grasp.py": "52e495fdfdb0dde1c3888a6193275d06cfd142e0",
+        "planning/run_seq_opt.py": "c79ae1a10c625fd45834c8fb30ce8cbaf7d64d1c"
+      },
+      "sources": [
+        "https://fabrica.csail.mit.edu/",
+        "https://github.com/yunshengtian/Fabrica",
+        "https://github.com/yunshengtian/Fabrica/blob/main/planning/robot/util_grasp.py",
+        "https://github.com/yunshengtian/Fabrica/blob/main/planning/run_grasp_gen.py",
+        "https://github.com/yunshengtian/Fabrica/blob/main/planning/run_seq_opt.py"
+      ]
+    },
+    {
+      "id": "embodichain_graspkit",
+      "title": "EmbodiChain GraspKit parallel-gripper mesh generation",
+      "year": 2026,
+      "training": "Geometric leaf; does not require trained grasp model.",
+      "input": "Triangle mesh, gripper dimensions/approach.",
+      "evaluation": "Documented mug tutorial; NIST performance not established.",
+      "nist_evaluation_verified": false,
+      "license": "Apache-2.0",
+      "dependencies": [
+        "Open3D",
+        "Torch",
+        "NumPy",
+        "EmbodiChain leaf config/logger helpers; full simulator dependencies must be separated"
+      ],
+      "generation": "Contact-pair sampling, requested-approach pose construction, collision filtering and ranking.",
+      "reduction": "Ranking and requested candidate count; exact source revision owns behavior.",
+      "version_caveat": "v0.2.4 documentation says uniform surface sampling; inspected current main uses Fibonacci rays toward mesh center. Do not combine claims from different versions.",
+      "source_blobs": {
+        "embodichain/toolkits/graspkit/pg_grasp/antipodal_sampler.py": "3ab15669000c579eb5c4e6fdecb3810905c3dac7"
+      },
+      "sources": [
+        "https://dexforce.github.io/EmbodiChain/v0.2.4/features/toolkits/grasp_generator.html",
+        "https://github.com/DexForce/EmbodiChain",
+        "https://github.com/DexForce/EmbodiChain/blob/main/embodichain/toolkits/graspkit/pg_grasp/antipodal_sampler.py"
+      ]
+    },
+    {
+      "id": "dexnet_analytic",
+      "title": "Dex-Net analytic AntipodalGraspSampler",
+      "year": 2017,
+      "training": "Analytic sampler training-free; learned GQ-CNN scoring is separate.",
+      "input": "Mesh plus signed-distance-field object.",
+      "nist_evaluation_verified": false,
+      "license": "UC Berkeley educational, research and not-for-profit permission; commercial license separately referenced by copyright header.",
+      "dependencies": [
+        "dexnet",
+        "mesh/SDF tooling",
+        "autolab stack",
+        "SciPy",
+        "OpenRAVE optional import in inspected sampler"
+      ],
+      "generation": "Surface contact and friction-cone axis rejection sampling, second-contact construction, finger-close contact search and force-closure check.",
+      "reduction": "Grasp-distance coverage pruning, shuffle and truncate target count.",
+      "shared_region": "Point-contact friction/force-closure model; no exact shared finite-pad polygon check.",
+      "sources": [
+        "https://github.com/BerkeleyAutomation/dex-net",
+        "https://github.com/BerkeleyAutomation/dex-net/blob/master/src/dexnet/grasping/grasp_sampler.py",
+        "https://berkeleyautomation.github.io/dex-net/code.html"
+      ]
+    },
+    {
+      "id": "graspit",
+      "title": "GraspIt! geometric grasp planning",
+      "training": "Analytic search without grasp-model training; database planners are separate.",
+      "input": "Object CAD plus gripper/hand model.",
+      "nist_evaluation_verified": false,
+      "license": "GPL-3.0-or-later; third-party components have their own notices.",
+      "dependencies": [
+        "C++",
+        "Qt",
+        "Coin/SoQt",
+        "configured gripper and contact model"
+      ],
+      "generation": "General EigenGrasp search uses simulated annealing over posture/pose and contact energies. Separate primitive planner uses shape-rule starting grasps.",
+      "reduction": "Quality-ranked best solutions.",
+      "caveat": "Old documented primitive planner is Barrett-only; general EigenGrasp planners are not restricted to that primitive pipeline.",
+      "sources": [
+        "https://github.com/graspit-simulator/graspit",
+        "https://github.com/graspit-simulator/graspit/blob/master/LICENSE.txt",
+        "https://graspit-simulator.github.io/build/html/grasp_planning_eg.html",
+        "https://www.cs.columbia.edu/~cmatei/graspit/html-manual/graspit-manual_9.html"
+      ]
+    },
+    {
+      "id": "moveit_grasps",
+      "title": "MoveIt Grasps",
+      "training": "Pose-based geometric primitive generator.",
+      "input": "Known pose and primitive dimensions.",
+      "evaluation": "Blocks/cylinders, not an arbitrary BNC/gear mesh generator.",
+      "nist_evaluation_verified": false,
+      "license": "BSD-3-Clause",
+      "dependencies": [
+        "ROS",
+        "MoveIt",
+        "catkin",
+        "gripper configuration"
+      ],
+      "generation": "Multiple approach directions and primitive-based grasp poses.",
+      "reduction": "IK feasibility filter.",
+      "caveat": "README explicitly excludes friction-cone and dynamics modeling.",
+      "sources": [
+        "https://github.com/moveit/moveit_grasps"
+      ]
+    },
+    {
+      "id": "kleeberger_2021",
+      "title": "Automatic Grasp Pose Generation for Parallel Jaw Grippers",
+      "year": 2021,
+      "training": "Geometric/training-free.",
+      "input": "CAD/scan surface point cloud and normals.",
+      "evaluation": "Qualitative IPAGearShaft/IPARingScrew/IPAUBolt/SileaneGear; physical ring-screw bin picking, not NIST Task Board.",
+      "nist_evaluation_verified": false,
+      "license": "No released generator code/license verified.",
+      "generation": "Point pairs filtered by finger travel, friction and simplified cuboid collision geometry; discretize remaining rotation around pair axis.",
+      "reduction": "Two-stage PAM k-medoids over translation and normalized closing direction, preserving real candidate medoids.",
+      "caveats": [
+        "Explicitly offline, generation seconds/minutes and clustering minutes/hours in paper.",
+        "Simplified hand collision model; paper says full gripper integration is future work.",
+        "Do not represent a local port as original released implementation."
+      ],
+      "sources": [
+        "https://arxiv.org/abs/2104.11660",
+        "https://arxiv.org/html/2104.11660v1"
+      ]
+    },
+    {
+      "id": "pickalo",
+      "title": "Pickalo: Leveraging 6D Pose Estimation for Low-Cost Industrial Bin Picking",
+      "year": 2026,
+      "training": "CAD grasp generation analytic; complete perception stack uses trained models.",
+      "input": "CAD and runtime 6D pose estimates.",
+      "evaluation": "Square/cylindrical/complex metallic industrial components with UR5e parallel jaw, not NIST board.",
+      "nist_evaluation_verified": false,
+      "license": "No released complete grasp-generator source/license verified from paper/project.",
+      "generation": "Offline normal-ray antipodal candidates, outward approach perpendicular to closing axis, CAD finger/part collision check; optional manual refinement.",
+      "reduction": "Runtime weighted vertical alignment, wrist yaw, pose confidence and height utility, followed by collision/IK check on top fraction.",
+      "caveat": "Offline curated grasp database does not satisfy user's preferred on-demand candidate generation without adaptation.",
+      "sources": [
+        "https://arxiv.org/html/2604.04690v1",
+        "https://mesh-iit.github.io/project-jl2-camozzi/"
+      ]
+    },
+    {
+      "id": "zhao_2021",
+      "title": "Towards Robotic Assembly by Predicting Robust, Precise and Task-oriented Grasps",
+      "year": 2021,
+      "training": "Three cascaded trained networks; excluded as training-free replacement.",
+      "evaluation": "Gear-on-peg, bracket and slot assembly; no NIST task-board claim verified.",
+      "nist_evaluation_verified": false,
+      "license": "No implementation license verified in this review.",
+      "sources": [
+        "https://proceedings.mlr.press/v155/zhao21c.html",
+        "https://proceedings.mlr.press/v155/zhao21c/zhao21c.pdf"
+      ]
+    }
+  ],
+  "nist_context": [
+    {
+      "id": "nist_atb",
+      "kind": "Official task definitions and CAD",
+      "sources": [
+        "https://www.nist.gov/el/intelligent-systems-division-73500/robotic-grasping-and-manipulation-assembly/assembly"
+      ]
+    },
+    {
+      "id": "nist_moadv2",
+      "kind": "Dataset, not grasp generator",
+      "evidence": "76 objects from NIST ATB1-4; CAD and reconstructed assets; no grasp generation implementation verified.",
+      "sources": [
+        "https://www.robot-manipulation.org/nist-moad",
+        "https://github.com/pgavriel/MOADv2"
+      ]
+    },
+    {
+      "id": "assemblebench",
+      "kind": "VLA assembly benchmark, not geometric candidate generator",
+      "evidence": "14 ATB1-style pin, gear and nut tasks, Robotiq2F85; pegs start upright in presentation bores, gears/nuts flat; no BNC tasks listed.",
+      "license": "MIT",
+      "sources": [
+        "https://github.com/hud-evals/assemble-bench"
+      ]
+    }
+  ],
+  "local_vs_upstream": {
+    "local_rule": "Exact projected finite-pad polygon intersection in 25 micrometer band.",
+    "attribution": "Added local rule; do not attribute exact implementation to Wan or GPG.",
+    "gpg_band_ratio": 120,
+    "gpg_difference": "3mm extremal band and transverse bounding-rectangle sample support, not exact polygon overlap.",
+    "interpretation": "Wider upstream support is motivation for controlled ablation; availability alone is not pickup or assembly precision."
+  }
+}

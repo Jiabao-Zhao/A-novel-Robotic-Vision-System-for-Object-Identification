@@ -1,28 +1,28 @@
-# Current Simulation
+# NIST Simulation
 
-The active experiment is the 13-object industrial workbench, not the retired
-six-object wrist association or NIST assembly benchmark. Read the root
-[`README.md`](../README.md) and [current protocol](human_cad_sam3_protocol.md).
+The supported generator is NIST Task Board 1. The five-part and seven-part
+framework-figure scenes are subsets of the same NIST product family.
 
 ```bash
 MUJOCO_GL=egl PYOPENGL_PLATFORM=egl \
-/home/jiabao/.venvs/lerobot-libero/bin/python -m scripts.capture_industrial_workbench
+/home/jiabao/.venvs/lerobot-libero/bin/python -m scripts.capture_nist_task_board
 ```
 
-This uses existing local assets and creates a new timestamped capture under
-`outputs/simulation/industrial_workbench`. The frozen current capture remains
-`20260922T214852Z`. Saved data includes wrist RGB, metric depth, intrinsics,
-camera-to-world transform and evaluation-only object poses.
+Official task-board meshes are prepared under
+`outputs/simulation/nist_task_board_1/assets/`. The converted `_m.stl` files use
+metres. Existing source assets and camera calibration are retained.
 
-NIST asset preparation and the LIBERO sensor/environment adapters remain shared
-dependencies. Older names such as `wrist_cluster.py` describe that implementation
-history, not a request to restore the removed classification experiments.
+Shared historical N00-N07 captures and twenty-view CAD references live under
+`outputs/datasets/nist_task_board/shared_inputs/`; the migration receipts record
+original hashes and path-only XML edits. A background-fixture mesh needed by
+some historical NIST captures is retained as a dependency, not a separate layout
+or FMB object-generation workflow.
 
-The workbench dimensions and materials are designed simulation values, not physical
-calibration. Official BOP products retain native metric geometry. The LM-O glue
-bottle rests upright; no bottom view or tip-down placement is used. CAD-view
-selection is operator-controlled. Simulator depth does not reproduce real sensor
-failures, and this inspection layout is not a held-out benchmark.
+`libero_env.py`, `libero_sensor.py`, `libero_io.py` and `libero_control.py` provide
+the shared simulator, RGB-D bridge and Panda controls. The LIBERO name does not
+mean household layouts are part of the current experiment. Installed backend
+textures/robot assets must remain available.
 
-No segmentation labels or simulator object poses may be used as scoring inputs.
-No object-identification result is an authorization to move the real robot.
+Read [the pipeline protocol](pipeline_protocol.md) before changing capture,
+projection, matching or pose assumptions. No capture command authorizes real
+robot execution, and no scene defines validated mechanical assembly success.

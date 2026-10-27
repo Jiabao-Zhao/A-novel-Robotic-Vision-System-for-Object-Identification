@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-27",
+  "status": "complete",
+  "authorization": "User requested repository cleanup, deletion of VLM likelihood experiments and results, and NIST-only CAD/scene generation.",
+  "current_framework": [
+    "Retrieve requested CAD using cosine similarity",
+    "Depth localization, calibrated RGB projection and crops",
+    "DINO descriptors plus native-scale CAD/depth matching and alignment",
+    "Investigate grasp candidates from aligned CAD and partial observed point cloud"
+  ],
+  "removed": {
+    "scope": [
+      "Retired VLM decision-token likelihood sources, tests, prompts, raw responses, scores and reports",
+      "FMB, household-object and industrial-workbench layout generators and exclusive outputs",
+      "Retired synthetic-depth-corruption and real T-LESS exclusive artifacts"
+    ],
+    "phase_a_targets": 113,
+    "extra_likelihood_results_directory": "experiments/joint_questions_component_comparison_20261005",
+    "phase_b_directories": 307,
+    "phase_b_individual_files": 5720,
+    "phase_a_receipt": "outputs/cleanup_20261027/deletion_plan.json",
+    "phase_b_manifest": "experiments/nist12_robustness_20261024/cleanup_nist_only_20261027/deletion_paths.json",
+    "phase_b_execution": "outputs/cleanup_20261027/phase_b_execution.json"
+  },
+  "preserved": {
+    "extracted_nist_files": 421,
+    "copied_bytes_before_path_updates": 646258582,
+    "legacy_nist_capture_directories_relocated": 18,
+    "nist_catalog_entries": 20,
+    "retained_nist_fit_summaries": 25360,
+    "grasp_input_records": 96,
+    "verified_xml_asset_dependencies": 112,
+    "other": [
+      "Current NIST classification, alignment and grasp studies",
+      "Native CAD meshes and required fixed-fixture meshes",
+      "Installed model weights and simulator/baseline dependencies",
+      "Physical captures and calibration",
+      "Unrelated existing user changes"
+    ],
+    "mixed_visual_cache_exception": "Seven shared CLIP embedding/metadata files remain byte-identical because they also contain retained NIST rows; retired rows are excluded from active task collection."
+  },
+  "organization": {
+    "main_guide": "README.md",
+    "experiment_index": "experiments/README.md",
+    "protocol": "simulation/pipeline_protocol.md",
+    "shared_inputs": "outputs/datasets/nist_task_board/",
+    "capture_helper": "simulation/nist_capture.py",
+    "cad_view_renderer": "simulation/nist_cad_views.py",
+    "clip_helper": "scripts/clip_encoders.py"
+  },
+  "migration_receipts": [
+    "outputs/datasets/nist_task_board/shared_inputs/migration_20261027.json",
+    "outputs/datasets/nist_task_board/shared_inputs/fixture_asset_migration_20261027.json",
+    "outputs/datasets/nist_task_board/shared_inputs/source_retargets_20261027.json",
+    "outputs/datasets/nist_task_board/board_captures/migration_20261027.json",
+    "outputs/cleanup_20261027/nist_capture_extraction.json",
+    "outputs/cleanup_20261027/path_migration.json",
+    "outputs/cleanup_20261027/final_source_path_fix.json"
+  ],
+  "validation": {
+    "runtime": "Existing Ubuntu-22.04 WSL lerobot-libero environment",
+    "main_regression_tests_passed": 81,
+    "main_subtests_passed": 9,
+    "focused_tests_passed": 47,
+    "focused_scope": "34 retained robustness checks, nine CLIP protocol checks, four grasp input provenance checks",
+    "source_audit": "815 retained Python sources checked outside robustness/vendor dependencies; one stale audit path fixed",
+    "remaining_planned_obsolete_targets": 0,
+    "native_depth_geometry_hash_unchanged": true,
+    "cad_description_prompt_hash_unchanged": true,
+    "original_run_manifests_relocked": false,
+    "provenance_test_adjustment": "The test now checks the explicit before/after path-migration receipt for two metadata files and resolves the byte-identical relocated association file. Original frozen hashes, poses and numerical results are unchanged."
+  },
+  "limits": [
+    "No inference, rendering, new accuracy evaluation, downloads, environment installation, paid APIs or physical robot commands were run during cleanup.",
+    "The retained robustness study has 220 NIST inputs and 2720 queries; classification accuracy evaluation remains incomplete.",
+    "Historical hashes describe the original checkout. Path migration does not certify the reorganized source as the original run.",
+    "The complete retrieval-to-grasp pipeline is not yet validated as an autonomous system."
+  ]
+}

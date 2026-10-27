@@ -1,0 +1,37 @@
+{
+  "task": "Supplied CAD identity -> highest-scored retained detection of that identity in full scene",
+  "scenes": [
+    "N00",
+    "N01",
+    "N02",
+    "N03",
+    "N04",
+    "N05",
+    "N06",
+    "N07"
+  ],
+  "object_count": 12,
+  "requests": 96,
+  "methods": [
+    "cnos",
+    "sam6d_rgb",
+    "sam6d_rgbd",
+    "nids_basic",
+    "noctis",
+    "nemo",
+    "ours"
+  ],
+  "shared_inputs": "Full balanced-light RGB, single-camera metric depth, intrinsics, native-scale CAD catalogue",
+  "proposal_policy": "Every method generates its own proposals; no supplied scene crops, masks, poses or proposal count.",
+  "native_settings": "Official method preprocessing, template bank and postprocessing. Record source commits and any compatibility or batch-size adjustments.",
+  "ours": "Fresh camera-frame depth localization, unchanged CLIP image/text top-five retrieval and zero-clearance table-constrained geometry selection.",
+  "ours_localization": "Historical localizer configuration with no world-coordinate workspace crop or camera extrinsics; no forced object count.",
+  "evaluation": "Freeze label-free outputs first. Audit labels are used only for per-object evaluation; no detection is a miss, exact ties unresolved.",
+  "evaluation_primary": "Correct CAD identity and highest-scored retained target box IoU >= 0.5 with target audit box.",
+  "evaluation_secondary": "Mask IoU, own proposal recall, wrong physical object, localization miss and classification miss separately.",
+  "training": "No target training; NIDS adapter disabled; all weights frozen.",
+  "hardware": "RTX 3060 Ti 8GB; sequential GPU model loads; cache outputs.",
+  "protected_prompt_sha256": "180dc9df66ab2cbd0b9b8057a054314bc1252d74b47db9d5dc98a15c391d2019",
+  "inputs_sha256": "f91926aad045ddcd93d392536128543507e6590391739d3a4a8ff0a20eefc766",
+  "frozen_before_new_model_inference": true
+}

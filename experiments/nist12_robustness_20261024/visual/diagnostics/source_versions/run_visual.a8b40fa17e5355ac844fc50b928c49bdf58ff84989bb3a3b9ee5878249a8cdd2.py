@@ -1,0 +1,162 @@
+"""Frozen Qwen descriptions and CLIP vectors on automatically localized candidates."""
+import base64
+import copy
+import importlib.util
+from pathlib import Path
+import sys
+from time import perf_counter
+import numpy as np
+from common import HERE,PRIOR,OLD,REPO,read,save,path,digest,relative
+
+
+def load(name,file):
+    spec=importlib.util.spec_from_file_location(name,file)
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+    return module
+
+
+def inputs_now():
+    inputs=[copy.deepcopy(r) for r in read(OLD/'inputs.json') if r['kind']=='CAD']
+    for cohort in ('new_cads','real_data'):
+        file=HERE/cohort/'reference_inputs.json'
+        if file.exists():inputs.extend(read(file)['inputs'])
+    for file in sorted((HERE/'geometry/localization').glob('*/localization.json')):
+        scene_id=file.parent.name
+        for row in read(file)['proposals']:
+            inputs.append({'input_id':f'crop__{scene_id}__p{row["proposal_id"]:03d}',
+                'kind':'crop','state':scene_id,'proposal_id':row['proposal_id'],
+                'file':row['crop'],'sha256':row['crop_sha256']})
+    by_id={}
+    for row in inputs:
+        if row['input_id'] in by_id:assert by_id[row['input_id']]==row
+        by_id[row['input_id']]=row
+    return list(by_id.values())
+
+
+def describe():
+    helper=load('robustness_original_qwen',OLD/'run_qwen.py')
+    local=helper.local
+    manifest=local.model_manifest('qwen',generation=True)
+    assert manifest==read(OLD/'protocol.json')['qwen'], 'Frozen Qwen controls or checkpoint changed'
+    prompts={m:(OLD/f'prompts/{m}.txt').read_text(encoding='utf-8') for m in ('keywords','phrases')}
+    protocol=read(HERE/'protocol.json')
+    for mode in prompts:
+        assert digest(OLD/f'prompts/{mode}.txt')==protocol['source_protection'][mode+'_prompt_sha256']
+    inputs=inputs_now()
+    for item in inputs:
+        assert digest(path(item['file']))==item['sha256'], 'Changed input pixels: '+item['input_id']
+    save(HERE/'visual/inputs.json',inputs)
+    cached={}
+    for root,input_name,output_name in ((OLD,'inputs.json','descriptions.json'),
+                (PRIOR/'ours','description_inputs.json','descriptions.json')):
+        originals={r['input_id']:r for r in read(root/input_name)}
+        for row in read(root/output_name):
+            cached[originals[row['input_id']]['sha256'],row['mode']]=(row,relative(root/output_name))
+    save(HERE/'visual/protocol.json',{'qwen':manifest,'prompts':prompts,'system':'',
+         'wrapper_sha256':digest(__file__), 'input_sha256':digest(HERE/'visual/inputs.json'),
+         'source_sha256':digest(OLD/'run_qwen.py'),'model_frozen':True,'training':False,
+         'reuse':'Only exact image hash, frozen prompt and generation controls; verbatim raw output retained.'})
+    provenance=local.runtime_for(manifest,HERE/'visual/runtime')
+    rows=[];fresh=reused=0
+    try:
+        for item in inputs:
+            for mode in ('keywords','phrases'):
+                key=item['sha256'],mode
+                file=HERE/'visual/raw'/mode/(item['sha256']+'.json')
+                if key in cached:
+                    row,source=cached[key]
+                    row=copy.deepcopy(row);row.update(input_id=item['input_id'],reused=True,
+                        image_sha256=item['sha256'],reused_from=source)
+                    reused+=1
+                else:
+                    if file.exists():
+                        stored=read(file)
+                        assert stored['image_sha256']==item['sha256'] and stored['prompt']==prompts[mode]
+                    else:
+                        start=perf_counter()
+                        image={'file':str(path(item['file']).resolve()),'sha256':item['sha256']}
+                        metadata=local.request_for('qwen',manifest['controls'],'',prompts[mode],[image])
+                        encoded=base64.b64encode(path(item['file']).read_bytes()).decode()
+                        wire=local.request_for('qwen',manifest['controls'],'',prompts[mode],[image],[encoded])
+                        response=None;error=None
+                        try:response=local.infer('qwen',wire)
+                        except Exception as exc:error={'type':type(exc).__name__,'message':str(exc)}
+                        stored={'image_sha256':item['sha256'],'prompt':prompts[mode],'request':metadata,
+                            'response':response,'generation_error':error,'runtime':provenance,
+                            'raw_file':relative(file),'duration_seconds':perf_counter()-start}
+                        save(file,stored)
+                        print(f'Qwen fresh {fresh+1}: {item["input_id"]} {mode}',flush=True)
+                    row=helper.parsed_record(stored,item,mode,manifest)
+                    row.update(image_sha256=item['sha256'],reused=False)
+                    cached[key]=(copy.deepcopy(row),relative(file));fresh+=1
+                rows.append(row)
+                save(HERE/'visual/progress.json',{'images':len(inputs),'processed_descriptions':len(rows),
+                    'expected_descriptions':len(inputs)*2,'reused':reused,'fresh_or_resumed':fresh})
+        save(HERE/'visual/descriptions.json',rows)
+        save(HERE/'visual/description_completion.json',{'images':len(inputs),'descriptions':len(rows),
+            'unavailable':sum(r['status']!='ok' for r in rows),'inputs_sha256':digest(HERE/'visual/inputs.json'),
+            'model_manifest':manifest,'prompts_unchanged':True,'labels_read':False})
+    finally:local.release('qwen',manifest)
+
+
+def encode():
+    clip=load('robustness_clip_source',OLD/'run_clip.py')
+    compat=load('robustness_tokenizer_source',OLD/'run_clip_tokenizer_fix.py')
+    original=clip.load_helper
+    def load_helper():
+        helper=original();loader=helper.load_model
+        def load_model(asset,device):
+            model,processor,info=loader(asset,device);compat.attach_and_check(processor.tokenizer)
+            return model,processor,info
+        helper.load_model=load_model
+        return helper
+    clip.load_helper=load_helper
+    inputs=read(HERE/'visual/inputs.json');descriptions=read(HERE/'visual/descriptions.json')
+    arrays,mapping,metadata=clip.encode(read(OLD/'protocol.json'),inputs,descriptions)
+    np.savez_compressed(HERE/'visual/features.npz',**arrays)
+    save(HERE/'visual/mapping.json',mapping);save(HERE/'visual/encoding.json',metadata)
+
+
+def score(manifest_file,catalog_file,cohort):
+    clip=load('robustness_clip_scoring',OLD/'run_clip.py')
+    inputs=read(HERE/'visual/inputs.json')
+    arrays=dict(np.load(HERE/'visual/features.npz'))
+    _,cads,crops=clip.validate_inputs(inputs,require_trial_size=False,verify_files=False)
+    image_ids={r['input_id']:i for i,r in enumerate(inputs)}
+    scenes=read(path(manifest_file))['scenes'];objects=read(path(catalog_file))['objects']
+    pairs=[];tasks=[]
+    for scene in scenes:
+        scene_id=scene['scene_id']
+        for item in objects:
+            target=item['target'];values=[]
+            for crop in crops.get(scene_id,[]):
+                comparisons=[]
+                for cad in cads[target]:
+                    components,value=clip.view_components(image_ids[crop['input_id']],image_ids[cad['input_id']],arrays,'full')
+                    comparisons.append({'view_index':cad['view_index'],'score':value,'components':components})
+                available=all(r['score'] is not None for r in comparisons)
+                best=max(comparisons,key=lambda r:-np.inf if r['score'] is None else r['score'])
+                row={'scene_id':scene_id,'target':target,'object_id':item['object_id'],
+                     'proposal_id':crop['proposal_id'],'score':best['score'] if available else None,
+                     'score_available':available,'best_CAD_view':best['view_index']}
+                values.append(row);pairs.append(dict(row,views=comparisons))
+            ranked=sorted((r for r in values if r['score_available']),key=lambda r:(-r['score'],r['proposal_id']))
+            k=min(5,len(ranked));status='ok' if k else 'unavailable_no_CLIP_candidates'
+            if len(ranked)>k and abs(ranked[k-1]['score']-ranked[k]['score'])<=1e-12:status='unavailable_cutoff_tie'
+            selected=[] if status!='ok' else [r['proposal_id'] for r in ranked[:k]]
+            tasks.append({'scene_id':scene_id,'target':target,'object_id':item['object_id'],'status':status,
+                'candidate_ids':selected,'ranked_ids':[r['proposal_id'] for r in ranked],
+                'scores':[[r['score'],r['proposal_id']] for r in ranked],
+                'unavailable_ids':[r['proposal_id'] for r in values if not r['score_available']]})
+    out=HERE/'visual'/cohort
+    save(out/'pairs.json',pairs);save(out/'shortlists.json',tasks)
+    save(out/'completion.json',{'tasks':len(tasks),'pairs':len(pairs),'labels_read':False,
+        'features_sha256':digest(HERE/'visual/features.npz'),'scoring_source_sha256':digest(OLD/'run_clip.py')})
+    print(f'CLIP {cohort}: {len(tasks)} queries, {len(pairs)} pairs',flush=True)
+
+
+if __name__=='__main__':
+    if sys.argv[1]=='describe':describe()
+    elif sys.argv[1]=='encode':encode()
+    elif sys.argv[1]=='score':score(*sys.argv[2:5])
+    else:raise ValueError(sys.argv[1])

@@ -1,0 +1,5 @@
+Choose pickup grasps for the target object outlined in green. Each numbered panel shows the same current RGB scene with one proposed grasp. The red line joins the jaws and shows their closing direction; the blue lines show the two fingers at the proposed opening. These are pickup views only. No final assembly view or previous outcome is supplied.
+
+Order all supplied candidate IDs from best to worst for picking up this object. Prefer fingers on opposite exposed sides, a grasp centered on a suitable solid part of the object, and an approach that appears unobstructed. Other loose products are deliberately excluded from collision checking in this experiment; do not penalize their proximity. The image alone does not establish clearance from the table or robot reachability; those are checked numerically afterward. Do not invent or move grasp poses.
+
+Return only JSON with ranked_ids (every supplied ID exactly once) and observations (one short visible observation per ID). Give brief observations rather than an extended explanation. Do not add confidence scores or claim a pickup succeeded.

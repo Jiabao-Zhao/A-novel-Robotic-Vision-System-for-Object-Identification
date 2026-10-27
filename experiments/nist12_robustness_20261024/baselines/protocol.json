@@ -1,0 +1,115 @@
+{
+  "frozen_before_new_model_inference": true,
+  "nominal_scenes_only": true,
+  "scene_ids": [
+    "R00",
+    "R01",
+    "R02",
+    "R03",
+    "R04",
+    "R05",
+    "R06",
+    "R07",
+    "R08",
+    "R09",
+    "R10",
+    "R11",
+    "R12",
+    "R13",
+    "R14",
+    "R15",
+    "R16",
+    "R17",
+    "R18",
+    "R19"
+  ],
+  "requests": 240,
+  "methods": [
+    "cnos",
+    "sam6d_rgb",
+    "sam6d_rgbd",
+    "nids_basic_finite_templates",
+    "noctis",
+    "nemo"
+  ],
+  "input_sha256": "236d4d887491e5b488defdb1459e5b9803b8f0f86a97acb33b955628ff9883dc",
+  "no_audit_data_or_scene_proposals": true,
+  "native_components": "Pinned official sources, preprocessing, native template bank, thresholds, per-proposal class assignment and NMS from the immutable 20261023 full-scene benchmark.",
+  "execution_changes": [
+    "Retarget label-free input/output paths to this new trial.",
+    "Replace only prior experiment-specific eight-scene count checks/receipts with twenty.",
+    "Reuse exact frozen CAD-only reference descriptor tensors and corrected NeMO 32-view memories.",
+    "NIDS practical control excludes the same six nonfinite USB CAD FFA slots before native max; finite scores remain bitwise unchanged. No adapter training.",
+    "Do not rerun the known invalid unguarded NIDS reference route; disclose its inherited reference failure separately."
+  ],
+  "source_sha256": {
+    "experiments/nist12_robustness_20261024/baselines/adapter.py": "c26c286c0864f6a18ee1d05b56080088342e60c8bfa3f68e645b20988931c2c4",
+    "experiments/nist12_robustness_20261024/baselines/common.py": "d4e90faba80b26e9b1a5cfaf94c623474998d331a2c2ee70a82f5b81d69c1d1e",
+    "experiments/nist12_robustness_20261024/baselines/run_all.py": "e6f9380674f684a40c173dbc03da7c21d05271cb6d3b3fb7a7179b5f5dadf015",
+    "experiments/nist12_fullscene_benchmarks_20261023/cnos_sam6d/run_native.py": "65ffe2889b572aee790e34288acde22cec6f5045ef712e6f9a976f9895ab693b",
+    "experiments/nist12_fullscene_benchmarks_20261023/nids_noctis/run_native.py": "ab40dc39474a12c03ef6efbb513de0d5846230f7213a28265f6fad78be65d2a6",
+    "experiments/nist12_fullscene_benchmarks_20261023/nids_noctis/compat.py": "7ee6bdb651e239468b231975e19c36b90f088b4995ebabba9796f3cc691296d3",
+    "experiments/nist12_fullscene_benchmarks_20261023/nids_noctis/run_finite_templates.py": "a18d394b1ce0143fedb6f461b19c29b7cb1bc56a3cf7a5fa74810965231f8f90",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo_runner/run.py": "e533e772d552a29eb46d8d7bfc6bdf9e091b4c5b0cefc686de9c50873a5b6db7",
+    "experiments/nist12_robustness_20261024/protocol.json": "e242a299a0d6567034430fe62ca8829a9b2cba8524892ff50c45fb67c5fbc2fb"
+  },
+  "reference_sha256": {
+    "experiments/nist12_fullscene_benchmarks_20261023/cnos/reference_features.pt": "6a25dc955f48fd49becbf1da381766c047abb62b9b5fb52b6d19c2688ce7a785",
+    "experiments/nist12_fullscene_benchmarks_20261023/sam6d/reference_features.pt": "eaf0cda6b60cfde23ed1ef97e041a86717f27d8db252486a48516f7c39da2bb7",
+    "experiments/nist12_fullscene_benchmarks_20261023/nids_basic/native_reference_features.pt": "96b9324ea142b68abc91978ff0ae02bcaba857e95ea1094266bbc0bfdfc90a7a",
+    "experiments/nist12_fullscene_benchmarks_20261023/noctis/native_reference_features.pt": "861663e853875cbb9ed128b5a2e44abc7d66aa39f1e696a0530a05432db87c4a",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000001.json": "597d5eb074776538495f729fc53ed2960be9399ec10380f058b264c768f4fc16",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000001.pt": "05b8bbd579ca00abf5fd89eac25c318c3dc881ab25252798f5a8216288f2ce0c",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000002.json": "d99e0ba95523346e5a73e006e580255718ad44d6de627c65ebfc0744a7d424d7",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000002.pt": "8960dc1328995ac3775eda69ba3b11166d11eeaad4daa51186dc161e61b70383",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000003.json": "90aa8759f5e35a614701d3a79e4bb901e1850dc32c076477ee6ed92341977ed0",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000003.pt": "9bc65e963ad75db9e61d091cbac518d05d03abe494784448db4e687dd77a5da3",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000004.json": "392713954a7ee429eba0ea424715b712da6386a1a58eccc29f0bbdf6507202f3",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000004.pt": "506d8535012fd140de7cd6678d79b75e8aefb9693c0c162307a7312c0cce22de",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000005.json": "02cc3065f2334c008cf6e964778b21a815651cabc6e1e148326eb83fcb24733c",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000005.pt": "b75af7d001ecfb116956e6edbbf33718242ae6a9225665c285862661bc3b4072",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000006.json": "a3e6c2de650aaa0b80f3634a85f95c22641331c997c8e976fbf8309d5257b132",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000006.pt": "077c97afe9fca1757ee8161fa6aca882d69751015ea74ca0270d48b4ed385473",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000007.json": "6a7e4ad9d9aa52e55c504625b13321b2e57301874457fe3522d79d1fcb60dfe1",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000007.pt": "13718e11156f5b1447b3f8927ef747099b9166bbed5c67156e1523714a1d02c5",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000008.json": "88981137231f73e4d33174584a5974f47c510cff71b3281520e4e7e9786a6a6d",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000008.pt": "a81336f1e6557941aac98a89b5d2185c0931ced8a546b0273f0ecf8279d09fcf",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000009.json": "03a94031fff9f50831b5f4cb2a7723f9b787b8139571006a4cb1125c3fef04c8",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000009.pt": "95bd602f316ff4dd0eacaa2fb84fdc5e8a4c9628830f1a7edbe3681fb5bfc4d7",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000010.json": "34a24e6db1090b066948f10332611fce76446305851a6d2770392e0ae475aefd",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000010.pt": "d94100eac25f64351bea6c19939eb883b96f78756d24ccb49c135cc7d6fc6de3",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000011.json": "fbef469a05491bff94e817cedfabf3d0a712a91cd9d8dff107eb62064172ed9f",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000011.pt": "fad4127ce6624cd24e01d9377b179a1a7c8f02f54ebbc195ef2eb3828c687d75",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000012.json": "307a7921dec4df474191e544b33bc00f6a524d4b67ed4816d086f2d9d4fd9909",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo/memories/obj_000012.pt": "9fd6db8b75b6c9f0d1b7a67c09dbe9f815e6727804d9284bc5c8d7b46ca05b06",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo_runner/primary_references.json": "8ac5239bca994092c5ca55f673a8a6baab2e2e3510f1c66245bb04443dbe023b",
+    "experiments/nist12_fullscene_benchmarks_20261023/nemo_runner/weights/checkpoint.pth": "546f9c1d52d0c9688c0f9b076d754f01861a93f6d85c42ecf92171560b0df780"
+  },
+  "excluded_NIDS_zero_based_object_template_slots": [
+    [
+      5,
+      16
+    ],
+    [
+      5,
+      19
+    ],
+    [
+      5,
+      20
+    ],
+    [
+      5,
+      21
+    ],
+    [
+      5,
+      24
+    ],
+    [
+      5,
+      25
+    ]
+  ],
+  "NeMO_reference_route": "Corrected custom-CAD native Pyrender 42-view bank, prospectively fixed 32-view subset; released NeMO encoder and detector. Not exact BOP PBR onboarding."
+}
