@@ -50,10 +50,10 @@ I used the **older 14-part `objects-centered` task-board scene**, saved state
 `objects_centered`. I did **not** use one of the recent N00–N07 twelve-part
 classification layouts.
 
-Original source:
+Original source, relocated to D: during the October 27 workspace cleanup:
 
 ```text
-C:/Users/Jiabao Zhao/Documents/Codex/2026-06-02/can-you-add-this-skill-to/nist-taskboard-workspace/objects-centered/scene.xml
+outputs/datasets/nist_task_board/legacy_workspace_inputs/nist-taskboard-workspace/objects-centered/scene.xml
 ```
 
 The test used a new copy at:

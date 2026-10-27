@@ -19,8 +19,8 @@ from scipy.spatial.transform import Rotation
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
-SOURCE = Path("/mnt/c/Users/Jiabao Zhao/Documents/Codex/2026-06-02/can-you-add-this-skill-to"
-              "/nist-taskboard-workspace/objects-centered/scene.xml")
+SOURCE = (ROOT / "outputs/datasets/nist_task_board/legacy_workspace_inputs"
+          / "nist-taskboard-workspace/objects-centered/scene.xml")
 MESHES = ROOT / "outputs/simulation/nist_task_board_1/assets/meshes"
 OUTPUT = ROOT / "outputs/runtime_antipodal_assembly_20261023/input_scene"
 USB_NAME = "nist_part_USB_Male"
@@ -30,6 +30,25 @@ PENETRATION_LIMIT_M = .0002
 
 def _sha256(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def _verify_xml_hash(path, expected):
+    """Accept original XML bytes or one explicitly verified asset-path migration."""
+    path = Path(path)
+    actual = _sha256(path)
+    if actual == expected:
+        return
+    try:
+        relative = path.resolve().relative_to(ROOT.resolve()).as_posix()
+        receipt = json.loads((ROOT / "outputs/c_workspace_cleanup_20261027/path_migration.json").read_text())
+    except (OSError, ValueError) as error:
+        raise RuntimeError(f"Frozen XML hash changed without a verified path migration: {path}") from error
+    records = [entry for entry in receipt.get("changes", []) if entry.get("file") == relative]
+    if (receipt.get("status") != "verified" or len(records) != 1
+            or records[0].get("kind") != "xml_asset_paths_only"
+            or records[0].get("before_sha256") != expected
+            or records[0].get("after_sha256") != actual):
+        raise RuntimeError(f"Frozen XML hash is not covered by its verified path migration: {path}")
 
 
 def _pose(model, data, name):
@@ -70,10 +89,8 @@ def _verify_existing(scene_path, audit_path):
     if not scene_path.is_file() or not audit_path.is_file():
         raise FileExistsError("Input-scene freeze is incomplete; it will not be overwritten.")
     audit = json.loads(audit_path.read_text())
-    if _sha256(scene_path) != audit["prepared_scene_sha256"]:
-        raise RuntimeError("Frozen input-scene hash changed.")
-    if _sha256(SOURCE) != audit["external_source_sha256"]:
-        raise RuntimeError("External source changed after the input scene was frozen.")
+    _verify_xml_hash(scene_path, audit["prepared_scene_sha256"])
+    _verify_xml_hash(SOURCE, audit["external_source_sha256"])
     for record in audit["parts"]:
         if _sha256(record["native_cad_path"]) != record["native_cad_sha256"]:
             raise RuntimeError(f"Frozen CAD hash changed: {record['part']}")

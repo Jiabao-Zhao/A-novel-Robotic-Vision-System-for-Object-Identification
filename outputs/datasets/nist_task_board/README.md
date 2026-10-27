@@ -5,6 +5,10 @@
 - `shared_inputs/cad_reference_views/`: CAD meshes, reference images and render
   metadata used by retained NIST comparisons.
 - `board_captures/`: eighteen earlier NIST board captures.
+- `legacy_workspace_inputs/`: preserved NIST scene/camera/state inputs, genuine
+  USB CAD assets and controller-source provenance from the retired C: workspace.
+  These are local study inputs; the preserved pilot source is provenance and was
+  not executed during migration.
 - `shared_inputs/fixture_assets/`: meshes required to reopen preserved scene
   XMLs, including a fixed background fixture and unused historical mesh
   declarations. These are dependencies, not additional enabled object layouts.

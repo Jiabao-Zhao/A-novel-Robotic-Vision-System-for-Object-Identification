@@ -21,10 +21,9 @@ TARGETS = (
     "Waterproof_Male", "USB_Male", "DSUB_Male", "BNC_Male",
     "RGOCG12-50_12mm", "RGOCG8-50_8mm", "KET12_Square_12mm", "KET8_Square_8mm",
 )
-PILOT_WINDOWS = Path("C:/Users/Jiabao Zhao/Documents/Codex/2026-06-02/can-you-add-this-skill-to/round-pin-assembly-pilot")
-PILOT_WSL = Path("/mnt/c/Users/Jiabao Zhao/Documents/Codex/2026-06-02/can-you-add-this-skill-to/round-pin-assembly-pilot")
-PILOT = PILOT_WINDOWS if PILOT_WINDOWS.is_dir() else PILOT_WSL
-WORKSPACE = PILOT.parent / "nist-taskboard-workspace"
+WORKSPACE_INPUTS = ROOT / "outputs/datasets/nist_task_board/legacy_workspace_inputs"
+PILOT = WORKSPACE_INPUTS / "round-pin-assembly-pilot"
+WORKSPACE = WORKSPACE_INPUTS / "nist-taskboard-workspace"
 
 
 def sha256(path):

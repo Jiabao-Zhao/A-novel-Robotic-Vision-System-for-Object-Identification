@@ -32,6 +32,13 @@ def digest(path):
 
 def local(name):
     name = str(name).replace('\\', '/')
+    retired = 'C:/Users/Jiabao Zhao/Documents/Codex/2026-06-02/can-you-add-this-skill-to'
+    for prefix in (retired, '/mnt/c' + retired[2:]):
+        if name == prefix or name.startswith(prefix + '/'):
+            suffix = name[len(prefix):].lstrip('/')
+            if '..' in suffix.split('/') or ':' in suffix:
+                raise ValueError('Unsafe retired-workspace path suffix')
+            return REPO / 'outputs/datasets/nist_task_board/legacy_workspace_inputs' / suffix
     if len(name) > 1 and name[1] == ':' and sys.platform != 'win32':
         name = '/mnt/' + name[0].lower() + name[2:]
     path = Path(name)

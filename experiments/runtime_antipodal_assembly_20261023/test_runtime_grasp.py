@@ -23,8 +23,8 @@ from experiments.runtime_antipodal_assembly_20261023.vendor import (
 
 HERE = Path(__file__).resolve().parent
 PANDA_SCENES = (
-    Path("/mnt/c/Users/Jiabao Zhao/Documents/Codex/2026-06-02/can-you-add-this-skill-to/nist-taskboard-workspace/objects-centered/scene.xml"),
-    Path("C:/Users/Jiabao Zhao/Documents/Codex/2026-06-02/can-you-add-this-skill-to/nist-taskboard-workspace/objects-centered/scene.xml"),
+    HERE.parents[1] / "outputs/datasets/nist_task_board/legacy_workspace_inputs"
+    / "nist-taskboard-workspace/objects-centered/scene.xml",
 )
 
 

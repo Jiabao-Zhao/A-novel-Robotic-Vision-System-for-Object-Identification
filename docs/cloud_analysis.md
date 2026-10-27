@@ -64,6 +64,12 @@ The full interactive retrieval-to-grasp runtime has not been validated.
 Exact-copied historical reports retain their original relative links. Some point
 to local-only galleries; use the published evidence index for included images.
 
+The old C: experiment workspace was removed. Required local inputs now live in
+`outputs/datasets/nist_task_board/legacy_workspace_inputs/` on D:. Existing path
+readers map that exact retired prefix for immutable historical records. XML
+path changes have a separate verified receipt; original full-run source locks
+remain historical. See [the migration record](c_workspace_cleanup_20261027.json).
+
 Do not restore retired likelihood classifiers or non-NIST layouts. Do not
 download models, start paid APIs, alter environments or command a robot as a
 side effect of reading or testing the repository. This handoff supplies evidence

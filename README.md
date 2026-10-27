@@ -71,6 +71,9 @@ Local data locations:
 
 - `outputs/datasets/nist_task_board/`: shared captures, camera metadata,
   crops and CAD reference views.
+- `outputs/datasets/nist_task_board/legacy_workspace_inputs/`: required legacy
+  NIST scene, camera/state metadata and USB CAD assets relocated from the retired
+  C: experiment workspace.
 - `outputs/simulation/`: NIST board and five/seven-part figure variants.
 - `outputs/cad_grasp_*/`: complete grasp-study outputs and galleries.
 - `outputs/cache/`: installed models, baseline dependencies and tools.
@@ -144,3 +147,10 @@ calibration/captures were preserved.
 Path migrations did not recompute saved numerical outcomes. Original source
 inventories describe the original checkout; they do not certify reorganized
 sources as the original run. See [cleanup_20261027.json](docs/cleanup_20261027.json).
+
+The separate C: experiment workspace was also removed after its required inputs
+and editable presentation assets were copied to D: and hash-verified. Saved
+results keep their historical path strings; maintained readers resolve that
+specific retired workspace prefix to the D: dataset location. Scene XML changes
+are restricted to asset-path attributes and recorded in a verified migration
+receipt. See [the C: cleanup record](docs/c_workspace_cleanup_20261027.json).

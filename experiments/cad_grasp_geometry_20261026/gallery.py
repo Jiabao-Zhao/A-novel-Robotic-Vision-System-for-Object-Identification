@@ -14,6 +14,13 @@ DISPLAY_TRIANGLES = 6000
 
 def local_path(value):
     text = str(value).replace('\\', '/')
+    retired = 'C:/Users/Jiabao Zhao/Documents/Codex/2026-06-02/can-you-add-this-skill-to'
+    for prefix in (retired, '/mnt/c' + retired[2:]):
+        if text == prefix or text.startswith(prefix + '/'):
+            suffix = text[len(prefix):].lstrip('/')
+            if '..' in suffix.split('/') or ':' in suffix:
+                raise ValueError('Unsafe retired-workspace path suffix')
+            return ROOT / 'outputs/datasets/nist_task_board/legacy_workspace_inputs' / suffix
     if sys.platform == 'win32' and text.startswith('/mnt/'):
         text = text[5].upper() + ':/' + text[7:]
     elif sys.platform != 'win32' and len(text) > 2 and text[1] == ':':

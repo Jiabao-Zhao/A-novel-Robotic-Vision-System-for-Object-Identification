@@ -24,7 +24,7 @@ from .prepare_scene import prepare_scene
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
-LOCAL = Path("/mnt/c/Users/Jiabao Zhao/Documents/Codex/2026-06-02/can-you-add-this-skill-to")
+LOCAL = ROOT / "outputs/datasets/nist_task_board/legacy_workspace_inputs"
 SOURCE = LOCAL / "nist-taskboard-workspace/objects-centered/scene.xml"
 MESHES = ROOT / "outputs/simulation/nist_task_board_1/assets/meshes"
 PARTS = ("Gear_Large", "Gear_Medium", "Gear_Small", "Waterproof_Male", "M12_Hex_Nut",
