@@ -14,6 +14,14 @@ the small summaries first, then read per-task/per-object CSVs for concrete
 failures. The thirteen-megabyte grasp decision file is detailed evidence;
 filter it to a scene or part before discussing individual hand poses.
 
+The latest [October 28 grasp run](../outputs/cad_grasp_selection_20261028/runs/20261028T190844Z/README.md)
+is also published at its original output paths. It contains all 96 case decisions
+and 9,600 proposal diagnostics, including failed searches, plus the eight gallery
+sheets and derived CAD validation meshes. Its publication manifest preserves
+the saved evidence hashes. The gallery HTML can be opened after cloning; GitHub
+displays the linked PNG sheets directly. Saved observation/calibration inputs
+and installed dependencies outside that run are still required for a rerun.
+
 The pipeline is target-CAD retrieval by cosine similarity, depth localization,
 calibrated RGB crops, DINO/depth matching and CAD alignment, followed by grasp
 research. Some tested fitting and fusion code lives in the historically named
@@ -31,9 +39,9 @@ does not make Qwen or CLIP mandatory in the current framework.
 3. Which aligned-CAD placements lose every grasp under the one-degree contact
    setting, and which modeled rejection explains each loss? Compare this with
    the fifteen-degree reference without calling either condition a pickup test.
-4. Does reducing contact pairs before finite-hand validation discard useful
-   alternatives? Inspect the implemented order before proposing a new ablation;
-   changing it has not yet been benchmarked over all 96 placements.
+4. In the October 28 selector, which checks reject the complete poses before
+   priority selection? Compare the 4/96 selected placements with earlier studies
+   only after accounting for their different budgets and contact conventions.
 
 ## Interpretation requirements
 

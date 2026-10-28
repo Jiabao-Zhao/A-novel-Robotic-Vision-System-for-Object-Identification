@@ -1,0 +1,50 @@
+{
+  "settings": {
+    "max_poses": 100,
+    "surface_budget": 200,
+    "orientation_samples": 10,
+    "pre_opening_clearance_m": 0.001
+  },
+  "workers": 4,
+  "base_seed": 20261028,
+  "seed_policy": "one seed per CAD reused across scenes; runtime generation called for each case",
+  "source_sha256": {
+    "experiments\\cad_grasp_selection_20261028\\criteria.py": "566a5c5f2db03cf4df2d7c05566b16389b4782b87caf414f0cdad3cb18d59a7a",
+    "experiments\\cad_grasp_selection_20261028\\gallery.py": "52ba6122ff62693d2d0e0b42bb80cf61ad4bdab79c65886c8aa8035bd185a045",
+    "experiments\\cad_grasp_selection_20261028\\geometry.py": "7002e5758c43a70d3bb36b7337d3185b0d35975f26cff80361f99237b9ed9f96",
+    "experiments\\cad_grasp_selection_20261028\\pipeline.py": "1574610e597d056ba3166d6f60340d91b2155191c8909a7807f2881e39dc64a7",
+    "experiments\\cad_grasp_selection_20261028\\run_nist.py": "e110ae1bf58592335bea8f91819c936a52a7cb33c84642ca4445217eb47428af",
+    "experiments\\cad_grasp_selection_20261028\\sampler.py": "c6b4cd6e1b32437c8b0cd2880cc4b0eac3562964c314467a2b57dbc11c75af16",
+    "experiments\\cad_grasp_selection_20261028\\task_geometry.py": "6c4075428a3c027717a0fc7214e0c6f7295a67c3b8640b2eefd320f4e8a5db4b",
+    "experiments\\cad_grasp_selection_20261028\\test_criteria.py": "384e9c2086963e43f1c94dfbe66a8d9200abba5010616e2d73c1337385a760ef",
+    "experiments\\cad_grasp_selection_20261028\\test_gallery.py": "16d792d8c3d4f9a00b1cd9a73cd40ac9dc25b2cb2d2b7016ba08e753b55d67d1",
+    "experiments\\cad_grasp_selection_20261028\\test_geometry.py": "a6d9eacb42f703cae7d9576e07cf64babf5fbdfbdc68f493d663ff4a5a3ab956",
+    "experiments\\cad_grasp_selection_20261028\\test_nist_run.py": "9e1e9ec79c7d8be85dabba8757ba6f9ca967757a3651f9898736e5c7728f500c",
+    "experiments\\cad_grasp_selection_20261028\\test_pipeline.py": "ca94558c38a1676c6eebaa4a1e7aa946438fd0eb7f3771ef97452b22872c2164",
+    "experiments\\cad_grasp_selection_20261028\\test_task_geometry.py": "7f90aa2cfd58b2b5c3f89748a57b12ed9bc09785f6b3add15228c967d6bddcb1",
+    "experiments\\cad_grasp_selection_20261028\\verify_nist.py": "b4bae0239c930f47209febda613e642224dcfbdd23dd98c6511d29976811e5ba",
+    "experiments\\cad_grasp_geometry_20261026\\geometry_kernel.py": "f4a43e200d73ab5fa6e6c7415678feb719ddd9895131341acdb2448a339dfd1d",
+    "experiments\\fabrica_candidates_20261027\\sampler.py": "3a2a8728efccc5df07edead98a23af20c59d7694cf691f92e2866141a3c07d0e",
+    "experiments\\fabrica_goal_geometry_20261027\\task_inputs.py": "24eea255b2881c7e8fb6e1ccff163aedeeebb450c9a6328b799d7f7aa621eb4d"
+  },
+  "protected_sha256": {
+    "outputs\\cad_grasp_geometry_20261026\\inputs.json": "13c1399b3e97ade8bfb7de521860db20598db45a2bd1c7ef0234c5d828cc9823",
+    "outputs\\cad_grasp_geometry_20261026\\hand_model.json": "c40725c8b27cd6bf56cdd98f41abbdb1f0ae76197f95fd27bc3ac56706a5a763",
+    "experiments\\runtime_antipodal_assembly_20261023\\goal_audit.json": "0e598b612050d4255badbcd70ae6ab84937f2313b4499a431dfdddf06f909515",
+    "experiments\\grconvnet_vlm_pickup_20261024\\vlm_client.py": "eefc23879b35b3d7a9b61e1e4e5b67ccf7c6a1670b5a324289c71e6daadafc7e",
+    "experiments\\grconvnet_vlm_pickup_20261024\\grasp_rank_prompt.txt": "d5a319de5f9f0a8f2c78f2df13659b4095cf065839696d3e295a3fbab20525d3",
+    "docs\\cad_view_prompt.txt": "180dc9df66ab2cbd0b9b8057a054314bc1252d74b47db9d5dc98a15c391d2019",
+    "simulation\\nist_task_board_1.py": "404a83d670afba7a0b971cc928d5a514c1469e53b23f257164610dbdb88a6982",
+    "outputs\\simulation\\nist_task_board_1\\assets\\provenance.json": "871dfbca981fd65b7be65c403efbcb2ab04963a86e2faca39a0dfe0137d0e08a",
+    "outputs\\fabrica_original_20261027\\runs\\20261027T193122Z\\results.json": "3f826da403d7472fd4ff98363ff57fb49a6b5d207d687d79a0bcc7e80b0950a1",
+    "outputs\\fabrica_original_20261027\\runs\\20261027T193122Z\\summary.json": "e20fb95079548dce486631ec54f7bfde247083695146032a19cc61f018f7f35c",
+    "outputs\\fabrica_goal_geometry_20261027\\runs\\20261027T213516Z\\results.json": "1442d77d6dbdcc2b58e50b161d33d93f5440e83ece546c8e6171a11b13567410"
+  },
+  "observed_manifest": "outputs\\cad_grasp_geometry_20261026\\inputs.json",
+  "scope": "candidate generation, modeled geometry checks and priority selection only",
+  "final_goal_scope": "unchanged nominal board-centered goals; not verified mating transforms",
+  "VLM_selection": false,
+  "pickup_execution": false,
+  "assembly_execution": false,
+  "simulator_object_poses_read": false
+}

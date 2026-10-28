@@ -40,7 +40,7 @@ Grasp candidates do not establish physical pickup, holding or assembly success.
 | Tested DINO/depth fusion | [select_results.py](experiments/nist12_qwen_clip_reranking_20261023/depth_verification_20261023/select_results.py) — historical experiment selector |
 | Reusable table-constrained alignment | [CADPointCloudRegistration.py](CADPointCloudRegistration.py) |
 | Grasp inputs and finite-hand geometry | [inputs.py](experiments/cad_grasp_geometry_20261026/inputs.py), [geometry_kernel.py](experiments/cad_grasp_geometry_20261026/geometry_kernel.py), [hand_model.py](experiments/cad_grasp_geometry_20261026/hand_model.py) |
-| Current grasp sampler and checks | [upstream.py](experiments/cad_grasp_method_comparison_20261026/upstream.py), [pair_reduction.py](experiments/cad_grasp_method_comparison_20261026/pair_reduction.py), [run_compare.py](experiments/cad_grasp_method_comparison_20261026/run_compare.py), [alignment_filter.py](experiments/cad_grasp_method_comparison_20261026/alignment_filter.py) |
+| Current grasp generation and selection | [Priority selector](experiments/cad_grasp_selection_20261028/README.md), [pipeline.py](experiments/cad_grasp_selection_20261028/pipeline.py): at most 100 complete poses, modeled geometry checks, then moment arm → surface centrality → downward preference; no grouping or mandatory downward gate |
 | NIST scenes and reference views | [simulation/nist_task_board_1.py](simulation/nist_task_board_1.py), [simulation/nist_capture.py](simulation/nist_capture.py), [simulation/nist_cad_views.py](simulation/nist_cad_views.py) |
 
 The historically named `nist12_qwen_clip_reranking_20261023` folder still houses
@@ -64,7 +64,8 @@ outputs/         Mostly local generated data, caches, captures and galleries
 The twenty catalog meshes are included at their existing
 `outputs/simulation/nist_task_board_1/assets/meshes/` paths, with conversion
 [provenance](CAD/NIST_ASSET_NOTICE.md). Other `outputs/` content is local except
-the dataset README and small cleanup receipts explicitly allowed by
+the dataset README, small cleanup receipts, and the reviewed
+[October 28 grasp run](outputs/cad_grasp_selection_20261028/runs/20261028T190844Z/README.md) explicitly allowed by
 [.gitignore](.gitignore).
 
 Local data locations:
@@ -84,6 +85,12 @@ assets and textures do not enable additional object-layout generators.
 
 ## Results available on GitHub
 
+The [October 28 grasp-selection run](outputs/cad_grasp_selection_20261028/runs/20261028T190844Z/README.md)
+is published at its original output paths, with all 96 case decisions, candidate
+diagnostics, derived CAD validation meshes, audits and eight gallery sheets.
+Its publication manifest records the saved file hashes. This is a run-specific
+exception in `.gitignore`; other generated output trees remain local by default.
+
 The [evidence bundle](results/README.md) contains 83 exact-copied files,
 about 22.25 MiB: classification decisions, per-object and error tables,
 depth pin-case illustrations, current grasp decisions and eight contact-atlas
@@ -93,7 +100,8 @@ evaluation was performed to publish these copies.
 
 [.gitattributes](.gitattributes) preserves result and pinned experimental bytes
 across platforms. Raw captures, feature arrays, exhaustive fit/pose banks,
-downloaded packages, model weights and temporary files are excluded from Git.
+downloaded packages, model weights and temporary files are excluded from Git,
+apart from the explicitly reviewed run evidence described above.
 Copied historical reports keep their original links; the evidence index points
 to the figures actually included.
 
@@ -104,9 +112,13 @@ Keep these claims separate:
 - Matching-module comparisons share crops; native full-scene methods generate
   their own proposals.
 - Grasp studies assume correct CAD/crop correspondence and saved observed-depth
-  alignment. The current [recommendation](experiments/cad_grasp_method_comparison_20261026/recommendation.md)
-  uses the released `one` sampler, nearby-pair reduction, downward Panda
-  conversion and modeled checks with one-degree local contact selection.
+  alignment. The [October 28 selector](experiments/cad_grasp_selection_20261028/README.md)
+  returns one grasp using explicit priorities after geometry checks. Its CAD-derived
+  eight-scene trial selected grasps for 4 of 96 placements; the report records
+  the pad-center/table and mesh-normal limitations. VLM, pickup and assembly
+  execution remain paused. The older
+  [sampler recommendation](experiments/cad_grasp_method_comparison_20261026/recommendation.md)
+  describes its historical downward-only, reduced-pair study.
 - The retained robustness scope is 220 NIST inputs and 2,720 queries.
   Classification accuracy evaluation remains incomplete.
 

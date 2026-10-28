@@ -10,6 +10,17 @@
    partial observation. Physical holding and assembly quality remain separate
    questions under investigation.
 
+The October 28 grasp selector proposes at most 100 complete, calibrated
+pad-center poses and rejects invalid geometry before selecting one by explicit
+priority: assembly moment arm, area-weighted CAD surface centrality, then pickup
+downward-angle preference. It has no mandatory downward gate, grasp grouping,
+independent finger-depth sampling or weighted score. Required mating-axis,
+protected-surface, receiver and calibration inputs must be explicit; missing
+inputs never produce an invalid fallback. The CAD-derived eight-scene geometry
+trial selected grasps in 4 of 96 placements under the current checks. This is
+candidate availability, not pickup or assembly performance. VLM selection,
+pickup and assembly execution remain paused.
+
 NIST Task Board 1 is the only enabled scene/CAD-generation family. Individual
 studies declare their chosen NIST products, sizes, scene variants and cameras.
 Keep the shared simulator/camera/Panda backend and required installed assets.

@@ -12,12 +12,13 @@ runs; copying them does not certify the current reorganized checkout as that run
 
 | Evidence | Start here | Detail available |
 |---|---|---|
+| October 28 grasp selector | [Published run](../outputs/cad_grasp_selection_20261028/runs/20261028T190844Z/README.md) | All 96 case decisions, 9,600 proposal diagnostics, derived CAD meshes, audits and eight selected-grasp sheets at the original output paths |
 | Earlier CLIP retrieval and DINO selection | [Appearance summary](classification/appearance/summary.json) | Per-object counts, all decisions, paired changes, shortlist retention and within-family errors |
 | DINO plus native-scale depth verification | [Depth summary](classification/depth/summary.json) | Per-task/per-object CSVs, fixed and introduced errors, fitting protocol and illustrated pin cases |
 | Matching modules with common crops | [Matching summary](classification/matching_modules/summary.json) | Per-task/per-object CSVs, confusions and the common top-five control |
 | Full-scene methods with their own proposals | [Full-scene summary](classification/fullscene/summary.json) | Per-task errors, proposal-stage counts, unavailable-depth and shortlist diagnostics |
-| Current grasp contact checks | [One-degree contact summary](grasp/contact_alignment_1deg/summary.json) | All 7,826 saved hand-pose decisions, zero-option placements, audits and contact-witness diagnostics |
-| Current contact-pair visuals | [Contact atlas](grasp/contact_atlas/index.html) | Eight scene sheets; each displays twelve CAD parts and retained sampled contact pairs |
+| Earlier grasp contact checks | [One-degree contact summary](grasp/contact_alignment_1deg/summary.json) | All 7,826 saved hand-pose decisions, zero-option placements, audits and contact-witness diagnostics |
+| Earlier contact-pair visuals | [Contact atlas](grasp/contact_atlas/index.html) | Eight scene sheets; each displays twelve CAD parts and retained sampled contact pairs |
 | Earlier sampler comparison | [Reference report](grasp/reference_sampler_comparison_15deg/report.md) | Per-placement summary and quality diagnostics at the former fifteen-degree limit |
 | Earlier extra contact-rule ablation | [Ablation report](grasp/contact_rule_ablation/report.md) | Saved proposals evaluated under different additional rules |
 
@@ -42,13 +43,19 @@ HTML is a small local viewer whose eight PNGs are included beside it.
   rule; diagnostics explain that gate. Native execution failures and numerical
   compatibility controls are documented in the source study README.
 - Grasp experiments assume the correct CAD/crop association and use saved
-  observation-fitted CAD poses. The current one-degree check retains options in
+  observation-fitted CAD poses. The earlier one-degree check retains options in
   89/96 placements. The former 95/96 result used fifteen degrees. Candidate
   availability is neither pickup success nor measured assembly precision.
-- The current grasp stage order is `one_budget512` contact sampling, saved 5 mm
+- The earlier grasp stage order is `one_budget512` contact sampling, saved 5 mm
   endpoint-pair reduction, downward Panda conversion and modeled finite-hand,
   target/table checks with one-degree local contact selection. Review
-  [the current recommendation](../experiments/cad_grasp_method_comparison_20261026/recommendation.md).
+  [its historical recommendation](../experiments/cad_grasp_method_comparison_20261026/recommendation.md).
+- The October 28 selector generated 100 complete poses per placement and selected
+  grasps in 4/96 placements after modeled geometry checks. It uses explicit
+  criterion priorities without grouping or a mandatory downward gate. These
+  results have a separate publication manifest in the run directory; the
+  historical 83-file copy manifest above is unchanged. VLM selection, pickup
+  and assembly remain paused.
 - The [retained robustness scope](classification/robustness_scope_only.json)
   contains 220 NIST inputs and 2,720 queries. Its classification accuracy
   evaluation is incomplete; this file is a scope receipt, not accuracy evidence.

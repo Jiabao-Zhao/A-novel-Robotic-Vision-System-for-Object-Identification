@@ -1,0 +1,137 @@
+{
+  "scene": "N07",
+  "part": "BNC_Male",
+  "mesh_path": "outputs\\simulation\\nist_task_board_1\\assets\\meshes\\BNC_Male_m.stl",
+  "world_T_cad": [
+    [
+      -0.7308668538869999,
+      -0.007690680150359244,
+      0.6824767361076437,
+      -0.5547013124358473
+    ],
+    [
+      0.6824392556314846,
+      0.007152491748853781,
+      0.7309073157623517,
+      0.15681438460096284
+    ],
+    [
+      -0.010502583608880822,
+      0.9999448461293279,
+      2.0902895173328368e-05,
+      0.0071148290787810264
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "selection": {
+    "status": "no_valid_grasp_within_budget",
+    "selected_grasp": null,
+    "proposed_count": 100,
+    "valid_count": 0,
+    "seed": 20261028,
+    "unchecked": [
+      "robot_arm_reachability",
+      "full_pregrasp_approach_path",
+      "insertion_path",
+      "release",
+      "friction_and_physical_grasp_stability",
+      "closing_induced_part_motion",
+      "physical_assembly_accuracy"
+    ],
+    "robot_or_physics_execution": false,
+    "pose_input": "caller-supplied estimated CAD alignment; no environment state read",
+    "contacts_frame": "native_CAD",
+    "units": "metres/radians",
+    "reference": {
+      "surface_centroid_cad_m": [
+        1.2097998729737884e-08,
+        -9.695375280169022e-09,
+        -0.003335381943983812
+      ],
+      "axis_point_cad_m": [
+        0.0,
+        1.6172416508197784e-06,
+        -0.0024950027000159025
+      ],
+      "axis_direction_cad": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "D_tau_m": 0.007068606625418185,
+      "D_surface_m": 0.014148539219129213,
+      "surface_area_m2": 0.0016185507071284353,
+      "zero_tau_criterion": false,
+      "zero_surface_criterion": false,
+      "frame": "native_CAD",
+      "length_units": "metres"
+    },
+    "sampling": {
+      "method": "Fabrica-derived area sampling and inward all-hit normal rays",
+      "seed": 20261028,
+      "surface_sampling_budget": 200,
+      "orientation_samples_per_pair": 10,
+      "orientation_range_rad": [
+        0.0,
+        6.283185307179586
+      ],
+      "orientation_phase": "seeded uniform phase per pair",
+      "opposing_normal_cosine": 0.95,
+      "inward_origin_offset_m": 0.0005,
+      "pre_opening_total_gap_increase_m": 0.002,
+      "coincident_hit_tolerance_m": 1e-09,
+      "ray_batch_size": 8,
+      "normal_accepted_pair_count": 279,
+      "proposal_pool_size": 2790,
+      "proposed_count": 100,
+      "max_complete_poses": 100,
+      "coincident_triangle_hits_removed": 0,
+      "pair_reduction": false,
+      "centroid_sort": false,
+      "independent_depth_sampling": false,
+      "downward_gate": false,
+      "units": "metres/radians",
+      "contacts_frame": "native_CAD",
+      "contact_convention": "centers of the two usable inner pads"
+    },
+    "unavailable_candidate_count": 0,
+    "selection_stages": [],
+    "tie_tolerances": {
+      "r_tau": 1e-10,
+      "r_surface": 1e-10,
+      "theta_down_rad": 1e-10
+    },
+    "final_tied_candidate_ids": [],
+    "message": "No valid grasp found within the sampling budget."
+  },
+  "wall_seconds": 4.91230919980444,
+  "rejection_counts": {
+    "Complete gripper intersects receiver at nominal final pose: board": 25,
+    "Intended pad-center surface normal is incompatible with pad": 63,
+    "Gripper solid intersects target during modeled closing: gripper0_finger1_collision": 11,
+    "Surrounding contact geometry is not aligned with inner pad": 1
+  },
+  "seed": 20261028,
+  "pose_source": "experiments/nist12_qwen_clip_reranking_20261023/depth_verification_20261023/fits/N07__BNC_Male__p011.json",
+  "observed_alignment_status": "available",
+  "table_plane_world": [
+    4.052268024455636e-07,
+    -2.897693397337942e-05,
+    0.9999999995800866,
+    -5.295182416831253e-05
+  ],
+  "derived_task_path": "derived_tasks/BNC_Male.json",
+  "final_pose_status": "nominal_simulation_assumption",
+  "final_pose_frame": "nominal task-board center XY=(0,0), original workspace Z",
+  "no_VLM": true,
+  "no_pickup_or_assembly_execution": true,
+  "no_physics_steps": true,
+  "no_new_pose_estimation": true,
+  "no_insertion_or_release_checks": true,
+  "simulator_object_poses_read": false
+}

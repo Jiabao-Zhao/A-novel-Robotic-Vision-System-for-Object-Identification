@@ -1,0 +1,140 @@
+{
+  "scene": "N05",
+  "part": "USB_Male",
+  "mesh_path": "outputs\\datasets\\nist_task_board\\legacy_workspace_inputs\\usb-cable-workspace\\usb_connector_with_cable.stl",
+  "world_T_cad": [
+    [
+      0.7718485412812468,
+      -0.6358064401313003,
+      3.0937656086531934e-06,
+      -0.22564394532291782
+    ],
+    [
+      0.6358064399750456,
+      0.7718485409628386,
+      -2.6453607052271158e-05,
+      0.16386072793979486
+    ],
+    [
+      1.4431455257433453e-05,
+      2.2385214112598646e-05,
+      0.9999999996453164,
+      5.85003346585955e-05
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "selection": {
+    "status": "no_valid_grasp_within_budget",
+    "selected_grasp": null,
+    "proposed_count": 100,
+    "valid_count": 0,
+    "seed": 20261038,
+    "unchecked": [
+      "robot_arm_reachability",
+      "full_pregrasp_approach_path",
+      "insertion_path",
+      "release",
+      "friction_and_physical_grasp_stability",
+      "closing_induced_part_motion",
+      "physical_assembly_accuracy"
+    ],
+    "robot_or_physics_execution": false,
+    "pose_input": "caller-supplied estimated CAD alignment; no environment state read",
+    "contacts_frame": "native_CAD",
+    "units": "metres/radians",
+    "reference": {
+      "surface_centroid_cad_m": [
+        0.0616762277029297,
+        0.0002485285923273577,
+        0.003183709166261761
+      ],
+      "axis_point_cad_m": [
+        -0.012785002589225769,
+        0.0,
+        0.0042500002309679985
+      ],
+      "axis_direction_cad": [
+        -1.0,
+        -0.0,
+        -0.0
+      ],
+      "D_tau_m": 0.061827620521393574,
+      "D_surface_m": 0.12322378968258575,
+      "surface_area_m2": 0.0063640732501661895,
+      "zero_tau_criterion": false,
+      "zero_surface_criterion": false,
+      "frame": "native_CAD",
+      "length_units": "metres"
+    },
+    "sampling": {
+      "method": "Fabrica-derived area sampling and inward all-hit normal rays",
+      "seed": 20261038,
+      "surface_sampling_budget": 200,
+      "orientation_samples_per_pair": 10,
+      "orientation_range_rad": [
+        0.0,
+        6.283185307179586
+      ],
+      "orientation_phase": "seeded uniform phase per pair",
+      "opposing_normal_cosine": 0.95,
+      "inward_origin_offset_m": 0.0005,
+      "pre_opening_total_gap_increase_m": 0.002,
+      "coincident_hit_tolerance_m": 1e-09,
+      "ray_batch_size": 8,
+      "normal_accepted_pair_count": 209,
+      "proposal_pool_size": 2090,
+      "proposed_count": 100,
+      "max_complete_poses": 100,
+      "coincident_triangle_hits_removed": 1,
+      "pair_reduction": false,
+      "centroid_sort": false,
+      "independent_depth_sampling": false,
+      "downward_gate": false,
+      "units": "metres/radians",
+      "contacts_frame": "native_CAD",
+      "contact_convention": "centers of the two usable inner pads"
+    },
+    "unavailable_candidate_count": 0,
+    "selection_stages": [],
+    "tie_tolerances": {
+      "r_tau": 1e-10,
+      "r_surface": 1e-10,
+      "theta_down_rad": 1e-10
+    },
+    "final_tied_candidate_ids": [],
+    "message": "No valid grasp found within the sampling budget."
+  },
+  "wall_seconds": 8.92515889997594,
+  "rejection_counts": {
+    "Complete gripper intersects receiver at nominal final pose: board": 40,
+    "Gripper solid intersects target during modeled closing: gripper0_hand_collision": 35,
+    "Gripper solid intersects target during modeled closing: gripper0_finger1_collision": 6,
+    "Part contact occurs outside usable inner pad face": 6,
+    "Gripper solid intersects target during modeled closing: gripper0_finger2_collision": 2,
+    "Intended pad-center surface normal is incompatible with pad": 9,
+    "Surrounding contact geometry is not aligned with inner pad": 2
+  },
+  "seed": 20261038,
+  "pose_source": "experiments/nist12_qwen_clip_reranking_20261023/depth_verification_20261023/fits/N05__USB_Male__p003.json",
+  "observed_alignment_status": "available",
+  "table_plane_world": [
+    3.093765608511584e-06,
+    -2.6453607052195254e-05,
+    0.9999999996453177,
+    -5.346753784984956e-05
+  ],
+  "derived_task_path": "derived_tasks/USB_Male.json",
+  "final_pose_status": "nominal_simulation_assumption",
+  "final_pose_frame": "nominal task-board center XY=(0,0), original workspace Z",
+  "no_VLM": true,
+  "no_pickup_or_assembly_execution": true,
+  "no_physics_steps": true,
+  "no_new_pose_estimation": true,
+  "no_insertion_or_release_checks": true,
+  "simulator_object_poses_read": false
+}

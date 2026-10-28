@@ -1,0 +1,135 @@
+{
+  "scene": "N05",
+  "part": "RGOCG16-50_16mm",
+  "mesh_path": "outputs\\simulation\\nist_task_board_1\\assets\\meshes\\RGOCG16-50_16mm_m.stl",
+  "world_T_cad": [
+    [
+      -0.011354948271236813,
+      0.5130578473011425,
+      -0.8582789234697965,
+      -0.39145134562884654
+    ],
+    [
+      0.019011972566475934,
+      -0.858068327984931,
+      -0.5131834851281489,
+      0.15415664228488543
+    ],
+    [
+      -0.9997547749567824,
+      -0.022144747274675365,
+      -1.09202404490645e-05,
+      0.008056799461835351
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "selection": {
+    "status": "no_valid_grasp_within_budget",
+    "selected_grasp": null,
+    "proposed_count": 100,
+    "valid_count": 0,
+    "seed": 20261036,
+    "unchecked": [
+      "robot_arm_reachability",
+      "full_pregrasp_approach_path",
+      "insertion_path",
+      "release",
+      "friction_and_physical_grasp_stability",
+      "closing_induced_part_motion",
+      "physical_assembly_accuracy"
+    ],
+    "robot_or_physics_execution": false,
+    "pose_input": "caller-supplied estimated CAD alignment; no environment state read",
+    "contacts_frame": "native_CAD",
+    "units": "metres/radians",
+    "reference": {
+      "surface_centroid_cad_m": [
+        8.633768031753173e-08,
+        -4.278591661233922e-10,
+        -0.00044722183609243566
+      ],
+      "axis_point_cad_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_direction_cad": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "D_tau_m": 0.008000001383716157,
+      "D_surface_m": 0.026239706843535323,
+      "surface_area_m2": 0.002863661335812172,
+      "zero_tau_criterion": false,
+      "zero_surface_criterion": false,
+      "frame": "native_CAD",
+      "length_units": "metres"
+    },
+    "sampling": {
+      "method": "Fabrica-derived area sampling and inward all-hit normal rays",
+      "seed": 20261036,
+      "surface_sampling_budget": 200,
+      "orientation_samples_per_pair": 10,
+      "orientation_range_rad": [
+        0.0,
+        6.283185307179586
+      ],
+      "orientation_phase": "seeded uniform phase per pair",
+      "opposing_normal_cosine": 0.95,
+      "inward_origin_offset_m": 0.0005,
+      "pre_opening_total_gap_increase_m": 0.002,
+      "coincident_hit_tolerance_m": 1e-09,
+      "ray_batch_size": 8,
+      "normal_accepted_pair_count": 193,
+      "proposal_pool_size": 1930,
+      "proposed_count": 100,
+      "max_complete_poses": 100,
+      "coincident_triangle_hits_removed": 0,
+      "pair_reduction": false,
+      "centroid_sort": false,
+      "independent_depth_sampling": false,
+      "downward_gate": false,
+      "units": "metres/radians",
+      "contacts_frame": "native_CAD",
+      "contact_convention": "centers of the two usable inner pads"
+    },
+    "unavailable_candidate_count": 0,
+    "selection_stages": [],
+    "tie_tolerances": {
+      "r_tau": 1e-10,
+      "r_surface": 1e-10,
+      "theta_down_rad": 1e-10
+    },
+    "final_tied_candidate_ids": [],
+    "message": "No valid grasp found within the sampling budget."
+  },
+  "wall_seconds": 0.14476089994423091,
+  "rejection_counts": {
+    "Intended pad-center surface normal is incompatible with pad": 96,
+    "Complete gripper intersects receiver at nominal final pose: board": 4
+  },
+  "seed": 20261036,
+  "pose_source": "experiments/nist12_qwen_clip_reranking_20261023/depth_verification_20261023/fits/N05__RGOCG16-50_16mm__p004.json",
+  "observed_alignment_status": "available",
+  "table_plane_world": [
+    3.093765608511584e-06,
+    -2.6453607052195254e-05,
+    0.9999999996453177,
+    -5.346753784984956e-05
+  ],
+  "derived_task_path": "derived_tasks/RGOCG16-50_16mm.json",
+  "final_pose_status": "nominal_simulation_assumption",
+  "final_pose_frame": "nominal task-board center XY=(0,0), original workspace Z",
+  "no_VLM": true,
+  "no_pickup_or_assembly_execution": true,
+  "no_physics_steps": true,
+  "no_new_pose_estimation": true,
+  "no_insertion_or_release_checks": true,
+  "simulator_object_poses_read": false
+}

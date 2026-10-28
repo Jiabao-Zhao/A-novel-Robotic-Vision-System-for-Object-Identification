@@ -1,0 +1,136 @@
+{
+  "scene": "N07",
+  "part": "M16_Hex_Nut",
+  "mesh_path": "outputs\\simulation\\nist_task_board_1\\assets\\meshes\\M16_Hex_Nut_m.stl",
+  "world_T_cad": [
+    [
+      0.36419100815669103,
+      -0.6325059559781846,
+      0.6835942694536957,
+      -0.13669259623572208
+    ],
+    [
+      -0.3430020975548849,
+      0.5913148434880984,
+      0.729860477724059,
+      0.2985053060088041
+    ],
+    [
+      -0.865860537644925,
+      -0.5002828914951671,
+      -0.0015993206285283318,
+      0.012072978873119311
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "selection": {
+    "status": "no_valid_grasp_within_budget",
+    "selected_grasp": null,
+    "proposed_count": 100,
+    "valid_count": 0,
+    "seed": 20261034,
+    "unchecked": [
+      "robot_arm_reachability",
+      "full_pregrasp_approach_path",
+      "insertion_path",
+      "release",
+      "friction_and_physical_grasp_stability",
+      "closing_induced_part_motion",
+      "physical_assembly_accuracy"
+    ],
+    "robot_or_physics_execution": false,
+    "pose_input": "caller-supplied estimated CAD alignment; no environment state read",
+    "contacts_frame": "native_CAD",
+    "units": "metres/radians",
+    "reference": {
+      "surface_centroid_cad_m": [
+        -4.187010863341529e-06,
+        -2.871466233202782e-06,
+        9.159592578136525e-06
+      ],
+      "axis_point_cad_m": [
+        2.012101730753959e-09,
+        2.8991363150080015e-09,
+        0.0
+      ],
+      "axis_direction_cad": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "D_tau_m": 0.013856409334934358,
+      "D_surface_m": 0.01488932057979601,
+      "surface_area_m2": 0.0026617025498870614,
+      "zero_tau_criterion": false,
+      "zero_surface_criterion": false,
+      "frame": "native_CAD",
+      "length_units": "metres"
+    },
+    "sampling": {
+      "method": "Fabrica-derived area sampling and inward all-hit normal rays",
+      "seed": 20261034,
+      "surface_sampling_budget": 200,
+      "orientation_samples_per_pair": 10,
+      "orientation_range_rad": [
+        0.0,
+        6.283185307179586
+      ],
+      "orientation_phase": "seeded uniform phase per pair",
+      "opposing_normal_cosine": 0.95,
+      "inward_origin_offset_m": 0.0005,
+      "pre_opening_total_gap_increase_m": 0.002,
+      "coincident_hit_tolerance_m": 1e-09,
+      "ray_batch_size": 8,
+      "normal_accepted_pair_count": 153,
+      "proposal_pool_size": 1530,
+      "proposed_count": 100,
+      "max_complete_poses": 100,
+      "coincident_triangle_hits_removed": 0,
+      "pair_reduction": false,
+      "centroid_sort": false,
+      "independent_depth_sampling": false,
+      "downward_gate": false,
+      "units": "metres/radians",
+      "contacts_frame": "native_CAD",
+      "contact_convention": "centers of the two usable inner pads"
+    },
+    "unavailable_candidate_count": 0,
+    "selection_stages": [],
+    "tie_tolerances": {
+      "r_tau": 1e-10,
+      "r_surface": 1e-10,
+      "theta_down_rad": 1e-10
+    },
+    "final_tied_candidate_ids": [],
+    "message": "No valid grasp found within the sampling budget."
+  },
+  "wall_seconds": 1.4026346998289227,
+  "rejection_counts": {
+    "Complete gripper intersects receiver at nominal final pose: board": 78,
+    "Intended pad-center surface normal is incompatible with pad": 21,
+    "Complete gripper intersects receiver at nominal final pose: fixture_7_M16_Screw": 1
+  },
+  "seed": 20261034,
+  "pose_source": "experiments/nist12_qwen_clip_reranking_20261023/depth_verification_20261023/fits/N07__M16_Hex_Nut__p006.json",
+  "observed_alignment_status": "available",
+  "table_plane_world": [
+    4.052268024455636e-07,
+    -2.897693397337942e-05,
+    0.9999999995800866,
+    -5.295182416831253e-05
+  ],
+  "derived_task_path": "derived_tasks/M16_Hex_Nut.json",
+  "final_pose_status": "nominal_simulation_assumption",
+  "final_pose_frame": "nominal task-board center XY=(0,0), original workspace Z",
+  "no_VLM": true,
+  "no_pickup_or_assembly_execution": true,
+  "no_physics_steps": true,
+  "no_new_pose_estimation": true,
+  "no_insertion_or_release_checks": true,
+  "simulator_object_poses_read": false
+}

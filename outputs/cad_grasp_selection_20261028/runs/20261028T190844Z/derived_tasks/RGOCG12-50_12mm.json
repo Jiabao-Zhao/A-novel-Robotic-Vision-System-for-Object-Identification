@@ -1,0 +1,173 @@
+{
+  "status": "available_CAD_derived_nominal_task",
+  "part": "RGOCG12-50_12mm",
+  "axis_point_cad_m": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "axis_direction_cad": [
+    -0.0,
+    -0.0,
+    -1.0
+  ],
+  "task_spec": {
+    "part": "RGOCG12-50_12mm",
+    "goal_T_cad_board": [
+      [
+        1.0,
+        -0.0,
+        0.0,
+        0.07444961413855578
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.15517577115604098
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.041991600014269354
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "receivers": [
+      {
+        "name": "board",
+        "mesh_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\simulation\\nist_task_board_1\\assets\\meshes\\GMC_Laser_Plate_Virtual_m.stl",
+        "board_T_mesh": [
+          [
+            1.0,
+            -0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.024495800007134676
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "region_kind": "inserted_pin_segment",
+    "region_status": "available_nominal_geometry",
+    "region_note": "Contacts at or below the plate top in the declared seated goal are reserved. Only the inserted 12 mm segment is excluded; whole mesh faces and the remaining round side are not excluded.",
+    "nominal_goal_record": {
+      "world_T_cad_goal": [
+        [
+          1.0,
+          -0.0,
+          0.0,
+          -0.44555038586144424
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.11982422884395905
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.041991600014269354
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "status": "nominal_simulation_assumption",
+      "goal_kind": "nominal_round_pin_guided_insertion_12mm",
+      "goal_frame": "existing objects-centered scene world; metres",
+      "official_final_assembly_pose": false,
+      "actual_insertion_validated": false,
+      "opening_id": "opening_27",
+      "guided_depth_m": 0.012,
+      "goal_assumption": "Vertical CAD Z axis, 12 mm lower-end depth below plate top; round-pin yaw set to zero.",
+      "destination_limitation": "Larger opening_27 clearance demonstration; not a verified official 12 mm destination."
+    },
+    "board_top_m": 0.028991600014269352,
+    "legacy_board_center_world_xy_m": [
+      -0.52,
+      -0.275
+    ],
+    "frame": "board-centred XY; original scene world Z; metres",
+    "goal_status": "nominal_simulation_assumption",
+    "official_final_assembly_pose": false,
+    "source_paths": [
+      "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\experiments\\runtime_antipodal_assembly_20261023\\goal_audit.json",
+      "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\simulation\\nist_task_board_1\\assets\\provenance.json",
+      "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\datasets\\nist_task_board\\legacy_workspace_inputs\\nist-taskboard-workspace\\scene.json",
+      "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\simulation\\nist_task_board_1.py"
+    ]
+  },
+  "evidence": {
+    "method": "longitudinal CAD extent + transverse bounding-center symmetry",
+    "extents_m": [
+      0.012000000104308128,
+      0.011997063644230366,
+      0.05000000074505806
+    ],
+    "axis_coordinate_index": 2,
+    "protected_region": {
+      "kind": "nominal_goal_board_halfspace",
+      "normal": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "offset_m": -0.013000000000000001
+    },
+    "engagement_source": "Existing user-authorized nominal final pose; not inferred from pickup.",
+    "chamfer_note": "Native positive-axis chamfer is preserved; old nominal goal inserts its negative-axis end.",
+    "plane_grouping_tolerance_m": 1e-07,
+    "protected_halfspace_tolerance_m": 1e-08,
+    "native_frames_and_scale_preserved": true,
+    "simulator_object_poses_used": false,
+    "known_nominal_final_pose_preserved": true
+  },
+  "mesh_path": "outputs\\simulation\\nist_task_board_1\\assets\\meshes\\RGOCG12-50_12mm_m.stl",
+  "mesh_sha256": "926557cdfcd5a681d12a0988d71278db24ca1e1a5eb0eb9c5f3f38bcebecdba4",
+  "validation_mesh": {
+    "part": "RGOCG12-50_12mm",
+    "method": "unchanged native vertices",
+    "proximity_tolerance_m": 0.0,
+    "merged_close_pair_count": 0,
+    "original_vertex_count": 218,
+    "validation_vertex_count": 218,
+    "triangle_count": 432,
+    "triangle_order_preserved": true,
+    "maximum_vertex_displacement_m": 0.0,
+    "original_CAD_file_modified": false,
+    "native_metric_scale_preserved": true,
+    "earlier_protocol": "experiments/cad_grasp_geometry_20261026/run_trial.py:load_target"
+  },
+  "final_goal_frame": "nominal task-board center XY=(0,0), original workspace Z",
+  "original_static_scene_board_position_used": false,
+  "simulator_object_poses_read": false
+}

@@ -15,7 +15,7 @@ venv/
 /.codex-ppt-rebuild/
 /tmp/
 
-# Publish reviewed evidence through results/, not generated output trees.
+# Historical evidence is copied to results/. Reviewed runs may be allowed below.
 /outputs/*
 !/outputs/datasets/
 /outputs/datasets/*
@@ -67,6 +67,22 @@ venv/
 !/outputs/c_workspace_cleanup_20261027/predelete_validation.json
 !/outputs/c_workspace_cleanup_20261027/postdelete_assets.json
 
+# Publish the reviewed October 28 grasp run at its original paths, including the
+# self-contained gallery and all 96 cases. Other runs remain local by default.
+!/outputs/cad_grasp_selection_20261028/
+/outputs/cad_grasp_selection_20261028/*
+!/outputs/cad_grasp_selection_20261028/runs/
+/outputs/cad_grasp_selection_20261028/runs/*
+!/outputs/cad_grasp_selection_20261028/runs/20261028T190844Z/
+/outputs/cad_grasp_selection_20261028/runs/20261028T190844Z/**
+!/outputs/cad_grasp_selection_20261028/runs/20261028T190844Z/**/
+!/outputs/cad_grasp_selection_20261028/runs/20261028T190844Z/**/*.json
+!/outputs/cad_grasp_selection_20261028/runs/20261028T190844Z/**/*.csv
+!/outputs/cad_grasp_selection_20261028/runs/20261028T190844Z/**/*.md
+!/outputs/cad_grasp_selection_20261028/runs/20261028T190844Z/**/*.html
+!/outputs/cad_grasp_selection_20261028/runs/20261028T190844Z/**/*.png
+/outputs/cad_grasp_selection_20261028/runs/20261028T190844Z/progress.json
+
 # Experiments: source, documentation, small configuration and provenance only.
 # Result tables/figures are exact copies under results/ with a source manifest.
 /experiments/**
@@ -114,3 +130,7 @@ venv/
 *.tar
 *.tar.gz
 *.7z
+
+# These twelve arrays contain derived CAD validation meshes, not captures,
+# feature/pose banks or model weights. Keep their exception limited to this run.
+!/outputs/cad_grasp_selection_20261028/runs/20261028T190844Z/derived_tasks/*_validation_mesh.npz

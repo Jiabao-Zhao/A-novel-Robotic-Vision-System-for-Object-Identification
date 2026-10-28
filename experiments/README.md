@@ -23,7 +23,8 @@ of the current DINO/depth framework.
 
 | Study | Purpose |
 |---|---|
-| [Sampler comparison and recommendation](cad_grasp_method_comparison_20261026/README.md) | Released CAD contact samplers and modeled Panda checks over 96 saved placements; current grasp-candidate investigation. |
+| [CAD grasp priority selector](cad_grasp_selection_20261028/README.md) | Active revision with CAD-derived task inputs: at most 100 complete poses and priority selection; four of 96 placements selected in the eight-scene geometric trial. VLM and pickup/assembly execution remain paused. |
+| [Sampler comparison and recommendation](cad_grasp_method_comparison_20261026/README.md) | Historical comparison of released CAD contact samplers and modeled Panda checks over 96 saved placements. |
 | [CAD geometry](cad_grasp_geometry_20261026/README.md) | Aligned CAD/observed-cloud inputs and geometric validation. |
 | [Surface-derived grasps](cad_surface_grasps_20261026/README.md) | Surface contact construction and its limitations. |
 | [Grasp regions](cad_grasp_regions_20261026/README.md) | Earlier human/VLM-reviewed grasp-region study. |
