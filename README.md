@@ -12,8 +12,16 @@ flowchart LR
     B --> F[DINO appearance and CAD/depth verification]
     E --> F
     F --> G[Object match and aligned CAD pose]
-    G --> H[Grasp-candidate research]
+    G --> H[CAD grasp candidates]
+    H --> I[Mandatory geometry checks]
+    I --> J[Geometric priority selection]
+    J --> K[One selected grasp or no valid grasp]
 ```
+
+The pipeline selects the final grasp itself using geometric criteria and
+deterministic priority rules. VLM ranking or pose selection is not part of this
+pipeline. The result is the best valid sampled grasp under those rules, rather
+than a globally optimal grasp or a VLM shortlist.
 
 The component modules and controlled studies exist. The complete
 retrieval-to-grasp workflow has not been validated as one autonomous system.
@@ -27,6 +35,8 @@ Grasp candidates do not establish physical pickup, holding or assembly success.
   questions and the limits of a GitHub checkout.
 - [Experiment index](experiments/README.md): current and historical study scopes.
 - [Pipeline contract](simulation/pipeline_protocol.md): units, frames and evidence rules.
+- [Official NIST board reference](docs/nist_task_board_1_reference.md): fabrication
+  dimensions, native assembly transforms and corrections to our receiver layout.
 
 ## Files used by each stage
 
@@ -39,6 +49,7 @@ Grasp candidates do not establish physical pickup, holding or assembly success.
 | CAD/depth fitting and verification | [scripts/surface_verification.py](scripts/surface_verification.py), [geometry.py](experiments/nist12_qwen_clip_reranking_20261023/depth_verification_20261023/geometry.py) — native-scale support hypotheses, table-plane refinement, silhouette/depth agreement |
 | Tested DINO/depth fusion | [select_results.py](experiments/nist12_qwen_clip_reranking_20261023/depth_verification_20261023/select_results.py) — historical experiment selector |
 | Reusable table-constrained alignment | [CADPointCloudRegistration.py](CADPointCloudRegistration.py) |
+| Task references before further grasp trials | [Official NIST source audit](docs/nist_task_board_1_reference.md): native assembly placements, vertical connector mounting, finished-hole requirements and receiver-location corrections; supersedes mounting/destination assumptions in the earlier side-section review |
 | Grasp inputs and finite-hand geometry | [inputs.py](experiments/cad_grasp_geometry_20261026/inputs.py), [geometry_kernel.py](experiments/cad_grasp_geometry_20261026/geometry_kernel.py), [hand_model.py](experiments/cad_grasp_geometry_20261026/hand_model.py) |
 | Current grasp generation and selection | [Priority selector](experiments/cad_grasp_selection_20261028/README.md), [pipeline.py](experiments/cad_grasp_selection_20261028/pipeline.py): at most 100 complete poses, modeled geometry checks, then moment arm → surface centrality → downward preference; no grouping or mandatory downward gate |
 | NIST scenes and reference views | [simulation/nist_task_board_1.py](simulation/nist_task_board_1.py), [simulation/nist_capture.py](simulation/nist_capture.py), [simulation/nist_cad_views.py](simulation/nist_cad_views.py) |
@@ -115,10 +126,20 @@ Keep these claims separate:
   alignment. The [October 28 selector](experiments/cad_grasp_selection_20261028/README.md)
   returns one grasp using explicit priorities after geometry checks. Its CAD-derived
   eight-scene trial selected grasps for 4 of 96 placements; the report records
-  the pad-center/table and mesh-normal limitations. VLM, pickup and assembly
-  execution remain paused. The older
+  the pad-center/table and mesh-normal limitations. The pipeline's geometric
+  selector makes the final decision; there is no subsequent VLM selection step.
+  Pickup and assembly execution remain paused. The older
   [sampler recommendation](experiments/cad_grasp_method_comparison_20261026/recommendation.md)
   describes its historical downward-only, reduced-pair study.
+- Grasp generation remains paused during the
+  [official NIST reference audit](docs/nist_task_board_1_reference.md). Native CAD
+  confirms vertical waterproof mating and exposes swapped USB/DSUB receiver
+  locations and M4/M12 bolts assigned to pin holes. The earlier mating registry
+  is superseded for those mounting/destination assumptions. Official saved CAD
+  placements still need explicit conversion into our board/STL frames; they are
+  not physical seating validation. Keep the user-selected 12 mm pin depth.
+  No scene update or execution has run. Historical grasp results and source
+  hashes remain unchanged.
 - The retained robustness scope is 220 NIST inputs and 2,720 queries.
   Classification accuracy evaluation remains incomplete.
 

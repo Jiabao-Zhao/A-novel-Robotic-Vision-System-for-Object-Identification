@@ -16,6 +16,13 @@ The sequence is:
 **At most 100 complete poses → mandatory geometry checks → geometric criteria
 → one selected grasp.**
 
+This geometric decision is the final grasp selection. There is no VLM ranking,
+approval or pose-selection stage after it. The output is the best valid sampled
+grasp under the declared priorities; an empty valid set returns no grasp. Older
+VLM experiments and frozen gallery captions describe their historical scope.
+Grasp generation, pickup and assembly remain paused during the
+[mating-goal review](../nist_mating_goals_20261028/README.md).
+
 There is no mandatory downward approach, grasp grouping, clustering, diversity
 reduction, independent finger-depth parameter, center-of-mass criterion or
 weighted combined score. The primary result contains one grasp, not a shortlist.

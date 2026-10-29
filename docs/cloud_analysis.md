@@ -28,6 +28,16 @@ research. Some tested fitting and fusion code lives in the historically named
 `experiments/nist12_qwen_clip_reranking_20261023/` directory. Its directory name
 does not make Qwen or CLIP mandatory in the current framework.
 
+The current grasp pipeline makes the final selection itself: mandatory geometry
+checks, then moment arm, surface centrality, downward preference and a
+deterministic candidate-ID tie break. VLM ranking/selection is not a pipeline
+stage. Historical VLM studies and captions do not define the current policy.
+Generation, pickup and assembly remain paused during mating-goal review.
+The [official NIST source audit](nist_task_board_1_reference.md) supersedes the
+earlier horizontal waterproof reference and wrong USB/DSUB and M4/M12 placement
+assignments. Historical results remain unchanged. Saved native CAD transforms
+are available locally and require explicit conversion to our component frames.
+
 ## Questions the evidence can answer
 
 1. Which pin sizes or connector geometries fail, and at which stage: proposal,

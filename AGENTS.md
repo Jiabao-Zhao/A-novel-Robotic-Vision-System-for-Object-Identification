@@ -13,6 +13,10 @@ NIST Task Board 1 and CAD-guided recognition/alignment, followed by grasp resear
   likelihood classifiers or their retired experiments/results.
 - Grasp generation uses the aligned CAD and partial observed cloud. It remains
   research; geometric candidates do not establish pickup or assembly success.
+- The pipeline makes the final grasp decision using mandatory geometry checks
+  and deterministic geometric priorities. VLM ranking/selection is not a current
+  or planned stage of this pipeline. Preserve older VLM studies as historical
+  evidence; do not reconnect them to the current selector.
 - Generate NIST scenes/CAD references only. LIBERO/robosuite camera and Panda
   support remain dependencies; household/FMB/workbench layout generators do not.
 - Keep native CAD scale, explicit frames and units, unavailable scores and ties.

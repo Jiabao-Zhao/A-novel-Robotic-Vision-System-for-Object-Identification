@@ -21,9 +21,15 @@ of the current DINO/depth framework.
 
 ## Grasp research after alignment
 
+The current pipeline selects its final grasp by geometric validation and
+deterministic priority rules. VLM ranking/selection is excluded. Older VLM
+studies below describe historical experiments, not a pending pipeline stage.
+
 | Study | Purpose |
 |---|---|
-| [CAD grasp priority selector](cad_grasp_selection_20261028/README.md) | Active revision with CAD-derived task inputs: at most 100 complete poses and priority selection; four of 96 placements selected in the eight-scene geometric trial. VLM and pickup/assembly execution remain paused. |
+| [Official NIST reference inspection](nist_official_reference_20261029/README.md) | Current source audit: instructions, finished holes, saved native assembly transforms and corrections to vertical waterproof mounting, USB/DSUB locations and M4/M12 hole roles. No grasp or execution trials. |
+| [NIST mating-goal CAD review](nist_mating_goals_20261028/README.md) | Earlier side-section diagnostics and user-selected 12 mm depth. Mounting/destination assumptions are superseded by the official source audit; numerical measurements are preserved. |
+| [CAD grasp priority selector](cad_grasp_selection_20261028/README.md) | Saved revision with nominal task inputs: at most 100 complete poses and priority selection; four of 96 placements selected. Further generation is paused pending mating-goal review. |
 | [Sampler comparison and recommendation](cad_grasp_method_comparison_20261026/README.md) | Historical comparison of released CAD contact samplers and modeled Panda checks over 96 saved placements. |
 | [CAD geometry](cad_grasp_geometry_20261026/README.md) | Aligned CAD/observed-cloud inputs and geometric validation. |
 | [Surface-derived grasps](cad_surface_grasps_20261026/README.md) | Surface contact construction and its limitations. |

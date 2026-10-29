@@ -54,8 +54,9 @@ HTML is a small local viewer whose eight PNGs are included beside it.
   grasps in 4/96 placements after modeled geometry checks. It uses explicit
   criterion priorities without grouping or a mandatory downward gate. These
   results have a separate publication manifest in the run directory; the
-  historical 83-file copy manifest above is unchanged. VLM selection, pickup
-  and assembly remain paused.
+  historical 83-file copy manifest above is unchanged. The current pipeline uses
+  geometric priority selection as its final decision and excludes VLM selection.
+  Grasp generation, pickup and assembly remain paused during mating-goal review.
 - The [retained robustness scope](classification/robustness_scope_only.json)
   contains 220 NIST inputs and 2,720 queries. Its classification accuracy
   evaluation is incomplete; this file is a scope receipt, not accuracy evidence.
