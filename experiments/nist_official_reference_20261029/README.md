@@ -5,6 +5,12 @@ and [official-source gallery](../../outputs/nist_official_reference_20261029/gal
 This is document/static CAD inspection. Grasp generation, pose estimation,
 VLM selection, pickup, assembly and physics execution did not run.
 
+The current [task requirement](task_requirements.json) is a **20 mm pin-tip depth
+below the board top**. It is implemented in the
+[scene/task correction](../nist_scene_corrections_20261029/README.md), with the
+current fingertip selector and corrected goal/protected-region inputs.
+The earlier 12 mm mating-review outputs are preserved as historical evidence.
+
 ## Inputs and evidence
 
 - NIST replication instructions v4, all 38 bill-of-material rows and nine original
@@ -41,6 +47,8 @@ The source files provide small, bounded inspection helpers:
 - `native_cad_audit.py`: recover named metadata streams, saved instance transforms
   and native previews. Verify decompressed size/CRC and assembly bounding boxes.
   Native B-rep and mate constraints are not decoded.
+- `task_requirements.json`: current user-chosen depth and paused stage status;
+  this is not an executed or corrected goal registry.
 - `build_reference.py`: create the static source gallery and a preservation receipt;
   it does not create new mating or grasp poses.
 
@@ -55,6 +63,8 @@ the extracted raw evidence; they are not automatically inferred task goals.
 Offline checks cover stream decoding/CRC, matrix transpose and parent chaining,
 173 proper component transforms and reconstruction of assembly bounds.
 
-All existing numerical measurements remain unchanged. A visible supersession
+All historical numerical measurements remain unchanged. A visible supersession
 notice on the earlier mating review identifies the corrected mounting and hole
-assignments. Frozen October 28 grasp outputs and launched inputs remain intact.
+assignments. Frozen October 28 grasp outputs and selector inputs remain intact.
+The active scene source changed during implementation; its exact original bytes
+are saved and hash-checked through the recorded source migration.

@@ -4,6 +4,11 @@ Reviewed on October 29, 2026. This is a source and static CAD inspection, with
 grasp generation, pickup, assembly and physics execution paused. The pipeline
 selects grasps geometrically; VLM selection is excluded.
 
+The findings below are implemented in the
+[current scene/task correction](../experiments/nist_scene_corrections_20261029/README.md).
+See its corrected side views and verification receipt. The source inspection
+and saved native placements remain separate evidence from physical assembly.
+
 The official design resolves several errors in our scene and inferences in the
 October 28 mating review. **The waterproof connector mounts vertically on a
 horizontal board. USB and DSUB receiver locations were swapped in our scene;
@@ -58,11 +63,15 @@ view: its X coordinates are reflected relative to the native board coordinates.
 Accounting for that reflection reconciles the labeled pilot holes; an initial
 unreflected comparison was discarded.
 
-Our user-selected pin target stays **12 mm below the board top**, giving
-3.0084 mm protrusion below the underside. This is a deliberate insertion target,
+The current user-selected pin target is **20 mm below the board top**, giving
+11.0084 mm protrusion below the underside. This is a deliberate insertion target,
 not the fully bottomed-out pin position described by the 2017 rules. Those rules
 award full peg seating when the bottom is constrained against the underlying
-surface. We have not changed the chosen 12 mm requirement.
+surface. The current requirement is recorded in
+[task_requirements.json](../experiments/nist_official_reference_20261029/task_requirements.json).
+It is applied to the current goal transforms and protected regions. Earlier
+review outputs use the previous 12 mm target and remain unchanged as historical
+measurements.
 
 ## What the official design says about the parts
 
@@ -137,7 +146,7 @@ Saved configuration placements require careful use:
   converted STL frame. Match component geometry/datums before transferring a
   matrix. A cable's bounding-box center is particularly unsuitable as a connector
   mating datum.
-- Our chosen 12 mm pin target is a task override, not a claim that the saved
+- Our chosen 20 mm pin target is a task override, not a claim that the saved
   native pin placement already has that depth.
 - Saved waterproof/DSUB references have approximately 0.25 mm Y differences
   against the plate mounting-group centers. Do not equate a matching bounding
@@ -150,14 +159,16 @@ Saved configuration placements require careful use:
 
 The official source inspection supersedes the mounting and destination
 conclusions in the [earlier mating review](../experiments/nist_mating_goals_20261028/README.md).
-Its side-section numbers and all October 28 grasp outcomes are preserved. No
-simulation layout, grasp input or historical result was silently rewritten.
+Its side-section numbers and all October 28 grasp outcomes are preserved.
 
-Before resuming grasp generation, transfer the official component references
-into our explicit board/STL frames, apply the documented finished-hole geometry
-and the retained 12 mm pin target, then review the corrected side views. This is
-a scene/reference correction, not a new grasping research problem. No VLM,
-pickup, insertion, release or robot-planning work is introduced here.
+The [implemented correction](../experiments/nist_scene_corrections_20261029/README.md)
+updates active scene construction, explicit board/STL task transforms, nominal
+finished-hole geometry, 20 mm pin targets and protected insertion regions.
+The [current selector](../experiments/cad_grasp_selection_20261029/README.md) uses
+the agreed fingertip reference. Exact old scene-source bytes are preserved in
+a recorded snapshot; the active file is no longer claimed hash-identical to
+the old run. Native CAD/STL sources and old numerical outcomes remain unchanged.
+No VLM, grasp trial, pickup, insertion, release or robot-planning execution ran.
 
 The inspection scripts and reproduction instructions are in
 [the source audit README](../experiments/nist_official_reference_20261029/README.md).

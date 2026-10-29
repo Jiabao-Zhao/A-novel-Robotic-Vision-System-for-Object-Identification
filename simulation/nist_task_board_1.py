@@ -1,7 +1,8 @@
 """Official NIST ATB1 meshes in a custom LIBERO perception scene.
 
-Run in the existing WSL LIBERO environment. This is not an assembly benchmark:
-removable parts use convex collision hulls, without insertion/threading models.
+Run in the existing WSL LIBERO environment. Official mounting transforms and
+finished round-pin holes are used. This remains a perception scene: component
+collision hulls do not establish insertion, electrical contact or threading.
 """
 
 import hashlib
@@ -28,22 +29,24 @@ BOARD_CENTER_XY_M = np.array([0.0, 0.065])
 FLOOR_Z_M = 0.0
 BOARD_BOTTOM_Z_M = FLOOR_Z_M + 0.020
 
-# Centers measured from the official plate STL, in its millimetre XY frame.
+# Mounting groups in original plate STL millimetres. These identify assets and
+# the reviewed source layout; actual placement uses full native-CAD transforms
+# below, including the explicit plate-frame conversion and mounting datums.
 FIXTURES = (
     ("Gear_Plate", 171.45, 47.176, 0.0, -90),
     ("Gear_Shaft", 141.45, 47.176, 5.0, 0),
     ("Gear_Shaft", 191.45, 47.176, 5.0, 0),
     ("Gear_Shaft", 221.45, 47.176, 5.0, 0),
-    ("M4_Screw", 191.45, 347.176, -7.0, 0),
-    ("M8_Screw", 41.45, 47.176, -9.0, 0),
-    ("M12_Screw", 41.45, 122.176, -11.0, 0),
-    ("M16_Screw", 341.45, 47.176, -16.0, 0),
+    ("M4_Screw", 191.45, 122.176, -12.9916, 0),
+    ("M8_Screw", 41.45, 47.176, -16.9916, 0),
+    ("M12_Screw", 266.45, 347.176, -20.9916, 0),
+    ("M16_Screw", 341.45, 47.176, -24.9916, 0),
     ("BNC_Female", 191.45, 279.676, -2.85, 0),
-    ("USB_Female", 266.45, 197.176, 0.0, 0),
+    ("USB_Female", 41.45, 272.176, 0.0, 0),
     ("RJ45_Housing", 341.45, 347.176, 0.0, 0),
     ("RJ45_Female", 341.45, 347.176, 2.0, 0),
-    ("DB_Housing", 41.45, 272.176, 0.0, -90),
-    ("DSUB_Female", 41.45, 272.176, 9.0, -90),
+    ("DB_Housing", 266.45, 197.176, 0.0, -90),
+    ("DSUB_Female", 266.45, 197.176, 9.0, -90),
     ("Waterproof_Female", 116.45, 197.176, 0.0, 0),
 )
 PARTS = (
@@ -117,6 +120,22 @@ def _values(values):
     return " ".join(f"{value:.9g}" for value in values)
 
 
+def _quaternion_wxyz(transform):
+    """MuJoCo quaternion for an explicit proper homogeneous pose."""
+    from scipy.spatial.transform import Rotation
+
+    transform = np.asarray(transform, float)
+    if transform.shape != (4, 4) or not np.all(np.isfinite(transform)):
+        raise ValueError('Component pose must be a finite 4x4 matrix')
+    rotation = transform[:3, :3]
+    if (not np.allclose(transform[3], [0, 0, 0, 1], atol=1e-10, rtol=0)
+            or not np.allclose(rotation.T @ rotation, np.eye(3), atol=1e-10, rtol=0)
+            or not np.isclose(np.linalg.det(rotation), 1., atol=1e-10, rtol=0)):
+        raise ValueError('Component pose must use a proper rigid rotation')
+    xyzw = Rotation.from_matrix(rotation).as_quat()
+    return xyzw[[3, 0, 1, 2]]
+
+
 def _color(name):
     if name == BOARD_FILE:
         return "0.90 0.90 0.85 1"
@@ -131,21 +150,24 @@ def _color(name):
 
 def add_board_scene(model, mesh_dir, dimensions, parts=PARTS, placements=None):
     """Add fixed hardware and the selected movable parts before compilation."""
-    import open3d as o3d
+    from .nist_board_geometry import prepare_finished_board, read_binary_stl
+    from experiments.nist_scene_corrections_20261029.native_goals import fixture_transforms
 
+    finished_board, _ = prepare_finished_board(mesh_dir)
     for name in dimensions:
-        ET.SubElement(model.asset, "mesh", name=f"nist_{name}", file=str(mesh_dir / f"{name}_m.stl"))
+        file = finished_board if name == BOARD_FILE else Path(mesh_dir) / f"{name}_m.stl"
+        ET.SubElement(model.asset, "mesh", name=f"nist_{name}", file=str(file))
     board_height = dimensions[BOARD_FILE][2]
-    board_top = BOARD_BOTTOM_Z_M + board_height
     board = ET.SubElement(model.worldbody, "body", name="nist_board",
                           pos=_values([*BOARD_CENTER_XY_M, BOARD_BOTTOM_Z_M + board_height / 2]))
-    ET.SubElement(board, "geom", name="nist_board_visual", type="mesh", mesh=f"nist_{BOARD_FILE}",
+    # Native assembly works from plate -Z. Rx(pi) flips both Y and Z and keeps
+    # a right-handed frame. Fixtures and goals use the same conversion.
+    plate_body = ET.SubElement(board, "body", name="nist_board_mesh", quat="0 1 0 0")
+    ET.SubElement(plate_body, "geom", name="nist_board_visual", type="mesh", mesh=f"nist_{BOARD_FILE}",
                   rgba=_color(BOARD_FILE), contype="0", conaffinity="0", group="1")
     # A single MuJoCo mesh collision would close all holes with its convex hull.
     # Extrude each bottom-surface triangle instead to preserve the plate openings.
-    plate = o3d.io.read_triangle_mesh(str(mesh_dir / f"{BOARD_FILE}_m.stl"))
-    vertices = np.asarray(plate.vertices)
-    triangles = np.asarray(plate.triangles)
+    vertices, triangles = read_binary_stl(finished_board)
     bottom = vertices[:, 2].min()
     triangles = triangles[np.all(np.isclose(vertices[triangles, 2], bottom, atol=1e-8), axis=1)]
     for index, triangle in enumerate(triangles):
@@ -155,16 +177,22 @@ def add_board_scene(model, mesh_dir, dimensions, parts=PARTS, placements=None):
         upper = lower + [0, 0, board_height]
         name = f"nist_plate_collision_{index}"
         ET.SubElement(model.asset, "mesh", name=name, vertex=_values(np.vstack((lower, upper)).ravel()))
-        ET.SubElement(board, "geom", type="mesh", mesh=name, group="0", friction="0.6 0.005 0.0001")
+        ET.SubElement(plate_body, "geom", type="mesh", mesh=name, group="0", friction="0.6 0.005 0.0001")
     for x in (-0.175, 0.175):
         for y in (-0.175, 0.175):
             ET.SubElement(board, "geom", type="cylinder", size="0.003 0.01",
                           pos=_values([x, y, -board_height / 2 - 0.01]), rgba="0.5 0.55 0.6 1", group="1")
 
-    def component(name, instance, position, yaw=0, movable=False):
-        angle = np.deg2rad(yaw) / 2
+    def component(name, instance, position=None, yaw=0, movable=False, transform=None):
+        if transform is not None:
+            transform = np.asarray(transform, float)
+            quaternion = _quaternion_wxyz(transform)
+            position = transform[:3, 3]
+        else:
+            angle = np.deg2rad(yaw) / 2
+            quaternion = [np.cos(angle), 0, 0, np.sin(angle)]
         body = ET.SubElement(model.worldbody, "body", name=instance, pos=_values(position),
-                             quat=_values([np.cos(angle), 0, 0, np.sin(angle)]))
+                             quat=_values(quaternion))
         if movable:
             ET.SubElement(body, "freejoint", name=f"{instance}_joint")
         ET.SubElement(body, "geom", name=f"{instance}_visual", type="mesh", mesh=f"nist_{name}",
@@ -172,10 +200,10 @@ def add_board_scene(model, mesh_dir, dimensions, parts=PARTS, placements=None):
         ET.SubElement(body, "geom", name=f"{instance}_collision", type="mesh", mesh=f"nist_{name}",
                       group="0", density="1200" if "Gear" in name else "3000", friction="0.8 0.005 0.0001")
 
-    for index, (name, x_mm, y_mm, base_mm, yaw) in enumerate(FIXTURES):
-        xy = (np.array([x_mm, y_mm]) - 192) * 0.001 + BOARD_CENTER_XY_M
-        component(name, f"nist_fixture_{index}",
-                  [*xy, board_top + base_mm * 0.001 + dimensions[name][2] / 2], yaw)
+    for fixture in fixture_transforms(mesh_dir):
+        pose = np.asarray(fixture['board_T_mesh'], float).copy()
+        pose[:3, 3] += [*BOARD_CENTER_XY_M, BOARD_BOTTOM_Z_M + board_height / 2]
+        component(fixture['name'], fixture['instance'], transform=pose)
     for index, name in enumerate(parts):
         row, column = divmod(index, 10)
         placement = (placements[name] if placements else

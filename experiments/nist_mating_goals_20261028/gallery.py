@@ -260,7 +260,7 @@ summary{cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size
 The official NIST design requires vertical waterproof mating, exchanges our USB/DSUB receiver locations, and corrects M4/M12 bolts assigned to pin holes.
 The round-12 alternate hole used below belongs to the M12 bolt. These drawings preserve the earlier mesh diagnostics; they are not the corrected official assembly layout.
 See the <a href="../../nist_official_reference_20261029/gallery/index.html">official source gallery</a> and
-<a href="../../../docs/nist_task_board_1_reference.md">reference report</a>. User-selected pin depth remains 12 mm.</p>
+<a href="../../../docs/nist_task_board_1_reference.md">reference report</a>. Current pin-tip target is 20 mm below the board top; the 12 mm drawings below remain historical and have not been regenerated.</p>
 <p>Twelve parts compared with their actual receiver meshes. Old goals appear in the upper row; reviewed references in the lower row.
 These are mesh sections: gray receiver, blue reviewed part, orange insertion arrow and red overlapping solid areas where both sections close.</p>
 <p class="notice">Grasp generation, pickup and assembly remain paused. The pipeline makes the final grasp decision using geometric criteria and deterministic priorities; VLM selection is not part of the pipeline. A reference shown here is not automatically a verified seated goal.

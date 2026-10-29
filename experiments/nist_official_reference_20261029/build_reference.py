@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 import re
 
+from experiments.nist_scene_corrections_20261029.history import historical_source
+
 ROOT = Path(__file__).resolve().parents[2]
 OUTPUT = ROOT / 'outputs/nist_official_reference_20261029'
 
@@ -19,6 +21,8 @@ def build():
     web = json.loads((OUTPUT / 'web_findings.json').read_text(encoding='utf-8'))
     native = json.loads((OUTPUT / 'native_cad_audit.json').read_text(encoding='utf-8'))
     instructions = json.loads((OUTPUT / 'instructions_findings.json').read_text(encoding='utf-8'))
+    requirements = json.loads((ROOT / 'experiments/nist_official_reference_20261029/task_requirements.json').read_text(encoding='utf-8'))
+    depth_mm = requirements['pin_tip_depth_below_board_top_m'] * 1000
     assert sha(ROOT / instructions['source_path']) == instructions['source_sha256']
     assert sha(ROOT / native['archive']) == native['archive_sha256']
     frozen = ROOT / 'outputs/cad_grasp_selection_20261028/runs/20261028T190844Z'
@@ -29,7 +33,7 @@ def build():
     pinned_count = 0
     for category in ['source_sha256', 'protected_sha256']:
         for name, expected in launch[category].items():
-            assert sha(ROOT / name.replace('\\', '/')) == expected, name
+            assert sha(historical_source(name, expected)) == expected, name
             pinned_count += 1
 
     gallery = OUTPUT / 'gallery'
@@ -63,9 +67,12 @@ article{background:white;border:1px solid #d6dce2;border-radius:8px;padding:18px
 <p>Source inspection, October 29, 2026. Original NIST photographs and native CAD evidence, with setup corrections.</p>
 <p class="notice"><strong>Grasp generation and pickup/assembly execution remain paused. VLM selection is excluded.</strong>
 The earlier horizontal waterproof reference was a mounting error. USB/DSUB locations were swapped, and M4/M12 fixtures occupied pin holes.
-No simulation layout or historical numerical result was changed during this source audit.</p>
+The corrections are now implemented in the <a href="../../nist_scene_corrections_20261029/gallery/index.html">corrected scene and goal references</a>.
+Historical numerical outcomes remain unchanged; the exact old scene source is retained in a recorded snapshot.</p>
 <p>Native board: <strong>384 × 384 × 8.9916 mm</strong>. Underside clearance: <strong>20 mm</strong>.
-Finished round-hole drill sizes: <strong>4.1, 8.1, 12.2 and 16.5 mm</strong>. Keep the user-selected <strong>12 mm</strong> pin-tip depth as our task override.</p>
+Finished round-hole drill sizes: <strong>4.1, 8.1, 12.2 and 16.5 mm</strong>.
+Current pin-tip target: <strong>PIN_DEPTH_MM mm below the board top</strong>.
+This requirement is applied to current goal transforms and protected regions; earlier 12 mm review outputs remain historical.</p>
 <p><a href="../../../docs/nist_task_board_1_reference.md">Detailed source report</a> ·
 <a href="../native_cad/placement_summary.json">Saved native placements and discrepancies</a> ·
 <a href="../native_cad_audit.json">Full CAD audit and matrices</a> ·
@@ -74,6 +81,7 @@ Finished round-hole drill sizes: <strong>4.1, 8.1, 12.2 and 16.5 mm</strong>. Ke
 <p>Saved placements are reference configurations, not physical fit certificates. Native working-face −Z differs from simulation +Z.
 Waterproof/DSUB saved placements include about 0.25 mm Y differences against plate mounting centers; match mating datums before transfer.</p>
 <div class="grid">''' + cards + '</div><h2>Primary sources</h2><ul>' + sources + '</ul></main></html>'
+    page = page.replace('PIN_DEPTH_MM', f'{depth_mm:g}')
     target = gallery / 'index.html'
     target.write_text(page, encoding='utf-8')
     checked_links = 0
@@ -85,20 +93,24 @@ Waterproof/DSUB saved placements include about 0.25 mm Y differences against pla
     old = ROOT / 'outputs/nist_mating_goals_20261028'
     preserved = {str(p.relative_to(ROOT)).replace('\\', '/'): sha(p)
                  for p in old.glob('*.json') if p.name != 'source_inventory.json'}
-    receipt = dict(scope='Official document and static native-CAD inspection only',
+    receipt = dict(scope='Official source inspection with linked authorized scene/task corrections; no grasp or robot execution',
         date='2026-10-29', source_docx_and_cad_archive_match_recorded_hashes=True,
+        current_pin_tip_depth_below_board_top_m=requirements['pin_tip_depth_below_board_top_m'],
+        task_requirement_applied_to_scene_or_goal_transforms=requirements['applied_to_scene_or_goal_transforms'],
         frozen_grasp_publication_files_verified=len(publication['files']),
         frozen_launched_source_and_protected_inputs_verified=pinned_count,
+        historical_source_changes_receipt='experiments/nist_scene_corrections_20261029/source_migrations.json',
         local_gallery_links_checked=checked_links,
         earlier_mating_review_numerical_files_retained_sha256=preserved,
         current_scene_source_sha256=sha(ROOT / 'simulation/nist_task_board_1.py'),
         grasp_generation=False, VLM=False, pickup=False, assembly=False,
-        physics_steps=False, simulation_layout_changed=False,
+        physics_steps=False, simulation_layout_changed=requirements['applied_to_scene_or_goal_transforms'],
         native_matrix_checks='native_cad/offline_checks.json',
-        note='Earlier review receives visible prose supersession notices only; no numerical outcome regeneration.')
+        note='Earlier review receives prose supersession notices only. Current corrected scene/goals are separate; old numerical outcomes were not regenerated.')
     (OUTPUT / 'preservation_receipt.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
-    inventory = {str(p.relative_to(ROOT)).replace('\\', '/'): sha(p)
-                 for p in sorted((ROOT / 'experiments/nist_official_reference_20261029').glob('*.py'))}
+    sources = list((ROOT / 'experiments/nist_official_reference_20261029').glob('*.py'))
+    sources.append(ROOT / 'experiments/nist_official_reference_20261029/task_requirements.json')
+    inventory = {str(p.relative_to(ROOT)).replace('\\', '/'): sha(p) for p in sorted(sources)}
     (OUTPUT / 'source_inventory.json').write_text(json.dumps(dict(
         description='Post-inspection source inventory, not a pre-run freeze', sha256=inventory), indent=2) + '\n', encoding='utf-8')
     print(json.dumps({k: receipt[k] for k in [

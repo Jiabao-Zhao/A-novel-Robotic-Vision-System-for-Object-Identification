@@ -6,9 +6,10 @@ this review's horizontal waterproof reference and some destination assignments.
 The receiver should face upward; our USB/DSUB locations were swapped, and M4/M12
 bolts were assigned to pin holes. In particular, the alternate round-12 hole
 selected below is the M12 bolt location. Treat this registry as historical
-inspection data pending explicit native-CAD frame conversion, not corrected
-goals ready for use. The user-selected 12 mm depth is retained. Mesh sections,
-measured numbers and historical grasp outcomes are unchanged.
+inspection data. The [implemented correction](../nist_scene_corrections_20261029/README.md)
+provides the converted current references. The current user-selected depth is **20 mm below the board
+top**; the 12 mm outputs below are historical and have not been regenerated.
+Mesh sections, measured numbers and historical grasp outcomes are unchanged.
 
 Review the twelve products in the current eight-scene grasp study against their
 actual receiver CADs before resuming grasp generation. This work runs no grasp

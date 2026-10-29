@@ -12,10 +12,12 @@ flowchart LR
     B --> F[DINO appearance and CAD/depth verification]
     E --> F
     F --> G[Object match and aligned CAD pose]
-    G --> H[CAD grasp candidates]
-    H --> I[Mandatory geometry checks]
-    I --> J[Geometric priority selection]
-    J --> K[One selected grasp or no valid grasp]
+    G --> H[Explicit CAD contact regions]
+    M[Known assembly pose and CAD task labels] --> H
+    H --> I[Bounded region-guided ray candidates]
+    I --> J[Mandatory geometry checks]
+    J --> K[Geometric priority selection]
+    K --> L[One selected grasp or no valid grasp]
 ```
 
 The pipeline selects the final grasp itself using geometric criteria and
@@ -49,9 +51,10 @@ Grasp candidates do not establish physical pickup, holding or assembly success.
 | CAD/depth fitting and verification | [scripts/surface_verification.py](scripts/surface_verification.py), [geometry.py](experiments/nist12_qwen_clip_reranking_20261023/depth_verification_20261023/geometry.py) — native-scale support hypotheses, table-plane refinement, silhouette/depth agreement |
 | Tested DINO/depth fusion | [select_results.py](experiments/nist12_qwen_clip_reranking_20261023/depth_verification_20261023/select_results.py) — historical experiment selector |
 | Reusable table-constrained alignment | [CADPointCloudRegistration.py](CADPointCloudRegistration.py) |
-| Task references before further grasp trials | [Official NIST source audit](docs/nist_task_board_1_reference.md): native assembly placements, vertical connector mounting, finished-hole requirements and receiver-location corrections; supersedes mounting/destination assumptions in the earlier side-section review |
+| Corrected scene and task references | [Implemented NIST corrections](experiments/nist_scene_corrections_20261029/README.md): full receiver transforms, finished holes, 20 mm pin goals and mating/protected regions |
 | Grasp inputs and finite-hand geometry | [inputs.py](experiments/cad_grasp_geometry_20261026/inputs.py), [geometry_kernel.py](experiments/cad_grasp_geometry_20261026/geometry_kernel.py), [hand_model.py](experiments/cad_grasp_geometry_20261026/hand_model.py) |
-| Current grasp generation and selection | [Priority selector](experiments/cad_grasp_selection_20261028/README.md), [pipeline.py](experiments/cad_grasp_selection_20261028/pipeline.py): at most 100 complete poses, modeled geometry checks, then moment arm → surface centrality → downward preference; no grouping or mandatory downward gate |
+| Current grasp generation and selection | [Surface-contact refinement](experiments/cad_grasp_refinement_20261029/README.md), [support_pipeline.py](experiments/cad_grasp_refinement_20261029/support_pipeline.py): bounded allowed-region rays, shared one-degree contact rule, verified round-pin side normals, dimension-consistent pad contacts, complete-hand checks and deterministic priority selection |
+| Preserved region-guided comparison | [Assembly-guided fingertip selector](experiments/cad_grasp_selection_20261029/README.md): the preceding allowed-patch sampler and fingertip/contact calibration; preserved for the controlled comparison |
 | NIST scenes and reference views | [simulation/nist_task_board_1.py](simulation/nist_task_board_1.py), [simulation/nist_capture.py](simulation/nist_capture.py), [simulation/nist_cad_views.py](simulation/nist_cad_views.py) |
 
 The historically named `nist12_qwen_clip_reranking_20261023` folder still houses
@@ -131,15 +134,42 @@ Keep these claims separate:
   Pickup and assembly execution remain paused. The older
   [sampler recommendation](experiments/cad_grasp_method_comparison_20261026/recommendation.md)
   describes its historical downward-only, reduced-pair study.
-- Grasp generation remains paused during the
-  [official NIST reference audit](docs/nist_task_board_1_reference.md). Native CAD
-  confirms vertical waterproof mating and exposes swapped USB/DSUB receiver
-  locations and M4/M12 bolts assigned to pin holes. The earlier mating registry
-  is superseded for those mounting/destination assumptions. Official saved CAD
-  placements still need explicit conversion into our board/STL frames; they are
-  not physical seating validation. Keep the user-selected 12 mm pin depth.
-  No scene update or execution has run. Historical grasp results and source
-  hashes remain unchanged.
+- [Scene and goal corrections](experiments/nist_scene_corrections_20261029/README.md)
+  implement vertical waterproof mounting, corrected USB/DSUB locations, M4/M12
+  hole assignments, bolt underside mounting and finished round-hole geometry.
+  Native/STL frame mappings and explicit CAD datums transfer task references;
+  they are not physical seating validation. The current user-selected pin-tip depth is
+  **20 mm below the board top**, recorded in the
+  [task requirement](experiments/nist_official_reference_20261029/task_requirements.json).
+  Earlier 12 mm review outputs are historical and have not been regenerated.
+  The current selector uses corrected task inputs and a calibrated fingertip
+  frame. Explicit positive CAD labels intersect the complement of protected
+  insertion/seating regions before area-weighted sampling; both contacts must
+  remain allowed before the orientation bank and 100-pose cap. Rays and collision
+  checks retain the complete CAD. These training-free annotations are our local
+  adaptation, not physical grip validation. The
+  [current refinement](experiments/cad_grasp_refinement_20261029/README.md) uses
+  the same one-degree normal-alignment tolerance when proposing and checking
+  contacts. A verified cylinder-side model applies to the three round pins;
+  BNC does not pass that model's verification and retains triangle normals.
+  Rays start on the CAD surface, avoiding the old fixed 0.5 mm inward jump.
+  All original part triangles and complete palm, finger and pad geometry remain
+  in collision checks. Independent failure categories record every available
+  check outcome; one pose may fail several categories.
+  The completed eight-scene comparison has **33/96 placements and 368 valid
+  poses** for the controlled previous construction, versus **35/96 placements
+  and 495 valid poses** in the final refined set, from 9,600 proposals per set.
+  Four round-pin placements gained a valid grasp and two waterproof placements
+  lost one. The final set combines 72 unchanged cases with 24 round-pin cases
+  rechecked after correcting how finite pad contact is represented; the
+  regenerated round-pin candidate banks were identical. Original trials remain
+  preserved. This derived set has no separately measured full-run wall time.
+  See the [final report](outputs/cad_grasp_refinement_20261029/runs/20261029T160919Z/support_corrected/report.md)
+  and [selected grasps with pickup side views](outputs/cad_grasp_refinement_20261029/runs/20261029T160919Z/support_corrected/gallery/index.html).
+  These are modeled grasp availability counts. VLM selection is excluded;
+  pickup and assembly execution remain paused.
+  Historical results and selector sources remain unchanged; the old scene
+  source is preserved in a hash-checked snapshot before updating the active file.
 - The retained robustness scope is 220 NIST inputs and 2,720 queries.
   Classification accuracy evaluation remains incomplete.
 

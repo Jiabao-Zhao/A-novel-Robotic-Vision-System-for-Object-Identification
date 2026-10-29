@@ -1,6 +1,9 @@
 # CAD grasp selection with explicit priorities
 
-This is the active October 28 revision requested after the Fabrica studies.
+This is the historical October 28 revision requested after the Fabrica studies.
+The [October 29 fingertip adapter](../cad_grasp_selection_20261029/README.md)
+and [corrected scene/task inputs](../nist_scene_corrections_20261029/README.md)
+are current. This revision's Python sources and measured results are preserved.
 It implements a callable selector and a small JSON entry point. It has offline
 tests and a completed CAD-derived geometric trial over N00–N07. No new perception
 run, VLM call, robot motion, pickup or assembly execution has run.
