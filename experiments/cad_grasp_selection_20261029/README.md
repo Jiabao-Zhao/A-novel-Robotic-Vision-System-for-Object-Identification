@@ -7,7 +7,7 @@ region-guided implementation used for comparison and the shared corrected-task,
 region and fingertip helpers. Its `pipeline.select_grasp` and JSON entry point
 remain available with their recorded assumptions.
 
-The current refinement is
+The preserved surface-contact refinement is
 [`experiments/cad_grasp_refinement_20261029`](../cad_grasp_refinement_20261029/README.md).
 It shares a one-degree proposal/check normal rule, verifies side models for the
 three round pins (BNC retains triangle normals), begins rays on the CAD surface,
@@ -19,10 +19,23 @@ per set. Four round-pin placements gained a grasp and two waterproof placements
 lost one. The final set combines 72 unchanged cases with 24 round-pin cases
 rechecked after a finite-pad witness correction; their regenerated banks were
 identical. Original trials are preserved and no standalone final full-run wall
-time is reported. The current callable is
+time is reported. Its preserved callable is
 `experiments.cad_grasp_refinement_20261029.support_pipeline.select_grasp`.
 See the [final report](../../outputs/cad_grasp_refinement_20261029/runs/20261029T160919Z/support_corrected/report.md)
 and [selected-contact/pickup-side gallery](../../outputs/cad_grasp_refinement_20261029/runs/20261029T160919Z/support_corrected/gallery/index.html).
+
+The current callable is
+`experiments.cad_fingertip_contacts_20261029.pipeline.select_grasp`, documented
+in the [finger-contact study](../cad_fingertip_contacts_20261029/README.md).
+It fits first contact on existing inward faces near the ends of the original
+finger collision hulls, retaining the complete hand and original pads. Its full
+eight-scene trial selected grasps in 37/96 placements, with 75 valid poses from
+9,600 proposals in 230.30 s. Against the preserved 35/96, 495-pose baseline,
+13 placements gained a selected grasp and 11 lost one. This modest net gain
+does not establish physical contact reliability; the collision hull bridges a
+groove in the visual finger. The round 8 mm pin still has no selected grasp in
+the eight-scene trial. See the [new report](../../outputs/cad_fingertip_contacts_20261029/runs/20261029T180942Z/report.md)
+and [pickup gallery](../../outputs/cad_fingertip_contacts_20261029/runs/20261029T180942Z/gallery/index.html).
 The detailed equations below describe this preserved sampler, including its
 0.95 proposal threshold and fixed inward ray offset; those two choices do not
 describe the refined sampler. Geometric availability is separate from physical

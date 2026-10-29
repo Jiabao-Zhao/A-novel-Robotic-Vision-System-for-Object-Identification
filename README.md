@@ -53,7 +53,8 @@ Grasp candidates do not establish physical pickup, holding or assembly success.
 | Reusable table-constrained alignment | [CADPointCloudRegistration.py](CADPointCloudRegistration.py) |
 | Corrected scene and task references | [Implemented NIST corrections](experiments/nist_scene_corrections_20261029/README.md): full receiver transforms, finished holes, 20 mm pin goals and mating/protected regions |
 | Grasp inputs and finite-hand geometry | [inputs.py](experiments/cad_grasp_geometry_20261026/inputs.py), [geometry_kernel.py](experiments/cad_grasp_geometry_20261026/geometry_kernel.py), [hand_model.py](experiments/cad_grasp_geometry_20261026/hand_model.py) |
-| Current grasp generation and selection | [Surface-contact refinement](experiments/cad_grasp_refinement_20261029/README.md), [support_pipeline.py](experiments/cad_grasp_refinement_20261029/support_pipeline.py): bounded allowed-region rays, shared one-degree contact rule, verified round-pin side normals, dimension-consistent pad contacts, complete-hand checks and deterministic priority selection |
+| Current grasp generation and selection | [Modeled finger-end contacts](experiments/cad_fingertip_contacts_20261029/README.md), [pipeline.py](experiments/cad_fingertip_contacts_20261029/pipeline.py): CAD region rays, static first-contact fitting on original inward finger hull faces, complete-hand checks and deterministic priority selection |
+| Preserved surface-contact baseline | [Surface-contact refinement](experiments/cad_grasp_refinement_20261029/README.md): shared one-degree contact rule, verified round-pin side normals and finite-pad witness correction; the preserved 35/96, 495-valid-pose comparison |
 | Preserved region-guided comparison | [Assembly-guided fingertip selector](experiments/cad_grasp_selection_20261029/README.md): the preceding allowed-patch sampler and fingertip/contact calibration; preserved for the controlled comparison |
 | NIST scenes and reference views | [simulation/nist_task_board_1.py](simulation/nist_task_board_1.py), [simulation/nist_capture.py](simulation/nist_capture.py), [simulation/nist_cad_views.py](simulation/nist_cad_views.py) |
 
@@ -148,7 +149,7 @@ Keep these claims separate:
   remain allowed before the orientation bank and 100-pose cap. Rays and collision
   checks retain the complete CAD. These training-free annotations are our local
   adaptation, not physical grip validation. The
-  [current refinement](experiments/cad_grasp_refinement_20261029/README.md) uses
+  [preserved surface-contact refinement](experiments/cad_grasp_refinement_20261029/README.md) uses
   the same one-degree normal-alignment tolerance when proposing and checking
   contacts. A verified cylinder-side model applies to the three round pins;
   BNC does not pass that model's verification and retains triangle normals.
@@ -170,6 +171,20 @@ Keep these claims separate:
   pickup and assembly execution remain paused.
   Historical results and selector sources remain unchanged; the old scene
   source is preserved in a hash-checked snapshot before updating the active file.
+- The current [finger-contact study](experiments/cad_fingertip_contacts_20261029/README.md)
+  fits first contact on the saved finger ends rather than extending pad boxes.
+  All original hand solids remain present. Its full eight-scene trial selected
+  grasps in **37/96 placements**, with **75 valid poses from 9,600 proposals**,
+  in **230.30 s**. Against the preserved 35/96 baseline, 13 placements gained a
+  selected grasp and 11 lost one: a modest net gain of two, with fewer valid
+  candidates because the contact model changed. The round 8 mm pin still has
+  no selected grasp in its eight placements. The coarse collision hull bridges
+  a groove in the detailed visual finger; physical contact accuracy is unverified.
+  See the [report](outputs/cad_fingertip_contacts_20261029/runs/20261029T180942Z/report.md)
+  and [selected contacts with pickup side views](outputs/cad_fingertip_contacts_20261029/runs/20261029T180942Z/gallery/index.html).
+  These are geometric results; VLM selection is excluded and pickup/assembly
+  execution remain paused. The derived 35/96 baseline has no standalone wall
+  time, so these records do not establish a measured speedup against it.
 - The retained robustness scope is 220 NIST inputs and 2,720 queries.
   Classification accuracy evaluation remains incomplete.
 

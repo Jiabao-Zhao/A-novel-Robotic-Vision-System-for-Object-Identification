@@ -25,13 +25,17 @@ selection is the final decision, not a preliminary ranking for a VLM. Pickup
 and assembly execution remain paused.
 
 The current selector is
-`experiments/cad_grasp_refinement_20261029/support_pipeline.py:select_grasp`.
-The initial refinement's `pipeline.py` is preserved with its original trial.
+`experiments/cad_fingertip_contacts_20261029/pipeline.py:select_grasp`.
+The prior `cad_grasp_refinement_20261029.support_pipeline.select_grasp` and its
+35/96 result are preserved as the modeled pad-contact baseline.
 The preceding `experiments/cad_grasp_selection_20261029` implementation is
 preserved as the region-guided comparison and supplies the shared task and
 fingertip calibration helpers.
-It uses a calibrated physical fingertip reference and near-tip contact anchors,
-retaining complete finger/pad/palm geometry. Its task-input builder uses the
+The current selector keeps the physical fingertip pose reference separate from
+actual modeled contact points on the original inward finger hull faces. Static
+first-contact fitting determines where each jaw first touches the complete CAD;
+it does not simulate closing or move the part. Complete finger/pad/palm geometry
+is retained with no pad extension or removed vertices. Its task-input builder uses the
 corrected goals and receivers rather than the old nominal-goal adapter.
 Its default `assembly_region_guided` mode samples fixed-budget surface origins
 from exact clipped patches: allowed surface = positive CAD labels minus protected
@@ -58,7 +62,7 @@ Current pin-tip depth is 20 mm below the board top with chamfer-first direction
 and protected regions derived from those goals. The earlier 12 mm review remains
 historical. CAD placements remain reference targets, not physical fit validation.
 
-The active refinement makes the proposal and mandatory contact check use the
+The surface-contact refinement makes the proposal and mandatory contact check use the
 same one-degree normal-alignment tolerance. Only the three round pins pass the
 complete constant-radius side verification for radial contact normals. BNC
 retains its original triangle normals; the code does not impose a cylinder on
@@ -74,7 +78,7 @@ surface outcomes in one traversal. These category counts are nonexclusive.
 Unavailable checks cannot become passes. Selection retains the same moment-arm,
 surface-centrality, downward-angle and candidate-ID priorities.
 
-The eight-scene geometric comparison is complete. The controlled previous
+The preserved eight-scene geometric comparison is complete. The controlled previous
 construction selected a grasp in 33/96 placements, with 368 valid poses from
 9,600 proposals. The final refined set selected one in 35/96 placements, with
 495 valid poses from 9,600 proposals: four round-pin placements gained a valid
@@ -92,6 +96,28 @@ The original trials and exact case provenance remain preserved.
 
 Read the [final report](../outputs/cad_grasp_refinement_20261029/runs/20261029T160919Z/support_corrected/report.md)
 and [selected-contact gallery](../outputs/cad_grasp_refinement_20261029/runs/20261029T160919Z/support_corrected/gallery/index.html).
+
+The subsequent full finger-contact trial selected grasps in 37/96 placements,
+with 75 valid poses from 9,600 proposals in 230.30 seconds. The comparison to
+35/96 and 495 valid poses is a modest net gain of two placements: 13 gained and
+11 lost a selected grasp. A different contact mode can reduce the number of
+valid candidates while changing which placements retain any candidate. It does
+not establish universally better contact or assembly performance. The original
+CAD contact-pair/approach banks were retained; first-contact fits change the
+actual modeled contacts, holding opening and resulting hand placement.
+
+In the [separately declared N00 8 mm side-grip audit](../outputs/cad_fingertip_contacts_20261029/declared_side_grip_audit.json), complete-hand table
+clearance changed from −1.103 mm to +2.238 mm. That pose still fails the one-degree
+contact condition (about 1.107 degrees) and final board clearance. This isolated
+height check is not a selected grasp or pickup result. The full trial retained
+no grasp for the round 8 mm pin in all eight placements. The convex collision
+hull bridges a groove in the detailed visual finger, so contact there remains
+a model approximation requiring physical calibration.
+
+Read the [finger-contact report](../outputs/cad_fingertip_contacts_20261029/runs/20261029T180942Z/report.md)
+and [pickup gallery](../outputs/cad_fingertip_contacts_20261029/runs/20261029T180942Z/gallery/index.html).
+The recorded runtime includes cached first-contact fits for identical per-part
+CAD banks, geometry checking and result writes; it excludes galleries/reports.
 These counts measure geometric candidate availability, not physical performance.
 VLM selection is excluded; pickup, assembly, insertion and release execution
 remain paused. No corrected-scene physics/capture is part of this trial.

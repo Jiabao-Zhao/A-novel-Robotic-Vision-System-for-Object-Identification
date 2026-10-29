@@ -48,7 +48,7 @@ the exposed 30 mm of each 50 mm pin after 20 mm insertion, selected connector
 housing sides and external gear/nut surfaces. These are our initial training-free
 annotations; they do not establish physical graspability. Missing labels fail
 explicitly; unrestricted generic sampling requires an explicit mode choice.
-The [current refinement](../experiments/cad_grasp_refinement_20261029/README.md)
+The [preserved surface-contact refinement](../experiments/cad_grasp_refinement_20261029/README.md)
 shares the one-degree alignment tolerance between proposal and contact checking.
 Only the three round pins pass its cylinder-side verification; BNC retains
 triangle normals. Rays start on the source CAD surface rather than at a fixed
@@ -63,7 +63,7 @@ The controlled previous construction selected grasps in 33/96 placements, with
 gained a valid grasp and two waterproof placements lost one. Both use the same
 corrected goals/regions, complete hand, seeds and 100-pose cap.
 
-The current callable is `experiments.cad_grasp_refinement_20261029.support_pipeline.select_grasp`.
+That preserved callable is `experiments.cad_grasp_refinement_20261029.support_pipeline.select_grasp`.
 It includes a post-trial finite-pad witness correction: actual flat-area support
 uses the supporting mesh-face normal, while a true line contact on a verified
 round side uses its radial normal. Numerical strips around a line contact are
@@ -83,6 +83,36 @@ Read the [final report](../outputs/cad_grasp_refinement_20261029/runs/20261029T1
 and [selected-contact/pickup-side gallery](../outputs/cad_grasp_refinement_20261029/runs/20261029T160919Z/support_corrected/gallery/index.html).
 The historical October 28 4/96 result used different goals and contact conventions.
 No pickup or assembly improvement is measured by these geometric trials.
+
+The current callable is
+`experiments.cad_fingertip_contacts_20261029.pipeline.select_grasp`.
+The [finger-contact revision](../experiments/cad_fingertip_contacts_20261029/README.md)
+uses existing inward-facing triangles near the ends of the saved finger collision
+hulls. A static first-contact calculation fits each jaw to the complete CAD.
+No pad is extended and the original complete hand geometry is retained. The
+coarse collision hull bridges the detailed visual finger's central groove;
+these contacts are a model approximation, not validated physical surfaces.
+
+Its complete eight-scene trial selected 37/96 placements, with 75 valid poses
+from 9,600 proposals in 230.30 s. The preserved baseline has 35/96 and 495 valid
+poses: 13 placements gained a selected grasp and 11 lost one. This is a modest
+net gain of two placements with fewer valid candidates under the changed
+contact mode. The raw CAD contact-pair/approach banks match; actual fitted
+contacts, finger opening and hand placement differ. There is no standalone
+complete-run wall time for the derived baseline, so do not claim a measured
+speedup against it.
+
+The [declared N00 round 8 mm side-grip audit](../outputs/cad_fingertip_contacts_20261029/declared_side_grip_audit.json) changed its complete-hand table clearance
+from −1.103 mm (entering the table) to +2.238 mm (above it). It still fails contact
+alignment at about 1.107 degrees against the one-degree limit, and the palm
+intersects the board at the declared final goal. The full trial selects no round
+8 mm grasp in any of its eight placements. Improved table clearance alone is
+not a valid grasp or assembly result.
+
+Read the [new report](../outputs/cad_fingertip_contacts_20261029/runs/20261029T180942Z/report.md),
+[selected contact measurements](../outputs/cad_fingertip_contacts_20261029/runs/20261029T180942Z/selected_contacts.csv)
+and [selected contacts with pickup side views](../outputs/cad_fingertip_contacts_20261029/runs/20261029T180942Z/gallery/index.html).
+VLM selection is excluded; pickup and assembly execution remain paused.
 The active scene source changed, with exact old bytes retained in a recorded
 hash-checked snapshot. Source CAD assets remain unchanged.
 
@@ -104,6 +134,10 @@ hash-checked snapshot. Source CAD assets remain unchanged.
    counts, selected placements and wall time differ between its two controlled
    variants? Read each nonexclusive failure category separately; do not sum them
    as if each failed pose had only one cause.
+6. Which placements gained or lost a valid grasp after contact moved onto the
+   modeled finger ends? Compare measured contact coordinates and the unchanged
+   full-hand checks, keeping collision-hull assumptions separate from physical
+   contact accuracy.
 
 ## Interpretation requirements
 
