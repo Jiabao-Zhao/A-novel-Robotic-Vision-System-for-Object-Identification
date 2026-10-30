@@ -1,0 +1,80 @@
+{
+  "candidate": {
+    "candidate_id": "cnos-fastsam:000003:000369:6834",
+    "segmentor": "cnos-fastsam",
+    "source_id": "public_BOP23_default_CNOS_FastSAM:db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+    "source_kind": "predicted",
+    "source_file_sha256": "db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+    "segmentation_score": 0.29760634899139404,
+    "record_index": 6834
+  },
+  "source": {
+    "rgb": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000003/rgb/000369.png",
+    "depth": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000003/depth/000369.png",
+    "camera": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000003/scene_camera.json",
+    "rgb_sha256": "c3643743a19a885a5b8060e3b52604daf2dc4300d5551aed2f7549f318a33c59",
+    "depth_sha256": "eb109077a7ce577fbd360f9a78a89387dfa71d9efc5e13012dc0d8b884136c92",
+    "camera_sha256": "e16f55fb52bb03e45c933e781e29d06ce23ea876b34475d24f31be189b540d22",
+    "modality": "rgb",
+    "image_mode": "RGB",
+    "image_dtype": "uint8",
+    "depth_mode": "I;16",
+    "depth_dtype": "uint16",
+    "image_size_hw": [
+      540,
+      720
+    ]
+  },
+  "status": "failed",
+  "identity": {
+    "recipe": "966d495e64ee265f085139832bd479241f112c2303953164b091a2a26062af3d",
+    "candidate": {
+      "candidate_id": "cnos-fastsam:000003:000369:6834",
+      "segmentor": "cnos-fastsam",
+      "source_id": "public_BOP23_default_CNOS_FastSAM:db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+      "source_kind": "predicted",
+      "source_file_sha256": "db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+      "segmentation_score": 0.29760634899139404,
+      "record_index": 6834
+    },
+    "source": {
+      "rgb": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000003/rgb/000369.png",
+      "depth": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000003/depth/000369.png",
+      "camera": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000003/scene_camera.json",
+      "rgb_sha256": "c3643743a19a885a5b8060e3b52604daf2dc4300d5551aed2f7549f318a33c59",
+      "depth_sha256": "eb109077a7ce577fbd360f9a78a89387dfa71d9efc5e13012dc0d8b884136c92",
+      "camera_sha256": "e16f55fb52bb03e45c933e781e29d06ce23ea876b34475d24f31be189b540d22",
+      "modality": "rgb",
+      "image_mode": "RGB",
+      "image_dtype": "uint8",
+      "depth_mode": "I;16",
+      "depth_dtype": "uint16",
+      "image_size_hw": [
+        540,
+        720
+      ]
+    },
+    "CAD_feature_identity": "bce92636e59e39a4408a67a40133938baf46281a7ced2b39c4bc57ddc672c390"
+  },
+  "pose_direction": "original_CAD_to_camera",
+  "units": "metres",
+  "model_sha256": "c1cddeec2c10fb5131d312a4655c37b88bc9b51ffdc330bb500b6bab1cf20257",
+  "frozen_CAD_feature_identity": "bce92636e59e39a4408a67a40133938baf46281a7ced2b39c4bc57ddc672c390",
+  "resource_attempts": [
+    {
+      "attempt": 0,
+      "hypothesis_batch_size": 64,
+      "type": "FeatureDependencyError",
+      "reason": "original GeDi extraction failed (check local neighborhoods, LRF degeneracy and CUDA ops): ValueError: 'a' cannot be empty unless no samples are taken"
+    }
+  ],
+  "previous_blocked_attempts": [],
+  "failure_type": "FeatureDependencyError",
+  "reason": "original GeDi extraction failed (check local neighborhoods, LRF degeneracy and CUDA ops): ValueError: 'a' cannot be empty unless no samples are taken",
+  "traceback": "Traceback (most recent call last):\n  File \"/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/gedi/gedi.py\", line 254, in compute\n    inds = np.random.choice(_inds.numpy(), size=self.samples_per_patch_lrf, replace=False)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"numpy/random/mtrand.pyx\", line 951, in numpy.random.mtrand.RandomState.choice\nValueError: 'a' cannot be empty unless no samples are taken\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/source_snapshot/freezev2_repro/features.py\", line 512, in compute\n    value = self.backend.compute(pts=query, pcd=support)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/gedi/gedi.py\", line 257, in compute\n    inds = np.r_[_inds, np.random.choice(_inds.numpy(), self.samples_per_patch_lrf - len(_inds))]\n                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"numpy/random/mtrand.pyx\", line 951, in numpy.random.mtrand.RandomState.choice\nValueError: 'a' cannot be empty unless no samples are taken\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/source_snapshot/freezev2_repro/case_inference.py\", line 62, in infer_candidate\n    geometric=gedi.compute(cloud['sparse'],cloud['dense'],bundle['model']['diameter_m'])\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/source_snapshot/freezev2_repro/features.py\", line 518, in compute\n    raise FeatureDependencyError(\nfreezev2_repro.features.FeatureDependencyError: original GeDi extraction failed (check local neighborhoods, LRF degeneracy and CUDA ops): ValueError: 'a' cannot be empty unless no samples are taken\n",
+  "runtime_s": 0.14910808199965686,
+  "artifact_files": {
+    "crop.png": "2a596280cff3108f347c355c8acebbd645dd3ba6817fa3c113cf09047fe8161f",
+    "mask.png": "1e79cc96d98a52dfe3296e5d17432bea1247b7791dc2494e8a023a1b29e766c3"
+  }
+}

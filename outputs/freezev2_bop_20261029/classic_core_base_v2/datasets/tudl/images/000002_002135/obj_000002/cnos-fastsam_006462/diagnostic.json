@@ -1,0 +1,79 @@
+{
+  "candidate": {
+    "candidate_id": "cnos-fastsam:000002:002135:6462",
+    "segmentor": "cnos-fastsam",
+    "source_id": "public_BOP23_default_CNOS_FastSAM:400978b21a94aaa109d6e5039df7aefa7cdbdc6af037cbd1b05ab586ae6d540d",
+    "source_kind": "predicted",
+    "source_file_sha256": "400978b21a94aaa109d6e5039df7aefa7cdbdc6af037cbd1b05ab586ae6d540d",
+    "segmentation_score": 0.46158644556999207,
+    "record_index": 6462
+  },
+  "source": {
+    "rgb": "/mnt/d/BOP_SAM3_Pilot/data/tudl/test/000002/rgb/002135.png",
+    "depth": "/mnt/d/BOP_SAM3_Pilot/data/tudl/test/000002/depth/002135.png",
+    "camera": "/mnt/d/BOP_SAM3_Pilot/data/tudl/test/000002/scene_camera.json",
+    "rgb_sha256": "1c2f9cdd7b7f0e89932d7af69cae6cde955a7b39217df9cfbb8fde5c6b15719d",
+    "depth_sha256": "8a3f7cdf80d37065dab49b04312762230231510339eac9edacf9ff36f5ae75b9",
+    "camera_sha256": "64e58024c2a5ca7e2ead171ab410cf2eb89a6ef32d960e6aa5996aeb2f1fb8d3",
+    "modality": "rgb",
+    "image_mode": "RGB",
+    "image_dtype": "uint8",
+    "depth_mode": "I;16",
+    "depth_dtype": "uint16",
+    "image_size_hw": [
+      480,
+      640
+    ]
+  },
+  "status": "failed",
+  "identity": {
+    "recipe": "966d495e64ee265f085139832bd479241f112c2303953164b091a2a26062af3d",
+    "candidate": {
+      "candidate_id": "cnos-fastsam:000002:002135:6462",
+      "segmentor": "cnos-fastsam",
+      "source_id": "public_BOP23_default_CNOS_FastSAM:400978b21a94aaa109d6e5039df7aefa7cdbdc6af037cbd1b05ab586ae6d540d",
+      "source_kind": "predicted",
+      "source_file_sha256": "400978b21a94aaa109d6e5039df7aefa7cdbdc6af037cbd1b05ab586ae6d540d",
+      "segmentation_score": 0.46158644556999207,
+      "record_index": 6462
+    },
+    "source": {
+      "rgb": "/mnt/d/BOP_SAM3_Pilot/data/tudl/test/000002/rgb/002135.png",
+      "depth": "/mnt/d/BOP_SAM3_Pilot/data/tudl/test/000002/depth/002135.png",
+      "camera": "/mnt/d/BOP_SAM3_Pilot/data/tudl/test/000002/scene_camera.json",
+      "rgb_sha256": "1c2f9cdd7b7f0e89932d7af69cae6cde955a7b39217df9cfbb8fde5c6b15719d",
+      "depth_sha256": "8a3f7cdf80d37065dab49b04312762230231510339eac9edacf9ff36f5ae75b9",
+      "camera_sha256": "64e58024c2a5ca7e2ead171ab410cf2eb89a6ef32d960e6aa5996aeb2f1fb8d3",
+      "modality": "rgb",
+      "image_mode": "RGB",
+      "image_dtype": "uint8",
+      "depth_mode": "I;16",
+      "depth_dtype": "uint16",
+      "image_size_hw": [
+        480,
+        640
+      ]
+    },
+    "CAD_feature_identity": "2ee85658aa15afdaaf47f30c33de3037f45332e59637f15d69a5dde741d77c14"
+  },
+  "pose_direction": "original_CAD_to_camera",
+  "units": "metres",
+  "model_sha256": "04158be4ff42e82b5169e1c9b05a1b6dd545b716ae4e21cd452643b3c98f3cee",
+  "frozen_CAD_feature_identity": "2ee85658aa15afdaaf47f30c33de3037f45332e59637f15d69a5dde741d77c14",
+  "resource_attempts": [
+    {
+      "attempt": 0,
+      "hypothesis_batch_size": 64,
+      "type": "ValueError",
+      "reason": "Insufficient valid observed RGB-D points"
+    }
+  ],
+  "previous_blocked_attempts": [],
+  "failure_type": "ValueError",
+  "reason": "Insufficient valid observed RGB-D points",
+  "traceback": "Traceback (most recent call last):\n  File \"/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/source_snapshot/freezev2_repro/case_inference.py\", line 58, in infer_candidate\n    cloud=observed_clouds(frame['depth_m'],candidate.mask,frame['K'],grid=recipe['observed']['grid'],dense_count=recipe['observed']['dense_points'],seed=recipe['seed'])\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/source_snapshot/freezev2_repro/geometry.py\", line 109, in observed_clouds\n    raise ValueError(\"Insufficient valid observed RGB-D points\")\nValueError: Insufficient valid observed RGB-D points\n",
+  "runtime_s": 0.0031199629993352573,
+  "artifact_files": {
+    "mask.png": "99dffe21d3c666fef8c269894c204de99a2e4ef88e0371ac538dc285cfb0f3d6"
+  }
+}

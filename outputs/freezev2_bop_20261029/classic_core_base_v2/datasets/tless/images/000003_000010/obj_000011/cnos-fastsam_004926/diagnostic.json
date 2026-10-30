@@ -1,0 +1,103 @@
+{
+  "candidate": {
+    "candidate_id": "cnos-fastsam:000003:000010:4926",
+    "segmentor": "cnos-fastsam",
+    "source_id": "public_BOP23_default_CNOS_FastSAM:db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+    "source_kind": "predicted",
+    "source_file_sha256": "db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+    "segmentation_score": 0.48283711075782776,
+    "record_index": 4926
+  },
+  "source": {
+    "rgb": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000003/rgb/000010.png",
+    "depth": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000003/depth/000010.png",
+    "camera": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000003/scene_camera.json",
+    "rgb_sha256": "f8b956d552924bb17b0767981ceedcb2694e47fc3b9f2b63279f8f22a7bb2b14",
+    "depth_sha256": "5fcc83eab48ab46ef14602df2fb7d58216faa6dbed339f5a94c991aaa79ff132",
+    "camera_sha256": "e16f55fb52bb03e45c933e781e29d06ce23ea876b34475d24f31be189b540d22",
+    "modality": "rgb",
+    "image_mode": "RGB",
+    "image_dtype": "uint8",
+    "depth_mode": "I;16",
+    "depth_dtype": "uint16",
+    "image_size_hw": [
+      540,
+      720
+    ]
+  },
+  "status": "failed",
+  "identity": {
+    "recipe": "966d495e64ee265f085139832bd479241f112c2303953164b091a2a26062af3d",
+    "candidate": {
+      "candidate_id": "cnos-fastsam:000003:000010:4926",
+      "segmentor": "cnos-fastsam",
+      "source_id": "public_BOP23_default_CNOS_FastSAM:db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+      "source_kind": "predicted",
+      "source_file_sha256": "db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+      "segmentation_score": 0.48283711075782776,
+      "record_index": 4926
+    },
+    "source": {
+      "rgb": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000003/rgb/000010.png",
+      "depth": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000003/depth/000010.png",
+      "camera": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000003/scene_camera.json",
+      "rgb_sha256": "f8b956d552924bb17b0767981ceedcb2694e47fc3b9f2b63279f8f22a7bb2b14",
+      "depth_sha256": "5fcc83eab48ab46ef14602df2fb7d58216faa6dbed339f5a94c991aaa79ff132",
+      "camera_sha256": "e16f55fb52bb03e45c933e781e29d06ce23ea876b34475d24f31be189b540d22",
+      "modality": "rgb",
+      "image_mode": "RGB",
+      "image_dtype": "uint8",
+      "depth_mode": "I;16",
+      "depth_dtype": "uint16",
+      "image_size_hw": [
+        540,
+        720
+      ]
+    },
+    "CAD_feature_identity": "76431d49cf087eb9e597ae59b06c60c31bd404289fd7cd3fc4a43e8886567f10"
+  },
+  "pose_direction": "original_CAD_to_camera",
+  "units": "metres",
+  "model_sha256": "621e99803ecee9c8490f1b880f32addd2dc387adb914187359ee0d3cf353fd0f",
+  "frozen_CAD_feature_identity": "76431d49cf087eb9e597ae59b06c60c31bd404289fd7cd3fc4a43e8886567f10",
+  "resource_attempts": [],
+  "previous_blocked_attempts": [],
+  "registration": {
+    "config": {
+      "k": 10,
+      "iterations": 10000,
+      "inlier_fraction": 0.03,
+      "seed": 0,
+      "edge_length_ratio": 0.9,
+      "min_triangle_area_ratio": 1e-06,
+      "hypothesis_backend": "torch_cuda",
+      "hypothesis_batch_size": 64,
+      "torch_dtype": "float32",
+      "icp_max_iterations": 30,
+      "icp_translation_tolerance_m": 1e-08,
+      "icp_rotation_tolerance_rad": 1e-07,
+      "icp_stop_when_correspondences_stable": true
+    },
+    "pose_direction": "CAD_to_camera",
+    "units": "m",
+    "requested_hypotheses": 10000,
+    "valid_hypotheses": 0,
+    "repeated_cad_triplets": 157,
+    "degenerate_triplets": 2,
+    "edge_rejected_triplets": 9841,
+    "correspondence_pairs": 1870,
+    "sparse_observed_count": 187,
+    "feature_score_denominator": "N_sparse_observed",
+    "threshold_m": 0.002297934,
+    "hypothesis_backend": "torch_cuda",
+    "numeric_dtype": "float32",
+    "sampling": "uniform_distinct_observed_rows_then_uniform_topk_per_row_fixed_budget_no_rejected_sample_replacement"
+  },
+  "failure_type": "no_valid_global_hypothesis",
+  "reason": "no_valid_hypothesis",
+  "runtime_s": 0.41770558200005325,
+  "artifact_files": {
+    "crop.png": "9e8deefdfdee62b7fe52c5fe1a73fd99537f4d67ccfa44cd703905f747904aa6",
+    "mask.png": "319422c2dab07ce9d63ff2a4425bf9d1c77d2793679356804eaade043cc8e220"
+  }
+}

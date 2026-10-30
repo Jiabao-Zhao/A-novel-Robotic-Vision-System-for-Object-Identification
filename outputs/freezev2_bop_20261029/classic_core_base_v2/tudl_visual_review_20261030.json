@@ -1,0 +1,84 @@
+{
+  "verified_utc": "2026-10-30T06:33:39.751178+00:00",
+  "dataset": "tudl",
+  "scope": "Three saved selected full-run candidates, one per object, visually inspected without ground-truth poses/masks.",
+  "selection": "For each object1/2/3, choose the middle entry of lexicographically sorted complete image receipts containing a retained prediction. No score/GT-based selection or tuning.",
+  "method_digest": "6f3f47c445366db882b1cb30d73968053354b7ced69bff3c7765e144e557ccbc",
+  "ground_truth_pose_access": false,
+  "source_or_prediction_mutation": false,
+  "interpretation": "Orange=coarse and green=ICP CAD projection. Apparent misalignment is a qualitative diagnostic; quantitative correctness comes from official evaluation. Feature scores sum multiple top-k inlier pairs per observed point and may exceed1; they are not probabilities.",
+  "cases": [
+    {
+      "scene_id": 1,
+      "image_id": 4088,
+      "object_id": 1,
+      "candidate_id": "cnos-fastsam:000001:004088:2485",
+      "selected_in_saved_predictions": true,
+      "diagnostic": "datasets\\tudl\\images\\000001_004088\\obj_000001\\cnos-fastsam_002485\\diagnostic.json",
+      "diagnostic_sha256": "fcf110b58060ed5ab3ac096f44cd60b3c9e36e0d2c465f12e4e0d8ce79ae75bd",
+      "receipt_sha256": "c2667d9424aab2c052ca40c0788694ad7b99f5c990db1e5f39ba9c9fff401694",
+      "artifact_sha256": {
+        "crop.png": "9dabd72be849e15dcb7aa0b7f9a7d1d39f5c8c7859bbddb5facea98358196496",
+        "mask.png": "fd7aae2463f2ea26685e05580f557b026291e9d68112dee49243f9ccbd1e4421",
+        "observed.npz": "b29a77104644d6c94d064e335708c966fcf7ea1f7dd2c9cddfeaa075abc8c00c",
+        "pose_overlay.png": "e6173d6703e7cbbb5b7007900df20258b010dd65232f894417d9263f43e4c038"
+      },
+      "visual_observations": "The projected CAD cloud extends substantially to the left and below the visible held animal-shaped object, over the dark jacket/hand area. Coarse and refined projections both show this visible displacement; this is an apparent alignment failure in the RGB overlay, without a GT-based pose-error claim.",
+      "scores": {
+        "coarse_feature_score": 0.10393425822257996,
+        "refined_feature_score": 0.042486007496927464,
+        "geometry_score": 0.2756,
+        "joint_score": 0.0012169811613632541
+      },
+      "icp_status": "max_iterations"
+    },
+    {
+      "scene_id": 2,
+      "image_id": 3992,
+      "object_id": 2,
+      "candidate_id": "cnos-fastsam:000002:003992:7834",
+      "selected_in_saved_predictions": true,
+      "diagnostic": "datasets\\tudl\\images\\000002_003992\\obj_000002\\cnos-fastsam_007834\\diagnostic.json",
+      "diagnostic_sha256": "e01fdae84dea441836cde64105546b9a38dfe77d39b71ddc5de94b190d1b3bd6",
+      "receipt_sha256": "06d2b222fd24ed99620c5b65057c7a14904d56bb3c2e03363539d8d862c76794",
+      "artifact_sha256": {
+        "crop.png": "a92823b99df39f5da90ddf584ad7ce7a0a0095344f2669ba205e97cb3aa663df",
+        "mask.png": "abfd4ff647cb735238a969cdf900a4392759d06da16987edbbbf0f0ba1f6c57a",
+        "observed.npz": "9661b0ca8786a5f2d855c2086fc1b4c56ae212d115f66e5cddbb0a050ff43692",
+        "pose_overlay.png": "91544b5a810d25529549596dc7d8ec2cc9a3ab70f6389245e82fb9f321a77107"
+      },
+      "visual_observations": "The compact coarse/refined CAD projections overlap near the left side of the hand-held black-and-white board. Orange/green edges differ slightly, and the dense point cluster obscures part of the visible item. Overlay alone cannot resolve orientation or object-to-CAD correctness.",
+      "scores": {
+        "coarse_feature_score": 0.07265658676624298,
+        "refined_feature_score": 0.04723015611931735,
+        "geometry_score": 0.1914,
+        "joint_score": 0.0006568047825631057
+      },
+      "icp_status": "max_iterations"
+    },
+    {
+      "scene_id": 3,
+      "image_id": 4065,
+      "object_id": 3,
+      "candidate_id": "cnos-fastsam:000003:004065:13700",
+      "selected_in_saved_predictions": true,
+      "diagnostic": "datasets\\tudl\\images\\000003_004065\\obj_000003\\cnos-fastsam_013700\\diagnostic.json",
+      "diagnostic_sha256": "e5935a564a1f9c037523afc5b5892581fbbaaf47fe45302ab0f0a52a644611fd",
+      "receipt_sha256": "7ce1a517f004e85bbb176e5bb6e37c0ce364ac5f89b764ad8daea286388b62bd",
+      "artifact_sha256": {
+        "crop.png": "b93a8840e4f2aae3aabb67af1db3ade7be549a36829b0bd544a57acff69ffa08",
+        "mask.png": "6baa6c960c2c470973d7a338ac7f5be26f0cca54474d292b524d235d45957b2b",
+        "observed.npz": "62a6f2a3954ae999b65cceaf033e0caca7f7e207655d0d4bd6a4a33c30e6383f",
+        "pose_overlay.png": "f32d99338cc977e1fb5651cdd0c2d5349a77659bc649bd8bc24e0c1542c3a3a3"
+      },
+      "visual_observations": "The projected handle, body and spout follow the visible watering-can silhouette reasonably in this view. Coarse/refined projections largely overlap, with local edge shifts; a plausible silhouette does not establish correct full 6D pose.",
+      "scores": {
+        "coarse_feature_score": 1.5534621477127075,
+        "refined_feature_score": 1.3934875775295545,
+        "geometry_score": 0.429,
+        "joint_score": 0.928669257945017
+      },
+      "icp_status": "max_iterations"
+    }
+  ]
+}

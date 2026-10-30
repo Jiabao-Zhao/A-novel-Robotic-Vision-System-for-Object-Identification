@@ -1,0 +1,103 @@
+{
+  "candidate": {
+    "candidate_id": "cnos-fastsam:000016:000174:42152",
+    "segmentor": "cnos-fastsam",
+    "source_id": "public_BOP23_default_CNOS_FastSAM:db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+    "source_kind": "predicted",
+    "source_file_sha256": "db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+    "segmentation_score": 0.3727114200592041,
+    "record_index": 42152
+  },
+  "source": {
+    "rgb": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000016/rgb/000174.png",
+    "depth": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000016/depth/000174.png",
+    "camera": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000016/scene_camera.json",
+    "rgb_sha256": "b24e5dd40319edf76cd5a297300819178231c62ce563f71084ba3162c4c09e18",
+    "depth_sha256": "f7d386fd94225d924666d06a8d2a5c6a109f221edafee11bf8140974ce517284",
+    "camera_sha256": "452cbed02b83885e1337cf1013fb979677f43c551a521622249972586cc3121b",
+    "modality": "rgb",
+    "image_mode": "RGB",
+    "image_dtype": "uint8",
+    "depth_mode": "I;16",
+    "depth_dtype": "uint16",
+    "image_size_hw": [
+      540,
+      720
+    ]
+  },
+  "status": "failed",
+  "identity": {
+    "recipe": "966d495e64ee265f085139832bd479241f112c2303953164b091a2a26062af3d",
+    "candidate": {
+      "candidate_id": "cnos-fastsam:000016:000174:42152",
+      "segmentor": "cnos-fastsam",
+      "source_id": "public_BOP23_default_CNOS_FastSAM:db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+      "source_kind": "predicted",
+      "source_file_sha256": "db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+      "segmentation_score": 0.3727114200592041,
+      "record_index": 42152
+    },
+    "source": {
+      "rgb": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000016/rgb/000174.png",
+      "depth": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000016/depth/000174.png",
+      "camera": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000016/scene_camera.json",
+      "rgb_sha256": "b24e5dd40319edf76cd5a297300819178231c62ce563f71084ba3162c4c09e18",
+      "depth_sha256": "f7d386fd94225d924666d06a8d2a5c6a109f221edafee11bf8140974ce517284",
+      "camera_sha256": "452cbed02b83885e1337cf1013fb979677f43c551a521622249972586cc3121b",
+      "modality": "rgb",
+      "image_mode": "RGB",
+      "image_dtype": "uint8",
+      "depth_mode": "I;16",
+      "depth_dtype": "uint16",
+      "image_size_hw": [
+        540,
+        720
+      ]
+    },
+    "CAD_feature_identity": "41458f6700d3712b915542bb5886191fe298463a7ae6d76b00e90c14bd5c88a2"
+  },
+  "pose_direction": "original_CAD_to_camera",
+  "units": "metres",
+  "model_sha256": "f9155cd450c4a87163cbf6ea0752a3dae770abfbf87a77fab7ebbc7029dabc83",
+  "frozen_CAD_feature_identity": "41458f6700d3712b915542bb5886191fe298463a7ae6d76b00e90c14bd5c88a2",
+  "resource_attempts": [],
+  "previous_blocked_attempts": [],
+  "registration": {
+    "config": {
+      "k": 10,
+      "iterations": 10000,
+      "inlier_fraction": 0.03,
+      "seed": 0,
+      "edge_length_ratio": 0.9,
+      "min_triangle_area_ratio": 1e-06,
+      "hypothesis_backend": "torch_cuda",
+      "hypothesis_batch_size": 64,
+      "torch_dtype": "float32",
+      "icp_max_iterations": 30,
+      "icp_translation_tolerance_m": 1e-08,
+      "icp_rotation_tolerance_rad": 1e-07,
+      "icp_stop_when_correspondences_stable": true
+    },
+    "pose_direction": "CAD_to_camera",
+    "units": "m",
+    "requested_hypotheses": 10000,
+    "valid_hypotheses": 0,
+    "repeated_cad_triplets": 71,
+    "degenerate_triplets": 2,
+    "edge_rejected_triplets": 9927,
+    "correspondence_pairs": 1090,
+    "sparse_observed_count": 109,
+    "feature_score_denominator": "N_sparse_observed",
+    "threshold_m": 0.0021584130000000005,
+    "hypothesis_backend": "torch_cuda",
+    "numeric_dtype": "float32",
+    "sampling": "uniform_distinct_observed_rows_then_uniform_topk_per_row_fixed_budget_no_rejected_sample_replacement"
+  },
+  "failure_type": "no_valid_global_hypothesis",
+  "reason": "no_valid_hypothesis",
+  "runtime_s": 0.28641663899998093,
+  "artifact_files": {
+    "crop.png": "9e62df74a27d7d2baa33981c30106c556ca5c77600fe08c5d62950f8c5691a2f",
+    "mask.png": "14e66374494953562a80df0840bdb553692806a6d52177ddda05b0b426f69d08"
+  }
+}

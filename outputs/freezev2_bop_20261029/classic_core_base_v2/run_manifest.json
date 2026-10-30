@@ -1,0 +1,278 @@
+{
+  "method_identity": {
+    "method": "FreeZeV2-base-paper-v1-independent",
+    "base": {
+      "seed": 0,
+      "render": {
+        "views": 162,
+        "resolution": 480,
+        "occupancy": 0.5,
+        "visibility_tolerance_fraction": 0.005,
+        "photometry_assumption": "native vertex colors or gray0.7, two-sided headlight ambient0.4 diffuse0.6, black background",
+        "texture_sampling": "BOP bottom-left UV; bilinear clamped sRGB; original PNG; Open3D native float32 intersections"
+      },
+      "cad": {
+        "initial_poisson_points": 20000,
+        "points": 5000,
+        "min_visible_views": 18
+      },
+      "features": {
+        "dino_layer_index": 18,
+        "dino_source_revision_hint": "e1277af2ba9496fbadf7aec6eba56e8d882d1e35",
+        "dino_expected_source_hashes": {
+          "hubconf.py": "e82275b3adcc3631865d1edd4b620b89d42459169acdeb652804cd0eb0fe9615",
+          "dinov2/models/vision_transformer.py": "8dc1e2ededd4893a335aa2f524c15554bcdb14d824e310ca3df825e16081a268"
+        },
+        "layer_selection_is_assumption": true,
+        "pca_components": 64,
+        "gedi_source_sha256": "50f23311ad3173c92f834c637e63c9c0bb6fbd8f12c58dd69773a7aba6350249",
+        "gedi_source_revision": "b3dd86776750d8221f89d39975118da9839b39f7",
+        "aggregation_assumption": "uniform mean of visible rendered descriptors; PCA fit only on selected CAD, no whitening",
+        "dino_checkpoint_sha256": "baf8467e50af277596bbbafa06887c177ee899ab46033649c383577d7e9309d3",
+        "gedi_checkpoint_sha256": "15723f382ecf60f7efbf9161f70bffda2d1c817025cb0702350baaa04060f5f4",
+        "gedi_sampling_batch_size": 500,
+        "gedi_patch_lrf_points": 4000,
+        "gedi_patch_network_points": 512,
+        "frozen_math_precision": "float32",
+        "tf32_matmul": false,
+        "tf32_cudnn": false
+      },
+      "observed": {
+        "grid": 16,
+        "dense_points": 3000
+      },
+      "registration": {
+        "k": 10,
+        "iterations": 10000,
+        "inlier_fraction": 0.03,
+        "seed": 0,
+        "edge_length_ratio": 0.9,
+        "min_triangle_area_ratio": 1e-06,
+        "hypothesis_backend": "torch_cuda",
+        "hypothesis_batch_size": 64,
+        "torch_dtype": "float32",
+        "icp_max_iterations": 30,
+        "icp_translation_tolerance_m": 1e-08,
+        "icp_rotation_tolerance_rad": 1e-07,
+        "icp_stop_when_correspondences_stable": true
+      },
+      "candidate_ranking": {
+        "translation_nms_diameter_fraction": 0.1,
+        "nms_distance_is_assumption": true
+      }
+    },
+    "code": {
+      "__init__.py": "9d4530bf43d4e3f227fba0ee83dd9fda74750ddafcc3e54cb280c45c67f4d5f4",
+      "case_inference.py": "57d49e9a46c03cebe559baf1036ec7a165db51ce9aaa3ab850288b613cf1e937",
+      "data.py": "9ea0520da8191c0c92eb65f864dcb32fe63cb184aeea6933479970c3c8a8d827",
+      "dataset_checks.py": "cbc7c13b962e9c2fac0244e6683d7104e43e1c912717e0310c32454ed4aab8cc",
+      "durable.py": "84f96719400757ac328992fd034af8ccf07209df7b74ea766f01414a3bea12d7",
+      "evaluation.py": "06760ac36a07b3e0a8578011d5359d3b4c58e5e84e7a4820cae45661a1ebc5f0",
+      "features.py": "84b63dce6a3fd317d3ef6383698d2074d643eb3a2e28b717a079d8c0a9a1a818",
+      "geometry.py": "1cbb150a7587b2edbd33949b6edfd4cdd15620c0801ff17d6d429ef00423586b",
+      "mask_index.py": "73d86af6371a68b783da9b234055ef01bd4fb171277bbac743eb56017fe42aca",
+      "masks.py": "0883e2182c4333ec3dc9c63ab4ba50a593a361b0383df2a1fd7a31214ea13eff",
+      "onboarding.py": "c70df67c2947910d1000d79cd9405a97dcf36c6a737e3e5c732c866c8138a2ce",
+      "owned_process.py": "2b49a610ae48e657f8c5a2f1ee06c118ed46023fd4cf882b11b8f2a9097cf0fb",
+      "pipeline.py": "815f2e1a51b45b88be1a028756d0c5ec82a6b5e563083c3ae2fcfae415a98a7f",
+      "registration.py": "2229d46a63591425ce1c211bb97ba5518d7282377f047243042b759ee5b5b123",
+      "rendering.py": "4aa94ee36412b4613975f01845bdee2029deff4ebba07c37ff21e2868797e3b2",
+      "suite.py": "6e632e0c1a21048e0621c2a2ee21af83147049c28c928a8310a072dd7113993d",
+      "synthetic.py": "eb38d0aa72f6e0569438596c030f503bd4a49fce50ee81ee0c3c2326a8fec2d7"
+    },
+    "mask_configuration": "CNOS-FastSAM-public-BOP23",
+    "task": "BOP19_localization"
+  },
+  "protocol": {
+    "schema": "FreeZeV2-Classic-Core-base-v2",
+    "method": "FreeZeV2-base-paper-v1-independent",
+    "mask_configuration": "CNOS-FastSAM-public-BOP23",
+    "task": "BOP19_model_based_6D_localization",
+    "datasets": [
+      "lmo",
+      "tless",
+      "tudl",
+      "icbin",
+      "itodd",
+      "hb",
+      "ycbv"
+    ],
+    "execution_order": [
+      "tless",
+      "lmo",
+      "tudl",
+      "icbin",
+      "itodd",
+      "hb",
+      "ycbv"
+    ],
+    "paths": {
+      "dataset_root": "D:/BOP_SAM3_Pilot/data",
+      "dino_source": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/cache/torch_hub/facebookresearch_dinov2_e1277af2ba9496fbadf7aec6eba56e8d882d1e35",
+      "dino_checkpoint": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/dinov2/dinov2_vitg14_pretrain.pth",
+      "gedi_source": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/gedi",
+      "gedi_checkpoint": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/gedi/data/chkpts/3dmatch/chkpt.tar",
+      "cnos_poses": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/cnos/cam_poses_level1.npy",
+      "bop_toolkit": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/cache/bop_toolkit",
+      "bop_eval_deps": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/cache/bop_eval_deps",
+      "suite_output_root": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2",
+      "assets_manifest": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/assets_manifest.json",
+      "evaluation_runtime": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/evaluation_runtime.json",
+      "feature_runtime": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/runtime_ready.json",
+      "inference_python": "/home/jiabao/.venvs/freezev2-bop-20261029/bin/python"
+    },
+    "base": {
+      "seed": 0,
+      "render": {
+        "views": 162,
+        "resolution": 480,
+        "occupancy": 0.5,
+        "visibility_tolerance_fraction": 0.005,
+        "photometry_assumption": "native vertex colors or gray0.7, two-sided headlight ambient0.4 diffuse0.6, black background",
+        "texture_sampling": "BOP bottom-left UV; bilinear clamped sRGB; original PNG; Open3D native float32 intersections"
+      },
+      "cad": {
+        "initial_poisson_points": 20000,
+        "points": 5000,
+        "min_visible_views": 18
+      },
+      "features": {
+        "dino_layer_index": 18,
+        "dino_source_revision_hint": "e1277af2ba9496fbadf7aec6eba56e8d882d1e35",
+        "dino_expected_source_hashes": {
+          "hubconf.py": "e82275b3adcc3631865d1edd4b620b89d42459169acdeb652804cd0eb0fe9615",
+          "dinov2/models/vision_transformer.py": "8dc1e2ededd4893a335aa2f524c15554bcdb14d824e310ca3df825e16081a268"
+        },
+        "layer_selection_is_assumption": true,
+        "pca_components": 64,
+        "gedi_source_sha256": "50f23311ad3173c92f834c637e63c9c0bb6fbd8f12c58dd69773a7aba6350249",
+        "gedi_source_revision": "b3dd86776750d8221f89d39975118da9839b39f7",
+        "aggregation_assumption": "uniform mean of visible rendered descriptors; PCA fit only on selected CAD, no whitening",
+        "dino_checkpoint_sha256": "baf8467e50af277596bbbafa06887c177ee899ab46033649c383577d7e9309d3",
+        "gedi_checkpoint_sha256": "15723f382ecf60f7efbf9161f70bffda2d1c817025cb0702350baaa04060f5f4",
+        "gedi_sampling_batch_size": 500,
+        "gedi_patch_lrf_points": 4000,
+        "gedi_patch_network_points": 512,
+        "frozen_math_precision": "float32",
+        "tf32_matmul": false,
+        "tf32_cudnn": false
+      },
+      "observed": {
+        "grid": 16,
+        "dense_points": 3000
+      },
+      "registration": {
+        "k": 10,
+        "iterations": 10000,
+        "inlier_fraction": 0.03,
+        "seed": 0,
+        "edge_length_ratio": 0.9,
+        "min_triangle_area_ratio": 1e-06,
+        "hypothesis_backend": "torch_cuda",
+        "hypothesis_batch_size": 64,
+        "torch_dtype": "float32",
+        "icp_max_iterations": 30,
+        "icp_translation_tolerance_m": 1e-08,
+        "icp_rotation_tolerance_rad": 1e-07,
+        "icp_stop_when_correspondences_stable": true
+      },
+      "candidate_ranking": {
+        "translation_nms_diameter_fraction": 0.1,
+        "nms_distance_is_assumption": true
+      }
+    },
+    "validation": {
+      "tless_fixed_cohort": [
+        {
+          "scene_id": 5,
+          "im_id": 7
+        },
+        {
+          "scene_id": 5,
+          "im_id": 20
+        },
+        {
+          "scene_id": 5,
+          "im_id": 25
+        },
+        {
+          "scene_id": 9,
+          "im_id": 0
+        }
+      ],
+      "other_dataset_target_rows": 3,
+      "selection_rule": "TLESS fixed original object1 four-frame cohort; other datasets first three official targets for the object in their first sorted target. No GT outcome selection."
+    },
+    "resources": {
+      "cpu_workers": 4,
+      "minimum_free_disk_gb": 15,
+      "ransac_batch_size": 64,
+      "gedi_forward_microbatch_size": 32,
+      "oom_retries": 3,
+      "export_interval_images": 25,
+      "GPU_concurrency": 1
+    },
+    "evaluation_protocol": {
+      "official_targets": "test_targets_bop19.json",
+      "visib_gt_min": -1,
+      "visibility_selection": "official inst_count most-visible GT, no additional0.10filter",
+      "GT_pose_role": "evaluation_only",
+      "metrics": [
+        "VSD",
+        "MSSD",
+        "MSPD"
+      ],
+      "authors_predictions_used": false
+    }
+  },
+  "python": "/home/jiabao/.venvs/freezev2-bop-20261029/bin/python",
+  "python_version": "3.12.14",
+  "original_input_manifest_sha256": "8eebb2d0051ec066df8e252071e9964d0bea15e35b135561bbeb1c3c676ab8b2",
+  "camera_sha256_by_relative_path": {
+    "lmo/test/000002/scene_camera.json": "373b04174b1655f716fff985726a19c1a3e17e0f09e860f57ebff7a82c93141b",
+    "tless/test_primesense/000001/scene_camera.json": "0f4e972b56ef220fe2d4efbbd4767f77ca0e54fe76093d46f952d515700f1ce1",
+    "tless/test_primesense/000002/scene_camera.json": "84d4a7b2106ed19c59d11da0fa406a763bd408c8585a77b8f44e5d3d7b300d9b",
+    "tless/test_primesense/000003/scene_camera.json": "e16f55fb52bb03e45c933e781e29d06ce23ea876b34475d24f31be189b540d22",
+    "tless/test_primesense/000004/scene_camera.json": "17e66211f09f5eb711c325c24e640b978f80c141509ab644bad34b0e5b22bcfa",
+    "tless/test_primesense/000005/scene_camera.json": "4c1b115bac191cd0cf015301a6c6fcfc6a16cd4a9c621193e1764fc7d58e02b0",
+    "tless/test_primesense/000006/scene_camera.json": "0600d66792e09f9ee82fd20bb62573d84219391d662dab5241aa350c9a56c90d",
+    "tless/test_primesense/000007/scene_camera.json": "8a57152d8a4a81df850b4e4f9792e7ca2ae0c543f96ae415efd925fcf3dc2a84",
+    "tless/test_primesense/000008/scene_camera.json": "23f3b468824dba24a923b2f489deaf441e434e28da9d437d5d647a9b3f192673",
+    "tless/test_primesense/000009/scene_camera.json": "6dbd3594252187250fa6b62fd4fb3eef5b26144fd8f11f4e038e120101108db4",
+    "tless/test_primesense/000010/scene_camera.json": "c7f11f0d8c88809c02b5de902c6f40a6fff6bc70368fe1e6c5131aeaebe6270d",
+    "tless/test_primesense/000011/scene_camera.json": "d80c89a43419b69d916fd7cf1f29a8a27d6ac23a7ae2c71563c811cb978b11a2",
+    "tless/test_primesense/000012/scene_camera.json": "193b35258ad15c6b0f66b247f8666f4fe79873aa369bbdcfc4c78736ee3f4adc",
+    "tless/test_primesense/000013/scene_camera.json": "957249d114c83746ee8b7f0bf8bf10e645ed720a73f72468971636916bcec303",
+    "tless/test_primesense/000014/scene_camera.json": "ec2fe1902a048117db74621c125a8e560be56bc489b45c5cd42f85467cb80877",
+    "tless/test_primesense/000015/scene_camera.json": "3d797a88b752a447f5e7f852edc4e5cd9b72f67b2b79a4b0a30acb58caa878eb",
+    "tless/test_primesense/000016/scene_camera.json": "452cbed02b83885e1337cf1013fb979677f43c551a521622249972586cc3121b",
+    "tless/test_primesense/000017/scene_camera.json": "16e4c659a0dd0094777d18ea001f2ca86b07cec6c33c3de8fd83ed5860d40ba8",
+    "tless/test_primesense/000018/scene_camera.json": "1ade7ff03e6caf82426f1bc804bd354d1d8220a2be8b54d82310d5ae5ca38075",
+    "tless/test_primesense/000019/scene_camera.json": "29353d5d3ea86bc13c7bb6d290f2cfd5fb0140c35e54096b5eee5eb9381db755",
+    "tless/test_primesense/000020/scene_camera.json": "7bba915f96fbe5839d54958bed02b3b8cc02eba4eb86af6eefe2358fbcbbd16e",
+    "tudl/test/000001/scene_camera.json": "fc98acfb0b0910779638778f3e89fa0737552bdc48aa35de2c5682f5bece7b45",
+    "tudl/test/000002/scene_camera.json": "64e58024c2a5ca7e2ead171ab410cf2eb89a6ef32d960e6aa5996aeb2f1fb8d3",
+    "tudl/test/000003/scene_camera.json": "5060a9ff4ef83646d6f27b2f65e6fdb17ea4e21253b8fba65d4aa37de8dc0f9f",
+    "icbin/test/000001/scene_camera.json": "2e8d64b4331c4a4531ebc1ac2e02449c89890d66462c5191221df08f94b371d2",
+    "icbin/test/000002/scene_camera.json": "070c0b948474abcf836f2e96077525a3ab551c81a2c01e8f53193380eea09c92",
+    "icbin/test/000003/scene_camera.json": "36216540b1a8576aab9f1df06285f7f9921e4605621ef342d21d4c5048908f3a",
+    "itodd/test/000001/scene_camera.json": "bd59514a0a0135789829bd4da259a4d5bb13f9fc53cf9afe7eff7000053ac1c0",
+    "hb/test_primesense/000003/scene_camera.json": "1941b136b99e7028fbc031f993ad70c917b842f256dc0f93014c9b0e3f3d8893",
+    "hb/test_primesense/000005/scene_camera.json": "1941b136b99e7028fbc031f993ad70c917b842f256dc0f93014c9b0e3f3d8893",
+    "hb/test_primesense/000013/scene_camera.json": "1941b136b99e7028fbc031f993ad70c917b842f256dc0f93014c9b0e3f3d8893",
+    "ycbv/test/000048/scene_camera.json": "8b3638d3fe1ac8f16e4fd8eee833f9b2793297ada90c98fb9cde2b09a0e8fe80",
+    "ycbv/test/000049/scene_camera.json": "7d2452abb5bf4bfdf95035552e2b1629e66f0bd7029e3e1040a8765ecccff82a",
+    "ycbv/test/000050/scene_camera.json": "18ead714a6d6a96d38e44f0078404a3cb5f2754760c3e59e3caee72e6e81ed6f",
+    "ycbv/test/000051/scene_camera.json": "5fc548c5afa88ae52fb91eafa6b57616ade853385d4e64f2ee8618034d8a4d8b",
+    "ycbv/test/000052/scene_camera.json": "37717088d289b4724d42e487fe61c8f0b3dc9ae9e0a41e9c60e31797adee2809",
+    "ycbv/test/000053/scene_camera.json": "33bfe508b1d8c4936cdc6cc296dc0259b7ed82c5563bc2d373e84d1630ff9d08",
+    "ycbv/test/000054/scene_camera.json": "7e8efcf5904c38dd398d017fc0642015a61042a87c1b9ee86c12123fa6480dd1",
+    "ycbv/test/000055/scene_camera.json": "1273e13706eed2d66b58132551e1f2c7cfb6e57880b5f612f7c29999d07d017f",
+    "ycbv/test/000056/scene_camera.json": "3f92dfcaab98935fbe037d6b79b7c5c4a97ad918ae63f3274e47aea29558cd40",
+    "ycbv/test/000057/scene_camera.json": "bb4dfae58ed905e93831a6cfb331dac8f49191b51999dd70433c91c9e3bac2f1",
+    "ycbv/test/000058/scene_camera.json": "22d98a25374783bbc97e4df7348b0f1e22e93240fff416f8eacea45adcd3c675",
+    "ycbv/test/000059/scene_camera.json": "08993e35dcec826bf6aa8c9e11234a7d03ddbc4e300119196995adf22d9f0198"
+  },
+  "camera_snapshot_digest": "abdf56339353643c982b87cdb7c22ec63fba5bee7d31a724ee591e717dd067e1",
+  "started_utc": 1793331116.9677773
+}

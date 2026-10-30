@@ -1,0 +1,103 @@
+{
+  "candidate": {
+    "candidate_id": "cnos-fastsam:000053:000167:16878",
+    "segmentor": "cnos-fastsam",
+    "source_id": "public_BOP23_default_CNOS_FastSAM:fdec15729676e15876302fc620f752cc5290ee28da5fc3c7e17da1072fd4f422",
+    "source_kind": "predicted",
+    "source_file_sha256": "fdec15729676e15876302fc620f752cc5290ee28da5fc3c7e17da1072fd4f422",
+    "segmentation_score": 0.14830227196216583,
+    "record_index": 16878
+  },
+  "source": {
+    "rgb": "/mnt/d/BOP_SAM3_Pilot/data/ycbv/test/000053/rgb/000167.png",
+    "depth": "/mnt/d/BOP_SAM3_Pilot/data/ycbv/test/000053/depth/000167.png",
+    "camera": "/mnt/d/BOP_SAM3_Pilot/data/ycbv/test/000053/scene_camera.json",
+    "rgb_sha256": "387254792d672eefa02abefcc2b8402c7543c2a53952f0afd2ad2177d803d454",
+    "depth_sha256": "15d41761d12fc4c3869fc08720edf21685639b2525ce941f4b15c4e131e4815b",
+    "camera_sha256": "33bfe508b1d8c4936cdc6cc296dc0259b7ed82c5563bc2d373e84d1630ff9d08",
+    "modality": "rgb",
+    "image_mode": "RGB",
+    "image_dtype": "uint8",
+    "depth_mode": "I;16",
+    "depth_dtype": "uint16",
+    "image_size_hw": [
+      480,
+      640
+    ]
+  },
+  "status": "failed",
+  "identity": {
+    "recipe": "966d495e64ee265f085139832bd479241f112c2303953164b091a2a26062af3d",
+    "candidate": {
+      "candidate_id": "cnos-fastsam:000053:000167:16878",
+      "segmentor": "cnos-fastsam",
+      "source_id": "public_BOP23_default_CNOS_FastSAM:fdec15729676e15876302fc620f752cc5290ee28da5fc3c7e17da1072fd4f422",
+      "source_kind": "predicted",
+      "source_file_sha256": "fdec15729676e15876302fc620f752cc5290ee28da5fc3c7e17da1072fd4f422",
+      "segmentation_score": 0.14830227196216583,
+      "record_index": 16878
+    },
+    "source": {
+      "rgb": "/mnt/d/BOP_SAM3_Pilot/data/ycbv/test/000053/rgb/000167.png",
+      "depth": "/mnt/d/BOP_SAM3_Pilot/data/ycbv/test/000053/depth/000167.png",
+      "camera": "/mnt/d/BOP_SAM3_Pilot/data/ycbv/test/000053/scene_camera.json",
+      "rgb_sha256": "387254792d672eefa02abefcc2b8402c7543c2a53952f0afd2ad2177d803d454",
+      "depth_sha256": "15d41761d12fc4c3869fc08720edf21685639b2525ce941f4b15c4e131e4815b",
+      "camera_sha256": "33bfe508b1d8c4936cdc6cc296dc0259b7ed82c5563bc2d373e84d1630ff9d08",
+      "modality": "rgb",
+      "image_mode": "RGB",
+      "image_dtype": "uint8",
+      "depth_mode": "I;16",
+      "depth_dtype": "uint16",
+      "image_size_hw": [
+        480,
+        640
+      ]
+    },
+    "CAD_feature_identity": "f27d7d04ffe11e6a5ad28dcc88d9ea16394f3f752edf78abafade16c80187e23"
+  },
+  "pose_direction": "original_CAD_to_camera",
+  "units": "metres",
+  "model_sha256": "9c77d165489482dcc602330513e381936121484f33fda4f9ff57d61bbaf773fc",
+  "frozen_CAD_feature_identity": "f27d7d04ffe11e6a5ad28dcc88d9ea16394f3f752edf78abafade16c80187e23",
+  "resource_attempts": [],
+  "previous_blocked_attempts": [],
+  "registration": {
+    "config": {
+      "k": 10,
+      "iterations": 10000,
+      "inlier_fraction": 0.03,
+      "seed": 0,
+      "edge_length_ratio": 0.9,
+      "min_triangle_area_ratio": 1e-06,
+      "hypothesis_backend": "torch_cuda",
+      "hypothesis_batch_size": 64,
+      "torch_dtype": "float32",
+      "icp_max_iterations": 30,
+      "icp_translation_tolerance_m": 1e-08,
+      "icp_rotation_tolerance_rad": 1e-07,
+      "icp_stop_when_correspondences_stable": true
+    },
+    "pose_direction": "CAD_to_camera",
+    "units": "m",
+    "requested_hypotheses": 10000,
+    "valid_hypotheses": 0,
+    "repeated_cad_triplets": 128,
+    "degenerate_triplets": 0,
+    "edge_rejected_triplets": 9872,
+    "correspondence_pairs": 1540,
+    "sparse_observed_count": 154,
+    "feature_score_denominator": "N_sparse_observed",
+    "threshold_m": 0.0038861999999999994,
+    "hypothesis_backend": "torch_cuda",
+    "numeric_dtype": "float32",
+    "sampling": "uniform_distinct_observed_rows_then_uniform_topk_per_row_fixed_budget_no_rejected_sample_replacement"
+  },
+  "failure_type": "no_valid_global_hypothesis",
+  "reason": "no_valid_hypothesis",
+  "runtime_s": 0.3570486680000613,
+  "artifact_files": {
+    "crop.png": "06ba326a57df151d6beaf654c445fa63bc997b4a1afae6784667b8f4977d9058",
+    "mask.png": "a3386f575375742e1cca52d2327e6ad9267ed9b7908abda16639bfb51b2a09e8"
+  }
+}

@@ -1,0 +1,3066 @@
+{
+  "schema": "freezev2-itodd-finalized-target-pass-private-GT-audit-v1",
+  "verified_utc": "2026-10-30T08:19:52.263605+00:00",
+  "scope": "Finalized ITODD target/CSV/source/calibration audit only. Official metrics are unavailable because private test GT is withheld. No GT poses, evaluator, remote submission, locks, inference or GPU/worker jobs are invoked.",
+  "claims": {
+    "full_target_pass_recorded": true,
+    "coverage_export_valid": true,
+    "strict_execution_complete": true,
+    "recorded_failed_targets": 224,
+    "official_metrics_status": "unavailable_private_test_GT",
+    "official_pose_metrics": null,
+    "published_FreeZeV2_performance_reproduced": false,
+    "remote_submission_performed_by_this_audit": false
+  },
+  "audit_provenance": {
+    "function": "audit_dataset(run_root,itodd,asset,run_manifest)",
+    "helper_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\auxiliary_source\\evaluation_v1\\complete_evaluation.py",
+    "helper_sha256": "9eddc4b53a176b9aa61d7fdfd99876d65714c3b3d9fbdc1c0b62d7bfd905872a",
+    "auxiliary_manifest_sha256": "8a6f0e10ba4c0c35068a2c9934353e3271816a6ced907adee9efe21f8dbf86a9",
+    "primary_source_manifest_sha256": "237f10948fddc3a02fd42176e5acca3a9db1b7598e5b7a34d6d6766190e85c50",
+    "primary_sealed_source_files_verified": 19,
+    "python_bytecode_writes_disabled": true
+  },
+  "audit": {
+    "dataset": "itodd",
+    "expected_images": 721,
+    "attempted_images": 721,
+    "expected_targets": 733,
+    "attempted_targets": 733,
+    "expected_instances": 3041,
+    "completed_targets": 509,
+    "failed_targets": 224,
+    "blocked_targets": 0,
+    "target_reason_counts": [
+      {
+        "status": "failed",
+        "reason": "fewer_valid_distinct_poses_than_requested",
+        "targets": 208
+      },
+      {
+        "status": "failed",
+        "reason": "no_predicted_masks",
+        "targets": 16
+      }
+    ],
+    "missing_targets": 0,
+    "unknown_targets": 0,
+    "valid_pose_predictions": 2446,
+    "valid_partial_poses_retained": true,
+    "inference_runtime_s": 2055.023917589984,
+    "strict_execution_complete": true,
+    "recorded_inference_failures": true,
+    "coverage_complete": true,
+    "export_valid": true,
+    "coverage_errors": [],
+    "export_errors": [],
+    "missing_keys": [],
+    "unknown_keys": [],
+    "ledger_files": [
+      {
+        "path": "datasets\\itodd\\images\\000001_000001\\complete.json",
+        "sha256": "926b81d03903cc5bbc97befa4de6006c5112566f20126e32339cd093e555274e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000002\\complete.json",
+        "sha256": "81b4580490a19b471a43fbbfd772eac97a3b79aa56354a6a2f7f43acf89c39b8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000004\\complete.json",
+        "sha256": "03021f420e920e6c0341621480bc7437bb90be0a0eb29d16214dc896862468ab"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000005\\complete.json",
+        "sha256": "5d749ca110c11c8ae314f74359b8d0ed1c90e774b9f138bfdb2a87711e1d8b6a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000006\\complete.json",
+        "sha256": "31fb6dbcb42c8d43ba8682e7d435f1d2df9153aaebc5fda452ce9a0367fb8775"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000007\\complete.json",
+        "sha256": "a30378f9c7ac80e23f969a4d727f8551948db318c983ed974aa6c88458cd594f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000008\\complete.json",
+        "sha256": "dcf195e402bff17ebec3fecb6e82b5d21fffe20a1a9ca88a387646f298138986"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000009\\complete.json",
+        "sha256": "a14ae358a5337562ae185b2a085ca21cf2b7d1eb5b1287e27c7e0288fa465d85"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000010\\complete.json",
+        "sha256": "54e71e62740e66805222e9e3accd6e9ffd3634ef03eac88750900844a7d15fce"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000011\\complete.json",
+        "sha256": "e52f46489f23dd7ebfce07ddca870be47fb15e2afa7cee935f48585c89317f6d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000012\\complete.json",
+        "sha256": "a7bb54ebabcb499f60b69c88cc0bdf87c51dcb640af92720edff712996772464"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000013\\complete.json",
+        "sha256": "d7024ad9d857667e2b4e029b3d87b2dbe847e847bc4c46da3c3ed61fba110c5c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000014\\complete.json",
+        "sha256": "e9223dc5cb543de1fbf1d529eb356359725c63639062e41cd0e85bcca2e53a60"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000016\\complete.json",
+        "sha256": "b569279e8e444b140265d80b73c1d31eb5983dfdc439ff1e0d41f35fa18f8ed9"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000017\\complete.json",
+        "sha256": "28cc3ff4de74cb56a2630fd144a394b17dc0b857a04f23e450bf5598dd0f2036"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000019\\complete.json",
+        "sha256": "09ecf5c25a85a0f6810982442247201b6761eac6b17ccdbe193a28b3b67ff157"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000020\\complete.json",
+        "sha256": "1b5cebbd6c9f77612ad3bee6969e4d4ce6d3682987162be990c6e4a2f9980755"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000021\\complete.json",
+        "sha256": "b9c0596cdf0670e0404e6ea10d5a0118aed1b4bccd3a9c81a097735f30bc7264"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000022\\complete.json",
+        "sha256": "53a083bfb125dcd006b3d387ed5d1c0c18af0d2ba340e121af0d758b7f43bff1"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000023\\complete.json",
+        "sha256": "89bc25349b1e95c5a6189b295f26e441d2de9435ad4a73f435483b7eceefe488"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000024\\complete.json",
+        "sha256": "c5814e1e670bd884daac7815d119f88091b605a6545c3a9b3f723d57a4139273"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000025\\complete.json",
+        "sha256": "956970652ff614985d13d5645c238d1901a3cc8cef558ec6711df96544959cd6"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000026\\complete.json",
+        "sha256": "6299d0a586ee6dd416dbd620a5872f6b3f4eeb09b8db0fced4b5779abde2b302"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000027\\complete.json",
+        "sha256": "5a2b6c051dfa87438ebb6087a94ceea38866f13d6753c1f08fa3fd66cad70e86"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000029\\complete.json",
+        "sha256": "990dfdf87b7ac4ff3aa6b55785803d9ead270ab00fff38d706aac9929e805305"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000030\\complete.json",
+        "sha256": "c6073ca373c066ac913e1843a1f7180b77b459e4d45cede30745d6b8df6d66d5"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000032\\complete.json",
+        "sha256": "9ef51b3556c61dda38383171f1848614fe616b7765b0119250776fc7c34aea95"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000033\\complete.json",
+        "sha256": "5f07f6782cc5f08399d3390e60ed98b25c729989eaff9a81d5304c58deefd0dc"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000034\\complete.json",
+        "sha256": "9e135428ff5bba54379bc301822d55845ea61714512da2d345cd4c10aa572b0e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000035\\complete.json",
+        "sha256": "6517601a02cae74d266b46404e778bc45d4fb428a34056240c925aa64c32fafc"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000036\\complete.json",
+        "sha256": "2b401a771218787ac332cc25f4dbcd049c32e56cec6d08a1f94c191fdff190d8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000037\\complete.json",
+        "sha256": "cb449150f8e484b18b0e18038cd6938b7c88d12d2b8901e767aa415a8b17b764"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000038\\complete.json",
+        "sha256": "6976bbc4f280f2211bd438719df4c28e5f3e64f011e83ba38a1f457cd66bbb6b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000039\\complete.json",
+        "sha256": "837fa34a89c726bd7c759ab2de8d87e7ea1fd3f4b33dd6cd06c930b10187b5c7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000040\\complete.json",
+        "sha256": "fae09834a2e3917221e8c48353ac79901375fc4a87dcbf0e7c8fde0470b6ec84"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000041\\complete.json",
+        "sha256": "b6aaf7c03f1731ca661437bda6b15e92fe5a0683af2cdb492ca498489b9550fe"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000042\\complete.json",
+        "sha256": "bb4b38c7f095f7d90e655771a9130deaf397a67e486eb23b1b66437156ec9492"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000043\\complete.json",
+        "sha256": "53766ed2d5d3b71690ac051ca0dc8e37d74625d2f7aecb48b1d35d0d5b7c8e95"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000044\\complete.json",
+        "sha256": "ed3248d347cc910b93f3ea5eeaa00b238216497295a76b167e2b2a26776d4e40"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000045\\complete.json",
+        "sha256": "4ec8df1d6cc37d99790f06b0569236604707c2410574f6bc891e38a4485e895f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000046\\complete.json",
+        "sha256": "fcd3509e23912a24e690e97bc7bec0b3a222cc7e829616d8885208a6eb60e94f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000047\\complete.json",
+        "sha256": "4f2bad197096b4c8017ff249c269e5012195e82e54490230591f39940c74515c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000049\\complete.json",
+        "sha256": "358a63fc32c04c0edc18b88788c141d9f96bcbeebfdf683701ec4a4b960fe3d3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000050\\complete.json",
+        "sha256": "8ed25c563e301d4b1f01763af3f6ed830937d14d8e14a042678fcab29e8cde1d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000052\\complete.json",
+        "sha256": "7f16cdef791585373b3fca96cc2821390e06b732ebe4813b9cefd940e0c752fa"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000053\\complete.json",
+        "sha256": "d8d793ece14c2cefc4b00467a89f554c5206d59dab17f3677777cade9b108f0d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000054\\complete.json",
+        "sha256": "739a92b10476fb1952df2efa207e7606b876145a020ca4a9e2fbe9c25efd41b3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000055\\complete.json",
+        "sha256": "38eb86e46da49db9b25df8c8573cd5415cd28cac87c6b4d1a71244dd2f0db67d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000056\\complete.json",
+        "sha256": "5ba42e06e692e3c2ad80e852bcffc0b5adac6ba1fccca11cae14356c6b074aa4"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000057\\complete.json",
+        "sha256": "067a5677b541111a24e40357842e6cac83ec553117860f103714a2a90d6aba48"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000058\\complete.json",
+        "sha256": "c6b6638d61a98fe631a561336ddb0bda48ad805cacdc4e67699eecc9b16ce749"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000059\\complete.json",
+        "sha256": "21c158b1b574c664fd7f5fa8259f58f107ec6d281a1e2b91a4e017f82215e33b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000060\\complete.json",
+        "sha256": "4a1404039910b7c4c0a643b45569786e5f6a634074b71bfc4695d22272661fd8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000061\\complete.json",
+        "sha256": "e3540853a7ecd9a359a270151b52bab72c737b5444253b29dad749ed272fe289"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000062\\complete.json",
+        "sha256": "1f190c51bfe89ffb9478f98b09b5fd1df35163f012f4160a058158143f5b9daa"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000063\\complete.json",
+        "sha256": "456f0c0c648449af4f4e7ab5229e343cc75efbef647639136eb9a9e108745f83"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000064\\complete.json",
+        "sha256": "67a3162f6b0c81694fce93b6eb876387361ed8f001d7cca72072aafdab243eeb"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000065\\complete.json",
+        "sha256": "60b08784d7151cb3714ea12c3ee817b4c1e632316f517fa1e9ce2d19467877a1"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000066\\complete.json",
+        "sha256": "b0489c99ce22cbeecd020642c2274741600080c787b098597c818596423754e7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000067\\complete.json",
+        "sha256": "6294d62bd5810449ba38b975aeec57d84d60a8fcae3fdaabfc22537e9029400e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000068\\complete.json",
+        "sha256": "81878ed010d66762d162a48005a1e2b0699c12d7d829cf9dacc481b9a3153de2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000069\\complete.json",
+        "sha256": "35a95647c6f9a8ff76aa86b03a3de0c3cd0198a51cf0b9fc2ed9d430dbfadd32"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000070\\complete.json",
+        "sha256": "380c1a87f820c421e22ca6bbea3bffee492451b7b2f82d94ff486780c08760da"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000071\\complete.json",
+        "sha256": "2dc823aa6db6a516d083e31b2e4de7402e44d0bb2d40cd8b708570cb4d2ecf1a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000072\\complete.json",
+        "sha256": "74e957f7037e6840243a3b452b0911d3da4ecb7bb853d480911e972e3bb328d3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000073\\complete.json",
+        "sha256": "e860b432dc7c99613e6114937e4b607620614c24b5da68f938bb1a34270fdc01"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000074\\complete.json",
+        "sha256": "9006be8d5ac43d7804eb351f0f2daf7c9764f0db723187a088be4492a499e4dc"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000075\\complete.json",
+        "sha256": "a2e6ce059b0df447dea5bab20b62f0ca7ec4a89c352aa0b3bb76266d57e88f29"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000076\\complete.json",
+        "sha256": "c844c549b2cfb9ebb85f4330ab73118ff5bb2d6ff724cef1ca92c3bb080761ec"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000077\\complete.json",
+        "sha256": "569a239d2517f298be486e3d914ece1260a559753a67277b6fe435351a7c70d6"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000078\\complete.json",
+        "sha256": "db21a16c89040f6123e19d8a15d7699ff9d87a3c4ace8fcec98daa011898b43a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000079\\complete.json",
+        "sha256": "a5c3f003f3b522ceba881ad13844d58fd2a3761871988f03dd5da78cb9d2d8ee"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000080\\complete.json",
+        "sha256": "6d5c67895f9aae13e6da5f0c7715e039248a9ff3e105d506ab954e81c0b6c869"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000081\\complete.json",
+        "sha256": "a1c6e9b9750aae3e6127255e9e80ffde2d31b40f67fec6e3ead51b92f976c5cc"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000082\\complete.json",
+        "sha256": "b01122c71a599d8956ba74263ccf2139a40b9c98eb5b2734c7e1ade26cdf4e90"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000083\\complete.json",
+        "sha256": "a99ce2a5cec00438fd32b045158b12fcdcf588f95a0dfc86bf9ac5077ee35c23"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000084\\complete.json",
+        "sha256": "6e10bf29efbbbb521f4dc96f80823152a2470e4ae4d85ded061c3db19eb79cf5"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000085\\complete.json",
+        "sha256": "0fedc4f6b267519df7a3c0f38b74c68390780e8ebd8c0e927acd5c653d1d98e1"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000086\\complete.json",
+        "sha256": "9b29b7a8def388a92d9d6628519fec5d9f831b667cc772ec3be3b5f142ba4885"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000088\\complete.json",
+        "sha256": "48bc8b6c62366f446a23a9a9d8ff6ced411f3e460c9678c5423da5cd21ecbbc3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000089\\complete.json",
+        "sha256": "ad74ab2f9d102e585cbf54b082289103db6a1b744f24fe4e1edcc9d7b54d6787"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000090\\complete.json",
+        "sha256": "cd7a85d49aae50a939c568b093cc50263f7fd8072dbb5dbd8c4f939012dbd8e2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000091\\complete.json",
+        "sha256": "a18b8478e882a97f21913d5034215be1b94c18a6716bb2c1a5e25d2537ff15e6"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000092\\complete.json",
+        "sha256": "6832920c3a675ce66ff38398ef51238a8ea0f92b7b5e2b02808dfb11b57fccbb"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000094\\complete.json",
+        "sha256": "a9aa60308dcfde24a8814415a25149f0a69f60f401966ff7254c484b1ed28300"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000095\\complete.json",
+        "sha256": "f71b2e8fb82ed402354bb815ef2b89db1576d575d2c2497aa5b21ef2a6cda3ab"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000096\\complete.json",
+        "sha256": "3ae371c972e8a8ce43c02278649cb692946479d9e035ab14df5c3750f81e3b21"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000097\\complete.json",
+        "sha256": "19cfb7cb043868eee50edbc080a0506699747e6ec4310cbeabc1f94ecf8bdea2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000098\\complete.json",
+        "sha256": "f1d95e5088bde06fcddaf06f475a62b9c7c28da69397c6e62c39932ea1fed742"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000099\\complete.json",
+        "sha256": "fb41083f95d100e9c94a114d572e267d5e558fc9e5a8aa101976d75299dd70ce"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000100\\complete.json",
+        "sha256": "93e2b3a41d84c59ced40bf73df78ecaa4f46955414fd8a703c8069bce8815945"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000101\\complete.json",
+        "sha256": "5ae963dd841ed643c64ee50cc154f6f482d32667ef1ee87f398f8b217fa009ae"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000102\\complete.json",
+        "sha256": "15307b9c317057781df5b15145eab507ffa0178e86d0af92021be4ae7894f364"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000103\\complete.json",
+        "sha256": "a2d7327f3298a6dd6679b18b438b87ced1d00df8216457903b5801e162404cc8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000104\\complete.json",
+        "sha256": "8aebc3222da6bce419c1e521c67f490731c1053c0d8786373ccb9f70b12d573b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000105\\complete.json",
+        "sha256": "5d9bc40934ce4d2bbef4e11ec09987f47dc2af4e8bf3bcb90230f4c0af79464a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000106\\complete.json",
+        "sha256": "02edaa2b758756a942c8eeaa21a1f98ce44e782360670e9fa9f12d954523e25a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000107\\complete.json",
+        "sha256": "313e8078d92c19d5120a098b805a85e6726baf53cb218976fcfe10666b605902"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000108\\complete.json",
+        "sha256": "a610d2e4d3cbd4c591890e0e2ffd393320f69fc4771fa6ea25287a652acc4c08"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000109\\complete.json",
+        "sha256": "ed96d87f6f019fbcf462c1f8c01e81e0ddbbac771b7a443dc662712553bd1fbd"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000110\\complete.json",
+        "sha256": "d7bdb28d688b02efb73748f170b1f6f937c2db56b4ee1bfe3f6e8badda769bec"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000111\\complete.json",
+        "sha256": "1fa2e47bd569d9ea4575911a54ca30c618425542cb9f24bbf43518f475b4109d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000112\\complete.json",
+        "sha256": "95d0eba496f3849c9b1f8f5ca8f25c15f01b9f72b0a6571d7916eae9fdfed472"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000113\\complete.json",
+        "sha256": "ee2a8a90285ebc459135376fa9f10fbc623c6a8b7e7878a822640d456ecf1245"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000114\\complete.json",
+        "sha256": "0f05fb9061623ba440e69289389b59696b34ab79573a9c6ee024c5e1024cd4de"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000115\\complete.json",
+        "sha256": "5df3f5c94b0f064bc17da4585ca135ff66df771f3b5b5c2ecde9b4d93f881690"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000116\\complete.json",
+        "sha256": "9362f2a6cfd2374dd4423ac4e6dc4f7b4bac256dfaa683d4abdd9505f7133ecd"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000117\\complete.json",
+        "sha256": "a60d9a3cb4b9f0bf6bd3bb4e4905b4165653440f555450562f81eb8e6b4e650d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000118\\complete.json",
+        "sha256": "fc76ece72cc4af33fbf5bea80af36d9763ecbdff36f1bcbe2d145119aa85eedd"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000119\\complete.json",
+        "sha256": "4adb382bf939114df5830d87ab79d9f8273405caf9ecc10bd24fe8c6918f8c13"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000120\\complete.json",
+        "sha256": "bae9e35ccf9237ba9498ea1e52f77403b3f65fbe3156b40ed83a7cd0706d4990"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000121\\complete.json",
+        "sha256": "04ef53a627dd3fc4c2ba6a6d84f95760cc220ff2fdadce2727f3ebf6af3f6f44"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000122\\complete.json",
+        "sha256": "5e92bbb3bd054185e2118889d4542b69b63c4a8752d388c7d1c668b560766245"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000123\\complete.json",
+        "sha256": "41c27ef0a618a30b8672c3ea09a70af9e09e963a64b6c8f32787d774120ed4ac"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000124\\complete.json",
+        "sha256": "7cffca898c1085e66b45d29d8b870e67322123dadb117e591773e5e3338b4053"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000125\\complete.json",
+        "sha256": "fb790d522d4a6289ac08cb68b6d8431df64430927e15ce6df9d257dbb23613e9"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000126\\complete.json",
+        "sha256": "d9377e6f3963e6c5c3a8157cd9551a426930b1b748e83fd1cb3c6c98399ada27"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000127\\complete.json",
+        "sha256": "0079b8c464c74473eb1f575684740dcd0bdcf40bfc7d30667f0aa44fc3959763"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000128\\complete.json",
+        "sha256": "b65d275765f67e32442437b70fb7a76f65fab3369dbd696b33b318dfea89bf08"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000129\\complete.json",
+        "sha256": "ade5714b72224e8cb84eef5f340668059c6845e0fcf34cb22210c60adbbcb16d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000130\\complete.json",
+        "sha256": "25d49198ab752c8a953e94d2d09ed7f3e80216b24cceeadbd2082a5f5b3d9928"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000131\\complete.json",
+        "sha256": "a23f1cfbd506e26752674f5e4d58fd389925b9e0d219b96619313c053b21ee85"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000132\\complete.json",
+        "sha256": "3e4df6b6a00578f888d267448c3e4f51baa7b15632a74e1adecd5886cddcf5f3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000133\\complete.json",
+        "sha256": "76525f68b1a285872c2f56d15e58b6bb7c8fa7ec655b8cb762defea9111b342e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000134\\complete.json",
+        "sha256": "0b6cb1b3699f955f368d84561a4ffe2d23c5656889063d36e231aad1491bb416"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000135\\complete.json",
+        "sha256": "4b77270007ef15ecc961f785ddaba9c0140977bb0f3088f6a799b3262703cc26"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000136\\complete.json",
+        "sha256": "b54792b1f9ac256d15311a862f4b06a53ad63ed6fece2cb140a856675a6bf2b8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000137\\complete.json",
+        "sha256": "d3a41edafe0543e4a142f62d1240000af417925d69960d3fc392d48cb0270546"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000138\\complete.json",
+        "sha256": "cd0a7f8c8e1beaab2604c6da59d09d11f8866098198819b942a70fb39c220512"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000139\\complete.json",
+        "sha256": "f987339c106e45a9c59f2dbae7ace2d49f49911f744e7e5ebccc180bb4840c97"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000140\\complete.json",
+        "sha256": "cad027205bfaeece5333ee0215d5f77813d5b51ac3672e881972f1f10d26d101"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000141\\complete.json",
+        "sha256": "3fe7fb8a3686e003e158d70edc33606caa0497decb6a04657b764112465d7ffe"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000142\\complete.json",
+        "sha256": "c4cfa404bb2bb8f91450de8f48df94fd3200102e7fc129b040c10b3eda2bdd71"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000143\\complete.json",
+        "sha256": "758c03f2d6c2b53b7dc06a39f332387095cab655bd7f0741bcef23010621846c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000144\\complete.json",
+        "sha256": "5dc0226ac56b78f980c2c9adc730f2f65f6fa70b685010575d36220c2e795c47"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000145\\complete.json",
+        "sha256": "879c2247ca3524798aab41034935cb608a1d28f1d65007b0c1847465f9c0d7fb"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000146\\complete.json",
+        "sha256": "675ec42bc3196b637b26919ece9f317500c5b1b8705bd0af47c427cc964a1f86"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000147\\complete.json",
+        "sha256": "22b594ece720ac926e64d134b4c3e7a8991944d45380948b0b5a6246ee73a724"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000148\\complete.json",
+        "sha256": "946d710919a787b04f135edf8cdec1f4ccf55fa9d9eedf09adc095236b3fb591"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000149\\complete.json",
+        "sha256": "064d3c4e4845246b621c9fb74cd1f21379339a9f45c93a9035dd4145b186e7a9"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000150\\complete.json",
+        "sha256": "006012823aaa88c7dbc6242acb5a29ff6883bf0d5fd7a06ee0fdf7ec446cd6e8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000151\\complete.json",
+        "sha256": "aeb779849246c0ff9643909e0589530683ab4b4ca56d3567f8c66a3dcf3264d7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000152\\complete.json",
+        "sha256": "2b7d477daa94f865038f70a53f054fc736ab58c0cefbb8e6a28c6e7a7786711d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000153\\complete.json",
+        "sha256": "c419792936df0a17b2e3c560746c5ba4acdd5cab51d9d6068a7a1d106ca7b2a4"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000154\\complete.json",
+        "sha256": "12540ba9091b2fbdc2d74118535ae1f552c431d119f4e2557d67e261ed8127fe"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000155\\complete.json",
+        "sha256": "9b1a44864bc31d2f705999730d92a5bd5cade75aeea1f624abb57c5fa4fd8e55"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000156\\complete.json",
+        "sha256": "0b7a13503354bfb55300ed5431dbb1990c58cd6983982638f7b8228a8e9f08c2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000157\\complete.json",
+        "sha256": "a8cef6afdd9e96d4a681c521c44ad100f75e28ff226aa3a7d4fdbbc05efd3d22"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000158\\complete.json",
+        "sha256": "18eef94284bfc5dad39d01a123a3fcd3552d89ca36edf5cad96a8d586b968d2b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000159\\complete.json",
+        "sha256": "63bfd77c41bbbf1c4e18e45dd32d1fd127061e640783e8d0220e62893552e500"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000160\\complete.json",
+        "sha256": "60bee35900bc29c1797200cfff45c6bfb797650526586699f4e93b9f2dbc558b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000161\\complete.json",
+        "sha256": "9d500f6f157889e1be3faec031967a471a63dea5c4a2dccae75daa3b16075290"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000162\\complete.json",
+        "sha256": "7d3a3e6bdd1d2244330a2a85005254a2e3666bc8e47d345b7eca4fa387723dcf"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000163\\complete.json",
+        "sha256": "2eeed0c75ef5c494fa81a325eedb9f4d608478a1c4dc85e4d1b61687ef8b12ea"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000164\\complete.json",
+        "sha256": "152f4aca65b87bf65147cfedcb7461f86c822f8dcc3368271cb5dddbf9ba0657"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000165\\complete.json",
+        "sha256": "08dac327f34eba459bca3eaf4bcde13320d89efcdc66e2d40609824249643d34"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000166\\complete.json",
+        "sha256": "6342a3520e782675335b0b6495d610092383c2feed7b389a9f575b9c9ae8a519"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000167\\complete.json",
+        "sha256": "f8c9eb0d67065de835872854afd99d94ac41a142de294a8acee56acc0831bf4e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000168\\complete.json",
+        "sha256": "7f5f8ce85143a01ff36c6f2a36b8b96c4134d1dbc6a0310d8afc682221a44b23"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000169\\complete.json",
+        "sha256": "ce8395bf1ef5a8660f1cfe826e076c5fd353906148036756c71076b5d506938f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000170\\complete.json",
+        "sha256": "860f3f3aca6b922f15e67fa7cef7367da2fa22b763ec82fa14c6b8486891fc0a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000171\\complete.json",
+        "sha256": "c78c682c03ff5a4d81c99cfb8355623e311970f76ed42236908b35b7db3b823a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000172\\complete.json",
+        "sha256": "1654f2860dffbe31818ee2151e1deb0a6660f22509bc2d71e333661b0500c791"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000174\\complete.json",
+        "sha256": "80ce862f3a3f2595a4aff21beb757a3b7594d6449ad3620cdeb6297074cad325"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000175\\complete.json",
+        "sha256": "8faa991da9e18ec2eb855d955079fb5fddb4a206246fc8fb11e3299546ca853e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000176\\complete.json",
+        "sha256": "c2a3c0894dcedddcd428b0718ee0757efb8ebe3dce75c70a6d57e3913146d827"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000177\\complete.json",
+        "sha256": "b69c1f94824f9a8fd2609b3ad69f30b0d8275fe613c76c62f44a85ed10aacb79"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000178\\complete.json",
+        "sha256": "ab64f64fe7d3add162abb2fa9132ec089e5c994f7ca6a344f7e9723162226be2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000180\\complete.json",
+        "sha256": "97c6f67782d538e7f1374221637dcf5a987fe06fa1782a441040016d9136a55a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000181\\complete.json",
+        "sha256": "5e361c1fe1d76342ef2945b17daaa16f1321431e55255b27c49e540ea826094c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000182\\complete.json",
+        "sha256": "e29d71980fa5ec9986ee28c49c0adf691bc55e64f3db3fbac1356af7b8e5569c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000183\\complete.json",
+        "sha256": "8a00bdb0723fe0cb422f389a608135604e1f5e03bb8ecad012197cb81b31087d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000184\\complete.json",
+        "sha256": "13bcf8cc4c235a3182e16eb84a829cc9c9edde1658259330f825c93a08e5b9ae"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000185\\complete.json",
+        "sha256": "fcf2f26c96cd5fa3a7f28ed1b53cd807e36c6efcc62188cf8142765d18f024fc"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000186\\complete.json",
+        "sha256": "0b642c0539e79cd732c788aa348d8409a49599e0383a40afb60d8fd5201d015a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000187\\complete.json",
+        "sha256": "293be35d6d4b3db1c3992952c72c2505562305d7a1da5d7a6f22d4ca6a86de79"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000188\\complete.json",
+        "sha256": "121e1a539fda8526dbd27108cd7bde3c20a9dedbca42ff0933cc2861e147d530"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000189\\complete.json",
+        "sha256": "3603046ebaf7c1e157d37a1868361d41bfd5c0409344e0a046df1d338f43e4f7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000190\\complete.json",
+        "sha256": "8d2afd9b52e73fcbcabd5f2db58ee84ddfaba5a98060509b6f3086822cea1fe8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000191\\complete.json",
+        "sha256": "6075146c5f00b8438d60db92aae30a6084944d2b6f97bc12498003f87c7e8a79"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000192\\complete.json",
+        "sha256": "161f13d83abb36c7f8b8a70fb6e3366cfe73a72469006f5c366bbc6ccbd70be4"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000193\\complete.json",
+        "sha256": "5b8eac16e3034618d26a0c39a7476d7996d5d0e2b8aa78179e2637c8aa149072"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000194\\complete.json",
+        "sha256": "261a099cdca0e88c4c9d59dbd9120ab721ca606ecc1a2fb64505e4518f858583"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000196\\complete.json",
+        "sha256": "e2f8484e4ba23e4a3b2fbc4681083912a8b6e8826e09570562353bd3145b9cec"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000197\\complete.json",
+        "sha256": "f45094c414162eb1c81f56449289d28dd80a21ff74f1f2703df8ef7a7eff1e0f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000198\\complete.json",
+        "sha256": "6670be66eead5dd61d0f7b293ede728b7b973bc9fb4da0b3e97067653b3be1dd"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000199\\complete.json",
+        "sha256": "01e427e36ff76de7b9550e31581e4afc3421c33c8c027bc4541117f4cd80b08f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000201\\complete.json",
+        "sha256": "d156bc23d96496bf342f7b8ecf9bbf60e58a35a1e9743ab4656b5309974d8df7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000202\\complete.json",
+        "sha256": "915c3995c80f04c75c9a65a230a300d9e14d7e3142b12a2f5b2360ceac8dbc3b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000203\\complete.json",
+        "sha256": "2057b18349c0e8c1438077bb14692d3ec11293b72cb62db106bc36418963d149"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000204\\complete.json",
+        "sha256": "3fae172a552da1cf877e844f3419465e9e2c820d507e3f439a5f1cbbde8979ca"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000205\\complete.json",
+        "sha256": "c62b44c4249c0110adde38c1a872225aa38190a17add2ef7ba5ad27c919bb2fc"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000207\\complete.json",
+        "sha256": "6d77698300cf2e96160d9a7b86b8d59fe10008045f5f325cbeab89fc910c347f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000208\\complete.json",
+        "sha256": "ecf53d9e81a3373976d7e28119c9a747b0c6f2ba8ce138ed74ab79a330f68157"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000209\\complete.json",
+        "sha256": "4d9b15e169f4a9a7f6e1d2b703abb81e3d580b27f41db5c3cdfca240cb647a32"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000210\\complete.json",
+        "sha256": "5ce268eb210c8416a61c3ccb0cb2c1601ee4574da3d18f9d0efef8b706fea989"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000211\\complete.json",
+        "sha256": "4160d3f94fce8b6fae861e5da611c95f84022b1a9af46508290e0a351d463b9b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000212\\complete.json",
+        "sha256": "808837157b875dfaf39e13a3b14a24257394ade6c56e981dc6fbdaa55d65c409"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000213\\complete.json",
+        "sha256": "968635b1a39a0a4a0f0aa4dd033fe7b8a28c3243627f7bc9f53d164e7808967f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000214\\complete.json",
+        "sha256": "897fbc859b25ca21dd6c857d0a0e7fb50a7996a8344e649a5479d853e20da93b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000215\\complete.json",
+        "sha256": "bc28abcec3b76ee83c75bfb4a15c6b39d466e9eaac319690db654c3479d4360a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000216\\complete.json",
+        "sha256": "9b2810efbbceee92081353fd6136339e23333c6351e82a9a0ea9f2c082aaccf6"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000217\\complete.json",
+        "sha256": "5a77f137351979f00dedd2d173268f86b4c547ff8a680d67ba4d6fa1eef1d54c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000218\\complete.json",
+        "sha256": "d586a40b3e38271444c8e73a04b2d5a46c9b280a565378fa70f538d947ddab0e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000219\\complete.json",
+        "sha256": "e74c97cafb064b3a2c29913cabee321ca665562d82ebb1164e1e0c825c620a95"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000220\\complete.json",
+        "sha256": "c2998db8bb6f7b94e92e69b7fce75f4381a12c1d4a1b2dfa130cf4ea24229ae1"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000221\\complete.json",
+        "sha256": "50357cc7047099ca230910c2d0f2addf54c98d6f7d57848657a0fa3fde49b9c3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000222\\complete.json",
+        "sha256": "de4305727209e42b308c07efb48a773d8a82f27d79b953297f3cc45dc4f42adf"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000223\\complete.json",
+        "sha256": "88b10ceca020723ebe9b487454552ac3aded2dd4dac81955f8f0b16bb95abefd"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000224\\complete.json",
+        "sha256": "2d971ba3c5eb9ca0c3635e4bacc0f790c36bd005afd2adee1e6afb3eda17f306"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000225\\complete.json",
+        "sha256": "b032cec477e88a8e40ff4c6ce76c8902492b39722e5b8e6822462f4c42ab3f01"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000226\\complete.json",
+        "sha256": "1039eecb5116a084a525b543664e303cd301bfe1c54ae78ee2c1cf100a39607d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000227\\complete.json",
+        "sha256": "1544de159f6fc959178ba7bb071eb77c84ec6aa79385c21cf07d42bfa6882605"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000228\\complete.json",
+        "sha256": "735252db192386e98dde864c6a7a111c7818dff06bc265b230f8ac80374e0974"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000229\\complete.json",
+        "sha256": "0a022f57d4db93b7dfff7e51cef3bc36a2da9f7c6f81b8c3ca1aad6603bcb5a4"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000231\\complete.json",
+        "sha256": "51012938ecd15315ab9f02e485ee70de72a45ed9ebf1189ca04a78183a2fcee9"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000232\\complete.json",
+        "sha256": "d6f04b0cbc727469b41e112d187f134dbdfbb4315dd2e7a329d46e4f98d0e62a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000234\\complete.json",
+        "sha256": "85b4516884eefba580d8c3f7fcccc482dcb0ed38fff8f219c09411e8f201f5b6"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000235\\complete.json",
+        "sha256": "9f64b3699f7aa62666326c5107337e2e00200e9485eaf5c0f6b9eba38333ad5a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000236\\complete.json",
+        "sha256": "bf1342249951a90e7d0dc7d4d58b939ec9ec63ba45c164849e108896bdce7cde"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000237\\complete.json",
+        "sha256": "75112f654d222d69aeb7d606c34601e73c603a37f715b78ed531702c012b2918"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000238\\complete.json",
+        "sha256": "898e4f8c632338346821761a9b26e35ef5cf895fcc213b17f4d9922eab74cd2a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000239\\complete.json",
+        "sha256": "ae3fe591ac6081173b42b30270cd4ac13775b2d6a3fdef6400d550bc3dbb59f2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000240\\complete.json",
+        "sha256": "f256a9cc60b2ef661123493f397ebcf3a831b6f47961bc936b101f6f66444f15"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000241\\complete.json",
+        "sha256": "270e1ca67be9333887ac0d8eb2e8107af1e261e3112f601fa7d581e8ecafdc3b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000242\\complete.json",
+        "sha256": "b8086c11bca8b7fcc36c2bd22ffcee6a360a6be7e0e3c7eacd86fff7af980200"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000243\\complete.json",
+        "sha256": "bc56d7c2761d7d8c597e992199ff6d7fe75c3564bc160ec65c19d81df8501b19"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000244\\complete.json",
+        "sha256": "9cfa7c300e645fa0d5dc96a191e9081a51cc2a9644a152091353b42cf447e33c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000246\\complete.json",
+        "sha256": "03401d8bfb26dd5060c288dff7bcccf7b1aa65e004feb97dfecfa502bf3f1333"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000247\\complete.json",
+        "sha256": "cdc822175113a4514d97a0c292116c38e0fbbbb77152a0b25fb481f671600129"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000249\\complete.json",
+        "sha256": "f14ceeb1a6a259983817b7aedc24076e1dd83a01a99c7eec3420e15b1c458b14"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000250\\complete.json",
+        "sha256": "31762164b54f1f7b400d58e9442916731aa13d6e102ce96772b2617476e406a2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000251\\complete.json",
+        "sha256": "9decd672f26f38ecdd7360bb0348a0abada64168c3067e43e6619c4171d7f51b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000252\\complete.json",
+        "sha256": "a976887f17cec76cf4812ca9ed20c5521ea1df8279245a8bf1c43c9cb16da3b2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000253\\complete.json",
+        "sha256": "a74bd22f3646910305ad8ff1508931998bf92a6a563ee015b352789e0eba3ac6"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000254\\complete.json",
+        "sha256": "0d2eaf40b6b9779056ca0686740e49c22a31ab35e78dd1c918e249a0d36348fc"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000255\\complete.json",
+        "sha256": "efe91e62a806744a0303bd97aced418e3d691f637ce4401d03ee15350f138be3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000256\\complete.json",
+        "sha256": "6f3d00cdf991dc56abbd580e10f93ca16239012b53f5c91c61032be350527183"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000257\\complete.json",
+        "sha256": "89f849c256a02821107ed4ef784d2c32360fce173f08641fd0335445345fe771"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000258\\complete.json",
+        "sha256": "1298e9d3a1545c0a6b58ac1de3a22bee9de56d3a35600f93b758731e5a193a06"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000259\\complete.json",
+        "sha256": "103820933543622d6c1b14bd177862c81bbf8527a8bfee19992a4d69651f8223"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000260\\complete.json",
+        "sha256": "b7a831c40ec28d638d8258b00a4d3566daf838913dd3e76e55341bc458c2c81e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000261\\complete.json",
+        "sha256": "3cc96fb642473d85140beac156a1afb4e9ed891be089f4e7c39c2438ca6af20a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000262\\complete.json",
+        "sha256": "fc58a7ce917bb5fc58fa214368e26ca126153fd1338424e8f9f1449909945d56"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000263\\complete.json",
+        "sha256": "f3d7c54921773b84637d4449780826b7401321d898efd23253472840f871c476"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000264\\complete.json",
+        "sha256": "7e5524897e7f1611df8c7376cd2298c709a2930c0507c71ee16d1ee05974dd32"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000265\\complete.json",
+        "sha256": "f770e53ceb19c3db4060b7571601e62ce883a33b43f94b2e28258be9610fe202"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000266\\complete.json",
+        "sha256": "f32d99824e313b77525bb3027f9f6f1546aa03e9ca15cd0c4efe7b49b5b8d0f8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000267\\complete.json",
+        "sha256": "635ea9c35d0629e8784d78b2f3a8ccde0cb347d69c8c13265d80fece116f0379"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000268\\complete.json",
+        "sha256": "2fc1a693a2b07c85ead550ba4b3690c654da31a899adeec08bb40a1daf31dbb4"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000269\\complete.json",
+        "sha256": "9d523b1928baad202430913aeecd68c68146056b211525cd5d9e3f0045037777"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000270\\complete.json",
+        "sha256": "5afe47e73b785a26ece1ad9925079775399b15b17ad103a605f023ce8a63c7d3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000271\\complete.json",
+        "sha256": "9741bd376ac9f53d89a843fccf34fb31fc92150d00096250dae3af7d037baf67"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000273\\complete.json",
+        "sha256": "58a9e890976bc2ab1d7bbe11cf75230babd3870e572c8d9314914d7b92091214"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000274\\complete.json",
+        "sha256": "a573a66221504c7288b73211e550a95ba1e9d2f6e1aa8aaaf82703f7e253ae53"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000276\\complete.json",
+        "sha256": "21b6601a9ddaf37b8df0147b346d3aaebe673a58bfc4b18e744b150e7b172bf1"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000277\\complete.json",
+        "sha256": "839507a2240505ff4f9070bff99d94083ad180c95d0956222a6f38a2fad142c8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000278\\complete.json",
+        "sha256": "8a46fc0df4564bd37c67432b33bf2444bb5e748002707de3a75f7221ccede3a1"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000279\\complete.json",
+        "sha256": "3786963379b0b7205282c63c6da647d85c97a371cbd1bcff43b546d9a59bd1f5"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000280\\complete.json",
+        "sha256": "cb8778f94856ccf0da8e1366e752f5ecbd4112e419801f9885d36a53615e2878"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000281\\complete.json",
+        "sha256": "8007908547922f10efc6ef8f096a792a845c11499356aff196733075bb83fcb4"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000282\\complete.json",
+        "sha256": "63d43d6c56e7a18bfbff5fab9f4c1221e8804da46ee0aba561167f521633d975"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000283\\complete.json",
+        "sha256": "d60618a2f115a850bc2df5ea7526f1fb813a98adc03bba064faead82283aee75"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000284\\complete.json",
+        "sha256": "11af09d0398d86c74ee23721054a5bef0db12c05112d25a290d4d61ce1f29198"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000285\\complete.json",
+        "sha256": "33809406d01b7f75f52b3f2ebfa0798f6b3da399d1f2072f5539e289c10ad09e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000286\\complete.json",
+        "sha256": "39410e5cca8440f0fc116a835eefb7f7ee4b5d0020ba1e08037a3ea15d8571e4"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000287\\complete.json",
+        "sha256": "52adf8847ff8f4b72148ac15301bb54c734dbc4be5f0190ea75f9d4f3e7046ce"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000288\\complete.json",
+        "sha256": "6309d89ae1a777380d4796270cce04b63d47d847170d4bb57229448d74791e64"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000289\\complete.json",
+        "sha256": "0614fb36a3e15a63f76d17fd54cf81f915cee9330e088544cf7a7e45c7081af7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000290\\complete.json",
+        "sha256": "fe4351dfe5946a229f3f79d3971bff90da718642871ae4db99ad9882da4c1103"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000291\\complete.json",
+        "sha256": "c9f95e67e6ba6a947bf5e9d54c2717095fa98bbb24fa68aef03c9754c1ddb9d4"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000292\\complete.json",
+        "sha256": "9653b102ac94fb9f1a27830e8a3d31420c31bbad29793235c368ed46258416e2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000294\\complete.json",
+        "sha256": "be0f7e54b2e17a41cd5da2ec4226cc1ba5c561196030ca51cd105107286ea802"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000295\\complete.json",
+        "sha256": "ce7254a27ed10963e36bce8060ecc9ef151f52c0a32f7737ff73babcd8ba3c2f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000297\\complete.json",
+        "sha256": "1340a6527e51250eaa199cac1909b6887bff921316b8af784706b55804d768a7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000298\\complete.json",
+        "sha256": "05b657f70cf20e0ffe89006068f4de51d170b45d8cfc6494ea2702649014f25b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000299\\complete.json",
+        "sha256": "711185babe614f70847214ab2ce705d7d1d4fa97c0d1b1a1d1ec4205f042782d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000300\\complete.json",
+        "sha256": "01149273b7cb54d0208ce6e92402ff99ca1024f84ae0befb0be1fe00c1ec4d43"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000301\\complete.json",
+        "sha256": "ac7923090be936772a98835e3e18039811b392ac3c1046c6ccd0b058e6c63832"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000302\\complete.json",
+        "sha256": "812135a7d4ee26a7fd0eb0125207080189b9e1292b5a52f9a5ebd79693c37a05"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000303\\complete.json",
+        "sha256": "e4773076971da51e109b6dee939d5217deb466e1fa848a384d57e8d87daf4702"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000304\\complete.json",
+        "sha256": "e067f3bb7c82cffd66e2dfba2a0a51b00d431a313a4d5f520dad1fa753767e76"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000305\\complete.json",
+        "sha256": "f25f521bd29459707227ccd9fc434998af8184373e083ca0a51d34a826992db3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000306\\complete.json",
+        "sha256": "8f8cc9da8c94d9ce7627643f10167141feaa8eccbfcc218a308f9077e1da433b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000307\\complete.json",
+        "sha256": "36971d03fc346d5ddf028e22a4ff77d0dec17acb8ccee3e4238b7849749f9c6d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000308\\complete.json",
+        "sha256": "0a98c50b8f8a8eff750e0356e432881e3dec22fb2cb27d23362dc51ca447e61a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000309\\complete.json",
+        "sha256": "49b6bc8b39fb488f5880f697f024aa2e3d5339df345f5245d3d1ab603b7cb8c3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000310\\complete.json",
+        "sha256": "20d0b6654866ac029409fb23f13f68e36baf8e485072ccee406572ff851ed891"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000312\\complete.json",
+        "sha256": "1121d31b8c2e6d6028b15636560a097ea4aabbd38192fb8571e389c08483ec37"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000313\\complete.json",
+        "sha256": "498f80ffb412eccf5216a9f16037983b4cd76133aa49d8e92f21bdf55e4626fd"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000314\\complete.json",
+        "sha256": "68b05f2243954fbb65c1aa923436e0617f04971cbf17514a55e1eedbb980a8c5"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000315\\complete.json",
+        "sha256": "48356fa3b186ca11bd62876eb2b58c020374535123443f6274a45b1d3397fdb0"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000316\\complete.json",
+        "sha256": "8734367c39823a0acc370a44fdb75024ec373589de6af2bf103fd77eb555eb53"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000317\\complete.json",
+        "sha256": "3c52242b3fefcc567cbb0c3b8aadaadd11ccedefdfe42504706d97bf146a5772"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000318\\complete.json",
+        "sha256": "5a366c45cb52f7e8787cccb83a5bfa23c0b26e02f68cffe01aeafef82e95f37d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000319\\complete.json",
+        "sha256": "0b40544f3f4ab8080c5af471a7ac5084f3d610375f95987624ed8090bc2d8ee7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000320\\complete.json",
+        "sha256": "f9422bfd900af39a83f11f90555a9a2beaa24f92e23364f11b939de96e407635"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000323\\complete.json",
+        "sha256": "4fb22e2bc6128a1b0cace08d85028736e1aa7958c895c911b87d48f09c35bbf1"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000324\\complete.json",
+        "sha256": "57faf0db8c602b6a925570c081bd2362ffade9e3a9bb8046d3db83c3eca6c766"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000326\\complete.json",
+        "sha256": "d40d1a26acfc017ef8dddf391418d52c8e48bb6500f94b2e3cc807159cc8c591"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000327\\complete.json",
+        "sha256": "000db64d5eed1bfc41086e88bed6da2fa1712e6b0d53479a91e2b541cc8c22c0"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000328\\complete.json",
+        "sha256": "e7ab19b2ab2c3da30ccc6e2ba629b43d0f0b3ace75d26a54313cc7d152101661"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000329\\complete.json",
+        "sha256": "c57c015d93896a8419360ca613e943fd3652db348222b9e7204fe88e7cde25ab"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000330\\complete.json",
+        "sha256": "fc52c7dacc2c746288621cd356c01a7b9e4a8064f102b376ff147f097075a94a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000331\\complete.json",
+        "sha256": "05ce34f056bae682ff8aff7f2913e02a4ce4659e6f4dd6eac74f262305b1737e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000332\\complete.json",
+        "sha256": "224cca7e208c482d91cb38224a2eafc5d8d0ba397e6146a1b21634b0e75fc84e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000333\\complete.json",
+        "sha256": "1614291c360e7059b520327e9ea7332953547997f0e7c52e9bca4acefcbe14e3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000334\\complete.json",
+        "sha256": "5ddef5421d934ff168e127e4d4b25a53757acefebe65c7d355d2766d73df1f8f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000335\\complete.json",
+        "sha256": "d44359e3b14be76a7483430fa62de2d8e74c404b30aa5649a50236b95f41b893"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000336\\complete.json",
+        "sha256": "50ae6c011cf0dce3a5beaa28fe032b11678154380fdc2d83be416cd980ea8da9"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000337\\complete.json",
+        "sha256": "591d607516f2622832e7d9c80420b54c679beb479dc9037157ffefad630969ad"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000338\\complete.json",
+        "sha256": "093473b2015da6bc7a8c0654851275225e4a8dc941c88e741f6c529e3846ad5e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000339\\complete.json",
+        "sha256": "3d36a2eff0de1f0e91cc0e5f653f94af32215385d3812a41df8446f2d9a6097e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000340\\complete.json",
+        "sha256": "dfbd189faf41a9e4ccfe9883e71c72d9a2b9b06de2abe2a20b7014a3a3f39121"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000341\\complete.json",
+        "sha256": "45072c7768cea4c28d2e417e27cb47fb49c7a400f0c84d5c8d4ff0f61c27e4b1"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000342\\complete.json",
+        "sha256": "275e9d9b1023eb805573e75993dc3802974b6ca71703f29f378baad02cbb8f63"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000343\\complete.json",
+        "sha256": "3f99bdb7e5af9618d9f7276156c0c97775ece128b24114523ad5f3a237c07ebd"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000344\\complete.json",
+        "sha256": "ee0b5a3d572ac49076ea86fff0fda806b8afa945dd022125dda04ef1ba77d750"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000345\\complete.json",
+        "sha256": "82659c534621b202e8265a2e28b5eb671714c5adb92abc980abc3e87e3d8d22a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000346\\complete.json",
+        "sha256": "e47df35314bcc688588564c67f6c47982d41f2cea1a77bbda10957ef9c6f6de8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000348\\complete.json",
+        "sha256": "7d5233534420db1fb2975df254d3dc03f9b337a879f737e50547d387dc662318"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000349\\complete.json",
+        "sha256": "258f0105c738d3c61b598d6b661b0e51e24fe2b1a12cb6f510018f08d7742c55"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000351\\complete.json",
+        "sha256": "eef3ed7369c9ace4245aa25bc9108668ebfad2bd1b538d0e481ee2af37e1dec0"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000352\\complete.json",
+        "sha256": "ef8a473f6eb18397671a06b9f1a2cb331e7e937a945057504a3ad29757c80741"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000353\\complete.json",
+        "sha256": "aef0f1a595ee74d28c1c4a7c58e69d98962e09d88dc5883b2c0901360cd96ff6"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000354\\complete.json",
+        "sha256": "82d60c41cd90b40ca9a1e09a2636eb0ec007dd31ee925de7c11ed55e4b683841"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000355\\complete.json",
+        "sha256": "d972b74c4278b5867e939e8742f65bc0a5ce48b83573444f62e3f13962f5f308"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000356\\complete.json",
+        "sha256": "4847073810bad7942f4d91226d2dfda9b452175ba9031fa08f5c4a550899de84"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000357\\complete.json",
+        "sha256": "e7aa4589422ad30a483d6813e9072e520e3859bbd010bb4332f7401d63c390b4"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000358\\complete.json",
+        "sha256": "dce7d247552bf1e10e809ae1df8f91d1c947b52ff46267a39e71b14ba1466230"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000359\\complete.json",
+        "sha256": "d4323c4091772bb410db0cc4fd142a37eb428c40005de924163471c0e61ba206"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000360\\complete.json",
+        "sha256": "15ccc6d72b10ab730747317160ddc1731b6bf92306efc82c9ada85f1d63c9168"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000361\\complete.json",
+        "sha256": "af7ab8cecb5fb79f56ecd04adf7cb06297c8eee936dd86ae489e8e46ab41cde3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000362\\complete.json",
+        "sha256": "e6e8c804b63dfa3e210f6590dcb94a959f2d972ed3b36cd29ceeeae186569c3f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000363\\complete.json",
+        "sha256": "21bff302de3c580f269e17889cf8e651a32ef0f5268ae2ed5002ea6093e46455"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000364\\complete.json",
+        "sha256": "926207ead84e54dc14a109ec5b8dd51e475f28e91e3f6f866566a2546ad07623"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000365\\complete.json",
+        "sha256": "b1696f83137dedbb3db8f6a03d5220db892d76028fdd2c1dfcbf9745212b49f9"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000367\\complete.json",
+        "sha256": "5c32814d26d92488dc2674532d24e76d4a2c9a14a9ee900b4c2d656c60d53ff8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000368\\complete.json",
+        "sha256": "97629b1229b941bf16e1424aeecdca49f4fdcf9965bfc0e1b8306a176d9c1da9"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000370\\complete.json",
+        "sha256": "bec9a3d82b253e08aaf6de83f2d943103465730edbc4ae4ad4a2dcd8e237044b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000371\\complete.json",
+        "sha256": "284f3edfd1f25d72e761469db0140f7fd56d808735f11d9754a2d1fbcb37fdf0"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000372\\complete.json",
+        "sha256": "b7905d34f2bce88bea9aed66908b22f725d1833af766a66fc284355f30968df9"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000373\\complete.json",
+        "sha256": "e88f44d5d13de8ed5ffd5780452563a71164a455c5214b9688b65e78e8074137"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000374\\complete.json",
+        "sha256": "302c5a706bba156dddbda99eee2ff87b96e5eea52574023cbde78cb8fbd897f2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000375\\complete.json",
+        "sha256": "ecc99f4179052574fd49b1e99dc8ea5a0a2181ab5993b8c975f32018284058f3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000376\\complete.json",
+        "sha256": "cc057ee40e3c9f00140fa41d7de90eabde76780ff24e444a36c5a57b7d7ef683"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000377\\complete.json",
+        "sha256": "73f474883a11a1428b1355cb1d39f2ea7587e8adfa68820508bfe14c5fdea3fa"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000378\\complete.json",
+        "sha256": "a307093359104dee262f78d950d5fa80ecf91119689897e87c819433371e7a3f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000379\\complete.json",
+        "sha256": "e1386684d5a21c6b7fdd7e834bc76adc29283f5cc3cb531bd5fd1ffa222da28a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000380\\complete.json",
+        "sha256": "0fdb323db57a1be5d006ff48b8a86069edb1b72633da82a18eb0051f51ea5244"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000381\\complete.json",
+        "sha256": "22aeb9dcd14a2983d467a2b803face5b4c01de5f87d9d85e318b44ff003a75a8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000382\\complete.json",
+        "sha256": "1db830b27a08329e3ce6241156407c3c048be942743e134affb6b38c816f7301"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000383\\complete.json",
+        "sha256": "b08d4ff5199b78c9a639c322fafe862e03425a75f156cdb86a7bab2cc81afe91"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000384\\complete.json",
+        "sha256": "c7b0ea46aacd499137a22bb0f5dd0f8f24d394f7106e850b9857f900d89c24e6"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000385\\complete.json",
+        "sha256": "e1ecbd1b730eea018bd23386f6dabbc333943a2828f11816221d8573a72bf175"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000386\\complete.json",
+        "sha256": "516d44c9c2a0fb1a5ad07eadb03fd028170ee6b98784485263c9db2aa80eed42"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000387\\complete.json",
+        "sha256": "3373765f01431392de596af3c8ff6d427074c5210a2e0298098aa9960a32734f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000388\\complete.json",
+        "sha256": "f1bfa46d3cc7b81afc570e671a84cbf7247ff20dbb8b9e2e43f29c88c2d625b3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000389\\complete.json",
+        "sha256": "e023e22aeadaecf990d21e6a62efa5bf1a6a3dfce6428945544e42b98671114a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000390\\complete.json",
+        "sha256": "5f8e751ec2de1ead876918f302427366136d2f4acfcc6be1091236eaae1f9a9f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000391\\complete.json",
+        "sha256": "4111d324c30a0d1702c0d602685274b1eb0edb41bfcb9eac2bab238f81552a7a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000392\\complete.json",
+        "sha256": "d90628472cdf80e718b74bac8b9429ae3e25036cbc5cb3edf3845bf405be0a56"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000394\\complete.json",
+        "sha256": "f237bcd2118e5f27c8ddcd14787fb13d1ccd5430369e4c89325d1439ee799fc1"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000395\\complete.json",
+        "sha256": "d6f621552ef6fa60e3f10da328d17cf1e664f79471eadd8fc96f24a38da43f6c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000396\\complete.json",
+        "sha256": "6ec259d398147e3918749d9acc1ac4e96f0c94bf66c503b62b8cc56dcad01601"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000397\\complete.json",
+        "sha256": "881b6c1f85d5c969e3afcddf3b11ed5fc7a799ca08726006b669b0dfcd293043"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000398\\complete.json",
+        "sha256": "60ee151ddafb9c360893c16c18c4814ce229bffcc693ab358027d2f3504f472f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000399\\complete.json",
+        "sha256": "0b2c1bfaadcfbc87382b7f07798146a1f903adb9a7994b2598d49eadc5df9b54"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000400\\complete.json",
+        "sha256": "cb72524515fb7dbf61b587f04ad41235d2be0b8b572762b7b6cb308545274866"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000401\\complete.json",
+        "sha256": "6eea43480fc1c5b452921d091be7ab0c92d0256d7c25770e5df0e7a2d505b1c8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000402\\complete.json",
+        "sha256": "1c57234eeae79ec1e1f3ce28c15f34afbfb6c2303e97e6848d8c597541786334"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000403\\complete.json",
+        "sha256": "16a4eb0e8a6ae0328f42d17ed26a7e261e9ed25800439b7616a9d5f0a08c6a40"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000404\\complete.json",
+        "sha256": "0a9a80d7c5f9321a931eb7334abb8127a7d6e60e7ac09c89b8682df2b16e66a7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000406\\complete.json",
+        "sha256": "83c7cf846eb8688c561f5ebde0c04cecab33fc24cfd97e1c5ec4a45cb745bf1c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000407\\complete.json",
+        "sha256": "79bb0d02d546087c611777a1d28da88bb3965f68a95525b3d69a599799d45626"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000408\\complete.json",
+        "sha256": "80b9d14a748cc89482ce5d9ecb0424f0c9daf51f2269e795bc69bb02dcbdd513"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000409\\complete.json",
+        "sha256": "4105e59f0163c3a458e2e0a70121d402a86ff22cfc17dc5f7d71fce76b4ac9be"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000410\\complete.json",
+        "sha256": "1e92d49e9dc9bad8dfe6cfdb895578fe499b9ed9e1a76457ca506e9554644882"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000411\\complete.json",
+        "sha256": "6590865486364799c3f039b6598d30b16e5e597a7806c0b68ce2e9869fbc1a07"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000412\\complete.json",
+        "sha256": "6ce84f19c73d53fdbf455fbe90ddf0c0b5b1d969a51e0586b5d610a71576d554"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000413\\complete.json",
+        "sha256": "9a7905f9b58c80ef211162380f7d4aa9b872b85e9e0ab0502797e287603ab2e1"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000414\\complete.json",
+        "sha256": "a1848d615d1a47998ec16a96bafaa34b55e0b2624e909b394119e37997ba66f5"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000415\\complete.json",
+        "sha256": "81283e3089bf5fd4be58ba9349442860dd1c1741eb6ab56ce03caf4bb2df5252"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000416\\complete.json",
+        "sha256": "c4e9b9ed1a336e752a7051e235505a1375cb5245ff106ba289fc682a937ec401"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000417\\complete.json",
+        "sha256": "33384088289a2c08167ab22b9642590cc8f3c34d3bc199454b17c9fc5a3f9b0c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000418\\complete.json",
+        "sha256": "defd95a3129794ab9eabf8c7945a33b147b00083e9cd32f9aad2fa486a19d1f6"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000419\\complete.json",
+        "sha256": "dbe03b5bee92ac6d71679b05bd146fb51a07107bea6ed56fb60e1870e7264903"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000420\\complete.json",
+        "sha256": "0675bf6a3aeaad0280e4625884430740bf54c13b11e5ff5392697e3371f1bc25"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000421\\complete.json",
+        "sha256": "fa43cb1ffae6dd76a2046ed8238042bbcdf4358550629418c7cb57206e9e3853"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000422\\complete.json",
+        "sha256": "c17b4dab678e30615a936396a03d10b0752a811a63278d6fc65bb894003ec191"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000424\\complete.json",
+        "sha256": "0b22e00ee011a1ea160fe01e70b53ba94cff1cf4a678151bb311e12536becff9"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000425\\complete.json",
+        "sha256": "7dec75132747754c21b9fd77271ca80852ce12e88aea685d8b367e02d8390242"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000426\\complete.json",
+        "sha256": "9b91956636084fa30b8bb5573346989ecb4b1c3f0ac4239d2af9e9b5ee4b0ab8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000427\\complete.json",
+        "sha256": "ecb57de99f0627cc09f03d0191ec46208a70a5554b83b910a73849584fa68e22"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000428\\complete.json",
+        "sha256": "9a4eb9106740e49409668ac12ac4a7971b5650e7bfd9dd5dd58332d18c6c6154"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000429\\complete.json",
+        "sha256": "3d13336f30a8a2e6b35eba1fe94d284f4aa5f5960958d6374e92e8778ca646f0"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000430\\complete.json",
+        "sha256": "4a3d87aca4666fb31e90a5e6af90019de488259ed61d688fa24a330c06f2f581"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000431\\complete.json",
+        "sha256": "d9cbffb4374a295a8b18c6557001fbd47ed52eb6a54c972ea0c0e62b20578d46"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000432\\complete.json",
+        "sha256": "fa762be7df0df3bc5724f7947f15d00cd6b6af5cc35d444aadff5450152f761c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000433\\complete.json",
+        "sha256": "9504bffc73f7d63ae60893abe752fb8e38cd7748a4cbe9ac7b5908a804613f29"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000434\\complete.json",
+        "sha256": "c84b6d55b48458311cb8e14bb95531f07555199217818c6d34023f83cef1926b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000436\\complete.json",
+        "sha256": "3856c39f6bacc5d6528c0f36d2db7ab65b36e0af636be66790a1eb3cb08fe176"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000437\\complete.json",
+        "sha256": "f5fd874839eda0f6dab3f58c017ad10d235df75a0ed5b41dcd24409474265550"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000438\\complete.json",
+        "sha256": "4e801c01c6dea2b78f67154ae5867b240260dbf045271905a076d0b0694c8be2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000439\\complete.json",
+        "sha256": "07a7073553cb491b8028139ae57ea3ae747437e26df7f4852b830242e4ec3fd3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000440\\complete.json",
+        "sha256": "d6a58c5eed3e2de63cb717088989634cc9449ed49614f393e8c805316747d9c2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000441\\complete.json",
+        "sha256": "97fc2a10451a8f931722c8993a819f37b913e68f4a4a52cfd32d247b17e6efed"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000442\\complete.json",
+        "sha256": "b1fea834636201d425da7644df7c106eb393e32555fca20fbc27904548ebd6a7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000443\\complete.json",
+        "sha256": "286e1507fd41b1c7a49bd19c726b03ccce9411ccedf1dea2407c4168c5609925"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000444\\complete.json",
+        "sha256": "2565a6f6801d9482a2e6e7922898b49f1f06d7539d659bb73f25dda3ecb2413d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000445\\complete.json",
+        "sha256": "7faa366f137faaad4648914ed5a7cae60a080422435fec1d15c6adb433e4de2d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000446\\complete.json",
+        "sha256": "37d6ed91b2b3accbe4f64ef2b8d84ca15158cceb6b0a5da8a38a7ced68b52343"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000447\\complete.json",
+        "sha256": "5b01e630219053455df104d0eed467b8828b3f8869c833b73af59d70fa426fe8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000448\\complete.json",
+        "sha256": "8b912be3896b0409bb6ed4b31a628fb25bdb3557ddab329d0bf40614b3c487b0"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000449\\complete.json",
+        "sha256": "b8e0c77ffbc7ccdfd55ef0b98b22b66e9758e3b080d4b0fe8f1206191ea3fc0e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000451\\complete.json",
+        "sha256": "4021115ce8e0cf884055cdb53b57531695e9135d34fec73068fe7bac20b2beec"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000452\\complete.json",
+        "sha256": "32d48dc8fde9e68cba32f52d5b2d78058a7fe3b2120730d1144986aaaf2792b2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000453\\complete.json",
+        "sha256": "1365fe0b178a2e6f485731e7f619d1487dbd18b7ff29caeb09e80369566ae348"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000454\\complete.json",
+        "sha256": "3d07422ae5e06f4f9cad3e523995e87f110660b721f54cd02c762306ad1e8d4c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000455\\complete.json",
+        "sha256": "7ad91e857faff5930c74ec9fa6b0434befb7f7cd8dec2b1124595741797e2197"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000456\\complete.json",
+        "sha256": "f68f50b73d296d538baaa967430f795b97fd450304dbf5e370ef19659b94b637"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000457\\complete.json",
+        "sha256": "64a56ce961084ed7ab97f50a4ce38f862fc33b98409fc36ddfa12dc8ab7709c7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000458\\complete.json",
+        "sha256": "1dec282d4a6ea88b410b1177c18b3535fab304af2be0f0bea7a79aa0ab1ee80c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000459\\complete.json",
+        "sha256": "9d883a029cf2dda34b4d1409c9c4e46db690bd3c7e9500e81cb94bbc699d8bbf"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000460\\complete.json",
+        "sha256": "289f1b2add3ddb63333dcdfeb7e37c438191d212bcb9f2ea827e9fbce3e55141"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000461\\complete.json",
+        "sha256": "2fec743a4f8883ca4c593ee038335792f3b355874e824ddb736321110e922bf1"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000462\\complete.json",
+        "sha256": "e528f202aac1b0d483548e63e2d9a6adad09beb8addffd916e0d80fe7dc423df"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000463\\complete.json",
+        "sha256": "98c24215037b0eadb22e7ea74678d9a1061cb4cbaeb66b3f03cb90193ef3f4b5"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000464\\complete.json",
+        "sha256": "c7785e14b054e46914850333428ed134249ae0da2c80524fafccacaee4d1101b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000465\\complete.json",
+        "sha256": "34e3df8d1905bcb323366b5acc65ecd809d7a249310908e4f0581d044cb830ff"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000466\\complete.json",
+        "sha256": "fa913f985e12cc52f47af493f5d8ebead6283f22ee43bf57b559572c0dff8333"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000467\\complete.json",
+        "sha256": "e568f488b695eeace9680d91c16c18cb9954833a5e2dc5c57577b63a75ad9cb3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000469\\complete.json",
+        "sha256": "3f1dc3da9d930f1c33441746c8f1c442aaae9ee7a6ebad4e890b51077ede0497"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000470\\complete.json",
+        "sha256": "21e36c0e26727b0d997d026497354d32a43b4c817ed8fe988589b90a1a32efef"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000471\\complete.json",
+        "sha256": "5260ac51422d813e0d2c3b178be27d2c6a2933105df6c5579de00a00b55ac255"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000472\\complete.json",
+        "sha256": "d3b52f175e2f7b0095f8fdc35b60a6edcea5fda90658efd2af3121b5a0fb9254"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000473\\complete.json",
+        "sha256": "9dc0dab70854781a6ea47111d30a660265a094cb60495b575d8484805539e4be"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000474\\complete.json",
+        "sha256": "cfa810a500acbb68935f5b2cb14a88b77822db7d34619f6ddf6937dcb0b4b7c2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000475\\complete.json",
+        "sha256": "c99910c3cd7816845fcaa6033bec6f2c01ac21d863aa6041b0451c9fa32f2739"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000476\\complete.json",
+        "sha256": "75e0b2c9bcc89fa586471d7d6878c35b878d1552920ea7af19554c5318f09388"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000477\\complete.json",
+        "sha256": "fc7f1a36ee2ea002024b08cc84ee4e9c564fbd83ca9057fc1ee38f701a3ed379"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000478\\complete.json",
+        "sha256": "a8912a67de003085d19500d7e80c50f61605b88811e41ba317d9dae81bdde5e2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000479\\complete.json",
+        "sha256": "c239736e9f28f7b3dec9ff09a9870aaedd137c1f05fa81220ffdeb1bb19a58c8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000480\\complete.json",
+        "sha256": "cbb794a5aff456f05b951df70b3e889c3cbb6d4c35485780712afeb144651029"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000481\\complete.json",
+        "sha256": "623922a557c57404a087b855c55e2b4719015a2da619bcb2471377ba5c94fbb6"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000482\\complete.json",
+        "sha256": "d8b945f35caf790648a4c60e80208c55e046fa6472669872452e14564f65dfb7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000483\\complete.json",
+        "sha256": "92ebe65821798d1f77b711834aaccb67933fd6ee6d8483284235fcfbae2c7669"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000484\\complete.json",
+        "sha256": "d1d2f6d26d40e91487dbcc56ba81189b954d2d2095c7f49a5d3ac46e8ecc94d5"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000485\\complete.json",
+        "sha256": "03ef85a810fcd9cc6762301b00f4152e0f6cef6d667c5c9060e02c4130e7f717"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000486\\complete.json",
+        "sha256": "bc90918e1f62b8f1ba6986e943e9138aac9958f793f693a44b2205cc6f1368f8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000487\\complete.json",
+        "sha256": "ee3501381bf3f7382aa0b7f4b2b2a3ade041bf40e056ef4e643280a406060f43"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000488\\complete.json",
+        "sha256": "7e6d81c1a4b5b3426e6e41b91529f6789d66cbf4726147d6c58383f77369c855"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000490\\complete.json",
+        "sha256": "e532c956d55b1bfd95fe84f04268a78d0680059404b9c53ab6cbd09d5bbba3f7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000491\\complete.json",
+        "sha256": "8820a6feb6574edd7ff0a34430760b574951471739ac68740fd5619ae8cc60dd"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000492\\complete.json",
+        "sha256": "19b785755187f00633131ed900a35df7dfafe7c870f5f30add1cca810078206d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000493\\complete.json",
+        "sha256": "d5f037363dca96add5a8153fd439ff15f5848e3b3b6a93a7c0a62943fe9fbb41"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000494\\complete.json",
+        "sha256": "ab9afad1970eae4c2f3728f6fd7e90895eebdbca6e42038cd25db7a6d0dbe4c4"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000495\\complete.json",
+        "sha256": "e9ed0ca1fb69661e4f86f292246517380a0e344814eaddc9a7bcbc17da4e5556"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000496\\complete.json",
+        "sha256": "5e6e89a44c0c50fd3b737f09e72a88af795620497e23d63cb1d93e7e2b3f350f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000497\\complete.json",
+        "sha256": "187931f91a8cba31858c394844f23c54f0f4385187219dbc88ec19d211d8f342"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000499\\complete.json",
+        "sha256": "74699016150ae90b2f81943106f43da1ebcd417f7dfd16109785a5479adcefb3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000500\\complete.json",
+        "sha256": "941ea8b015fbb7ba9876d85d2b1ef1d8185a1c85ff6b9ad152905b2e40c5b94c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000501\\complete.json",
+        "sha256": "0e10b52f3ef7d84ca2c90d34d0df83f9fe64035c94782678363573ae1e263349"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000502\\complete.json",
+        "sha256": "22a7036cee2bc256f5fd48847d19638d7cb1a5ba6fbc788ada4b76935b02bf32"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000503\\complete.json",
+        "sha256": "617d13cf4d117c7aeb64f0b5bace679ddfeedbf2776be37a80cb05fab80cc205"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000504\\complete.json",
+        "sha256": "0e7e90f4f4eefab11b1f6da083196fb343260d7a12a7f841f2d36bc174e4d9d0"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000505\\complete.json",
+        "sha256": "9d92931413ce398c15df59522144f451b87111646c9c48253485466896355687"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000506\\complete.json",
+        "sha256": "645797c4aa53db5204ba8a09a54fb35322fc2e679216612209981c206bff2ad7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000507\\complete.json",
+        "sha256": "2fad6410c619bff2af8f6bc6835ececb93e88b7f8458b69e57cddc439fa59ef0"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000508\\complete.json",
+        "sha256": "b829faf71761d50cb340f7b2e836ea36e6fd8095620e21895d16b992b64bb1d8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000509\\complete.json",
+        "sha256": "41980fa98ba89a1113937a09c2908b29495f9e5f44482c192b792e721606770c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000510\\complete.json",
+        "sha256": "a3b4c7272c59a6852775eea34e9ac90d959353f9f86fea5ea90e7ff88124c915"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000511\\complete.json",
+        "sha256": "ce4027d8ef93a70ba13fc47100917e62195c24a31e9f0ed33481f3ac5fdc06ce"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000512\\complete.json",
+        "sha256": "9eadd424d23593b03284184a33f382e47b7f030dfeb8c8c01e90780da4d9db45"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000514\\complete.json",
+        "sha256": "56d06798b1000f8f90df051995671d4331ca880c3ab97a520ffca1c05050204a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000515\\complete.json",
+        "sha256": "d1a9329654903d7739fcac6f23f2994a635047fd8b723977dcf1d6e4e2311ee7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000517\\complete.json",
+        "sha256": "4fcbac7cdaad0b6f7653fa3cabf7c9bf490f561cdf67728b37c2f7eea846f740"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000518\\complete.json",
+        "sha256": "d3d58ee920f32973472951ad9dd82a663a11478ac3639e492376df5a14797025"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000519\\complete.json",
+        "sha256": "7a309cc5912c4c441eb2c6000986d3ea968b62391d6dd7a011092ec056ead58f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000520\\complete.json",
+        "sha256": "afe9d4fd98889037a021a16820d2099f3a65d849b6422597cca24a1f925b1d3b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000521\\complete.json",
+        "sha256": "21e0db353a58f2dfb2ea91398e216c3d557e3e797a44ac9723809a0328d8cc05"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000522\\complete.json",
+        "sha256": "ba26e7923d07c4dc23c6aabedab93d18461f114ed353b317a8d534e7e60267f1"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000523\\complete.json",
+        "sha256": "9a3a5459d72887bbaf9941511e92615726effb00deb8a954b3d728fc343446ad"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000524\\complete.json",
+        "sha256": "22de97450a1b4f2396c25013c6ff36c3deb7b761c0baf7309062dde5917d66da"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000525\\complete.json",
+        "sha256": "a17fff9e351fc239c09fc12aca4071c1f8f2ed3436a477c3de2f1a9d31db2858"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000526\\complete.json",
+        "sha256": "c5dd8f62314081dc18f3de83aba90670209ee2c0946c18caea39e1dea234cc14"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000527\\complete.json",
+        "sha256": "edf1c8ec1b3a6124ee5dede4e96a1b1898727023899e0ef7fb18eddd36adc2ab"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000528\\complete.json",
+        "sha256": "0a4c1a80668616da2e47241c54c594f68f3b664119bd9903ba07277897b7b4cf"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000529\\complete.json",
+        "sha256": "926cedcf66110559ff19de0e37c259318aefbc990a28289e7baef30a13bf7bb5"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000530\\complete.json",
+        "sha256": "2757bf806a0e1461bf60efd7e2149cbec4c8b143d7fe643742a12b9247488aee"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000531\\complete.json",
+        "sha256": "52614ac89b307be993957b6d80c41c3f68ca879759bb541bd54edfdab46ac818"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000532\\complete.json",
+        "sha256": "f53915a3f179daa8a4f8ea9dbe63d22f6eb4bb8258ef3bdeee409f8a92eb0080"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000533\\complete.json",
+        "sha256": "fb67f54b46b6c3d74cec60ad117eae1ef3b81fcc3ac47f7ef7c8ea5bacea90d5"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000534\\complete.json",
+        "sha256": "a10a53acc0261913c9a09230d7b08a744ffe0b5a0e9fbf70e533e225fef8a78e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000535\\complete.json",
+        "sha256": "891c26ae8f8edda5a64c98da2bb285524acb67e840c5b1d41f59314525f66800"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000536\\complete.json",
+        "sha256": "56e304f0e71f8858c3c96b05a97863da8aaf838d2f5d26a43e240d310471740a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000537\\complete.json",
+        "sha256": "58baf8158658a8b135514c79d51654bb20b833499c0331c6ec8c652d0aded9f7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000538\\complete.json",
+        "sha256": "713e4d0131b0631f137f6e8032df5a3bae796d44963711e0208d597d4fb72417"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000539\\complete.json",
+        "sha256": "5ab71a9796842d25e67569572fdc67917e09408e1c8f080d841d8a0c41a39e3d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000540\\complete.json",
+        "sha256": "a7da591df89eb069a890797341fc1841f186ff729de7fdb0dd3162fc6ded9816"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000541\\complete.json",
+        "sha256": "8b45eb27768fcef6421c16e4c453e1e10b5a9b6cfdef361d40fe0df7978016ac"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000542\\complete.json",
+        "sha256": "c9ff3f5c4efb3ce7f608b2ebfbf69227ba672a6e8d22d8a368f42fa865347a45"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000543\\complete.json",
+        "sha256": "401e634dff518c7032c02b878cc2b6205567347c5f99ac0df126754af48e15bf"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000544\\complete.json",
+        "sha256": "2c3c31a1afbf95cd0697aa9dbb85baf5599334327a28ad1e9853ed643ec7e44e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000545\\complete.json",
+        "sha256": "d71cce6e9d3de21b9d122adaf85562d3f517ea1e9f0a1fe0c5aad0ec56bb8c5b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000546\\complete.json",
+        "sha256": "6f14b2c84747fc511c7747e38a190137bdf4a57dbc7604811613eedda7b75d7e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000547\\complete.json",
+        "sha256": "a30d04b4e9edf7cd8e2103484e36e208bd4b7b5189ba47bbb4d5fe09b161c3ea"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000548\\complete.json",
+        "sha256": "207be16ef8a588de49a1ed0df4c2b2e85015d6c88fe051d22738ebf256622f1c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000549\\complete.json",
+        "sha256": "cafccd3b5667bcab96765ee543a24788b686fe019091cf51d16736121e9bfd55"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000550\\complete.json",
+        "sha256": "a52b5520655eb4a7d1468cbc10b90b4f3bfbd4c6e9fa41040d50350b910cbd70"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000551\\complete.json",
+        "sha256": "572e4fa4d9da05c54fa94d23764dff22106c83ffd80cb3f705f81276f481fe38"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000552\\complete.json",
+        "sha256": "7a849382002bb78ea178d8c04eccbb90041c2be1e962ca5244c65f0bf499ae41"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000553\\complete.json",
+        "sha256": "6c1b15da99000e2046a802f63e5d553812f8fc371193929c9d3265850fcc197c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000554\\complete.json",
+        "sha256": "0a6f38183b060fd42f6c35e629895c165eaea7ef9d26e67efe935dc5fe268cc1"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000555\\complete.json",
+        "sha256": "6fe331a6f28c03daf9767ac9a01f0023923dc3274dfb84e190d5277f65ea616a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000556\\complete.json",
+        "sha256": "df32a99da19aea8de3b1d5d214ad2eb42ada0f9323d3216971085f0f82d403cf"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000557\\complete.json",
+        "sha256": "28684a574b49bce306bd5de3aa906f5a4661491f5e1b7a644734d04ade78df3c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000558\\complete.json",
+        "sha256": "45737e9f19e2ef8db90207ea69aba056b7f067b8435dfb5ba4cafe371273fa73"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000559\\complete.json",
+        "sha256": "3eaa7da4bce82cc56a138efbab43c73f8cbf7bca7b906d00d074037cc2fd7b8d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000560\\complete.json",
+        "sha256": "1dc1cb37124874cef1648d7406227eeab081e63f4df16fd973d5cb05ec470311"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000561\\complete.json",
+        "sha256": "7e2248e54798afa0e8fd44192ecb353e97fabca40badacf6417b8fb518661a48"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000563\\complete.json",
+        "sha256": "ba42c33be6ccbd2616f56b754ee56d5397861194f89586bba72042eff625915e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000564\\complete.json",
+        "sha256": "0c612e4fcd132666eb086704995dcdf3e4a4b8fa9e2e0ce020b5ad8b373b08bf"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000566\\complete.json",
+        "sha256": "f46cca6f021bc98833b237b502c86a448f766a2af59a0ff584250bcb4babd68e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000567\\complete.json",
+        "sha256": "1ad3cdf01950678a8192051af898aa8e8c00171abc18cb028dd8ea58c37acf82"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000568\\complete.json",
+        "sha256": "7015e044733080ce36bb1f2121fb19fd8dab641fc69aa933e151747897e39301"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000569\\complete.json",
+        "sha256": "75605f6b97de0d625d78529bc91f2ee49ddd39f24779c55b292849c7022111d9"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000570\\complete.json",
+        "sha256": "f2c1f12238472b0f9697456449fd10d5d767f469c71245f3bb0bb5ec8fdbad0d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000571\\complete.json",
+        "sha256": "62a9dca7e626d45d003968fa37db0b313e10d22e03bb117694bf50b597f9def2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000572\\complete.json",
+        "sha256": "a13b25c1870ee7b88df7cc76d6eb2c62de7a2d9d62b621405ce936124bd27daf"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000573\\complete.json",
+        "sha256": "984b90641b5738fee2c37bc0b01d717b1a26f1be2a02c224896c97ea4264aa5a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000574\\complete.json",
+        "sha256": "d14d011cdbeeb48f4cce7dc3a4d5e5c24bf97bc0f2695b157de9e6ce9875c634"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000575\\complete.json",
+        "sha256": "077e9c15e84dd474f32eac51ae394f9908c590feac7a1d874d88116dd53fb583"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000576\\complete.json",
+        "sha256": "38e6d645c94b75e0fe7eba550f9cd64a9a46b3bf7ff1dba7d21656387075de1c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000577\\complete.json",
+        "sha256": "6da6229cb3aee84c8f4e4aa6862f72518340e172bd3773041c25f7936aec8ff0"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000578\\complete.json",
+        "sha256": "d756839049bbb12a2b2bcf7dcdbf943ed90701971dd2a0c40fcfb18be31aa5e2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000579\\complete.json",
+        "sha256": "4af1f4be6c31d1a3c32a227d65b9559f00c00df4751ddb43be831a9620155f37"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000580\\complete.json",
+        "sha256": "263cab5ca49e2940ea486fb1180f584029838143bcab9d4d7440a781fb62f20a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000581\\complete.json",
+        "sha256": "4162af7b24c132915cdbf9836dfdcafe73f87da491de3bbdb6b62b1494a3379d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000582\\complete.json",
+        "sha256": "d6f2ab35362d6c1f954a9f5c387df6ad87349632d2da8056531c439cf8d561d5"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000583\\complete.json",
+        "sha256": "c8438a67d499872fe8f3e93ec45d1b754942b1190a513302b85ae8e23a0a3b1f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000584\\complete.json",
+        "sha256": "14c7def3d455959a6ce7a83b7900b723fca0c08de66834e3ed1e562ecf9df4ee"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000585\\complete.json",
+        "sha256": "6b77014a9a6d2d53d7cdcff8791dfaa00ff69ba303873db54c5f0909d73651e6"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000586\\complete.json",
+        "sha256": "06008852d91723df1759cbf8f23effc29630a9601202da4048d62b3df88696f7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000587\\complete.json",
+        "sha256": "3eb54fa76735199afb9562a9667c4fbcea47ce0fac77d2445062cc9cf4dc25cc"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000588\\complete.json",
+        "sha256": "762a1335f490d13ae5a0222b393e222e1bbc7201901b16f46ff21168783d490b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000590\\complete.json",
+        "sha256": "dfce951b180448b2c78c1c68e9f4404b67439a6e78a6405898b47cb0309c3640"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000591\\complete.json",
+        "sha256": "8d5126660f65ad8647eab767fa672eb02812c53039181720326b6f65877a15fd"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000592\\complete.json",
+        "sha256": "c333ee24f448ef33fd4f448c773eb98a2f60f5b2a69a161a6b3e87d99b2761cf"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000593\\complete.json",
+        "sha256": "bd6493a855c65e33b668579592be6a8beb24b5057f642d02d083d4d2d856808d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000594\\complete.json",
+        "sha256": "79e8c2473812d524df57fe6db0567066df42ccb55db6d50e33e91fe20e29ce60"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000595\\complete.json",
+        "sha256": "e3d2298c2df2f2298f73b5b221236eea4c81e0628561e6271f8908ace8c327ff"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000596\\complete.json",
+        "sha256": "ae8b06f877ab39ebda1a3eb016e4b8662d18e8d142de9f735941004f41d29e08"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000597\\complete.json",
+        "sha256": "dfcbebb2d88995d9649d35972fdcd5f5a03977db217c22f9b95dd9b98d3130c3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000598\\complete.json",
+        "sha256": "4f5904e77c32543490003bc5d337c07569fab1daf83f7644a24ebd04a6baa7bc"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000599\\complete.json",
+        "sha256": "bcd7b995f15f10171bd7a0314c84a0ed0869adcc653cfc1c64927f0265ed8162"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000600\\complete.json",
+        "sha256": "3e071eb6f2df9be3557224ab8ded5eb85952eb5c130a90bf4e1a05ff2826d9eb"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000602\\complete.json",
+        "sha256": "a5a658cfa5004870d41dd880b243fc5399379d9f2d4a34f12f39815ccb0a0483"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000603\\complete.json",
+        "sha256": "f28979c236802ad45f94dea3f88d126982507f70f2f768607c312e9905547dc3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000604\\complete.json",
+        "sha256": "3da84ac18ef9f69ca3d4fe4e8df557b0607d1a54aa4efc9de130a43f91151f5e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000605\\complete.json",
+        "sha256": "d299de19bce506b8a0d0cefa9b0cd31af0230c328ca55d9ea357e6f6eec53615"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000606\\complete.json",
+        "sha256": "3dfb5763b11676653678cbe8cda0e7879c9698701d5a053668367263a61eef46"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000607\\complete.json",
+        "sha256": "19425bd09db6eb2251ba4beb664695c6fe56e4224d06d93d6bb29b3f7cbad69d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000608\\complete.json",
+        "sha256": "c5ec3e2ee912415d7fb8c995a97410c3d9faa7fb34bfeab891bf105ddd05556a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000609\\complete.json",
+        "sha256": "5a5b8b6285e9015c4d6c15a7ed40d8e57ea678e8ab781fe05fb7361fb4e6a69a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000610\\complete.json",
+        "sha256": "7bb13769873f51ffee2b382c33fa8d864b5e6a9203ff9a6b09c095be419a3264"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000611\\complete.json",
+        "sha256": "0cd69eaf2be26874b1ccc380d062b2948d5b638cd7e42f29a451e555c627684d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000612\\complete.json",
+        "sha256": "291dc43e0c52a4971788a3ec856ff50dc2e52da5b12b4da38da73013da828071"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000613\\complete.json",
+        "sha256": "a2c5392c07284c1904ebf43cbf92b5b0c4dddb23cf14b188299007d625048ffd"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000614\\complete.json",
+        "sha256": "7344d7a1b022302d193bb19050b21f2e01262b596078a89b35afc681fed83469"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000615\\complete.json",
+        "sha256": "4cea9077139f30a3e820ac5c7089bbbc55f8714a859e15c307a1070db8ac1659"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000617\\complete.json",
+        "sha256": "28e776f42e16aabf027dd9ae6695b59c138e649587b2de2beeb55fd7bc00f086"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000618\\complete.json",
+        "sha256": "f31c8b93d118e430dc777834b3f7e0ddcfbc92c13f1a38f5402926978b389968"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000619\\complete.json",
+        "sha256": "3241928bc0db51c3b6d0ac787fb20b49736173c11e45b9f909e885d5929db6cb"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000620\\complete.json",
+        "sha256": "8e5a159539196edeb708eb95ed0febcb660cde07b60992974483e4d679b008df"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000621\\complete.json",
+        "sha256": "ddf9066038044f4e34359216640e43932de16f950e1fdc714b09b8c8dea3d093"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000622\\complete.json",
+        "sha256": "73f82310eea47282163beb11000d17032124561319ef3857d9c48faf052a1394"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000623\\complete.json",
+        "sha256": "fd42d340117f57790f5111e77bb0bd30adb6247aab0ac5f6f91a904e96074bb0"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000624\\complete.json",
+        "sha256": "ba45ce16e8fc08b080bc6a584f2302a41f9095a8a909b8a0e9cf1b35f5f53986"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000625\\complete.json",
+        "sha256": "0e28ce1e2037c86a7af8ac38c9bc5eb53698fb65b5d47ff364bf686fc700dba6"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000626\\complete.json",
+        "sha256": "da28cddf3cd222046620f3aedbe4bab17441e2b26b92bf3a04eca7525da23d5a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000627\\complete.json",
+        "sha256": "d76b36a0cc5df483d4456f4347c3d18fb7d6ebad2b5cfe3d9a428f8f34bb751c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000629\\complete.json",
+        "sha256": "ef3104a1b12870b844ee5a3e85f79ac82dbfebb9b3d6afb9d5a52a2270bc0250"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000630\\complete.json",
+        "sha256": "f0077a925939a796eba7641606fc2d35fc0511349047c40c86777f14c7d08567"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000631\\complete.json",
+        "sha256": "a3afc3064725be4b78cadead7e7a18d5219b76fb69fee9798df9b152a68287a8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000632\\complete.json",
+        "sha256": "9cfb142db58fed96ae1fe9acf946a8aae2963e3a14fd0fd9e4ad9649e7f43f1e"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000633\\complete.json",
+        "sha256": "64918ffe8e57064f95d9abea5e8b0cb43f2912632a526f92339b0ca27ae01742"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000634\\complete.json",
+        "sha256": "68335329e8230ec775f356269b3d578e6b346f8814587814ea5675eb19a2ba2b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000635\\complete.json",
+        "sha256": "a0ef72fc231b713e958d1224bc2fd2f11fc4981de6b84c9a230ee5d48fb2b925"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000636\\complete.json",
+        "sha256": "377e72f11c364fa1cdc0b89fdab1153a22912ca778c83f5e3fba66ed7fa508c1"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000637\\complete.json",
+        "sha256": "5ba3cba613ae561dc9775602e3b9d3e58ea7fce932d066e3a598b294d871893d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000638\\complete.json",
+        "sha256": "1c735d8aa6086cd014ef780b7ea25ce72fd37ae1bef309011a3a2fe27b8f78a5"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000639\\complete.json",
+        "sha256": "b776c902680bb3b06bc4c072e097dcd5f20ba68b818c289e04fe0c52c63deb37"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000640\\complete.json",
+        "sha256": "b6368cbc861f9b46a5b4afee5d70a18aae99128705a32d90866576a8ce4bb5c9"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000641\\complete.json",
+        "sha256": "a1c437369e797586254f2110585509e9b727bb7db043067583f9400d3b7bec78"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000642\\complete.json",
+        "sha256": "c4523196918da5a9f9c8982a2a5b357bc0e0f0c946ed5a2d34867780a76246e4"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000644\\complete.json",
+        "sha256": "f48e337be855d1f19d384d1051d2ca7bad554d795f7e86be27d1fe28ce840df0"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000645\\complete.json",
+        "sha256": "d5a1e9f5f751d0e0c248aff65ef7e751d1e53fb8f75283553c65337f3442213a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000646\\complete.json",
+        "sha256": "33ed785270644ef1caba7da9b5724ed0ced4a029e5cc8c0f3a5b58e141ff0ef7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000647\\complete.json",
+        "sha256": "98dc3540ba76ba2118e67d80597b8f4c251d9a7718ad0a974134ecb2715f5024"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000648\\complete.json",
+        "sha256": "cf00778dd9bc9620230a237b04dfd7ccfc4bd8814b3193de08b24b2f23ea3525"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000649\\complete.json",
+        "sha256": "3cc3a8a4fd1aa694a1ebf326f043f005ebb464680e0ed623a12a60e938ebc05f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000650\\complete.json",
+        "sha256": "42d0a1f6fcdae67f713f937be369b86d82962b47703e3eda3033f613ff0af6bf"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000651\\complete.json",
+        "sha256": "58a2b0b857ecf6a33dab2342c2404c3da4f86a09f63dd92681fbc3bfcf50ef10"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000652\\complete.json",
+        "sha256": "f29a311665282249a3976583595b12eb1143d3befae9de4122978c805361aa32"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000653\\complete.json",
+        "sha256": "f711d3f24b47e2f6d2f63233d6243431cc09b402d3bf471e1ddffe2e5ca04917"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000654\\complete.json",
+        "sha256": "89a378dd6bb108f687d4ff097f3c2bc379107b158e14d14df53346b59eb64eec"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000655\\complete.json",
+        "sha256": "21275c834195f71f3fd4116e53573ffdf28cf69ecb14e0f60e04d3f916e4ec80"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000656\\complete.json",
+        "sha256": "88490397354530d5631cee5c2d8884068280d2479978271f6491fcf4ba664fb7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000657\\complete.json",
+        "sha256": "215067e911e69def067dd030472de301214975f708f16fcb239b252979b27e2a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000659\\complete.json",
+        "sha256": "7efad02fc15abd887a4e866ae90badc107cfd158c3b0d61c598f619c4d833907"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000660\\complete.json",
+        "sha256": "28231314e1c110177ba1f9b3a7243bdc4456bf5b5d2a7926105a528033046d7c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000661\\complete.json",
+        "sha256": "816a02ce3633fe5947bb3a07ac9c52184804354ed99996a8be747f53ac1cbf95"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000662\\complete.json",
+        "sha256": "7b2fd1704e9e3d841db8e9c88e89b7458da345a7753cb083a1b81f525563b972"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000663\\complete.json",
+        "sha256": "134217e810a01bf5703bdd63fc91da584cdd6e7817577d92fd7b2a02089122f7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000664\\complete.json",
+        "sha256": "c397b18c8cccc176223eb65ac556f6b12b2eba25c4403455dde51a85f4f939fd"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000665\\complete.json",
+        "sha256": "e0a89562182ebbffcc3216a7289b791b7d67ea2651e88fa236ca40b97ed873ae"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000666\\complete.json",
+        "sha256": "d1870c83e69fc7fd41f502e7d885112016b447fb861a62fc71a0254d90551184"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000667\\complete.json",
+        "sha256": "167a3d33adfa4adbf90b3397c74a94c57fb26bb92b81121b05fc91335fd21f25"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000668\\complete.json",
+        "sha256": "9a28db5698747c5ef8aad282e5db64daec008a9331d5f914cac89abc21987069"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000669\\complete.json",
+        "sha256": "0fe8170839fe40b8b53705928edddac9a6976b13b4c0bd00ed5ce95c3d5ba341"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000670\\complete.json",
+        "sha256": "9a192b60098b0c34408ead80b2dc179fda05553a5959605ddea5dcfcbe76dcc5"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000671\\complete.json",
+        "sha256": "a144466e5f999983fcb0b49b9f15a130f2ca2f69b7e8f566c6da20ca0f1f20ce"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000672\\complete.json",
+        "sha256": "bbb3213c8da58aad760f061f2d327d095c2e58cb11f4b3f2fc66cc894b9943e4"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000673\\complete.json",
+        "sha256": "56ecb119fd5f9f7edb6486fdfd628d24ec806b9d6c9c233c3576d0243c87c7ce"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000675\\complete.json",
+        "sha256": "cdb29cee03978f9c49b66254c6bcc626a7757d4cc862ed9a936429630d96fa18"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000676\\complete.json",
+        "sha256": "fe0fc1a11ba2ea5d1d1d476562fb70658834e20f927ccd8a348b3625b5e21d92"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000678\\complete.json",
+        "sha256": "c398b718a50a87f7a5d7954ed9c8322897bd9074d0ba3f78ff9a4643a76215d7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000679\\complete.json",
+        "sha256": "45ded77ebb4b8e67e589a8d23f0a0d29fc6c316bc2878f15a5904d6ec82e5b70"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000680\\complete.json",
+        "sha256": "06e6897e8c566e09c6503107b6c299d44d25c69b9975d942b577f3895f01af1f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000681\\complete.json",
+        "sha256": "ad15a9eacb0e75b312913b0f84c6578a73e8096f64f8c7f0d64917408102e994"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000682\\complete.json",
+        "sha256": "382d8576fdb055a18378e3835663c6479cb49c2c67fab254ab41c2807e0b4f6a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000683\\complete.json",
+        "sha256": "894cd700c69f251b643eeaf0455bcae9d3ada9ed1c84a56729d7d9a301a6349d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000684\\complete.json",
+        "sha256": "d6ec4a6078b060144ebb8e37f32302555e1a6caebfdf4e7529e8560ed010f99b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000685\\complete.json",
+        "sha256": "06e526aa7e970ab3781286ac69a384b220a036d2acd6a76e916b940438243f17"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000686\\complete.json",
+        "sha256": "60159cee9e02ec1d77316db61d03609b1f7c58f0149adbaf2e9c974b3275ee3a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000687\\complete.json",
+        "sha256": "71d997edacaf45478b5de08bc320cb2a7654f3d0e1cde96f8f7aed351bb19c20"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000688\\complete.json",
+        "sha256": "ce193e2a1b4cccdba6429b6f63e174e8484f062aabb95eec3521c3a9d6828e5b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000689\\complete.json",
+        "sha256": "28c9481a2fd8f09cd917a8dc040f408c0a9124a3e633a4199cc903bf01e679d9"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000690\\complete.json",
+        "sha256": "cf25af4c9660b8d4525ae0af138333d25e328ef484fdfaa662f617cd49b8c24f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000691\\complete.json",
+        "sha256": "edb159e853f5855deff9b657e72443b2666fdd0705d252da049767f491f59345"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000692\\complete.json",
+        "sha256": "868edf5374b505cba57be88968c62796f57c233f25a95ca2b2412f39a9d05220"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000693\\complete.json",
+        "sha256": "d1468654d1a0299210dfc41a7603a3d94efa42a1231289eacc89e8e6e3e8e7f1"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000694\\complete.json",
+        "sha256": "156cc231b43e2b5ede35d0817c7cfe8033f9f57955b2ebfd386934f45f694c39"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000695\\complete.json",
+        "sha256": "1a2d9db632e8a83cafe49b415bdea175decc04bdb610754dc47c8e9e5f640ed5"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000696\\complete.json",
+        "sha256": "089ffc1ca59a3aa9ca1931f7917cfe07d854bc8f457d1f2b416570b9672f70b7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000697\\complete.json",
+        "sha256": "281ac0f19acfd712401f37c3f4c62e408904e516acce24fa6e1e6d9f44d8f641"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000698\\complete.json",
+        "sha256": "b63ea0d0a2318d3d77b6c11588351e0f8f113931c13593eed0f13fbe5a44dc9a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000700\\complete.json",
+        "sha256": "659d7ac85be1bd45c55318e5c377d131a7c33f940b4d375341445e5c94a1f67d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000701\\complete.json",
+        "sha256": "7cc7abccd009ffa47ed9923c4dc0f2e2e3eedce68b274e4fa95e9beb749ff03f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000703\\complete.json",
+        "sha256": "152c14fab412d9743c50164dbb34b7a2484240dab834058148cda331d26f96c1"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000704\\complete.json",
+        "sha256": "e434d7b7e533d7eec049a8241c3480a740de51fbfced3c2c73b6a05ff847d6c1"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000705\\complete.json",
+        "sha256": "f0b91207d58a543df8fdcd6d135a9e86cf1ebac3053d56da93e7c57c794bbfa2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000706\\complete.json",
+        "sha256": "15ac40f5592acdc25a675e2b2315121fe66cd1b9c191e8e0be61973e22715277"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000707\\complete.json",
+        "sha256": "9ec55a842e6d6b80e5367d652720df03afc1cf41f68b9bfe4da296540458624c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000708\\complete.json",
+        "sha256": "0861e8d4ceb530e9440da0cc03234058f84ace42d34d0401025a20338f480cda"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000709\\complete.json",
+        "sha256": "4f48f7f45c1b9eb4a0511b62dfae94fd35fc2b3409fb3bd19f732d1a424b333a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000710\\complete.json",
+        "sha256": "db82020f6cceb97a8bb7ec412b7e5ca78440e572199fcf0afebf5bb0c949dcad"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000711\\complete.json",
+        "sha256": "c8d8956cdd9dbf41def012d6e6af2e5a6439ff750231bf6172cf7a9f086ed3d4"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000712\\complete.json",
+        "sha256": "b06e324b516c288c5b173ee44349a1ac8eea684d7f68e7e1b30362d9cecdd939"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000713\\complete.json",
+        "sha256": "2cc3b0b5f0e52f640109f42ce4b090acb46946a3521f3d3f2b15753f3dc1573a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000714\\complete.json",
+        "sha256": "eff5de475bb66473589f12142a75d7d9dfb10fe4b7496f97be767acbec830ed2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000715\\complete.json",
+        "sha256": "60ec78198242c077a0a40bc6f4c9dab4faf8f9d8f6a9acf7d89709086f76014b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000716\\complete.json",
+        "sha256": "6714c046f28bc3ebf6b2816a7ed14bd7d87d3c671c555c31163be9edfa09f823"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000717\\complete.json",
+        "sha256": "8fa30840eac8e3336e08bfa060fa29015c489bb5acf7c4af84ce320d001f6fe9"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000718\\complete.json",
+        "sha256": "f8a1658dab961f5a851a21e0fc62dd6d874b72bc7c15425722f5b984a603ad0f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000719\\complete.json",
+        "sha256": "a6f9ec1ac447699a4c14825746228549289a597dcf1c4d18518de2ce748d0a0c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000720\\complete.json",
+        "sha256": "cb551057c9e913fc07d15b67d35526ffe01e97401e757892f37e5d6f46829dcb"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000721\\complete.json",
+        "sha256": "44acde01b21e4fdb69cfbc7d274316a0fb3d0e00a7f598f83ec889cd92e6f24d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000722\\complete.json",
+        "sha256": "64a1dc7ef55171bd945212b9688bcedd86b4747347056a2d017c51b61ae29b92"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000723\\complete.json",
+        "sha256": "972cc6e244d73352e0a39f1a69e8ed3ce9800557524a5b3231451f38944d72d7"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000724\\complete.json",
+        "sha256": "426bfc3884023e5c113b2115acd4e6e94861cb8e5e9cc4fbaae5406b338dfbc3"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000725\\complete.json",
+        "sha256": "96397d12534e7c1042b872952224df43b57cb94c6967cca3657ff3ab5927c791"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000726\\complete.json",
+        "sha256": "064f175b86c22d15f0ca3ad05f694177213e4c4f63d83a9b8d1b93ad65b208b4"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000727\\complete.json",
+        "sha256": "f1e14349765a2eeaa3bbd7a2d6424870eaf96636cb3f51a9a370acf0312252e0"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000728\\complete.json",
+        "sha256": "1c27990d5a1fca89d7dde9ae108933788cce1a7c835051ce32d83e559a722479"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000729\\complete.json",
+        "sha256": "7c3b5a1b50ff05d7c652fefee041a3a6e0061206949024540f24f655b9643aee"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000730\\complete.json",
+        "sha256": "0a8f104e9ea0990185cbdb752beaeb8ad1c130acbfada05611295eab880619a9"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000731\\complete.json",
+        "sha256": "0c8a3accc633c5ebf674d77136a598066ad50db58cb0f7831dae2e90280c6758"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000732\\complete.json",
+        "sha256": "fc2d62e577396ddb885a65538743f2561dbd7fcdce09c132f08bdcea3a2e2114"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000733\\complete.json",
+        "sha256": "4a5c0a4265e6c3bca05b29bf3463b814115bed54e63f9e7a14e9380d0420da30"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000734\\complete.json",
+        "sha256": "303f30c7988fa3b36b62a57b66592c0ac3fe910e3116e25d9a27f3368ff602c5"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000735\\complete.json",
+        "sha256": "8b7d02a77c8ab24eac1cf270ccedbfd12e79b1dc5a7174f581501ebff8c5800b"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000736\\complete.json",
+        "sha256": "aecc14b57a1ac8a91ba762d20762757652431fad95b8361f598125511332c3b2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000737\\complete.json",
+        "sha256": "b25c0a5679bbc91eef3a04e213d35f6c54ee28e5047a4dbbfd1d80135ed53afc"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000738\\complete.json",
+        "sha256": "d5bcbd9b44aad521f1f386b28d9aa832cc4b7a4ce9b95e7f0fc05c191378cb78"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000739\\complete.json",
+        "sha256": "ff04053992b1770e090ff83102385a1bd83700981e238221cc13888fd508c30d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000740\\complete.json",
+        "sha256": "a8c4f103f73c3f30402b1b1ed27cfc44b0944a93391b8b139eb5cbf5ce77488f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000741\\complete.json",
+        "sha256": "cf99a161f02fee0029b313bfd165da944cdb0a0d19b71206e0b8f6603e3390ed"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000742\\complete.json",
+        "sha256": "1ad8c02de322fee3090eaa983a07106a3d544b8725be0f3fd06615b38f84e1ca"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000743\\complete.json",
+        "sha256": "4380f0b1b5ce648f7e4d97dc8cd6bdbb2dc2283dc75c0374d637e86e20dda995"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000744\\complete.json",
+        "sha256": "7be6d1426e045c13559c13ddb9e2a3315f879a22496f4fb8e29bcdf531177f5c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000745\\complete.json",
+        "sha256": "1de0b66dc0299e1db44b26dbab3908138f37df3c6227823fca76d33344669a23"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000746\\complete.json",
+        "sha256": "4aecdfc7e42e21a1831a2157bfb4cf8304da1bc101fd3715b6075b28dd3fd222"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000747\\complete.json",
+        "sha256": "878c65f9dc9e2bd89657205fdf1b01d8a151b711af3771338bc4dcbcfd812cad"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000748\\complete.json",
+        "sha256": "52266e4239723e766016a31b087d4de9ad7e3e7738d196c4759b35ee89e5f21a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000749\\complete.json",
+        "sha256": "afe28ca5e3a72702e143d7bb8cf217890279d615beb9af8a8a0d2b3766636624"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000750\\complete.json",
+        "sha256": "692746af0e9682442a6765c6e064f14d9c35e16894f61dfd9034e42f2d9cc2a8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000752\\complete.json",
+        "sha256": "307bf915c946beb98e270a1fbef03543dcbf90b67888f3f086873c07ccd2ddc2"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000753\\complete.json",
+        "sha256": "bfb8f910c60af5fb163480ac1b19e490fa346d9ed953d708cbdaa32abae50e07"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000754\\complete.json",
+        "sha256": "91fc85eaea437f8b05c3a9edf8a7610737676ec502748045d9396eb23170153a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000755\\complete.json",
+        "sha256": "e5847c8f141dce4012bdfefa84e50e152314e83cb575698003ced8142868672d"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000756\\complete.json",
+        "sha256": "2e0a63488d4480d94b9a4600379093bbb728a21397ba654fbaa864da2938fead"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000757\\complete.json",
+        "sha256": "1a77dd95c67ac325c0d88abe81e7b9ba45788d38e48dae8e0ae381b837054298"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000760\\complete.json",
+        "sha256": "2b0611c29e3f2319f417c3677fd48f18065060f1c93183547c6be422eb1fdc52"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000761\\complete.json",
+        "sha256": "6fd16244b17774f9ba07cadd8df8637bbb18b5c9ef89fdda390d0b9ade1fa27a"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000762\\complete.json",
+        "sha256": "a7e39e8fdd3d1fe4a61d321720f3441c8e818702eee615e33aa383b256204f2c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000763\\complete.json",
+        "sha256": "2304ecf4d315f34811ec995710e0b0ea96326817c8c2ee1151bb6586fab24d4c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000764\\complete.json",
+        "sha256": "2121b776062f0a6481e1e9a2ea5d3d4c8dac12c9c2de9e6e3e1ee792ca295405"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000765\\complete.json",
+        "sha256": "613dba1681fecc070fdad3fffbf180a891fb01b722d507ab3be8631fe76d47bc"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000766\\complete.json",
+        "sha256": "39245b4cb91ab492a0d47f5e32d2e97a8725f7d34e4ea0c9262e60781b7cd263"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000767\\complete.json",
+        "sha256": "fc6b76b40a810c5c8835a8e4734769eb4fde9fc98721004d60762efd47ba7ca8"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000768\\complete.json",
+        "sha256": "9979352b04226cd06c0c5b44b4ed3482a85f26783a5104660a34a532b106ec12"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000769\\complete.json",
+        "sha256": "441b11455e0f72db6badc0cd72c90861ece92ed7d3032a595330df1662d57d57"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000770\\complete.json",
+        "sha256": "78649d6b840abc68b9c5c603b01cec71cf29250fb5e4cd648ae8d5b2c3d351c0"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000771\\complete.json",
+        "sha256": "ea6a2b06eb95255ff39a422692caefe9d08aeaed71ba592d31aab3f56081ba6c"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000772\\complete.json",
+        "sha256": "3ca9409dec96c829fbc35f8a5fb80b05e4f2d8638310650f1893f6706a746726"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000773\\complete.json",
+        "sha256": "da43d7d7c82bca1908a3573401940ec73c5a1f9304a894122842d0c3732df7f6"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000774\\complete.json",
+        "sha256": "b869117ea4c74ec462e6622122f4750adf42b37583834425b8f0e775adf4c63f"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000775\\complete.json",
+        "sha256": "147d71b052a7e6ffe946de421e14cc760c32a7877dcc962d897585de50f316be"
+      },
+      {
+        "path": "datasets\\itodd\\images\\000001_000776\\complete.json",
+        "sha256": "b79b5240ef699416c423ffa1d0b503e47d21ee92f9e292b693f5c28adf08d4d4"
+      }
+    ],
+    "ledger_digest": "87462e0bb411884203a9f1b544823de4b9a986ca906467870b5e4d3c652eeafb",
+    "csv_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\itodd\\predictions\\freezev2base_itodd-test.csv",
+    "csv_sha256": "5af79f162b4b6e653eaf8ecd83bdc14d4ae91e954413e210aba3465f8a291375",
+    "export_receipt_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\itodd\\predictions\\export_receipt.json",
+    "export_receipt_sha256": "d1dca07fa8d3fddb1c8820b5ef7f6c4fb0b0b5e44a7003404eb63bfcb042e1e2",
+    "official_target_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\external\\itodd_test_targets_bop19.json",
+    "target_sha256": "e77142809e2900f08f55e97187516d8a1a42f45bed4425ca6f26ca53c28a2b7b",
+    "mask_sha256": "cce4bcc9d33618e215f1099f9ac7f04598c0f39188585e739dd992496c3bbbd6",
+    "denominator_policy": "Unmodified complete official localization targets, including blocked and failed rows"
+  },
+  "denominator": {
+    "official_images": 721,
+    "official_target_rows": 733,
+    "official_requested_instances": 3041,
+    "derivation": "Sum of inst_count from the unchanged original official target JSON, not inferred from target-row count.",
+    "requested_instances_by_target_status": {
+      "completed": 1588,
+      "failed": 1453
+    },
+    "retained_poses_by_target_status": {
+      "completed": 1588,
+      "failed": 858
+    },
+    "missing_requested_pose_count": 595,
+    "interpretation": "Pose-output counts are execution diagnostics, not GT-based accuracy or recall."
+  },
+  "physical_receipts": {
+    "complete_images": 721,
+    "partial_files": 0,
+    "effective_partial_images": 0,
+    "top_level_statuses": {
+      "complete": 497,
+      "complete_with_failures": 224
+    },
+    "prediction_bearing_images": 703
+  },
+  "identity_verification": {
+    "method_base_mask_target_and_source_identity_match": true,
+    "retained_input_manifest_sha_matches": true,
+    "retained_RGB_depth_metadata_fingerprints_checked": 721,
+    "actual_scene_camera_files_SHA256_checked": 1,
+    "camera_snapshot_digest_matches": true,
+    "recorded_sensor_modes": "All721 sources record grayscale uint8 L TIFF, depth float32 F TIFF,960x1280. Native sensor-byte and cloud mapping checks remain the separate three-case sampled audit.",
+    "scope_limit": "This audit joins all saved inference source fingerprints to the retained acquisition manifest; it does not repeat raw RGB/depth file decodes or a full raw-image rehash.",
+    "GT_pose_access_in_inference": false
+  },
+  "evaluation_unavailability": {
+    "receipt_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\itodd\\evaluation_receipt.json",
+    "receipt_sha256": "de7ad7ab679e359a3a4a3f3b92c908838e9e45eecbbb807e3e014ba5d8719d15",
+    "receipt_status": "blocked_evaluation_assets",
+    "official_pose_metrics": null,
+    "reason": [
+      {
+        "component": "private_test_GT",
+        "reason": "Official public test GT poses/info are withheld; generate valid predictions but local VSD/MSSD/MSPD scores are unavailable. Official BOP evaluation service is the supported scoring route."
+      }
+    ],
+    "csv_sha256": "5af79f162b4b6e653eaf8ecd83bdc14d4ae91e954413e210aba3465f8a291375",
+    "target_sha256": "e77142809e2900f08f55e97187516d8a1a42f45bed4425ca6f26ca53c28a2b7b",
+    "evaluation_runtime_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\evaluation_runtime.json",
+    "evaluation_runtime_sha256": "8a8a080f8470e55f237c285748521d747eb8fbe688b6b48a966a0fef8735932e",
+    "runtime_dataset_status": "private_GT",
+    "GT_withheld": true,
+    "local_ready": false,
+    "local_scores_bop19_files": [],
+    "official_evaluation_directory_present": false,
+    "toolkit_revision_pin": "cea62d651c7e395b2e1962b9749e4e89693c6ac4",
+    "task": "BOP19_model_based_6D_localization",
+    "split": "test",
+    "targets_filename": "test_targets_bop19.json",
+    "planned_GT_selection": "official inst_count k-most-visible; visib_gt_min=-1",
+    "no_metric_values_invented": true,
+    "remote_submission_note": "No submission is made here; the saved receipt identifies the official BOP service only as a possible future scoring route."
+  },
+  "runtime_scope": {
+    "all_721_image_active_runtime_s": 2055.023917589984,
+    "mean_recorded_active_time_per_attempted_image_s": 2.8502412171844442,
+    "policy": "Saved current image wall time plus retained completed-candidate compute time; interruption downtime excluded. Includes recorded failed image/candidate work. Excludes CAD onboarding and evaluation.",
+    "CAD_onboarding": {
+      "stages": {
+        "geometry": {
+          "completed_CADs": 28,
+          "expected_CADs": 28,
+          "completed_stage_active_runtime_s": 955.6299732669587,
+          "partial_CADs_with_progress": 0,
+          "partial_checkpointed_active_runtime_s": 0
+        },
+        "features": {
+          "completed_CADs": 28,
+          "expected_CADs": 28,
+          "completed_stage_active_runtime_s": 1195.1930881560443,
+          "partial_CADs_with_progress": 0,
+          "partial_checkpointed_active_runtime_s": 0
+        }
+      },
+      "completed_stage_active_runtime_s": 2150.823061423003,
+      "partial_checkpointed_active_runtime_s": 0,
+      "scope": "Sum of saved completed-stage active runtimes; partial progress is separate. Failed/unfinished CAD work after its last checkpoint, including a failing GeDi tail, is not fully logged and is not included."
+    },
+    "official_BOP_average_time_metric": null
+  },
+  "onboarding_physical_counts": {
+    "geometry_complete": 28,
+    "features_complete": 28,
+    "expected_CADs": 28,
+    "CAD_blocker_files": 0,
+    "scope": "Physical completion receipts and saved runtimes only; no all-CAD deep-cache check repeated."
+  },
+  "prior_separate_reviews": [
+    {
+      "path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\itodd_sampled_candidate_audit_20261030.json",
+      "sha256": "e5de8a92fa2819fafa8e696503382849d9e19d98a6076b0090f57de95f15a8b1",
+      "scope": "Prior separate scoped evidence; not repeated."
+    },
+    {
+      "path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\itodd_visual_review_20261030.json",
+      "sha256": "255cd0cbc1d79dcf5e7fed9cc9bc4b8a8334aabf7209311eecd2974fedcfba2f",
+      "scope": "Prior separate scoped evidence; not repeated."
+    }
+  ],
+  "preservation_action": "Only this new separate audit JSON is written; primary input, source, features, predictions, evaluation receipts, scores, blockers and status files are not changed. Prior sampled/visual audits are not rerun."
+}

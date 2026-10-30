@@ -1,0 +1,2639 @@
+{
+  "schema": "freezev2-icbin-three-image-candidate-audit-v1",
+  "verified_utc": "2026-10-30T07:05:56.222331+00:00",
+  "scope": "Three fixed completed images selected independently per scene while the full pass was still running; this is not a dataset-wide accuracy or cache audit. No GT, learned feature inference, registration, ICP or evaluator rerun. CPU recomputation uses only saved transforms/correspondences/clouds.",
+  "source_provenance": {
+    "helper_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\auxiliary_source\\evaluation_v1\\complete_evaluation.py",
+    "helper_sha256": "9eddc4b53a176b9aa61d7fdfd99876d65714c3b3d9fbdc1c0b62d7bfd905872a",
+    "auxiliary_manifest_sha256": "8a6f0e10ba4c0c35068a2c9934353e3271816a6ced907adee9efe21f8dbf86a9",
+    "primary_source_manifest_sha256": "237f10948fddc3a02fd42176e5acca3a9db1b7598e5b7a34d6d6766190e85c50",
+    "primary_sealed_source_files_verified": 19,
+    "scope": "CPU checks of existing saved results only; no inference, evaluator, main locks, GPU jobs or GT poses."
+  },
+  "external_mask_source": {
+    "path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\external\\cnos-fastsam_icbin-test_f21a9faf-7ef2-4325-885f-f4b6460f4432.json",
+    "sha256": "922b9878b1e8e8cac7d9245daa672de7568408ca0d4a8f9a7884bb532f93bcc3",
+    "records": 6361,
+    "source_kind": "predicted",
+    "segmentor": "CNOS-FastSAM"
+  },
+  "fixed_method": {
+    "method_digest": "6f3f47c445366db882b1cb30d73968053354b7ced69bff3c7765e144e557ccbc",
+    "recipe_digest": "966d495e64ee265f085139832bd479241f112c2303953164b091a2a26062af3d",
+    "mask_sha256": "922b9878b1e8e8cac7d9245daa672de7568408ca0d4a8f9a7884bb532f93bcc3",
+    "camera_snapshot_digest": "abdf56339353643c982b87cdb7c22ec63fba5bee7d31a724ee591e717dd067e1",
+    "ranking": "Stable descending coarse_feature*refined_feature*geometry; segmentation score selects external N+1 pool only; same-CAD translation NMS; official instance-count cap."
+  },
+  "CAD_geometry_SHA256": {
+    "1": "451ac70b8fdd011abc17168602e3d4aa2f303524a8ac39f756fdcf7adc378d4c",
+    "2": "7ae0e3a51baf24c3eadf00d400e8265d17701952a51622fbb5897286ebdc4725"
+  },
+  "counts": {
+    "selected_poses": 30,
+    "candidate_traces": 34,
+    "artifact_hashes": 128,
+    "external_masks_pixel_equal": 34,
+    "complete_candidates": 30,
+    "observed_artifacts": 30,
+    "target_rows": 4,
+    "failed_candidates": 4
+  },
+  "candidate_failure_reasons": {
+    "original GeDi extraction failed (check local neighborhoods, LRF degeneracy and CUDA ops): ValueError: trained GeDi descriptors must contain finite numeric values": 2,
+    "no_valid_hypothesis": 2
+  },
+  "maximum_CPU_score_component_absolute_errors": {
+    "coarse": 1.5306078893218e-07,
+    "refined": 0.0,
+    "geometry": 0.0
+  },
+  "CPU_numeric_comparison_tolerance": 1e-05,
+  "integrity_concerns": [],
+  "samples": [
+    {
+      "scene_id": 1,
+      "image_id": 28,
+      "selection": {
+        "rule": "middle lexicographic complete receipt per scene at selection snapshot; index=floor(n/2)",
+        "complete_receipts_available_at_selection": 50,
+        "zero_based_index": 25
+      },
+      "receipt_path": "datasets\\icbin\\images\\000001_000028\\complete.json",
+      "receipt_sha256": "acf129292621a89651e8bf383b0da0b25c32cf18bd73abb1589f0e1d031f3d11",
+      "status": "complete_with_failures",
+      "runtime_s": 9.62382317599986,
+      "retained_poses": 13,
+      "targets": [
+        {
+          "object_id": 1,
+          "official_instance_count": 16,
+          "candidate_quota_per_segmentor": 17,
+          "available_external_records": 13,
+          "empty_masks_skipped": [],
+          "candidate_count": 13,
+          "retained_poses": 13,
+          "status": "failed",
+          "reason": "fewer_valid_distinct_poses_than_requested",
+          "translation_NMS_threshold_m": 0.013661600000000001,
+          "translation_NMS_setting_is_reproduction_assumption": true,
+          "expected_ranked_candidate_ids": [
+            "cnos-fastsam:000001:000028:631",
+            "cnos-fastsam:000001:000028:627",
+            "cnos-fastsam:000001:000028:628",
+            "cnos-fastsam:000001:000028:626",
+            "cnos-fastsam:000001:000028:625",
+            "cnos-fastsam:000001:000028:623",
+            "cnos-fastsam:000001:000028:624",
+            "cnos-fastsam:000001:000028:634",
+            "cnos-fastsam:000001:000028:629",
+            "cnos-fastsam:000001:000028:633",
+            "cnos-fastsam:000001:000028:632",
+            "cnos-fastsam:000001:000028:630",
+            "cnos-fastsam:000001:000028:635"
+          ],
+          "recorded_suppressed": [],
+          "recorded_rejected": [],
+          "candidate_details": [
+            {
+              "candidate_id": "cnos-fastsam:000001:000028:623",
+              "record_index": 623,
+              "segmentation_score": 0.6407474279403687,
+              "external_RLE_digest": "5f1698f313f038e30963446a8f5ae396d9ac2f92f1593322056fce432bb83771",
+              "diagnostic_path": "datasets\\icbin\\images\\000001_000028\\obj_000001\\cnos-fastsam_000623\\diagnostic.json",
+              "diagnostic_sha256": "af07dff5aee117e2e3b0c7f3fb1f1301b081efe6397649406562bf7ddfd08a9e",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "d898e2554c90bf5ffa56d43bc48dd42d93adad6fa46ce0206780ac82d999361f"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "0ccde7947520fbfb29ca364e493e7fc61b71b0e2ccf449385495daee8a79286c"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "1d634123e89dfb8676d91f1b232c5ffad97eaaaec91d72500848d33ed45657ca"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "77adc13ceb4eed167c5e3361345d5852e70062b6575fcfc8527252789e161777"
+                }
+              ],
+              "scores": {
+                "coarse": 0.08051662147045135,
+                "refined": 0.09273237440656988,
+                "geometry": 0.4056,
+                "joint": 0.003028411381193623
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000001:000028:623",
+                "obj_id": 1,
+                "R": [
+                  [
+                    0.7647095817076109,
+                    -0.6179432235232656,
+                    0.18266205995292634
+                  ],
+                  [
+                    -0.43870280109596976,
+                    -0.2916436579366179,
+                    0.8499904876502442
+                  ],
+                  [
+                    -0.47197363057179476,
+                    -0.730130227621775,
+                    -0.4941161227463181
+                  ]
+                ],
+                "t": [
+                  -0.14471244968683922,
+                  -0.04529671380109708,
+                  0.6402398451985543
+                ],
+                "score": 0.003028411381193623,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.08051662053041582,
+                "refined": 0.09273237440656988,
+                "geometry": 0.4056,
+                "absolute_errors": [
+                  9.400355355237977e-10,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 47,
+                "correspondence_pairs": 1400,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000001:000028:624",
+              "record_index": 624,
+              "segmentation_score": 0.5965450406074524,
+              "external_RLE_digest": "a5687afbe3f491173fab9ecb95414133ba93ffac795408bfaae191bdb8f73442",
+              "diagnostic_path": "datasets\\icbin\\images\\000001_000028\\obj_000001\\cnos-fastsam_000624\\diagnostic.json",
+              "diagnostic_sha256": "4cc5da57fde89b9709c50122b8bac0f0fd6a86872c51b221ba57a860d6c0bc03",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "71c0336b747f375443aad6ff949e46d8650851ca45ae007dd452c05636e632c3"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "55218c5d37e68889a42d2c8b4a129afad84242f095ca54baf4e57fd981b0953a"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "b2566abc1a5eb37d04cc4daf355651a2a13911d74a965ef34763281c07785dbb"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "4ad0b3ef1e43706f4d0e04a45732b9727c44ed0ad204e33047ea662a97b0d997"
+                }
+              ],
+              "scores": {
+                "coarse": 0.06264222413301468,
+                "refined": 0.10560217712350897,
+                "geometry": 0.285,
+                "joint": 0.0018853192457669718
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000001:000028:624",
+                "obj_id": 1,
+                "R": [
+                  [
+                    -0.16685616699384284,
+                    0.8290540586578832,
+                    -0.5336931584337715
+                  ],
+                  [
+                    -0.6469306464067581,
+                    -0.5005319388745344,
+                    -0.5752812502648024
+                  ],
+                  [
+                    -0.7440697267567449,
+                    0.24927323560581358,
+                    0.6198573188522917
+                  ]
+                ],
+                "t": [
+                  -0.06815569345590274,
+                  -0.1092432525589091,
+                  0.6618215931750473
+                ],
+                "score": 0.0018853192457669718,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.06264221861721087,
+                "refined": 0.10560217712350897,
+                "geometry": 0.285,
+                "absolute_errors": [
+                  5.515803813693765e-09,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 39,
+                "correspondence_pairs": 1480,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000001:000028:625",
+              "record_index": 625,
+              "segmentation_score": 0.5898280739784241,
+              "external_RLE_digest": "defba480d3cbd3f1772fa99282e3be1dccec2b00dc681013b5a437b1c773630b",
+              "diagnostic_path": "datasets\\icbin\\images\\000001_000028\\obj_000001\\cnos-fastsam_000625\\diagnostic.json",
+              "diagnostic_sha256": "b1042637dd35d5825e44b13e081aa60c8c6ee2b0f51c877bd22744fc5ab67ebd",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "0f159c81f7cbe2bf138fdf2ab2d4ac34c856b426b8af2b6adf7fb215996a2e16"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "5fd82c4197fc68bb6d76b2f1cfaba4d186f8e82b0b4518ee4f2fe8a7c8d26c5f"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "901ff8e19b62e9568bf18aee114d5691fa6d71720f688509959adf50f8d5b6fb"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "601b828c396ab45198caaeda3371f22aed06dd1bacde36a6395dbcd9876c7290"
+                }
+              ],
+              "scores": {
+                "coarse": 0.11086592823266983,
+                "refined": 0.09708148682164952,
+                "geometry": 0.3438,
+                "joint": 0.0037003294220071797
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000001:000028:625",
+                "obj_id": 1,
+                "R": [
+                  [
+                    -0.3487738295291031,
+                    0.6915378134244518,
+                    0.6325600907737786
+                  ],
+                  [
+                    0.6959708735581164,
+                    0.6431399068398767,
+                    -0.3193675052173384
+                  ],
+                  [
+                    -0.6276793440876921,
+                    0.328856371132021,
+                    -0.7056005443390202
+                  ]
+                ],
+                "t": [
+                  0.0435431470012247,
+                  -0.09784252280935073,
+                  0.6851587853080234
+                ],
+                "score": 0.0037003294220071797,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.11086592813515346,
+                "refined": 0.09708148682164952,
+                "geometry": 0.3438,
+                "absolute_errors": [
+                  9.751636997901159e-11,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 48,
+                "correspondence_pairs": 1560,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000001:000028:626",
+              "record_index": 626,
+              "segmentation_score": 0.5696640014648438,
+              "external_RLE_digest": "218824b22386a2a05b846330d0e674c3ada1b5d2bb84aa8fbb682f9441683193",
+              "diagnostic_path": "datasets\\icbin\\images\\000001_000028\\obj_000001\\cnos-fastsam_000626\\diagnostic.json",
+              "diagnostic_sha256": "968731838139220ac072c089624a0fd51ad11fabb10ebf57c1266a72951efc6b",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "aa868c7869b873e6986ff19c06cf518db4d767f72dc504ad6daea87accd1f992"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "332141ec5c6fa4662478791c11543bbcc0585668815614ad0ae3aa85e1eb6cd9"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "934d567fd340faf050749e6f2bca03320d0b0c47f905461c57019940bdd00f5e"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "1ab03d47f76c7093c8cbee45d310e9f43c19b7fa24b8874e36dc60b859d4f8af"
+                }
+              ],
+              "scores": {
+                "coarse": 0.12687627971172333,
+                "refined": 0.12106570077095417,
+                "geometry": 0.2644,
+                "joint": 0.0040612806949168094
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000001:000028:626",
+                "obj_id": 1,
+                "R": [
+                  [
+                    -0.9721670966339371,
+                    0.18900940083398934,
+                    -0.13844342750278363
+                  ],
+                  [
+                    0.23423187506089835,
+                    0.7970933750240772,
+                    -0.5565766615644084
+                  ],
+                  [
+                    0.005154117557623962,
+                    -0.5735133807411147,
+                    -0.8191799785047847
+                  ]
+                ],
+                "t": [
+                  -0.13345731267180952,
+                  0.12348052771180464,
+                  0.777054781721208
+                ],
+                "score": 0.0040612806949168094,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.1268762891645469,
+                "refined": 0.12106570077095417,
+                "geometry": 0.2644,
+                "absolute_errors": [
+                  9.452823579447767e-09,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 48,
+                "correspondence_pairs": 1530,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000001:000028:627",
+              "record_index": 627,
+              "segmentation_score": 0.5395331382751465,
+              "external_RLE_digest": "6dd999b2cf86a45205de0caa0e1195dd2dadfaa81e80015798f61e772b1ad22e",
+              "diagnostic_path": "datasets\\icbin\\images\\000001_000028\\obj_000001\\cnos-fastsam_000627\\diagnostic.json",
+              "diagnostic_sha256": "3f243a17d26e4166d6d9837230c5ab496905cfe5891b28b38c5462adec6d6998",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "d308c5ad2800a3a00c57e92563f5b624e130dfc4749986fe93c4b073c0bdaf7b"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "03d7f074fef2b17ad21194b8559ce787f4c0224baacec221b02572c80fee80f2"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "8b38b1bdf976eace3b2ef8775e2c89e8a106f36cdfcae10bebe5cebe6c31ed45"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "2f58b2f5d1e1d8673cc427791bf4f624a709812a957066c315246a87c6fad91f"
+                }
+              ],
+              "scores": {
+                "coarse": 0.295923113822937,
+                "refined": 0.33496998148977825,
+                "geometry": 0.317,
+                "joint": 0.03142273910721436
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000001:000028:627",
+                "obj_id": 1,
+                "R": [
+                  [
+                    -0.42344973764260185,
+                    -0.8492722051976909,
+                    0.31532053718250475
+                  ],
+                  [
+                    -0.8404254750374158,
+                    0.23833309130794444,
+                    -0.4867056179003202
+                  ],
+                  [
+                    0.33819423501672163,
+                    -0.47109877845973075,
+                    -0.8146720814752425
+                  ]
+                ],
+                "t": [
+                  -0.03674298901818951,
+                  0.07905945349621209,
+                  0.7107958575325108
+                ],
+                "score": 0.03142273910721436,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.2959231082940581,
+                "refined": 0.33496998148977825,
+                "geometry": 0.317,
+                "absolute_errors": [
+                  5.528878910254775e-09,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 81,
+                "correspondence_pairs": 1590,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000001:000028:628",
+              "record_index": 628,
+              "segmentation_score": 0.5194432139396667,
+              "external_RLE_digest": "e5025559fa884e09b3b10648805cbabc3b4f84fd045f0f0e05fbdf945d2898fc",
+              "diagnostic_path": "datasets\\icbin\\images\\000001_000028\\obj_000001\\cnos-fastsam_000628\\diagnostic.json",
+              "diagnostic_sha256": "7736a2e5af142d3facaa1690b40ce2cec57e271f43c67b796099dceac98a3448",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "19f7da787a87474d117b9f97efe149c5d1116c8dcba69909c6d7aa9e43eeaa4a"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "f58f47521181f5883194dfbaebcaa3f44b887ea7eb8d6ead55f8558649a03d05"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "eae1da4b678ff2b911e48a767fbaa2e8b0be748c50eee00d692d44a75b871ae0"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "a1a5caabe3b217bacaa4f2a674d0269b5420d7cf63f7f2a051560bdd67a5b51f"
+                }
+              ],
+              "scores": {
+                "coarse": 0.11897366493940353,
+                "refined": 0.1504466337174772,
+                "geometry": 0.26,
+                "joint": 0.004653788721702719
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000001:000028:628",
+                "obj_id": 1,
+                "R": [
+                  [
+                    -0.9356783075790652,
+                    -0.22037689495042215,
+                    -0.2755723659911983
+                  ],
+                  [
+                    -0.13601587040600682,
+                    0.9458896812756268,
+                    -0.2946054884994328
+                  ],
+                  [
+                    0.3255853002266421,
+                    -0.23817374966251756,
+                    -0.9150232113165346
+                  ]
+                ],
+                "t": [
+                  0.025629497673588693,
+                  -0.010892022852667094,
+                  0.7019011721235838
+                ],
+                "score": 0.004653788721702719,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.11897365419210774,
+                "refined": 0.1504466337174772,
+                "geometry": 0.26,
+                "absolute_errors": [
+                  1.0747295789426126e-08,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 30,
+                "correspondence_pairs": 1620,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000001:000028:629",
+              "record_index": 629,
+              "segmentation_score": 0.514574408531189,
+              "external_RLE_digest": "a12696b43a7f96c523c12c816a5368270287ebdcdb8588882b3e7401b7c099f0",
+              "diagnostic_path": "datasets\\icbin\\images\\000001_000028\\obj_000001\\cnos-fastsam_000629\\diagnostic.json",
+              "diagnostic_sha256": "5b11800488325ab09d2294a760581868452fde157f8af5260a600986cf00d3b8",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "d6d0773ed2209bd73de10106464cefe7b4542a5c25b9855cbcc11db2e31a4194"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "8eebf5ffe27968489e1a7abf0c1318876f9a4d4c78e8abddb865c9522bcd36fe"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "f32d792c557303659d92794abf1d4f3f92d4f70b1cbdc797aa6efd323f6eda22"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "2be513a5b6ae9c06f62d6686b7a36701467e6316154e5b81cb947aba8f341f09"
+                }
+              ],
+              "scores": {
+                "coarse": 0.1200290322303772,
+                "refined": 0.07177594723319596,
+                "geometry": 0.1314,
+                "joint": 0.0011320369493738336
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000001:000028:629",
+                "obj_id": 1,
+                "R": [
+                  [
+                    0.9084556652638608,
+                    -0.21158271089631953,
+                    0.36047338417664027
+                  ],
+                  [
+                    -0.41797839829273375,
+                    -0.4566869159542815,
+                    0.7853223028520252
+                  ],
+                  [
+                    -0.001537143661539447,
+                    -0.8641005828292975,
+                    -0.5033168186574257
+                  ]
+                ],
+                "t": [
+                  0.10573349885712881,
+                  -0.08050923297435307,
+                  0.7990489980826915
+                ],
+                "score": 0.0011320369493738336,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.1200290363653982,
+                "refined": 0.07177594723319596,
+                "geometry": 0.1314,
+                "absolute_errors": [
+                  4.13502100615748e-09,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 19,
+                "correspondence_pairs": 1370,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000001:000028:630",
+              "record_index": 630,
+              "segmentation_score": 0.4936952590942383,
+              "external_RLE_digest": "6a80e8c40ca83a76a4029301369b3ce3fc207c70751a98583245837e878d912a",
+              "diagnostic_path": "datasets\\icbin\\images\\000001_000028\\obj_000001\\cnos-fastsam_000630\\diagnostic.json",
+              "diagnostic_sha256": "d28ca10bf2d74b973d120a7b5040930c9426bf17689532af7a798ea2fc538b20",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "caa5516ce8fd0b6943732b99c0852864c19e09f09042ab4ebb055a39e72a987e"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "fc7197490aceeceabc149f878fbfd9e251427a39adc204c06592948078633378"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "d0b323fccacdbaab0b86d3a4ee84dca2bc01b554efd5400fb778fbf9d42c04ae"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "2446dc0f024c4988ec9c7b83cb6c4789b554478514fead7f5227936ef31620a7"
+                }
+              ],
+              "scores": {
+                "coarse": 0.08568532019853592,
+                "refined": 0.01698453753013641,
+                "geometry": 0.1232,
+                "joint": 0.0001792961061206748
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000001:000028:630",
+                "obj_id": 1,
+                "R": [
+                  [
+                    -0.8636820047651801,
+                    0.23994828442866373,
+                    0.44325863267909554
+                  ],
+                  [
+                    -0.45423563224911223,
+                    0.010617961061257538,
+                    -0.89081830318991
+                  ],
+                  [
+                    -0.21845682648992507,
+                    -0.9707276032454436,
+                    0.09982251878863799
+                  ]
+                ],
+                "t": [
+                  -0.13031276753475965,
+                  0.048449833938760456,
+                  0.7044871150923997
+                ],
+                "score": 0.0001792961061206748,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.08568531103034384,
+                "refined": 0.01698453753013641,
+                "geometry": 0.1232,
+                "absolute_errors": [
+                  9.168192080521997e-09,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 39,
+                "correspondence_pairs": 1110,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000001:000028:631",
+              "record_index": 631,
+              "segmentation_score": 0.4570654332637787,
+              "external_RLE_digest": "8b4f5c6fbc2dc64c8ba4e77480e3bfd8607e13cc45333a8b9ad5959d73910566",
+              "diagnostic_path": "datasets\\icbin\\images\\000001_000028\\obj_000001\\cnos-fastsam_000631\\diagnostic.json",
+              "diagnostic_sha256": "6f2064762b149b7346ab203eda193525306ce75e5d3860fc3a235673b3aea069",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "6ca51886e3633f9a52ac3dc1748f1a29156c318f95fe3317b25ab4c8eac56ab4"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "7cb9991b6ef75e96b44995bb9cc4b339823b04b6d0948d8ee76cecdabd8584a0"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "b03063f9b6807fa9817fd3966da29ca9a60496b6bfa2f0417a7c1c6eced936d5"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "d72670a2dc1cc427db3d74283f2b2e47da642a3e16e46f31ee3a10f8463d80b8"
+                }
+              ],
+              "scores": {
+                "coarse": 0.5146891474723816,
+                "refined": 0.4685489797684292,
+                "geometry": 0.1414,
+                "joint": 0.03409961039737387
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000001:000028:631",
+                "obj_id": 1,
+                "R": [
+                  [
+                    -0.01231959870188974,
+                    0.892649362370205,
+                    -0.45058333674015405
+                  ],
+                  [
+                    -0.046357158806047113,
+                    -0.45064288516526707,
+                    -0.8914998619614896
+                  ],
+                  [
+                    -0.9988489582090256,
+                    0.009904842754466124,
+                    0.04693242775261041
+                  ]
+                ],
+                "t": [
+                  -0.20230513739755693,
+                  -0.03419349888428347,
+                  0.6888639065691936
+                ],
+                "score": 0.03409961039737387,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.5146891256547114,
+                "refined": 0.4685489797684292,
+                "geometry": 0.1414,
+                "absolute_errors": [
+                  2.181767022602088e-08,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 78,
+                "correspondence_pairs": 760,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000001:000028:632",
+              "record_index": 632,
+              "segmentation_score": 0.3268667161464691,
+              "external_RLE_digest": "9b34b86e245f391e0c070ea617b48c88f0ad64591dea1e101725f59474bd575e",
+              "diagnostic_path": "datasets\\icbin\\images\\000001_000028\\obj_000001\\cnos-fastsam_000632\\diagnostic.json",
+              "diagnostic_sha256": "0bfeb10a486a8ee3acb64a46e35810b10c58c32dedd8f7163cb8e55a7e0357c6",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "ad2c13a0528668982f9486a32bd7c18ec4bcd7966a1dfa5e581ab9814f5228f5"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "b8b246152dff86c5888c4dab118fa7f91032afcb0595152c99e6b11db4c687b5"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "0ab84fd6e15edfc30961ce2521cc0ba6acd07c3f8c5c3dd9f0670cb0816c5bbd"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "628635b681f64cc7362867f0ff28f3deb16343ff70c53c158e43f39054ed5edf"
+                }
+              ],
+              "scores": {
+                "coarse": 0.10922560095787048,
+                "refined": 0.03896581634034133,
+                "geometry": 0.0812,
+                "joint": 0.0003455924541749286
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000001:000028:632",
+                "obj_id": 1,
+                "R": [
+                  [
+                    -0.1292736076512311,
+                    0.9817862788080776,
+                    -0.13922656754019405
+                  ],
+                  [
+                    -0.5915895025894995,
+                    0.03632059823171723,
+                    0.8054208058958997
+                  ],
+                  [
+                    0.7958078881179463,
+                    0.18648462909387128,
+                    0.576119161563801
+                  ]
+                ],
+                "t": [
+                  -0.03453496101560169,
+                  -0.10522551124462659,
+                  0.7412845148036508
+                ],
+                "score": 0.0003455924541749286,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.10922560662258081,
+                "refined": 0.03896581634034133,
+                "geometry": 0.0812,
+                "absolute_errors": [
+                  5.664710325814504e-09,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 15,
+                "correspondence_pairs": 900,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000001:000028:633",
+              "record_index": 633,
+              "segmentation_score": 0.31502848863601685,
+              "external_RLE_digest": "d2deb8f60b7851264f0ec87eb38313c242f6afc1246308a6f5d4653820cfad07",
+              "diagnostic_path": "datasets\\icbin\\images\\000001_000028\\obj_000001\\cnos-fastsam_000633\\diagnostic.json",
+              "diagnostic_sha256": "0a1a0981b2b28669148ecfbc3c1b4798be7b11e462a2d0eefd442994160b200b",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "7267f1d8a723ca6664e9ff8779684675a012829b45b362d6885283548d2fa0f3"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "d0ac92e42280054933e472ef7adb890080f61d6db0498bc9cb1229c6d15d3eaf"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "86ae4041397de08223763e1853798b14cc99ae0fbbdd83a4aee124b9b15331cc"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "0666e4abec1631780af14df40ebf52065e0d605aeddf63eb24b4662907251644"
+                }
+              ],
+              "scores": {
+                "coarse": 0.09830772131681442,
+                "refined": 0.07544003696254344,
+                "geometry": 0.1244,
+                "joint": 0.0009225924633525811
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000001:000028:633",
+                "obj_id": 1,
+                "R": [
+                  [
+                    0.4890378646220671,
+                    0.7492678494764188,
+                    -0.44658667323025963
+                  ],
+                  [
+                    0.2547638706396035,
+                    -0.6123558590663192,
+                    -0.7484087600261485
+                  ],
+                  [
+                    -0.8342285880875908,
+                    0.2522260724194321,
+                    -0.4903515791850287
+                  ]
+                ],
+                "t": [
+                  0.09211834613406575,
+                  -0.33548464466171724,
+                  0.8833586113882356
+                ],
+                "score": 0.0009225924633525811,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.09830772168361522,
+                "refined": 0.07544003696254344,
+                "geometry": 0.1244,
+                "absolute_errors": [
+                  3.668007980683896e-10,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 16,
+                "correspondence_pairs": 1430,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000001:000028:634",
+              "record_index": 634,
+              "segmentation_score": 0.2774432599544525,
+              "external_RLE_digest": "0e61902ce23a32ae08d588904edbd9de87453977db9daead4f73d0cfe8b521dd",
+              "diagnostic_path": "datasets\\icbin\\images\\000001_000028\\obj_000001\\cnos-fastsam_000634\\diagnostic.json",
+              "diagnostic_sha256": "1b77f04ffebdffffbf905943291a14d4e69bacc608d9ed16ea275445adc250bc",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "baf26aeb72aea48665c0d98420a22adf8ba1537c9b0636a266eacf64b99099ef"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "ebd8e6b65e1e3fd340ccae358851888e4d8bc2e6a59b8202dbf66a687f3cb3c1"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "45199936b3e35996dc1d7bd33c85070a732e2c071bb9a6eee0660b017c64a624"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "1b2ff609df445ebabd70302410fd31b20be47a229fb115da223347743939ed9a"
+                }
+              ],
+              "scores": {
+                "coarse": 0.14061659574508667,
+                "refined": 0.1380004422137477,
+                "geometry": 0.0926,
+                "joint": 0.0017969171118153134
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000001:000028:634",
+                "obj_id": 1,
+                "R": [
+                  [
+                    -0.009498100451188303,
+                    0.921808350946766,
+                    0.38752954753492386
+                  ],
+                  [
+                    0.2696957387059222,
+                    0.37554689653303536,
+                    -0.8866954026204669
+                  ],
+                  [
+                    -0.9628987457732434,
+                    0.09609314558910684,
+                    -0.252174766301279
+                  ]
+                ],
+                "t": [
+                  0.009973570123918325,
+                  -0.19207243134371993,
+                  0.6112218719202996
+                ],
+                "score": 0.0017969171118153134,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.14061659660128054,
+                "refined": 0.1380004422137477,
+                "geometry": 0.0926,
+                "absolute_errors": [
+                  8.56193865805821e-10,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 14,
+                "correspondence_pairs": 1980,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000001:000028:635",
+              "record_index": 635,
+              "segmentation_score": 0.2665247619152069,
+              "external_RLE_digest": "85981e23527a31c2d64a7acfc8153acae70b411d1610e45a5c4a0a5359322832",
+              "diagnostic_path": "datasets\\icbin\\images\\000001_000028\\obj_000001\\cnos-fastsam_000635\\diagnostic.json",
+              "diagnostic_sha256": "8e38a97bc32c48483db5b1f77b400649b8a1f63b718fe7bc5a57cb4803918c1c",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "8dd274e274fbc05ef45adeb1e57e0fc2f4dd189fdac1c7801d4fd8ea7cdbace6"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "d456fae62c5a86eceece75e84febdea694fe9a8dc70cc89a653a69cda26467c8"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "72f2dcf19019c66f18c75afdfa92a7320b06eb14f20e9337a010790999ab1cf1"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "ff6498ec96406e078d4c8216d29817912ceacebd82a9434c1ab575f451a0316d"
+                }
+              ],
+              "scores": {
+                "coarse": 0.03405755013227463,
+                "refined": 0.026629715614559853,
+                "geometry": 0.0532,
+                "joint": 4.8249360926117916e-05
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000001:000028:635",
+                "obj_id": 1,
+                "R": [
+                  [
+                    -0.659033464466649,
+                    -0.5614869431941754,
+                    -0.5004071395729159
+                  ],
+                  [
+                    -0.49806930708911784,
+                    0.8243520196226108,
+                    -0.2690180534460268
+                  ],
+                  [
+                    0.5635617606339638,
+                    0.07194553750292029,
+                    -0.8229349801682779
+                  ]
+                ],
+                "t": [
+                  -0.266428932706047,
+                  -0.240553051819186,
+                  0.702698981944781
+                ],
+                "score": 4.8249360926117916e-05,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.034057551216028055,
+                "refined": 0.026629715614559853,
+                "geometry": 0.0532,
+                "absolute_errors": [
+                  1.0837534272778448e-09,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 7,
+                "correspondence_pairs": 1070,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "converged_stable_correspondences"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scene_id": 2,
+      "image_id": 31,
+      "selection": {
+        "rule": "middle lexicographic complete receipt per scene at selection snapshot; index=floor(n/2)",
+        "complete_receipts_available_at_selection": 50,
+        "zero_based_index": 25
+      },
+      "receipt_path": "datasets\\icbin\\images\\000002_000031\\complete.json",
+      "receipt_sha256": "97fb4eaabc3bde859d6d6cc591c7cd7ff91be26acbdaa03ea02bad298f76f73a",
+      "status": "complete",
+      "runtime_s": 3.949303217999841,
+      "retained_poses": 5,
+      "targets": [
+        {
+          "object_id": 2,
+          "official_instance_count": 5,
+          "candidate_quota_per_segmentor": 6,
+          "available_external_records": 36,
+          "empty_masks_skipped": [],
+          "candidate_count": 6,
+          "retained_poses": 5,
+          "status": "completed",
+          "reason": null,
+          "translation_NMS_threshold_m": 0.022064,
+          "translation_NMS_setting_is_reproduction_assumption": true,
+          "expected_ranked_candidate_ids": [
+            "cnos-fastsam:000002:000031:2992",
+            "cnos-fastsam:000002:000031:2991",
+            "cnos-fastsam:000002:000031:2989",
+            "cnos-fastsam:000002:000031:2988",
+            "cnos-fastsam:000002:000031:2990"
+          ],
+          "recorded_suppressed": [],
+          "recorded_rejected": [],
+          "candidate_details": [
+            {
+              "candidate_id": "cnos-fastsam:000002:000031:2988",
+              "record_index": 2988,
+              "segmentation_score": 0.6761924028396606,
+              "external_RLE_digest": "8214e06a7cb2f632ce9a6bbf696d42d2a63dadec5e944032d90f9ab4457c8b88",
+              "diagnostic_path": "datasets\\icbin\\images\\000002_000031\\obj_000002\\cnos-fastsam_002988\\diagnostic.json",
+              "diagnostic_sha256": "2bd12fda57e7e14a4f577bc26015349845adc98bd3119234f7a7d7aafe95124c",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "d2807029056bde03457ba0988b680b27d6dfdc38b4ac885ef327ac4fb020519a"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "203c3ff58375aa54dfe91873e500ce121fe5d31bebf9813b0dda96be53a26777"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "4478b111942162e4947453e2b192e506d8c7e7f516cb46feeb2d68be758b90c6"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "d90aad8ca495c6ea4803956b9656c6bd6904bb3c03b81a2f04e19d6113a7941d"
+                }
+              ],
+              "scores": {
+                "coarse": 0.25856974720954895,
+                "refined": 0.27005018560755695,
+                "geometry": 0.2586,
+                "joint": 0.018057212607356807
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000002:000031:2988",
+                "obj_id": 2,
+                "R": [
+                  [
+                    0.17839795761445904,
+                    -0.6587050629738055,
+                    -0.7309458315988023
+                  ],
+                  [
+                    -0.9689003292147932,
+                    0.01186512693937863,
+                    -0.24716668628716393
+                  ],
+                  [
+                    0.17148271273354249,
+                    0.7523076888982242,
+                    -0.6361028379579501
+                  ]
+                ],
+                "t": [
+                  -0.12170659725956072,
+                  0.05724165166418229,
+                  0.530480155510947
+                ],
+                "score": 0.018057212607356807,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.25856976432858736,
+                "refined": 0.27005018560755695,
+                "geometry": 0.2586,
+                "absolute_errors": [
+                  1.711903840906359e-08,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 32,
+                "correspondence_pairs": 850,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000002:000031:2989",
+              "record_index": 2989,
+              "segmentation_score": 0.6482879519462585,
+              "external_RLE_digest": "61df33c2cf249986d2123dc79a2f0bd3be1787758eaebd91da3afa522a730b45",
+              "diagnostic_path": "datasets\\icbin\\images\\000002_000031\\obj_000002\\cnos-fastsam_002989\\diagnostic.json",
+              "diagnostic_sha256": "94459bedeeb66e6dd5f86ce487e37b94c4227c9715d3e409d887e5d167196cb9",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "800589e9b0a4bba9ce3324ef00507c8e8db5fb71292f452b9d2c04a6d5614e1a"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "5dee9222649de5ec2ef45ac48e55facf204aa05f84b13d78f41c682a3bd06134"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "a3d76f2853158aa79aaa8339a4f331041ebe9df6aa1b566a7aaacdcb5bdd7cbc"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "80e08d52143291c25296217454123138e3f101759f8ca3f8a989035e27914d78"
+                }
+              ],
+              "scores": {
+                "coarse": 0.62083500623703,
+                "refined": 0.5984472405077349,
+                "geometry": 0.1824,
+                "joint": 0.06776834812387111
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000002:000031:2989",
+                "obj_id": 2,
+                "R": [
+                  [
+                    0.7866457477971309,
+                    -0.4426485508049172,
+                    -0.4304076299776748
+                  ],
+                  [
+                    -0.34892223555168084,
+                    0.2563891222909704,
+                    -0.9013977432346294
+                  ],
+                  [
+                    0.5093542392189443,
+                    0.8592594942397622,
+                    0.047237490921066834
+                  ]
+                ],
+                "t": [
+                  -0.19531813220870498,
+                  -0.015084509747746923,
+                  0.6084015103046242
+                ],
+                "score": 0.06776834812387111,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.6208350125976918,
+                "refined": 0.5984472405077349,
+                "geometry": 0.1824,
+                "absolute_errors": [
+                  6.360661775062226e-09,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 22,
+                "correspondence_pairs": 1200,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000002:000031:2990",
+              "record_index": 2990,
+              "segmentation_score": 0.6281576156616211,
+              "external_RLE_digest": "811ad505473755c41605d6bdc140d5ec0b4c9291fe0cdb0c98fac130e2b804c1",
+              "diagnostic_path": "datasets\\icbin\\images\\000002_000031\\obj_000002\\cnos-fastsam_002990\\diagnostic.json",
+              "diagnostic_sha256": "7eee8d0b17717ca9e149334cae79161edf6c33f12eaab5ea742f5d10c1d0618b",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "b0de80bdf0d390aa869c3d567b0a19842571cc29da34c81d3e10936c41add1e3"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "f0012bca529e3b6799a9f8de3b2647d38e7dd196ed10f4370abe8a0805ce237a"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "e4887859883a0913b96043ce4649aa691400d46bcd7f1d9c195f760957c9c154"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "ac74a3bf3cb3f73f17dd53f13eb6424853a456ef75a627bf88d6d7e95e0d25eb"
+                }
+              ],
+              "scores": {
+                "coarse": 0.2111693173646927,
+                "refined": 0.22745845107852827,
+                "geometry": 0.1462,
+                "joint": 0.007022314342258758
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000002:000031:2990",
+                "obj_id": 2,
+                "R": [
+                  [
+                    0.9060772853292962,
+                    -0.36389717609705824,
+                    -0.2158768126475868
+                  ],
+                  [
+                    -0.25873058072651645,
+                    -0.0728148111291726,
+                    -0.9632011679172444
+                  ],
+                  [
+                    0.33478715567837153,
+                    0.9285886325541639,
+                    -0.1601271740960173
+                  ]
+                ],
+                "t": [
+                  -0.1466610256031588,
+                  -0.07295390730222379,
+                  0.6550655702088692
+                ],
+                "score": 0.007022314342258758,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.2111693052901618,
+                "refined": 0.22745845107852827,
+                "geometry": 0.1462,
+                "absolute_errors": [
+                  1.2074530875150202e-08,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 6,
+                "correspondence_pairs": 1080,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000002:000031:2991",
+              "record_index": 2991,
+              "segmentation_score": 0.5493256449699402,
+              "external_RLE_digest": "5abc6892619705bdbd3f95cb8827d010a6a5fd0e67ebcfa71327da2729d378fb",
+              "diagnostic_path": "datasets\\icbin\\images\\000002_000031\\obj_000002\\cnos-fastsam_002991\\diagnostic.json",
+              "diagnostic_sha256": "826650846e4ecdf5656d03af2d5250a8b4b230ad4a99a329e80b1a0687a13648",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "048d0207f5fea89d844c06605ab247ffed804c9b8ca5f69fdf2085c15ee35713"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "9b6c6efb502d76ec8bc093947ceff0ea794fc9a97671a6af4ca41c08023055a1"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "f6329501c88384b2e834f40de6a174bbd97d7983f0ea59a5c9d7a8e9d327ff1d"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "c319dc36b5f5608317f3a907bc7911baaa1acb5a00880f37d3541d4ff2f9436c"
+                }
+              ],
+              "scores": {
+                "coarse": 0.5091897249221802,
+                "refined": 0.5664897648844647,
+                "geometry": 0.3914,
+                "joint": 0.11289963042014678
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000002:000031:2991",
+                "obj_id": 2,
+                "R": [
+                  [
+                    0.8936551732951855,
+                    -0.44869658734791074,
+                    0.007197481857630949
+                  ],
+                  [
+                    0.01866140640082799,
+                    0.021132858580946687,
+                    -0.9996024980957888
+                  ],
+                  [
+                    0.4483661262337906,
+                    0.8934342587961002,
+                    0.027258797764543038
+                  ]
+                ],
+                "t": [
+                  -0.0605583664987243,
+                  -0.08488209632986007,
+                  0.6078948380179173
+                ],
+                "score": 0.11289963042014678,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.509189711667187,
+                "refined": 0.5664897648844647,
+                "geometry": 0.3914,
+                "absolute_errors": [
+                  1.3254993214140143e-08,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 326,
+                "correspondence_pairs": 920,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "converged_stable_correspondences"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000002:000031:2992",
+              "record_index": 2992,
+              "segmentation_score": 0.5261274576187134,
+              "external_RLE_digest": "0bec2bf826de36bfb3b6aef2b3b92d56af28c1358abd18ae058e33020c6396e5",
+              "diagnostic_path": "datasets\\icbin\\images\\000002_000031\\obj_000002\\cnos-fastsam_002992\\diagnostic.json",
+              "diagnostic_sha256": "5a0a6ffe9764da77d4f0877ea99db661ceb8956aae541be1c805e29e767ba87b",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "586e898eb97a26ee458a66eeaa28ddaf619d8bfdb3cbfc993ebc3fc5ac778187"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "47fa67aca1bf73e95481a445988c8d296722da4e869a663cf06db9fcb47a3791"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "dbf2ec5ea207236920df3b890a662c6605914d58bcf5487da975f0b01824fdf4"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "a8b7bd746e6f8c2b811babc4098443bdab7c5dbafd1b66caaf0e9e63681286e9"
+                }
+              ],
+              "scores": {
+                "coarse": 0.6639464497566223,
+                "refined": 0.6167625719257727,
+                "geometry": 0.3276,
+                "joint": 0.13415132202311555
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000002:000031:2992",
+                "obj_id": 2,
+                "R": [
+                  [
+                    -0.8799530362395683,
+                    -0.4599452840217327,
+                    0.11888225148832197
+                  ],
+                  [
+                    -0.24622592510953958,
+                    0.22756187531038746,
+                    -0.9421190936973789
+                  ],
+                  [
+                    0.40627016604313426,
+                    -0.8582924493500955,
+                    -0.31349421616976664
+                  ]
+                ],
+                "t": [
+                  0.019200049992498535,
+                  -0.08297593921156583,
+                  0.6316010797234477
+                ],
+                "score": 0.13415132202311555,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.6639465048425495,
+                "refined": 0.6167625719257727,
+                "geometry": 0.3276,
+                "absolute_errors": [
+                  5.50859271530868e-08,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 258,
+                "correspondence_pairs": 860,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000002:000031:2993",
+              "record_index": 2993,
+              "segmentation_score": 0.4553415775299072,
+              "external_RLE_digest": "8d6c570cf8cfb7973296859702acc9c61d3bbc0f7ae6adf320886fb7d2752ed6",
+              "diagnostic_path": "datasets\\icbin\\images\\000002_000031\\obj_000002\\cnos-fastsam_002993\\diagnostic.json",
+              "diagnostic_sha256": "6bb7abb41c2bde54fb14338fb92d24e068bbea64adf4524e95d92027a480cfb7",
+              "status": "failed",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "df3b26a7f447160bd9b3c933051f3e6a5583cf222e47eac686a7124688a3ea35"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "96bc614f0b1f32461bc72dd4a24db8e7eb226303dc8751346b32128f998c5f70"
+                }
+              ],
+              "failure_type": "FeatureDependencyError",
+              "reason": "original GeDi extraction failed (check local neighborhoods, LRF degeneracy and CUDA ops): ValueError: trained GeDi descriptors must contain finite numeric values"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scene_id": 3,
+      "image_id": 20,
+      "selection": {
+        "rule": "middle lexicographic complete receipt per scene at selection snapshot; index=floor(n/2)",
+        "complete_receipts_available_at_selection": 37,
+        "zero_based_index": 18
+      },
+      "receipt_path": "datasets\\icbin\\images\\000003_000020\\complete.json",
+      "receipt_sha256": "b34d0349538ed9f387de32ca1c89be4faf479e4da27739590d7b1da00ca99dfb",
+      "status": "complete_with_failures",
+      "runtime_s": 9.98838387899923,
+      "retained_poses": 12,
+      "targets": [
+        {
+          "object_id": 1,
+          "official_instance_count": 10,
+          "candidate_quota_per_segmentor": 11,
+          "available_external_records": 15,
+          "empty_masks_skipped": [],
+          "candidate_count": 11,
+          "retained_poses": 9,
+          "status": "failed",
+          "reason": "fewer_valid_distinct_poses_than_requested",
+          "translation_NMS_threshold_m": 0.013661600000000001,
+          "translation_NMS_setting_is_reproduction_assumption": true,
+          "expected_ranked_candidate_ids": [
+            "cnos-fastsam:000003:000020:4749",
+            "cnos-fastsam:000003:000020:4746",
+            "cnos-fastsam:000003:000020:4745",
+            "cnos-fastsam:000003:000020:4747",
+            "cnos-fastsam:000003:000020:4753",
+            "cnos-fastsam:000003:000020:4752",
+            "cnos-fastsam:000003:000020:4748",
+            "cnos-fastsam:000003:000020:4751",
+            "cnos-fastsam:000003:000020:4755"
+          ],
+          "recorded_suppressed": [],
+          "recorded_rejected": [],
+          "candidate_details": [
+            {
+              "candidate_id": "cnos-fastsam:000003:000020:4745",
+              "record_index": 4745,
+              "segmentation_score": 0.7813664674758911,
+              "external_RLE_digest": "ad49568b3004e939161be4098f98a414accec9526d995e628b514761edc937c9",
+              "diagnostic_path": "datasets\\icbin\\images\\000003_000020\\obj_000001\\cnos-fastsam_004745\\diagnostic.json",
+              "diagnostic_sha256": "e5c1c2c98e6b475c77be9d08b6d12a3773d72aa0e55801715be25fe86ec27c02",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "bd65c5f25bddda01cc32312e7ddbcead329bcfcdca9a9fcabe8aec688a6dae1d"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "904e733a566574ac1d6e314efc2dda5dd14d05073b616f1f3d74e3709db0457d"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "9e19fe08eb0e812666839de921986c2b2442f18d3801cb1414eaa2c0f8e73728"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "7e2315c108cf57c7e34b43215eba0db8eeada53ff308ca527d434fad0e35206c"
+                }
+              ],
+              "scores": {
+                "coarse": 0.8372484445571899,
+                "refined": 0.8476512211908275,
+                "geometry": 0.2592,
+                "joint": 0.18395285754877072
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000003:000020:4745",
+                "obj_id": 1,
+                "R": [
+                  [
+                    0.9005785557071598,
+                    0.36646342447183117,
+                    -0.23380082019698886
+                  ],
+                  [
+                    -0.26416004274929195,
+                    0.03422703728045303,
+                    -0.9638713512360945
+                  ],
+                  [
+                    -0.34522128673518804,
+                    0.929802704041767,
+                    0.12762912967469597
+                  ]
+                ],
+                "t": [
+                  0.14776226046605448,
+                  -0.017263108956650383,
+                  0.6898473260233766
+                ],
+                "score": 0.18395285754877072,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.8372485397423435,
+                "refined": 0.8476512211908275,
+                "geometry": 0.2592,
+                "absolute_errors": [
+                  9.518515353690304e-08,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 261,
+                "correspondence_pairs": 1220,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000003:000020:4746",
+              "record_index": 4746,
+              "segmentation_score": 0.7348372340202332,
+              "external_RLE_digest": "fa6a2911e0a3fb5426facf5c0066458fea68ab35616b8b38bd76e738dac990e4",
+              "diagnostic_path": "datasets\\icbin\\images\\000003_000020\\obj_000001\\cnos-fastsam_004746\\diagnostic.json",
+              "diagnostic_sha256": "f4b483dd6719f4bd8b4921e61cfc1250ae4b33dac83525e6252e5293210ae405",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "12eb4f00939a3448ec3bad41760a170dae5f17a378a0c54f9451ad9a9085ab42"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "76c36cd0098e7ef9d4e5fea75205626e22c4130790bd85056115bf3078847d5b"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "2b5ffd07c9d90d7215482c1cf86f620415eab194f63736df5b2e9378ffe35d74"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "c740645cb34610d84802f9d24a8eb1221686a0c267edc61d2a42a3fb6e5ceeb1"
+                }
+              ],
+              "scores": {
+                "coarse": 0.8384844064712524,
+                "refined": 0.8660644270215332,
+                "geometry": 0.333,
+                "joint": 0.2418184451799862
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000003:000020:4746",
+                "obj_id": 1,
+                "R": [
+                  [
+                    0.7729403750107232,
+                    0.5075616537250341,
+                    -0.3807155688255881
+                  ],
+                  [
+                    -0.21504935097197758,
+                    -0.3549524340050642,
+                    -0.9098145669532951
+                  ],
+                  [
+                    -0.5969229040042051,
+                    0.7851050485519684,
+                    -0.1652062632390114
+                  ]
+                ],
+                "t": [
+                  0.0786159947456515,
+                  -0.004828920479806084,
+                  0.661790538500297
+                ],
+                "score": 0.2418184451799862,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.8384844281473774,
+                "refined": 0.8660644270215332,
+                "geometry": 0.333,
+                "absolute_errors": [
+                  2.1676125006031555e-08,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 297,
+                "correspondence_pairs": 1260,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000003:000020:4747",
+              "record_index": 4747,
+              "segmentation_score": 0.697858989238739,
+              "external_RLE_digest": "afed2543342e8e6949c7d8fdc1ef9252b81d523a891fac26574d4c21e18076ca",
+              "diagnostic_path": "datasets\\icbin\\images\\000003_000020\\obj_000001\\cnos-fastsam_004747\\diagnostic.json",
+              "diagnostic_sha256": "942acdf7a5450921794e500ee4d0466157e3cf85a87f276154a84e2557d8b881",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "aaae998096ae06460e5640204684be33ae58279ea913774e39cb35eb8c5b8468"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "e7f55b0dd1fcf08285744a249658e37db18c430ee8ec7fb8c83852ff970eb824"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "b8cec9545dab4b5ffd8f767b8cd989dffad02cf2e046478f9b061d0dbfa4cbf9"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "1a9907065611689f02fba0f7dd5713af3487c04892055cf27c18bbaba98af15e"
+                }
+              ],
+              "scores": {
+                "coarse": 0.7268762588500977,
+                "refined": 0.6338829686956403,
+                "geometry": 0.3308,
+                "joint": 0.15241758225998
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000003:000020:4747",
+                "obj_id": 1,
+                "R": [
+                  [
+                    0.9231883703716689,
+                    0.28765336873957753,
+                    -0.25490934126327486
+                  ],
+                  [
+                    -0.15157089675105537,
+                    -0.3370005424481862,
+                    -0.9292238146150313
+                  ],
+                  [
+                    -0.3531989468678873,
+                    0.8964854565704915,
+                    -0.26751510254378935
+                  ]
+                ],
+                "t": [
+                  0.3388044269518201,
+                  -0.07138783153213557,
+                  0.7343474449638798
+                ],
+                "score": 0.15241758225998,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.7268761935937226,
+                "refined": 0.6338829686956403,
+                "geometry": 0.3308,
+                "absolute_errors": [
+                  6.525637508136839e-08,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 246,
+                "correspondence_pairs": 1300,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000003:000020:4748",
+              "record_index": 4748,
+              "segmentation_score": 0.6592193841934204,
+              "external_RLE_digest": "76d99c804da7afcc349a871e3a88830bfb79800a02fa70ba47f6c253465b0671",
+              "diagnostic_path": "datasets\\icbin\\images\\000003_000020\\obj_000001\\cnos-fastsam_004748\\diagnostic.json",
+              "diagnostic_sha256": "68173d4b89a1b95753514344026d61ff893af57ab1512d741149e690244286a5",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "1608cb4c08fd60a9ccc95e25f3a80fc11ef2b35c84ca5422b111dc7e4d4f72bf"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "78db1a0cf08e6c79a5144b1f7152496bb442e7d3a46633be6ed8fb710a8bcc60"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "e60c1faabf000f93d496aa620521c1e7884e5694b35a52f754cf349478f5113f"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "fec94a071359d8fbe0a2d3afef4008340c5e3329b4d352b38fd1d9c1c0ae877f"
+                }
+              ],
+              "scores": {
+                "coarse": 0.16652873158454895,
+                "refined": 0.17536835752322935,
+                "geometry": 0.2222,
+                "joint": 0.006489099944754497
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000003:000020:4748",
+                "obj_id": 1,
+                "R": [
+                  [
+                    0.4058949250973745,
+                    0.4518905636386664,
+                    0.7943829229499613
+                  ],
+                  [
+                    0.710875313437966,
+                    0.39016393722545756,
+                    -0.5851738124977928
+                  ],
+                  [
+                    -0.5743740928390388,
+                    0.802226290134558,
+                    -0.16287228399047288
+                  ]
+                ],
+                "t": [
+                  0.22319100931476152,
+                  -0.16324239411933217,
+                  0.7708492143031428
+                ],
+                "score": 0.006489099944754497,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.166528741616032,
+                "refined": 0.17536835752322935,
+                "geometry": 0.2222,
+                "absolute_errors": [
+                  1.0031483060890523e-08,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 52,
+                "correspondence_pairs": 980,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000003:000020:4749",
+              "record_index": 4749,
+              "segmentation_score": 0.5910570025444031,
+              "external_RLE_digest": "3ae93b8455dec5e53ec90444e1d87033becc99a15f164caad99b3a645188ca6f",
+              "diagnostic_path": "datasets\\icbin\\images\\000003_000020\\obj_000001\\cnos-fastsam_004749\\diagnostic.json",
+              "diagnostic_sha256": "94194fb837fcbbc4d90b38f1a8c562dc1581c35e0d25b092ed2e8c884ef587d5",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "f00b218153614e8730db7e604e66c22bc26c3b1856390e4c8652baae4d471aa3"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "046521608b973cebe0a5048ce6d2a2da70ef5dce7c7c48344a53a1f235ddf9b3"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "c0b1f3a1cee66ee261efee31e97b024f0eaf35fa77461c259c5061dc68ef92ff"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "304c67dd46e72e80e88709cfcd23096c9d1a78eb048cc8a1db13dba58f6d587e"
+                }
+              ],
+              "scores": {
+                "coarse": 1.1297909021377563,
+                "refined": 0.9673426944075237,
+                "geometry": 0.2722,
+                "joint": 0.2974860123014422
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000003:000020:4749",
+                "obj_id": 1,
+                "R": [
+                  [
+                    -0.8733102364466577,
+                    0.3925030785796444,
+                    -0.28856639482619095
+                  ],
+                  [
+                    0.04875833509357966,
+                    -0.5189423388677317,
+                    -0.8534175260031821
+                  ],
+                  [
+                    -0.4847183261198064,
+                    -0.7593682783972426,
+                    0.43405986002811153
+                  ]
+                ],
+                "t": [
+                  0.025198193461766848,
+                  0.02649671811291441,
+                  0.6987280414789725
+                ],
+                "score": 0.2974860123014422,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 1.1297910551985453,
+                "refined": 0.9673426944075237,
+                "geometry": 0.2722,
+                "absolute_errors": [
+                  1.5306078893218e-07,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 375,
+                "correspondence_pairs": 1210,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000003:000020:4750",
+              "record_index": 4750,
+              "segmentation_score": 0.35620078444480896,
+              "external_RLE_digest": "677ec8865d548118e1c697e541e364bc8d9cc7758a5c4365bb901354445b013c",
+              "diagnostic_path": "datasets\\icbin\\images\\000003_000020\\obj_000001\\cnos-fastsam_004750\\diagnostic.json",
+              "diagnostic_sha256": "d77737564e6d55ac7de1048632c46b7a9d62d314b54dddf9060b1dce6fab04bb",
+              "status": "failed",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "9540368d05c9097d9632e88f24c04dd517accb568412bdc2d3a8094adecbe578"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "b54e32071c940a631b0943fc9a046f1542a2ee63829a9b47ec3c388d828cdc7a"
+                }
+              ],
+              "failure_type": "FeatureDependencyError",
+              "reason": "original GeDi extraction failed (check local neighborhoods, LRF degeneracy and CUDA ops): ValueError: trained GeDi descriptors must contain finite numeric values"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000003:000020:4751",
+              "record_index": 4751,
+              "segmentation_score": 0.3300710618495941,
+              "external_RLE_digest": "d7883ce95ee17bf2421721e56dc6417549b6b331149af3541d228c301184dfbd",
+              "diagnostic_path": "datasets\\icbin\\images\\000003_000020\\obj_000001\\cnos-fastsam_004751\\diagnostic.json",
+              "diagnostic_sha256": "4639af1ad141dc5773786abf5548ec32ad7995c2e3b977f797c76c2e4726f05c",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "30aaa45a101315d3ee60af342b77f5f7463ba651d05efbaa17a2efe66b773cbf"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "3b315a9ba32e177cb462f5accdd50fac169fb13d43370837227b6eda4097b713"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "f1aabe8e56a6e5a5375b3d923117db2777cbc8913081c25724f0ad127bca1302"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "9f7cde6494701ab50eeb5087cce7e84e6b0a3adb44b2a4625f9fe7619701934b"
+                }
+              ],
+              "scores": {
+                "coarse": 0.08657188713550568,
+                "refined": 0.08737897266742418,
+                "geometry": 0.151,
+                "joint": 0.001142248946526883
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000003:000020:4751",
+                "obj_id": 1,
+                "R": [
+                  [
+                    -0.1308834946890546,
+                    0.7290895098138769,
+                    0.6717871668150127
+                  ],
+                  [
+                    -0.8837524812785928,
+                    0.22127726525625127,
+                    -0.4123322976855517
+                  ],
+                  [
+                    -0.4492783799070601,
+                    -0.6476610676581355,
+                    0.615373121600231
+                  ]
+                ],
+                "t": [
+                  0.22698813843045437,
+                  0.18192644281896883,
+                  0.7426356254772504
+                ],
+                "score": 0.001142248946526883,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.08657189715378162,
+                "refined": 0.08737897266742418,
+                "geometry": 0.151,
+                "absolute_errors": [
+                  1.0018275944934096e-08,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 42,
+                "correspondence_pairs": 1130,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "converged_stable_correspondences"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000003:000020:4752",
+              "record_index": 4752,
+              "segmentation_score": 0.3138585090637207,
+              "external_RLE_digest": "7dd702a28921a5ddfd7f585c9e251e3774f428f70a4116fb66b0daead2b5f38e",
+              "diagnostic_path": "datasets\\icbin\\images\\000003_000020\\obj_000001\\cnos-fastsam_004752\\diagnostic.json",
+              "diagnostic_sha256": "ca9349cbf4abc2688240b8a4fe09de21e32d17c659e551b436098bd671c82cc6",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "1f19446e49001572cefe61a508f9f44ffbdcda8ff17c049beabcf962f3050c5e"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "b50fbfadff33d52a58676630fe8428ffab66a4ba5b3b0dab7576afa1fd54015b"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "6daac4e2bdf01990a434c06d112f72fb48d0469c0683ded1a692858e7a8a86b6"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "11d5b7e234045a804a11b77026fb1d7012063b05573435a48dab6706f897c8fa"
+                }
+              ],
+              "scores": {
+                "coarse": 0.2804598808288574,
+                "refined": 0.27992394458924796,
+                "geometry": 0.2312,
+                "joint": 0.018150919235716934
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000003:000020:4752",
+                "obj_id": 1,
+                "R": [
+                  [
+                    0.8448081185314209,
+                    -0.5350511237298312,
+                    0.004420165024775812
+                  ],
+                  [
+                    -0.46383452603594966,
+                    -0.736430517742742,
+                    -0.492470938222919
+                  ],
+                  [
+                    0.2667522733181609,
+                    0.41399322160223995,
+                    -0.8703176645035947
+                  ]
+                ],
+                "t": [
+                  -0.05553096935855388,
+                  -0.0989196425582438,
+                  0.7825973081557129
+                ],
+                "score": 0.018150919235716934,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.280459885055947,
+                "refined": 0.27992394458924796,
+                "geometry": 0.2312,
+                "absolute_errors": [
+                  4.227089567265807e-09,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 67,
+                "correspondence_pairs": 1850,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000003:000020:4753",
+              "record_index": 4753,
+              "segmentation_score": 0.2979795038700104,
+              "external_RLE_digest": "f871ddd1e330a33580c72ad0c479c91b4a02468490ca98485698c3ed480c7da6",
+              "diagnostic_path": "datasets\\icbin\\images\\000003_000020\\obj_000001\\cnos-fastsam_004753\\diagnostic.json",
+              "diagnostic_sha256": "32a7a2eb8171e2cc4077bf73c26ac8925f1f95dfa8dab533af2a4ed5b61ca786",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "4de33f2ba4f242246d0873afed10602c3b685c082c50f25dd3e7dd094cd72846"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "164eb7f5c7f334ff6558b350297a803907cc45c99c288a03f2f7dec969d76dc2"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "ec6dd4233a69b520880bd0e45116a725dd4c423c006bbc4be3a7ea1d096511bf"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "422e55f2068fe64df27ec9e2dcb1d7bee6631d5414e5ab5260dadeebd1eac5a0"
+                }
+              ],
+              "scores": {
+                "coarse": 0.6098653674125671,
+                "refined": 0.6385597164842263,
+                "geometry": 0.2758,
+                "joint": 0.10740629879472909
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000003:000020:4753",
+                "obj_id": 1,
+                "R": [
+                  [
+                    0.9371060416429492,
+                    -0.15358472812403082,
+                    -0.313438986093546
+                  ],
+                  [
+                    -0.19566493215849873,
+                    -0.9747774542781094,
+                    -0.10735058898067815
+                  ],
+                  [
+                    -0.2890458459132265,
+                    0.161927903457545,
+                    -0.9435209870703202
+                  ]
+                ],
+                "t": [
+                  0.2724638724236124,
+                  -0.021389225880226598,
+                  0.7573387065273143
+                ],
+                "score": 0.10740629879472909,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.6098654235712042,
+                "refined": 0.6385597164842263,
+                "geometry": 0.2758,
+                "absolute_errors": [
+                  5.61586370739775e-08,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 83,
+                "correspondence_pairs": 2010,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000003:000020:4754",
+              "record_index": 4754,
+              "segmentation_score": 0.2921783924102783,
+              "external_RLE_digest": "6079b7c5b2c09b6c1220e7829f223bf1c05e97fe1da9752690431ba6189539b7",
+              "diagnostic_path": "datasets\\icbin\\images\\000003_000020\\obj_000001\\cnos-fastsam_004754\\diagnostic.json",
+              "diagnostic_sha256": "6092213cd660f341cc34df33608c3da93d80104f2da03dd71e136a0bb12e091f",
+              "status": "failed",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "1124fdb465346126c38f8340b7c2cf4ef6da7864ccc5dd4772961794d66e608f"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "9d8143866d5d1422bb7b9afb3cb1712f0c0a35f263f7a76d9733d9557b24362f"
+                }
+              ],
+              "failure_type": "no_valid_global_hypothesis",
+              "reason": "no_valid_hypothesis"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000003:000020:4755",
+              "record_index": 4755,
+              "segmentation_score": 0.27153801918029785,
+              "external_RLE_digest": "ee16e6f512ce19e284f9408f8059b9b31a63cc3038a315b35f129cfb49c322a2",
+              "diagnostic_path": "datasets\\icbin\\images\\000003_000020\\obj_000001\\cnos-fastsam_004755\\diagnostic.json",
+              "diagnostic_sha256": "78b2922cfac6946908c8b01ca1f23d7ea2b69986f206592b0375012bc1ed7d86",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "b4cdff565e2047419e7c91345f74ac812a1968d0b6dd718bfed29fc2f61deb43"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "cda638691f956076a560065a5810fd9a9ae5294c29ecf9f132edd888fc8e5d53"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "06e47d44ca261f53addeb16716742ff4cd3957c05f653073a3bc02d0b2c48133"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "2f0463db12809f7a20d24c61985ec92ebb645766db598f791397c09e7e2835e8"
+                }
+              ],
+              "scores": {
+                "coarse": 0.033545855432748795,
+                "refined": 0.02575246188496729,
+                "geometry": 0.092,
+                "joint": 7.947772943560473e-05
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000003:000020:4755",
+                "obj_id": 1,
+                "R": [
+                  [
+                    0.09365529555880422,
+                    0.8016216169075465,
+                    -0.5904502256078186
+                  ],
+                  [
+                    -0.9955089637654998,
+                    0.08362382392381237,
+                    -0.04437295499400949
+                  ],
+                  [
+                    0.013805385772739789,
+                    0.5919542544647266,
+                    0.805853319124998
+                  ]
+                ],
+                "t": [
+                  0.19106629374291237,
+                  0.2022737626738537,
+                  0.693048903790822
+                ],
+                "score": 7.947772943560473e-05,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.03354585468816778,
+                "refined": 0.02575246188496729,
+                "geometry": 0.092,
+                "absolute_errors": [
+                  7.445810148998255e-10,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 13,
+                "correspondence_pairs": 1360,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "converged_stable_correspondences"
+            }
+          ]
+        },
+        {
+          "object_id": 2,
+          "official_instance_count": 3,
+          "candidate_quota_per_segmentor": 4,
+          "available_external_records": 21,
+          "empty_masks_skipped": [],
+          "candidate_count": 4,
+          "retained_poses": 3,
+          "status": "completed",
+          "reason": null,
+          "translation_NMS_threshold_m": 0.022064,
+          "translation_NMS_setting_is_reproduction_assumption": true,
+          "expected_ranked_candidate_ids": [
+            "cnos-fastsam:000003:000020:4760",
+            "cnos-fastsam:000003:000020:4761",
+            "cnos-fastsam:000003:000020:4762"
+          ],
+          "recorded_suppressed": [],
+          "recorded_rejected": [],
+          "candidate_details": [
+            {
+              "candidate_id": "cnos-fastsam:000003:000020:4760",
+              "record_index": 4760,
+              "segmentation_score": 0.5673578977584839,
+              "external_RLE_digest": "c9c9e5bee5579c296d1590c97adf6ff4507bb606d01da438c922baf63335777c",
+              "diagnostic_path": "datasets\\icbin\\images\\000003_000020\\obj_000002\\cnos-fastsam_004760\\diagnostic.json",
+              "diagnostic_sha256": "a1d30091fc13f7e8e3dce516eacd8b617d7881316fc0d884f4e5da2c7a9085cd",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "94d24115abb21f7b17b911e986b4c6679dcf91e2fd75cb709e79625de59b6014"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "b09d91b951987be3d936d6699dd1b1a2ec6257fa6f6b38f8e73b50251f1f9493"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "5093930ca74859592002ecfb498194459a2458006cc021d105a5cbe76da80a1b"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "7013ddf948cc1bbf14ea043fcf8e54095825aa5aaacf96016b5ad1b32f4af2e1"
+                }
+              ],
+              "scores": {
+                "coarse": 0.22116665542125702,
+                "refined": 0.20550291770384888,
+                "geometry": 0.193,
+                "joint": 0.008771925846658927
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000003:000020:4760",
+                "obj_id": 2,
+                "R": [
+                  [
+                    -0.7037254957512297,
+                    -0.5990352636018491,
+                    -0.3820041617458498
+                  ],
+                  [
+                    0.5310484393187691,
+                    -0.08631929331293788,
+                    -0.8429332919626886
+                  ],
+                  [
+                    0.4719724374651416,
+                    -0.796056362680068,
+                    0.3788618293122132
+                  ]
+                ],
+                "t": [
+                  0.19190547127614194,
+                  -0.15337025743328625,
+                  0.753716761621475
+                ],
+                "score": 0.008771925846658927,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.22116664280503087,
+                "refined": 0.20550291770384888,
+                "geometry": 0.193,
+                "absolute_errors": [
+                  1.2616226147121878e-08,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 13,
+                "correspondence_pairs": 1450,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000003:000020:4761",
+              "record_index": 4761,
+              "segmentation_score": 0.5170552134513855,
+              "external_RLE_digest": "80950b5c6a0aa69d56b98bcebdeaf5b2e0e19b13334c5ab7aeaaf3cef81759b1",
+              "diagnostic_path": "datasets\\icbin\\images\\000003_000020\\obj_000002\\cnos-fastsam_004761\\diagnostic.json",
+              "diagnostic_sha256": "a5dd4e789e76f6e6b8fff84d10cb8cb7a1cc4a3dc8a9081acdbaf364c4ce9638",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "7639aa51ab7517980e6f04a62f3a9ad74e5cb727464e5ff44192bfca88842db3"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "ce17dc5df2e66d16628ca94a1a7cac7aa6ecc5560c630794f3e03c5c5f8f52fc"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "fb27cf1bf52b2464327f399c2db222a9f354d8aa4d52d133ee73bd18f83c9618"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "0720d8bc1ddea6b3a0b4708d629068138b4b389675585fc92c7b528ec9fa5db1"
+                }
+              ],
+              "scores": {
+                "coarse": 0.1901683211326599,
+                "refined": 0.20117894823829954,
+                "geometry": 0.2244,
+                "joint": 0.008585064419884908
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000003:000020:4761",
+                "obj_id": 2,
+                "R": [
+                  [
+                    0.014293206501495306,
+                    -0.8767010318585045,
+                    0.4808232575345549
+                  ],
+                  [
+                    -0.9617687239415327,
+                    -0.1435813479898765,
+                    -0.23320659972926777
+                  ],
+                  [
+                    0.27348971808055705,
+                    -0.45910750075297874,
+                    -0.8452358705453602
+                  ]
+                ],
+                "t": [
+                  0.00375657168557377,
+                  -0.14725814548014,
+                  0.8093729573390541
+                ],
+                "score": 0.008585064419884908,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.19016832173812248,
+                "refined": 0.20117894823829954,
+                "geometry": 0.2244,
+                "absolute_errors": [
+                  6.054625689699833e-10,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 12,
+                "correspondence_pairs": 1580,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000003:000020:4762",
+              "record_index": 4762,
+              "segmentation_score": 0.3937005400657654,
+              "external_RLE_digest": "d97e612ed28102fca2eb10493f0f02bc8c3b75584c5c15fc367f7986934b6853",
+              "diagnostic_path": "datasets\\icbin\\images\\000003_000020\\obj_000002\\cnos-fastsam_004762\\diagnostic.json",
+              "diagnostic_sha256": "b14d5a9ee5dd24520b6bd108f54d833998906f5ac70e21b21c0495a3e904b568",
+              "status": "complete",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "c07e6f2fb48cbec3d5a4a8f690708bbd31df9cada5a40c86ecf2d806784e3a2e"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "66724aa7e010a3cfe8115889ee1c363515d821b0b4be1c37ce508f2de4d0c707"
+                },
+                {
+                  "name": "observed.npz",
+                  "sha256": "24f95e6eb09a9764db2acb918ca5dc28b27b230b1ced1947b15379ef4057ed51"
+                },
+                {
+                  "name": "pose_overlay.png",
+                  "sha256": "2db3a93f82ab4f46fbc9bb8743015ad71ad785bce8c1e78e9a4ad65690d7915b"
+                }
+              ],
+              "scores": {
+                "coarse": 0.2139061689376831,
+                "refined": 0.2162021489383555,
+                "geometry": 0.0718,
+                "joint": 0.003320532689796756
+              },
+              "saved_pose": {
+                "candidate_id": "cnos-fastsam:000003:000020:4762",
+                "obj_id": 2,
+                "R": [
+                  [
+                    -0.5169311780976904,
+                    -0.8445555802347253,
+                    0.13967114592827962
+                  ],
+                  [
+                    -0.12154002813285028,
+                    -0.08909799823755647,
+                    -0.9885795710369124
+                  ],
+                  [
+                    0.8473548127390316,
+                    -0.5280032373048907,
+                    -0.056589775786398254
+                  ]
+                ],
+                "t": [
+                  0.02090485631115977,
+                  -0.10248951069332295,
+                  0.7680874332438735
+                ],
+                "score": 0.003320532689796756,
+                "status": "ok"
+              },
+              "CPU_saved_correspondence_scores": {
+                "coarse": 0.21390616198711568,
+                "refined": 0.2162021489383555,
+                "geometry": 0.0718,
+                "absolute_errors": [
+                  6.9505674271663764e-09,
+                  0.0,
+                  0.0
+                ]
+              },
+              "registration": {
+                "requested_hypotheses": 10000,
+                "valid_hypotheses": 1,
+                "correspondence_pairs": 1320,
+                "feature_score_denominator": "N_sparse_observed"
+              },
+              "icp_status": "max_iterations"
+            },
+            {
+              "candidate_id": "cnos-fastsam:000003:000020:4763",
+              "record_index": 4763,
+              "segmentation_score": 0.3737564980983734,
+              "external_RLE_digest": "60200128698dbd7d40689f24ea1bdfd495e897bb492d44783c1c0117c88d0632",
+              "diagnostic_path": "datasets\\icbin\\images\\000003_000020\\obj_000002\\cnos-fastsam_004763\\diagnostic.json",
+              "diagnostic_sha256": "ee5889d6a15e1cd8dfc2e283452f099b51455dfc69dd9bb09caa98684fb225c1",
+              "status": "failed",
+              "artifact_files": [
+                {
+                  "name": "crop.png",
+                  "sha256": "771770fb54513253776d636bde844dd641573caccc4e8b054d24d716b88cfbac"
+                },
+                {
+                  "name": "mask.png",
+                  "sha256": "387a498d4e687310c032bf60c8f5b33924235b887db58aea530c0a1b38a785ed"
+                }
+              ],
+              "failure_type": "no_valid_global_hypothesis",
+              "reason": "no_valid_hypothesis"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "No GT comparison or pose-accuracy claim.",
+    "The selected cases may have too few public nonempty masks or failed candidates to reach official requested counts.",
+    "Translation-NMS distance is a recorded configurable reproduction assumption.",
+    "If no suppressions occur in these samples, consistency of the rule is checked but suppression behavior is not empirically exercised.",
+    "Saved candidate scores/poses remain unchanged; finite poses and scores do not establish correctness."
+  ]
+}

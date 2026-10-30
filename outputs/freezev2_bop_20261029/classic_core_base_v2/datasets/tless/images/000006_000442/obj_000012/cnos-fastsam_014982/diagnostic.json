@@ -1,0 +1,79 @@
+{
+  "candidate": {
+    "candidate_id": "cnos-fastsam:000006:000442:14982",
+    "segmentor": "cnos-fastsam",
+    "source_id": "public_BOP23_default_CNOS_FastSAM:db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+    "source_kind": "predicted",
+    "source_file_sha256": "db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+    "segmentation_score": 0.2867036759853363,
+    "record_index": 14982
+  },
+  "source": {
+    "rgb": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000006/rgb/000442.png",
+    "depth": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000006/depth/000442.png",
+    "camera": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000006/scene_camera.json",
+    "rgb_sha256": "fbb7826ddedbf87d5ea0a5ee5e62a2cc114b30093aecb9d8d15ccc1874911871",
+    "depth_sha256": "d33fb8409291903543e0e6f5642283ab3aaa223bd4a4de9d90f10c104eda33ea",
+    "camera_sha256": "0600d66792e09f9ee82fd20bb62573d84219391d662dab5241aa350c9a56c90d",
+    "modality": "rgb",
+    "image_mode": "RGB",
+    "image_dtype": "uint8",
+    "depth_mode": "I;16",
+    "depth_dtype": "uint16",
+    "image_size_hw": [
+      540,
+      720
+    ]
+  },
+  "status": "failed",
+  "identity": {
+    "recipe": "966d495e64ee265f085139832bd479241f112c2303953164b091a2a26062af3d",
+    "candidate": {
+      "candidate_id": "cnos-fastsam:000006:000442:14982",
+      "segmentor": "cnos-fastsam",
+      "source_id": "public_BOP23_default_CNOS_FastSAM:db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+      "source_kind": "predicted",
+      "source_file_sha256": "db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+      "segmentation_score": 0.2867036759853363,
+      "record_index": 14982
+    },
+    "source": {
+      "rgb": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000006/rgb/000442.png",
+      "depth": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000006/depth/000442.png",
+      "camera": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000006/scene_camera.json",
+      "rgb_sha256": "fbb7826ddedbf87d5ea0a5ee5e62a2cc114b30093aecb9d8d15ccc1874911871",
+      "depth_sha256": "d33fb8409291903543e0e6f5642283ab3aaa223bd4a4de9d90f10c104eda33ea",
+      "camera_sha256": "0600d66792e09f9ee82fd20bb62573d84219391d662dab5241aa350c9a56c90d",
+      "modality": "rgb",
+      "image_mode": "RGB",
+      "image_dtype": "uint8",
+      "depth_mode": "I;16",
+      "depth_dtype": "uint16",
+      "image_size_hw": [
+        540,
+        720
+      ]
+    },
+    "CAD_feature_identity": "42c56451f663c26dd97d00168791d593be092bebf39831cf9b9d0317a33158ba"
+  },
+  "pose_direction": "original_CAD_to_camera",
+  "units": "metres",
+  "model_sha256": "39dee96298a44a5148cbe608f67843b613d1f62738f5f3586ed44adfdf48971e",
+  "frozen_CAD_feature_identity": "42c56451f663c26dd97d00168791d593be092bebf39831cf9b9d0317a33158ba",
+  "resource_attempts": [
+    {
+      "attempt": 0,
+      "hypothesis_batch_size": 64,
+      "type": "ValueError",
+      "reason": "Insufficient valid observed RGB-D points"
+    }
+  ],
+  "previous_blocked_attempts": [],
+  "failure_type": "ValueError",
+  "reason": "Insufficient valid observed RGB-D points",
+  "traceback": "Traceback (most recent call last):\n  File \"/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/source_snapshot/freezev2_repro/case_inference.py\", line 58, in infer_candidate\n    cloud=observed_clouds(frame['depth_m'],candidate.mask,frame['K'],grid=recipe['observed']['grid'],dense_count=recipe['observed']['dense_points'],seed=recipe['seed'])\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/source_snapshot/freezev2_repro/geometry.py\", line 109, in observed_clouds\n    raise ValueError(\"Insufficient valid observed RGB-D points\")\nValueError: Insufficient valid observed RGB-D points\n",
+  "runtime_s": 0.005838084000060917,
+  "artifact_files": {
+    "mask.png": "54c3ae6fbb221ad49e8a0a61c5885af99105ada63b395191c89743d95cd7e315"
+  }
+}

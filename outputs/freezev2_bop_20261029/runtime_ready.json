@@ -1,0 +1,249 @@
+{
+  "status": "ready",
+  "created_utc": "2026-10-30T03:16:48.822415+00:00",
+  "python": "/home/jiabao/.venvs/freezev2-bop-20261029/bin/python",
+  "python_version": "3.12.14",
+  "torch": "2.2.2+cu121",
+  "cuda_version": "12.1",
+  "device": "NVIDIA GeForce RTX 3060 Ti",
+  "checkpoint_paths_sha256": {
+    "dinov2_giant": {
+      "wsl_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/dinov2/dinov2_vitg14_pretrain.pth",
+      "windows_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\external\\dinov2\\dinov2_vitg14_pretrain.pth",
+      "sha256": "baf8467e50af277596bbbafa06887c177ee899ab46033649c383577d7e9309d3",
+      "bytes": 4546108579,
+      "hash_evidence": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\runtime\\trained_feature_smoke_20261030_fp32_v2.json"
+    },
+    "gedi_3dmatch": {
+      "wsl_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/gedi/data/chkpts/3dmatch/chkpt.tar",
+      "windows_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\external\\gedi\\data\\chkpts\\3dmatch\\chkpt.tar",
+      "sha256": "15723f382ecf60f7efbf9161f70bffda2d1c817025cb0702350baaa04060f5f4",
+      "bytes": 12512035,
+      "hash_evidence": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\runtime\\trained_feature_smoke_20261030_fp32_v2.json"
+    }
+  },
+  "scientific_backend_settings": {
+    "dinov2": {
+      "backend": "official_local_dinov2",
+      "model": "dinov2_vitg14",
+      "source_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/cache/torch_hub/facebookresearch_dinov2_e1277af2ba9496fbadf7aec6eba56e8d882d1e35",
+      "source_revision": null,
+      "verified_git_revision": null,
+      "source_revision_hint": "e1277af2ba9496fbadf7aec6eba56e8d882d1e35",
+      "source_fingerprints": {
+        "dinov2/models/vision_transformer.py": "8dc1e2ededd4893a335aa2f524c15554bcdb14d824e310ca3df825e16081a268",
+        "hubconf.py": "e82275b3adcc3631865d1edd4b620b89d42459169acdeb652804cd0eb0fe9615"
+      },
+      "verified_source_hashes": {
+        "hubconf.py": "e82275b3adcc3631865d1edd4b620b89d42459169acdeb652804cd0eb0fe9615",
+        "dinov2/models/vision_transformer.py": "8dc1e2ededd4893a335aa2f524c15554bcdb14d824e310ca3df825e16081a268"
+      },
+      "source_hash_scope": "selected files only; not a complete source-tree or Git verification",
+      "checkpoint": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/dinov2/dinov2_vitg14_pretrain.pth",
+      "checkpoint_sha256": "baf8467e50af277596bbbafa06887c177ee899ab46033649c383577d7e9309d3",
+      "layer_index": 18,
+      "layer_selection_is_assumption": true,
+      "input_size": 224,
+      "input_resize_is_assumption": true,
+      "normalization": "ImageNet_mean_std",
+      "precision": "float32",
+      "frozen": true,
+      "tf32_matmul": false,
+      "tf32_cudnn": false,
+      "memory_efficient_checkpoint_loading": true
+    },
+    "gedi": {
+      "backend": "external_original_gedi",
+      "source_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/gedi",
+      "source_sha256": "50f23311ad3173c92f834c637e63c9c0bb6fbd8f12c58dd69773a7aba6350249",
+      "source_revision": "b3dd86776750d8221f89d39975118da9839b39f7",
+      "checkpoint": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/gedi/data/chkpts/3dmatch/chkpt.tar",
+      "checkpoint_sha256": "15723f382ecf60f7efbf9161f70bffda2d1c817025cb0702350baaa04060f5f4",
+      "radii_diameter_fractions": [
+        0.3,
+        0.4
+      ],
+      "output_dimension_per_scale": 32,
+      "samples_per_batch": 500,
+      "samples_per_patch_lrf": 4000,
+      "samples_per_patch_out": 512,
+      "sampling_batch_preserved": true,
+      "tf32_matmul": false,
+      "tf32_cudnn": false,
+      "patch_counts_are_assumptions": true,
+      "frozen": true,
+      "seed": 0
+    },
+    "visual_pca_dimension": 64,
+    "pca_fit_scope": "CAD visible aggregated descriptors only; shared transform for observations",
+    "pca_whitening": false,
+    "visual_and_geometric_normalization": "independent L2; concatenate 64+64 without final L2",
+    "visual_aggregation": "uniform mean over visible mapped CAD points; explicit reproduction assumption",
+    "precision_assumption": "full FP32, matmul TF32 false, cuDNN TF32 false; paper omits exact numerical policy"
+  },
+  "resources": {
+    "gedi_network_forward_microbatch_size": 32,
+    "validated_forward_microbatch_fallback": 16,
+    "original_gedi_sampling_batch_preserved": 500,
+    "forward_microbatch_tolerance": {
+      "rtol": 1e-05,
+      "atol": 1e-06
+    },
+    "forward_microbatch_max_abs_difference_32": 5.718320608139038e-07,
+    "forward_microbatch_max_abs_difference_16": 6.081536412239075e-07,
+    "repeat_max_abs_difference_32": 0.0,
+    "peak_gpu_allocated_bytes_smoke": 4635732480,
+    "peak_gpu_reserved_bytes_smoke": 4687134720,
+    "memory_efficient_checkpoint_loading": true,
+    "gpu_released_after_smoke": true
+  },
+  "smoke_audit_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\runtime\\trained_feature_smoke_20261030_fp32_v2.json",
+  "smoke_audit_sha256": "c3b6a77dbcee8228519c575c2af4773d5365852b5271017202384c61236bc29d",
+  "smoke_audit_wsl_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/runtime/trained_feature_smoke_20261030_fp32_v2.json",
+  "smoke_summary": {
+    "status": "passed",
+    "gedi_query_count": 64,
+    "gedi_support_count": 20000,
+    "gedi_shape": [
+      64,
+      64
+    ],
+    "gedi_finite": true,
+    "dinov2_view_shapes": [
+      [
+        16,
+        16,
+        1536
+      ],
+      [
+        16,
+        16,
+        1536
+      ]
+    ],
+    "all_parameters_frozen": true,
+    "GT_pose_access": false,
+    "claim": "Actual trained feature/runtime validity only; no pose or benchmark accuracy claim."
+  },
+  "venv_provenance": {
+    "manifest_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\runtime\\trained_runtime_environment_20261030.json",
+    "manifest_sha256": "c518cbaa0005a1ec55dbd4d25df34e1305fe0e2e82633fdb83bb7faf61e091da",
+    "pip_freeze_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\runtime\\trained_runtime_pip_freeze_20261030.txt",
+    "compatible_dependencies_reused_read_only_from": "/home/jiabao/.venvs/lerobot-libero/lib/python3.12/site-packages",
+    "resolved_core_packages": {
+      "torch": {
+        "version": "2.2.2+cu121",
+        "distribution_path": "/home/jiabao/.venvs/freezev2-bop-20261029/lib/python3.12/site-packages/torch-2.2.2+cu121.dist-info"
+      },
+      "torchvision": {
+        "version": "0.17.2+cu121",
+        "distribution_path": "/home/jiabao/.venvs/freezev2-bop-20261029/lib/python3.12/site-packages/torchvision-0.17.2+cu121.dist-info"
+      },
+      "numpy": {
+        "version": "1.26.4",
+        "distribution_path": "/home/jiabao/.venvs/freezev2-bop-20261029/lib/python3.12/site-packages/numpy-1.26.4.dist-info"
+      },
+      "scipy": {
+        "version": "1.13.1",
+        "distribution_path": "/home/jiabao/.venvs/freezev2-bop-20261029/lib/python3.12/site-packages/scipy-1.13.1.dist-info"
+      },
+      "open3d": {
+        "version": "0.19.0",
+        "distribution_path": "/home/jiabao/.venvs/lerobot-libero/lib/python3.12/site-packages/open3d-0.19.0.dist-info"
+      },
+      "opencv-python-headless": {
+        "version": "4.10.0.84",
+        "distribution_path": "/home/jiabao/.venvs/freezev2-bop-20261029/lib/python3.12/site-packages/opencv_python_headless-4.10.0.84.dist-info"
+      },
+      "torchgeometry": {
+        "version": "0.1.2",
+        "distribution_path": "/home/jiabao/.venvs/freezev2-bop-20261029/lib/python3.12/site-packages/torchgeometry-0.1.2.dist-info"
+      },
+      "pointnet2-ops": {
+        "version": "3.0.0",
+        "distribution_path": "/home/jiabao/.venvs/freezev2-bop-20261029/lib/python3.12/site-packages/pointnet2_ops-3.0.0.dist-info"
+      },
+      "ninja": {
+        "version": "1.13.2",
+        "distribution_path": "/home/jiabao/.venvs/freezev2-bop-20261029/lib/python3.12/site-packages/ninja-1.13.2.dist-info"
+      },
+      "cmake": {
+        "version": "4.1.3",
+        "distribution_path": "/home/jiabao/.venvs/lerobot-libero/lib/python3.12/site-packages/cmake-4.1.3.dist-info"
+      },
+      "setuptools": {
+        "version": "74.1.3",
+        "distribution_path": "/home/jiabao/.venvs/freezev2-bop-20261029/lib/python3.12/site-packages/setuptools-74.1.3.dist-info"
+      },
+      "gdown": {
+        "version": "6.5.1",
+        "distribution_path": "/home/jiabao/.venvs/freezev2-bop-20261029/lib/python3.12/site-packages/gdown-6.5.1.dist-info"
+      }
+    },
+    "old_environment_core_versions": {
+      "torch": "2.11.0",
+      "torchvision": "0.26.0",
+      "numpy": "2.2.6",
+      "open3d": "0.19.0"
+    },
+    "old_environment_core_versions_match_prior_inventory": true,
+    "global_or_nist_environment_installations_performed": false
+  },
+  "pointnet2_extension": {
+    "path": "/home/jiabao/.venvs/freezev2-bop-20261029/lib/python3.12/site-packages/pointnet2_ops/_ext.cpython-312-x86_64-linux-gnu.so",
+    "sha256": "7c56646e58561993a64f1aeaa6c3dc9b3e12ac0bd1cb79b4de165b4c7fd3a6fe",
+    "source_build_manifest": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\external\\wheels\\pointnet2_build_sources.json",
+    "wheel_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\external\\wheels\\pointnet2_ops-3.0.0-cp312-cp312-linux_x86_64.whl",
+    "source_kernels_modified": false
+  },
+  "cuda_toolchain": {
+    "source_manifest": "https://developer.download.nvidia.com/compute/cuda/redist/redistrib_12.1.1.json",
+    "components": {
+      "cuda_nvcc": {
+        "relative_path": "cuda_nvcc/linux-x86_64/cuda_nvcc-linux-x86_64-12.1.105-archive.tar.xz",
+        "sha256": "0b85f7eee17788abbd170b0b493c74ce2e9fd5a9604461b99c2c378165e1083b",
+        "md5": "40610a303fa8aa49e3641d2899654a44",
+        "size": "44459684",
+        "version": "12.1.105",
+        "license": "CUDA Toolkit"
+      },
+      "cuda_cudart": {
+        "relative_path": "cuda_cudart/linux-x86_64/cuda_cudart-linux-x86_64-12.1.105-archive.tar.xz",
+        "sha256": "6096ec878c8c443258d39c6e9cf2decef127f8aa8da594fdc5a336d047ab6bd9",
+        "md5": "4562908c66430be2baed868c490990b7",
+        "size": "984372",
+        "version": "12.1.105",
+        "license": "CUDA Toolkit"
+      },
+      "cuda_cccl": {
+        "relative_path": "cuda_cccl/linux-x86_64/cuda_cccl-linux-x86_64-12.1.109-archive.tar.xz",
+        "sha256": "b84ef3ec3dc1b4891267be25846f0c3ed7f9fa84154d59eba805402b86991baa",
+        "md5": "7133971e57e54ca78dd4476270c13d56",
+        "size": "1024940",
+        "version": "12.1.109",
+        "license": "CUDA Toolkit"
+      }
+    },
+    "destination": "/home/jiabao/.local/share/freezev2_bop_20261029/cuda-12.1",
+    "compiler_version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2023 NVIDIA Corporation\nBuilt on Mon_Apr__3_17:16:06_PDT_2023\nCuda compilation tools, release 12.1, V12.1.105\nBuild cuda_12.1.r12.1/compiler.32688072_0\n"
+  },
+  "frozen_adapter_source": {
+    "path": "C:\\Users\\Jiabao Zhao\\OneDrive - The Pennsylvania State University\\Documents 1\\ChatGPT\\RA-L\\freezev2_staging\\freezev2_repro\\features.py",
+    "sha256": "84b63dce6a3fd317d3ef6383698d2074d643eb3a2e28b717a079d8c0a9a1a818",
+    "test_path": "C:\\Users\\Jiabao Zhao\\OneDrive - The Pennsylvania State University\\Documents 1\\ChatGPT\\RA-L\\freezev2_staging\\tests\\test_features.py",
+    "test_sha256": "8028f361c19a4d85d5a069d0ccba286d240ba895588d0456c192e05fb7b7cb32",
+    "focused_tests_passed": 14,
+    "focused_test_python": "/home/jiabao/.venvs/freezev2-bop-20261029/bin/python"
+  },
+  "license_handling": {
+    "dinov2": "official model/source; cached existing source reused; checkpoint acquired once from Meta official URL",
+    "gedi": "no top-level license grant identified; original dependency remains external ignored checkout, no algorithm vendored into tracked implementation",
+    "pointnet2": "original external dependency sources compiled without kernel changes",
+    "cuda": "official NVIDIA redistributables retained under CUDA Toolkit terms; local toolchain only, no system driver/toolkit install"
+  },
+  "claim_limits": [
+    "This manifest verifies trained feature extraction and dependency readiness, not pose accuracy or published benchmark performance.",
+    "DINOv2 source cache has no .git; selected file hashes match the recorded revision hint, not whole-tree Git verification.",
+    "GeDi source/checkpoint are original, but patch sizes, seed, numerical policy and selected giant block are explicit reproduction assumptions."
+  ]
+}

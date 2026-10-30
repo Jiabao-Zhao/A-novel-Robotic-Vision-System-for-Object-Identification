@@ -1,0 +1,103 @@
+{
+  "candidate": {
+    "candidate_id": "cnos-fastsam:000013:000510:10231",
+    "segmentor": "cnos-fastsam",
+    "source_id": "public_BOP23_default_CNOS_FastSAM:7eb39ad0d82783dc59a49cd2f6654c99b63d3b3ef3f051f3368056755e94e6b0",
+    "source_kind": "predicted",
+    "source_file_sha256": "7eb39ad0d82783dc59a49cd2f6654c99b63d3b3ef3f051f3368056755e94e6b0",
+    "segmentation_score": 0.3397183418273926,
+    "record_index": 10231
+  },
+  "source": {
+    "rgb": "/mnt/d/BOP_SAM3_Pilot/data/hb/test_primesense/000013/rgb/000510.png",
+    "depth": "/mnt/d/BOP_SAM3_Pilot/data/hb/test_primesense/000013/depth/000510.png",
+    "camera": "/mnt/d/BOP_SAM3_Pilot/data/hb/test_primesense/000013/scene_camera.json",
+    "rgb_sha256": "42977c4ff05b5fbaecfd0921c982abd6066d9df99a0bf61559a560f2d807f8fa",
+    "depth_sha256": "14b3b812b4b201f77b2239c7bf9fe17819dd65e603ce3c7f33cac3f6593f9f6a",
+    "camera_sha256": "1941b136b99e7028fbc031f993ad70c917b842f256dc0f93014c9b0e3f3d8893",
+    "modality": "rgb",
+    "image_mode": "RGB",
+    "image_dtype": "uint8",
+    "depth_mode": "I;16",
+    "depth_dtype": "uint16",
+    "image_size_hw": [
+      480,
+      640
+    ]
+  },
+  "status": "failed",
+  "identity": {
+    "recipe": "966d495e64ee265f085139832bd479241f112c2303953164b091a2a26062af3d",
+    "candidate": {
+      "candidate_id": "cnos-fastsam:000013:000510:10231",
+      "segmentor": "cnos-fastsam",
+      "source_id": "public_BOP23_default_CNOS_FastSAM:7eb39ad0d82783dc59a49cd2f6654c99b63d3b3ef3f051f3368056755e94e6b0",
+      "source_kind": "predicted",
+      "source_file_sha256": "7eb39ad0d82783dc59a49cd2f6654c99b63d3b3ef3f051f3368056755e94e6b0",
+      "segmentation_score": 0.3397183418273926,
+      "record_index": 10231
+    },
+    "source": {
+      "rgb": "/mnt/d/BOP_SAM3_Pilot/data/hb/test_primesense/000013/rgb/000510.png",
+      "depth": "/mnt/d/BOP_SAM3_Pilot/data/hb/test_primesense/000013/depth/000510.png",
+      "camera": "/mnt/d/BOP_SAM3_Pilot/data/hb/test_primesense/000013/scene_camera.json",
+      "rgb_sha256": "42977c4ff05b5fbaecfd0921c982abd6066d9df99a0bf61559a560f2d807f8fa",
+      "depth_sha256": "14b3b812b4b201f77b2239c7bf9fe17819dd65e603ce3c7f33cac3f6593f9f6a",
+      "camera_sha256": "1941b136b99e7028fbc031f993ad70c917b842f256dc0f93014c9b0e3f3d8893",
+      "modality": "rgb",
+      "image_mode": "RGB",
+      "image_dtype": "uint8",
+      "depth_mode": "I;16",
+      "depth_dtype": "uint16",
+      "image_size_hw": [
+        480,
+        640
+      ]
+    },
+    "CAD_feature_identity": "356743091a1b1f2b3375dc1c6ffe96a558590e60a4dac26d9f2be24694580b0a"
+  },
+  "pose_direction": "original_CAD_to_camera",
+  "units": "metres",
+  "model_sha256": "1181a76d3ac1648c45fed386c1ad8e829b50d453e8881d7c50dd47c78e16172a",
+  "frozen_CAD_feature_identity": "356743091a1b1f2b3375dc1c6ffe96a558590e60a4dac26d9f2be24694580b0a",
+  "resource_attempts": [],
+  "previous_blocked_attempts": [],
+  "registration": {
+    "config": {
+      "k": 10,
+      "iterations": 10000,
+      "inlier_fraction": 0.03,
+      "seed": 0,
+      "edge_length_ratio": 0.9,
+      "min_triangle_area_ratio": 1e-06,
+      "hypothesis_backend": "torch_cuda",
+      "hypothesis_batch_size": 64,
+      "torch_dtype": "float32",
+      "icp_max_iterations": 30,
+      "icp_translation_tolerance_m": 1e-08,
+      "icp_rotation_tolerance_rad": 1e-07,
+      "icp_stop_when_correspondences_stable": true
+    },
+    "pose_direction": "CAD_to_camera",
+    "units": "m",
+    "requested_hypotheses": 10000,
+    "valid_hypotheses": 0,
+    "repeated_cad_triplets": 65,
+    "degenerate_triplets": 0,
+    "edge_rejected_triplets": 9935,
+    "correspondence_pairs": 1040,
+    "sparse_observed_count": 104,
+    "feature_score_denominator": "N_sparse_observed",
+    "threshold_m": 0.00697716,
+    "hypothesis_backend": "torch_cuda",
+    "numeric_dtype": "float32",
+    "sampling": "uniform_distinct_observed_rows_then_uniform_topk_per_row_fixed_budget_no_rejected_sample_replacement"
+  },
+  "failure_type": "no_valid_global_hypothesis",
+  "reason": "no_valid_hypothesis",
+  "runtime_s": 0.3033182180006406,
+  "artifact_files": {
+    "crop.png": "9dfebb884b5468aa3751399edf49c35f789e0d0de674c1b35e24cf4afea08e32",
+    "mask.png": "08c8f039eab32fcc17ac3941ecea56ecca7c7dbe60399a8f0218c94be5ec58d0"
+  }
+}

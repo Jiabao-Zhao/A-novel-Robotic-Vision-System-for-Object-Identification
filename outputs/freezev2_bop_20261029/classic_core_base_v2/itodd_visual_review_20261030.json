@@ -1,0 +1,91 @@
+{
+  "verified_utc": "2026-10-30T07:48:54.077829+00:00",
+  "dataset": "itodd",
+  "scope": "Three selected saved full-run candidates visually reviewed without GT; in-progress subset, not completed dataset coverage or accuracy.",
+  "selection": "At the observation snapshot use25%,50%,75%indices of sorted completed receipts with predictions, then first retained CAD identity not previously sampled (search forward with wrap). Actual images68/131/194 andCAD21/4/19; no metric/GT selection or tuning.",
+  "method_digest": "6f3f47c445366db882b1cb30d73968053354b7ced69bff3c7765e144e557ccbc",
+  "ground_truth_pose_access": false,
+  "test_ground_truth_availability": "private; no local pose metrics claimed",
+  "source_or_prediction_mutation": false,
+  "interpretation": "Orange=coarse, green=ICP CAD projection. Appearance/proximity scores and projected silhouette alone do not prove correct full6D pose.",
+  "cases": [
+    {
+      "scene_id": 1,
+      "image_id": 68,
+      "object_id": 21,
+      "candidate_id": "cnos-fastsam:000001:000068:8754",
+      "selected_in_saved_predictions": true,
+      "diagnostic": "datasets\\itodd\\images\\000001_000068\\obj_000021\\cnos-fastsam_008754\\diagnostic.json",
+      "diagnostic_sha256": "05f8f614d7d0cedaf18993f4772ba00f8f0588c2ca0bc4c230367753e533452b",
+      "receipt_sha256": "81878ed010d66762d162a48005a1e2b0699c12d7d829cf9dacc481b9a3153de2",
+      "artifact_sha256": {
+        "crop.png": "352e330b751805e3b72075accc3fff05b20df1e9ae24a36c903ebb6c53a9be38",
+        "mask.png": "0b0963901cff57e297fb58c80322e60f4e8a16d22a042b845a7f607842f4eaa4",
+        "observed.npz": "31ae20fa05f5d772cc468166df308c0890a66db34093e4e7f13784c0fd49d148",
+        "pose_overlay.png": "ac9e73e23bc0c6af6fe28e2d4c6ade7f4c63134774b05839fc1d2a3afca422aa"
+      },
+      "source_modality": "gray",
+      "source_image_mode": "L",
+      "visual_observations": "The grayscale input contains overlapping industrial plates and gears. Coarse/refined projected CAD points spread below and around the upper-right gear, onto neighboring plate regions; green refinement visibly differs from orange. This suggests residual or incorrect alignment visually, without private-GT pose verification.",
+      "scores": {
+        "coarse_feature_score": 0.3284856975078583,
+        "refined_feature_score": 0.3064814656978399,
+        "geometry_score": 0.379,
+        "joint_score": 0.03815574087450157
+      },
+      "icp_status": "max_iterations"
+    },
+    {
+      "scene_id": 1,
+      "image_id": 131,
+      "object_id": 4,
+      "candidate_id": "cnos-fastsam:000001:000131:420",
+      "selected_in_saved_predictions": true,
+      "diagnostic": "datasets\\itodd\\images\\000001_000131\\obj_000004\\cnos-fastsam_000420\\diagnostic.json",
+      "diagnostic_sha256": "be3b6366159004bd3372105d17be3dc896bde305a066fbe6eb70c1620ae4283d",
+      "receipt_sha256": "a23f1cfbd506e26752674f5e4d58fd389925b9e0d219b96619313c053b21ee85",
+      "artifact_sha256": {
+        "crop.png": "852eb37f772ed6a9e45e39b41dcbddf695039216e3a3a4fa38f7fc146b0a9c7b",
+        "mask.png": "6409abb9466457768175e52764189415ff7977c0ed280a356dbd441ae276d84a",
+        "observed.npz": "a1a7b67b217b20f5ea09c2c5b07bf6750e1cba81440f4683de427a91537787d0",
+        "pose_overlay.png": "f573b9adbdf0e2e8a1c3658b2417c0da149d7f63b250862a8ea6769c301138d2"
+      },
+      "source_modality": "gray",
+      "source_image_mode": "L",
+      "visual_observations": "The projected rectangular perforated plate follows the central visible plate outline and its hole pattern reasonably, with orange and green points almost coincident. The recorded geometry score is0.9946, which is a model-to-observed proximity fraction, not verified pose accuracy.",
+      "scores": {
+        "coarse_feature_score": 0.8414808511734009,
+        "refined_feature_score": 0.8371493180978765,
+        "geometry_score": 0.9946,
+        "joint_score": 0.7006411171001713
+      },
+      "icp_status": "max_iterations"
+    },
+    {
+      "scene_id": 1,
+      "image_id": 194,
+      "object_id": 19,
+      "candidate_id": "cnos-fastsam:000001:000194:1213",
+      "selected_in_saved_predictions": true,
+      "diagnostic": "datasets\\itodd\\images\\000001_000194\\obj_000019\\cnos-fastsam_001213\\diagnostic.json",
+      "diagnostic_sha256": "1906971808f47029f30aea05cd89731499a04028aeeded6accd79b1b317174c3",
+      "receipt_sha256": "261a099cdca0e88c4c9d59dbd9120ab721ca606ecc1a2fb64505e4518f858583",
+      "artifact_sha256": {
+        "crop.png": "14eb4ea4b62453b6e9bd90de6f623e3022b2f9320ec1583578e26108ce33c17f",
+        "mask.png": "52764706a2b0bee77f8913b39f1c22bbaf81bcadb28b54cfcf2dce8f9d2dada6",
+        "observed.npz": "67001c6ae6b001a27e296c6bb6a711c271842fed0cb0ac5420ea4f2fcf858387",
+        "pose_overlay.png": "08a0ab9a616ec3dbc117aaf5f226d5b471731812bdedadced195b9070fe4184d"
+      },
+      "source_modality": "gray",
+      "source_image_mode": "L",
+      "visual_observations": "The projected long channel-like CAD lies across the lower front of a pile of similar metal parts. Orange and green projections largely overlap, with a small boundary shift; repeated parts, partial occlusion and symmetry leave instance/orientation correctness unresolved.",
+      "scores": {
+        "coarse_feature_score": 0.8129359483718872,
+        "refined_feature_score": 0.7180612473002319,
+        "geometry_score": 0.3496,
+        "joint_score": 0.20407473525166475
+      },
+      "icp_status": "max_iterations"
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "verified_utc": "2026-10-30T06:48:53.384906+00:00",
+  "dataset": "icbin",
+  "scope": "Three selected saved full-run candidate overlays, one per scene, visually inspected without GT poses/masks. This samples two CAD identities and multiple-instance clutter.",
+  "selection": "For each scene1/2/3, middle lexicographic completed image receipt containing retained predictions at snapshot; first retained prediction. Scene1/image28,scene2/image31,scene3/image17. No score or GT selection.",
+  "method_digest": "6f3f47c445366db882b1cb30d73968053354b7ced69bff3c7765e144e557ccbc",
+  "ground_truth_pose_access": false,
+  "source_or_prediction_mutation": false,
+  "interpretation": "Orange=coarse CAD projection, green=ICP CAD projection. Visual overlap and finite score do not establish correct6D pose, distinct-instance correctness, or published benchmark performance. Official evaluation remains separate.",
+  "cases": [
+    {
+      "scene_id": 1,
+      "image_id": 28,
+      "object_id": 1,
+      "candidate_id": "cnos-fastsam:000001:000028:631",
+      "selected_in_saved_predictions": true,
+      "diagnostic": "datasets\\icbin\\images\\000001_000028\\obj_000001\\cnos-fastsam_000631\\diagnostic.json",
+      "diagnostic_sha256": "6f2064762b149b7346ab203eda193525306ce75e5d3860fc3a235673b3aea069",
+      "receipt_sha256": "acf129292621a89651e8bf383b0da0b25c32cf18bd73abb1589f0e1d031f3d11",
+      "artifact_sha256": {
+        "crop.png": "6ca51886e3633f9a52ac3dc1748f1a29156c318f95fe3317b25ab4c8eac56ab4",
+        "mask.png": "7cb9991b6ef75e96b44995bb9cc4b339823b04b6d0948d8ee76cecdabd8584a0",
+        "observed.npz": "b03063f9b6807fa9817fd3966da29ca9a60496b6bfa2f0417a7c1c6eced936d5",
+        "pose_overlay.png": "d72670a2dc1cc427db3d74283f2b2e47da642a3e16e46f31ee3a10f8463d80b8"
+      },
+      "visual_observations": "A cylindrical CAD projection lies over the left edge of a pile of repeated cups/cans. Its projected body extends beyond the visible lid/body into adjacent occluded regions; coarse and refined points largely overlap. Occlusion and repeated instances limit what this single overlay establishes.",
+      "scores": {
+        "coarse_feature_score": 0.5146891474723816,
+        "refined_feature_score": 0.4685489797684292,
+        "geometry_score": 0.1414,
+        "joint_score": 0.03409961039737387
+      },
+      "icp_status": "max_iterations"
+    },
+    {
+      "scene_id": 2,
+      "image_id": 31,
+      "object_id": 2,
+      "candidate_id": "cnos-fastsam:000002:000031:2992",
+      "selected_in_saved_predictions": true,
+      "diagnostic": "datasets\\icbin\\images\\000002_000031\\obj_000002\\cnos-fastsam_002992\\diagnostic.json",
+      "diagnostic_sha256": "5a0a6ffe9764da77d4f0877ea99db661ceb8956aae541be1c805e29e767ba87b",
+      "receipt_sha256": "97fb4eaabc3bde859d6d6cc591c7cd7ff91be26acbdaa03ea02bad298f76f73a",
+      "artifact_sha256": {
+        "crop.png": "586e898eb97a26ee458a66eeaa28ddaf619d8bfdb3cbfc993ebc3fc5ac778187",
+        "mask.png": "47fa67aca1bf73e95481a445988c8d296722da4e869a663cf06db9fcb47a3791",
+        "observed.npz": "dbf2ec5ea207236920df3b890a662c6605914d58bcf5487da975f0b01824fdf4",
+        "pose_overlay.png": "a8b7bd746e6f8c2b811babc4098443bdab7c5dbafd1b66caaf0e9e63681286e9"
+      },
+      "visual_observations": "The box-like CAD projection occupies the rightmost carton region in a bin of similar cartons. The top and long vertical edges are visible in the projection, with local orange/green offsets; some projected points extend onto the bin wall/background, suggesting residual alignment ambiguity.",
+      "scores": {
+        "coarse_feature_score": 0.6639464497566223,
+        "refined_feature_score": 0.6167625719257727,
+        "geometry_score": 0.3276,
+        "joint_score": 0.13415132202311555
+      },
+      "icp_status": "max_iterations"
+    },
+    {
+      "scene_id": 3,
+      "image_id": 17,
+      "object_id": 1,
+      "candidate_id": "cnos-fastsam:000003:000017:4482",
+      "selected_in_saved_predictions": true,
+      "diagnostic": "datasets\\icbin\\images\\000003_000017\\obj_000001\\cnos-fastsam_004482\\diagnostic.json",
+      "diagnostic_sha256": "a21da01133db7130cb24ea3b7e2f74241c85d0a307f2951b45d59afa7325d5bd",
+      "receipt_sha256": "4f52e2a6e0101e32d5f2bd87c36d0314b84cc2dff936e77a641d14439a06e23b",
+      "artifact_sha256": {
+        "crop.png": "d98cebdbaff475130d5b0195b17d92fe8dd4382838393420b1c282b2e6d002f9",
+        "mask.png": "d13803ca72bbd885282c532e120a8a62abb86640266514affab709ee7d0d606a",
+        "observed.npz": "4e3c70c73b5a6f92afa907ee52c1908cfa40106ff6c3543b72a6bf5ec4df886a",
+        "pose_overlay.png": "771ae1115b57694b8d739915762c227e8c46df19aa72f6f34e0ec5c8451bab1d"
+      },
+      "visual_observations": "The projected circular cap follows the front-most white cup/can lid, while the projected body extends down the front edge of the cluttered bin. Coarse/refined projections mostly overlap; occluded surfaces and identical neighboring instances prevent a full-pose correctness claim from the image alone.",
+      "scores": {
+        "coarse_feature_score": 0.7516184449195862,
+        "refined_feature_score": 0.7330311625691789,
+        "geometry_score": 0.385,
+        "joint_score": 0.21211950085781942
+      },
+      "icp_status": "max_iterations"
+    }
+  ]
+}

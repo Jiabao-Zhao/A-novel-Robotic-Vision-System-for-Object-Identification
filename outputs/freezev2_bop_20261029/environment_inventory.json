@@ -1,0 +1,70 @@
+{
+  "scope": "dependency inventory, not inference or benchmark completion",
+  "python": "3.12.14",
+  "paths": {
+    "dataset_root": "/mnt/d/BOP_SAM3_Pilot/data",
+    "output_root": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029",
+    "dino_source": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/cache/torch_hub/facebookresearch_dinov2_e1277af2ba9496fbadf7aec6eba56e8d882d1e35",
+    "dino_checkpoint": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/cache/torch_hub/checkpoints/dinov2_vitg14_pretrain.pth",
+    "gedi_source": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/gedi",
+    "gedi_checkpoint": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/gedi/data/chkpts/3dmatch/chkpt.tar",
+    "targets": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/tless_test_targets_bop19.json",
+    "cnos_poses": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/cnos/cam_poses_level1.npy",
+    "bop_toolkit": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/cache/bop_toolkit",
+    "bop_eval_deps": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/cache/bop_eval_deps"
+  },
+  "modules": {
+    "torch": true,
+    "open3d": true,
+    "pointnet2_ops": false,
+    "torchgeometry": false,
+    "cv2": true
+  },
+  "cuda": {
+    "available": true,
+    "torch": "2.11.0+cu130",
+    "cuda": "13.0",
+    "device": "NVIDIA GeForce RTX 3060 Ti"
+  },
+  "inference_blockers": [
+    {
+      "component": "dino_checkpoint",
+      "reason": "missing",
+      "path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/cache/torch_hub/checkpoints/dinov2_vitg14_pretrain.pth"
+    },
+    {
+      "component": "gedi_source",
+      "reason": "missing",
+      "path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/gedi"
+    },
+    {
+      "component": "gedi_checkpoint",
+      "reason": "missing",
+      "path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/gedi/data/chkpts/3dmatch/chkpt.tar"
+    },
+    {
+      "component": "pointnet2_ops",
+      "reason": "not importable in this interpreter"
+    },
+    {
+      "component": "torchgeometry",
+      "reason": "not importable in this interpreter"
+    }
+  ],
+  "evaluation_blockers": [
+    "Official models_eval is absent; inference models_cad is not silently aliased to evaluation models."
+  ],
+  "config_sha256": "2254d9a5b6a48972cdf13640a3d4c88d73f87772946e92a0e89bd48954a881e6",
+  "source_sha256": {
+    "__init__.py": "9d4530bf43d4e3f227fba0ee83dd9fda74750ddafcc3e54cb280c45c67f4d5f4",
+    "data.py": "ace188d4aeb7c3b4b43262d31df6e3ca4a082d54106d1d8fb646f1bc881e9588",
+    "evaluation.py": "cfa98f80722134faf44fafa8c656b2a57f7b614fdc60304984106a0e320226c2",
+    "features.py": "ae785926d4f3389a07dae2789efff46d9c93ae9efb9f9af96e293a4105108a41",
+    "geometry.py": "1cbb150a7587b2edbd33949b6edfd4cdd15620c0801ff17d6d429ef00423586b",
+    "masks.py": "0883e2182c4333ec3dc9c63ab4ba50a593a361b0383df2a1fd7a31214ea13eff",
+    "pipeline.py": "735872488bc3acd52754f836c1b0fb293cfe1fcd0cc345b7547ed8b45be0ed17",
+    "registration.py": "2229d46a63591425ce1c211bb97ba5518d7282377f047243042b759ee5b5b123",
+    "rendering.py": "e1102c84ee4074d7fc62de67168c002cd02a0dacdab2bd7468d5d91bf6e335de",
+    "synthetic.py": "95d3ae6c08c2f7fd85ba22c59ed3abba5bf00ccb262868fd52c1a7297676a017"
+  }
+}

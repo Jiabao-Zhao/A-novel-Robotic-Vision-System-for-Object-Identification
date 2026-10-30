@@ -1,0 +1,84 @@
+{
+  "verified_utc": "2026-10-30T09:19:39.781051+00:00",
+  "dataset": "ycbv",
+  "scope": "Three selected full-run candidates with distinct CAD identities visually reviewed without GT; in-progress subset within scene48, not final coverage/pose accuracy.",
+  "selection": "At snapshot25%,50%,75%indices of sorted completed image receipts with predictions, then first retained CAD identity not previously sampled, searching forward with wrap. Actual scene48/images1074/1104/1128,CAD1/6/14; no score/GT selection or tuning.",
+  "method_digest": "6f3f47c445366db882b1cb30d73968053354b7ced69bff3c7765e144e557ccbc",
+  "ground_truth_pose_access": false,
+  "source_or_prediction_mutation": false,
+  "interpretation": "Orange=coarse, green=ICP projection. Visual overlap is a qualitative diagnostic; quantitative pose evaluation is separate. Known object-ID localization does not test CAD identity classification.",
+  "cases": [
+    {
+      "scene_id": 48,
+      "image_id": 1074,
+      "object_id": 1,
+      "candidate_id": "cnos-fastsam:000048:001074:168",
+      "selected_in_saved_predictions": true,
+      "diagnostic": "datasets\\ycbv\\images\\000048_001074\\obj_000001\\cnos-fastsam_000168\\diagnostic.json",
+      "diagnostic_sha256": "d307b56326653a267148973600140f382915b56f1f9cc55d598eaa0ab4dca1d6",
+      "receipt_sha256": "534cf84baa2de7a77f0c84d600c9507351bf0fbd47a08fc385782d2ee30821c8",
+      "artifact_sha256": {
+        "crop.png": "f14edce2a0f68818339fd766b1f40da4e688498fbc863f7a52b88985a9cc068c",
+        "mask.png": "3d490509cace777c89c34e324a68f76e37888de7fb27d870bf3c228ebf90ffa2",
+        "observed.npz": "1b0458157f73a422d871b582f7cacca8e351583bd07b460b6ad9ee6af49c0320",
+        "pose_overlay.png": "16f35e84c94f1299aa70f52cea7a1218569a84e853979f0dcf0bf29127f494a0"
+      },
+      "visual_observations": "The cylindrical CAD projection follows the visible coffee-can body beneath the red mug. Orange/green projections largely overlap, with local boundary offsets. The front smaller tin partially occludes the lower region, and this view does not establish rotation or full6D correctness.",
+      "scores": {
+        "coarse_feature_score": 0.48176538944244385,
+        "refined_feature_score": 0.48398066312095656,
+        "geometry_score": 0.236,
+        "joint_score": 0.05502697130565484
+      },
+      "icp_status": "max_iterations"
+    },
+    {
+      "scene_id": 48,
+      "image_id": 1104,
+      "object_id": 6,
+      "candidate_id": "cnos-fastsam:000048:001104:314",
+      "selected_in_saved_predictions": true,
+      "diagnostic": "datasets\\ycbv\\images\\000048_001104\\obj_000006\\cnos-fastsam_000314\\diagnostic.json",
+      "diagnostic_sha256": "c8c782ad109d8ae823a75f5fdcb197a0f29ec1e820dd6845ea5e008741be0052",
+      "receipt_sha256": "2d6f6c90ae04557a3019f42c90bd5899ff5e27115fe3f7b335822cad59f73690",
+      "artifact_sha256": {
+        "crop.png": "50223bbb69fe28dbea4ada8896f3935c8399c4858e1a2ddacad6ac2aa9cc14b0",
+        "mask.png": "e23a41c5ef1b5c6b2ffd51007e751fd7204c3833f1f7addf120b631f86aebd72",
+        "observed.npz": "a0e182d7e5df5fee4591400a35a388ebb77f195bea18d9bd6b7c04decd222dc3",
+        "pose_overlay.png": "a01f329edf16c82db9148bbed38529f9ca74fca854f07cb7485c07f670492e0a"
+      },
+      "visual_observations": "The compact cylindrical projection covers the small front tin near the base of the larger coffee can. Coarse/refined points largely coincide and ICP records stable correspondences; visible contour agreement remains a qualitative observation.",
+      "scores": {
+        "coarse_feature_score": 0.5223411917686462,
+        "refined_feature_score": 0.5210680358065404,
+        "geometry_score": 0.1884,
+        "joint_score": 0.051277826296884654
+      },
+      "icp_status": "converged_stable_correspondences"
+    },
+    {
+      "scene_id": 48,
+      "image_id": 1128,
+      "object_id": 14,
+      "candidate_id": "cnos-fastsam:000048:001128:617",
+      "selected_in_saved_predictions": true,
+      "diagnostic": "datasets\\ycbv\\images\\000048_001128\\obj_000014\\cnos-fastsam_000617\\diagnostic.json",
+      "diagnostic_sha256": "3382a06db0f7dfe62865f504dfa5a76232ff115bcccd7956e0c38dddddfaa758",
+      "receipt_sha256": "ec54d1806f42cd5235cca1520212b7db0c8e4edd1b9fd57a2eb3f4afe83bc062",
+      "artifact_sha256": {
+        "crop.png": "ce30bb73ba646172b6ac5969080edf6a6c375aee64ec111181f22ae29d49fe25",
+        "mask.png": "84d1e42a3afc6aa60ebb0596ed4c486eba5e74375433d1845578a0947bee90bb",
+        "observed.npz": "90f2e8912c07f6f1abe379ab70188a73b4b154123171468112ffc17fe8d86417",
+        "pose_overlay.png": "f37738f68dc9cf295140593b3a9f9a85998ac6ebee4ea83b0714d27b97c53cd5"
+      },
+      "visual_observations": "The CAD projection follows the red mug body and right-side handle above the coffee can. Orange/green points mostly overlap despite low feature/joint scores; this demonstrates that silhouette plausibility and internal matching score alone do not establish verified pose accuracy.",
+      "scores": {
+        "coarse_feature_score": 0.05514785647392273,
+        "refined_feature_score": 0.031232417417484875,
+        "geometry_score": 0.267,
+        "joint_score": 0.00045988103311051784
+      },
+      "icp_status": "max_iterations"
+    }
+  ]
+}

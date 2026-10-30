@@ -1,0 +1,84 @@
+{
+  "method": "FreeZeV2-base-paper-v1-independent",
+  "base": {
+    "seed": 0,
+    "render": {
+      "views": 162,
+      "resolution": 480,
+      "occupancy": 0.5,
+      "visibility_tolerance_fraction": 0.005,
+      "photometry_assumption": "native vertex colors or gray0.7, two-sided headlight ambient0.4 diffuse0.6, black background",
+      "texture_sampling": "BOP bottom-left UV; bilinear clamped sRGB; original PNG; Open3D native float32 intersections"
+    },
+    "cad": {
+      "initial_poisson_points": 20000,
+      "points": 5000,
+      "min_visible_views": 18
+    },
+    "features": {
+      "dino_layer_index": 18,
+      "dino_source_revision_hint": "e1277af2ba9496fbadf7aec6eba56e8d882d1e35",
+      "dino_expected_source_hashes": {
+        "hubconf.py": "e82275b3adcc3631865d1edd4b620b89d42459169acdeb652804cd0eb0fe9615",
+        "dinov2/models/vision_transformer.py": "8dc1e2ededd4893a335aa2f524c15554bcdb14d824e310ca3df825e16081a268"
+      },
+      "layer_selection_is_assumption": true,
+      "pca_components": 64,
+      "gedi_source_sha256": "50f23311ad3173c92f834c637e63c9c0bb6fbd8f12c58dd69773a7aba6350249",
+      "gedi_source_revision": "b3dd86776750d8221f89d39975118da9839b39f7",
+      "aggregation_assumption": "uniform mean of visible rendered descriptors; PCA fit only on selected CAD, no whitening",
+      "dino_checkpoint_sha256": "baf8467e50af277596bbbafa06887c177ee899ab46033649c383577d7e9309d3",
+      "gedi_checkpoint_sha256": "15723f382ecf60f7efbf9161f70bffda2d1c817025cb0702350baaa04060f5f4",
+      "gedi_sampling_batch_size": 500,
+      "gedi_patch_lrf_points": 4000,
+      "gedi_patch_network_points": 512,
+      "frozen_math_precision": "float32",
+      "tf32_matmul": false,
+      "tf32_cudnn": false
+    },
+    "observed": {
+      "grid": 16,
+      "dense_points": 3000
+    },
+    "registration": {
+      "k": 10,
+      "iterations": 10000,
+      "inlier_fraction": 0.03,
+      "seed": 0,
+      "edge_length_ratio": 0.9,
+      "min_triangle_area_ratio": 1e-06,
+      "hypothesis_backend": "torch_cuda",
+      "hypothesis_batch_size": 64,
+      "torch_dtype": "float32",
+      "icp_max_iterations": 30,
+      "icp_translation_tolerance_m": 1e-08,
+      "icp_rotation_tolerance_rad": 1e-07,
+      "icp_stop_when_correspondences_stable": true
+    },
+    "candidate_ranking": {
+      "translation_nms_diameter_fraction": 0.1,
+      "nms_distance_is_assumption": true
+    }
+  },
+  "code": {
+    "__init__.py": "9d4530bf43d4e3f227fba0ee83dd9fda74750ddafcc3e54cb280c45c67f4d5f4",
+    "case_inference.py": "57d49e9a46c03cebe559baf1036ec7a165db51ce9aaa3ab850288b613cf1e937",
+    "data.py": "9ea0520da8191c0c92eb65f864dcb32fe63cb184aeea6933479970c3c8a8d827",
+    "dataset_checks.py": "cbc7c13b962e9c2fac0244e6683d7104e43e1c912717e0310c32454ed4aab8cc",
+    "durable.py": "84f96719400757ac328992fd034af8ccf07209df7b74ea766f01414a3bea12d7",
+    "evaluation.py": "06760ac36a07b3e0a8578011d5359d3b4c58e5e84e7a4820cae45661a1ebc5f0",
+    "features.py": "84b63dce6a3fd317d3ef6383698d2074d643eb3a2e28b717a079d8c0a9a1a818",
+    "geometry.py": "1cbb150a7587b2edbd33949b6edfd4cdd15620c0801ff17d6d429ef00423586b",
+    "mask_index.py": "73d86af6371a68b783da9b234055ef01bd4fb171277bbac743eb56017fe42aca",
+    "masks.py": "0883e2182c4333ec3dc9c63ab4ba50a593a361b0383df2a1fd7a31214ea13eff",
+    "onboarding.py": "c70df67c2947910d1000d79cd9405a97dcf36c6a737e3e5c732c866c8138a2ce",
+    "owned_process.py": "2b49a610ae48e657f8c5a2f1ee06c118ed46023fd4cf882b11b8f2a9097cf0fb",
+    "pipeline.py": "815f2e1a51b45b88be1a028756d0c5ec82a6b5e563083c3ae2fcfae415a98a7f",
+    "registration.py": "2229d46a63591425ce1c211bb97ba5518d7282377f047243042b759ee5b5b123",
+    "rendering.py": "4aa94ee36412b4613975f01845bdee2029deff4ebba07c37ff21e2868797e3b2",
+    "suite.py": "6e632e0c1a21048e0621c2a2ee21af83147049c28c928a8310a072dd7113993d",
+    "synthetic.py": "eb38d0aa72f6e0569438596c030f503bd4a49fce50ee81ee0c3c2326a8fec2d7"
+  },
+  "mask_configuration": "CNOS-FastSAM-public-BOP23",
+  "task": "BOP19_localization"
+}

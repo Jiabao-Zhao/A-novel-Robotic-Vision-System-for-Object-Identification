@@ -1,0 +1,237 @@
+{
+  "identity": {
+    "run": {
+      "method_digest": "6f3f47c445366db882b1cb30d73968053354b7ced69bff3c7765e144e557ccbc",
+      "dataset": "tless",
+      "targets_sha256": "5ced8796c421baad79816fe905a36fe6ad440efe78cd640d167fc4b8f26c3cfe",
+      "mask_sha256": "db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+      "original_input_manifest_sha256": "8eebb2d0051ec066df8e252071e9964d0bea15e35b135561bbeb1c3c676ab8b2",
+      "camera_snapshot_digest": "abdf56339353643c982b87cdb7c22ec63fba5bee7d31a724ee591e717dd067e1"
+    },
+    "scene_id": 5,
+    "image_id": 239,
+    "target_rows": [
+      [
+        1,
+        1
+      ],
+      [
+        4,
+        1
+      ],
+      [
+        9,
+        1
+      ],
+      [
+        10,
+        1
+      ],
+      [
+        27,
+        1
+      ]
+    ]
+  },
+  "status": "complete_with_failures",
+  "targets": [
+    {
+      "object_id": 1,
+      "requested_instances": 1,
+      "status": "failed",
+      "valid_predictions": 0,
+      "candidate_count": 0,
+      "candidates": [],
+      "reason": "no_predicted_masks",
+      "suppressed": [],
+      "rejected": []
+    },
+    {
+      "object_id": 4,
+      "requested_instances": 1,
+      "status": "completed",
+      "valid_predictions": 1,
+      "candidate_count": 1,
+      "candidates": [
+        {
+          "candidate_id": "cnos-fastsam:000005:000239:11106",
+          "directory": "obj_000004/cnos-fastsam_011106",
+          "status": "complete",
+          "diagnostic_sha256": "0e6c8d53a61d020daa4add36c0ef64b4bed74d9e80d28a41b7e87d9f5eba4eda"
+        }
+      ],
+      "reason": null,
+      "suppressed": [],
+      "rejected": []
+    },
+    {
+      "object_id": 9,
+      "requested_instances": 1,
+      "status": "completed",
+      "valid_predictions": 1,
+      "candidate_count": 1,
+      "candidates": [
+        {
+          "candidate_id": "cnos-fastsam:000005:000239:11121",
+          "directory": "obj_000009/cnos-fastsam_011121",
+          "status": "complete",
+          "diagnostic_sha256": "b010bf4d85da8da299f4c3ddd2a570e2bf14f7e97d93ee983b29691259c98421"
+        }
+      ],
+      "reason": null,
+      "suppressed": [],
+      "rejected": []
+    },
+    {
+      "object_id": 10,
+      "requested_instances": 1,
+      "status": "completed",
+      "valid_predictions": 1,
+      "candidate_count": 2,
+      "candidates": [
+        {
+          "candidate_id": "cnos-fastsam:000005:000239:11122",
+          "directory": "obj_000010/cnos-fastsam_011122",
+          "status": "complete",
+          "diagnostic_sha256": "3bbf0a8af8ccfe3b8a34a21257c862fdbfbd8d586bfe4525a2b8900b1fc2db64"
+        },
+        {
+          "candidate_id": "cnos-fastsam:000005:000239:11123",
+          "directory": "obj_000010/cnos-fastsam_011123",
+          "status": "complete",
+          "diagnostic_sha256": "b65ae9c36b1655e509e7ab1234bd4ed276df969fcfb43b007f320e849aa8ec12"
+        }
+      ],
+      "reason": null,
+      "suppressed": [
+        {
+          "candidate_id": "cnos-fastsam:000005:000239:11123",
+          "input_index": 1,
+          "reason": "instance_count_limit"
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "object_id": 27,
+      "requested_instances": 1,
+      "status": "blocked",
+      "valid_predictions": 0,
+      "reason": "CAD_onboarding_unavailable",
+      "candidates": []
+    }
+  ],
+  "predictions": [
+    {
+      "scene_id": 5,
+      "image_id": 239,
+      "object_id": 4,
+      "R_m2c": [
+        [
+          0.7658766046138948,
+          -0.18186449330234478,
+          0.6167319779133994
+        ],
+        [
+          -0.4202142790218864,
+          -0.867560525319654,
+          0.26600506501418897
+        ],
+        [
+          0.4866754423753155,
+          -0.4628866394517867,
+          -0.7408663663615893
+        ]
+      ],
+      "t_m": [
+        -0.09167050943814305,
+        -0.04464675207080356,
+        0.7295571009095511
+      ],
+      "score": 0.0004725677870311421,
+      "candidate_id": "cnos-fastsam:000005:000239:11106",
+      "image_time_s": 2.927840433000256
+    },
+    {
+      "scene_id": 5,
+      "image_id": 239,
+      "object_id": 9,
+      "R_m2c": [
+        [
+          0.8864483430412738,
+          -0.43762466637268793,
+          -0.15064523391588985
+        ],
+        [
+          -0.29990009362085174,
+          -0.29520428902306656,
+          -0.9071462735350844
+        ],
+        [
+          0.35251846613416465,
+          0.849316830826152,
+          -0.3929270312791389
+        ]
+      ],
+      "t_m": [
+        0.053183198654126455,
+        -0.03461917113292473,
+        0.7713984745041312
+      ],
+      "score": 0.007827168443091805,
+      "candidate_id": "cnos-fastsam:000005:000239:11121",
+      "image_time_s": 2.927840433000256
+    },
+    {
+      "scene_id": 5,
+      "image_id": 239,
+      "object_id": 10,
+      "R_m2c": [
+        [
+          -0.8672996346447779,
+          0.4947312353703114,
+          -0.055066763968839194
+        ],
+        [
+          0.3594976796486723,
+          0.5459958086069765,
+          -0.7567364107209552
+        ],
+        [
+          -0.34431491700513756,
+          -0.6761135864132447,
+          -0.6513966964877591
+        ]
+      ],
+      "t_m": [
+        -0.02062079568179706,
+        -0.09353209963225771,
+        0.8442497971210599
+      ],
+      "score": 0.013117205707741556,
+      "candidate_id": "cnos-fastsam:000005:000239:11122",
+      "image_time_s": 2.927840433000256
+    }
+  ],
+  "source": {
+    "rgb": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000005/rgb/000239.png",
+    "depth": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000005/depth/000239.png",
+    "camera": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000005/scene_camera.json",
+    "rgb_sha256": "384edf87040ccb54f4d2b7e289836c313c0dccdd1aaf30b137505418faa5194c",
+    "depth_sha256": "e683f56ff7af974db74b0635c61502bfd8ab98686e0232f3fe943b076b7514cc",
+    "camera_sha256": "4c1b115bac191cd0cf015301a6c6fcfc6a16cd4a9c621193e1764fc7d58e02b0",
+    "modality": "rgb",
+    "image_mode": "RGB",
+    "image_dtype": "uint8",
+    "depth_mode": "I;16",
+    "depth_dtype": "uint16",
+    "image_size_hw": [
+      540,
+      720
+    ]
+  },
+  "runtime_s": 2.927840433000256,
+  "reused_candidate_runtime_s": 0.0,
+  "runtime_policy": "active current image wall time plus retained completed-candidate compute time; interruption downtime excluded",
+  "GT_pose_access": false
+}

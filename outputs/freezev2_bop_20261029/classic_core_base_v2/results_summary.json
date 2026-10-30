@@ -1,0 +1,594 @@
+{
+  "schema": "freezev2-suite-results-v2",
+  "method": "FreeZeV2-base-paper-v1-independent",
+  "mask_configuration": "CNOS-FastSAM-public-BOP23",
+  "task": "BOP19_model_based_6D_localization",
+  "official_GT_selection": "official inst_count most-visible GT; evaluator visib_gt_min=-1",
+  "suite_complete_and_evaluated": false,
+  "all_seven_aggregate": null,
+  "expected_images": 3871,
+  "expected_targets": 13635,
+  "datasets": {
+    "lmo": {
+      "dataset": "lmo",
+      "task": "BOP19_model_based_6D_localization",
+      "split": "test",
+      "expected_images": 200,
+      "expected_targets": 1445,
+      "expected_instances": 1445,
+      "completed_targets": 1345,
+      "failed_targets": 100,
+      "blocked_targets": 0,
+      "pending_targets": 0,
+      "attempted_images": 200,
+      "valid_pose_predictions": 1345,
+      "onboarding_expected_CADs": 8,
+      "geometry_CADs": 8,
+      "frozen_feature_CADs": 8,
+      "onboarding_runtime_s": 436.06597162499247,
+      "inference_runtime_s": 1547.7029760510004,
+      "mask_source": "predicted:CNOS-FastSAM",
+      "mask_sha256": "1a03d3c7a1d57a9c7e6e1bc162f99281b5044ca50428c619477ec4ab11fa375a",
+      "official_targets_sha256": "634fc970d81d10e93e1b08f97c80a914ddbe801eb67881b633b9fa0691a400c6",
+      "status": "complete",
+      "blocker": null,
+      "validation": {
+        "status": "passed",
+        "fixed_targets": [
+          {
+            "scene_id": 2,
+            "image_id": 3,
+            "object_id": 1,
+            "instance_count": 1
+          },
+          {
+            "scene_id": 2,
+            "image_id": 8,
+            "object_id": 1,
+            "instance_count": 1
+          },
+          {
+            "scene_id": 2,
+            "image_id": 17,
+            "object_id": 1,
+            "instance_count": 1
+          }
+        ],
+        "valid_pose_predictions": 3,
+        "CAD_blockers": {},
+        "ground_truth_pose_access": false,
+        "runtime_blocked_targets": 0,
+        "scope": "real frozen feature extraction, global rigid registration/refinement/scoring and output validity; no accuracy tuning",
+        "official_format_check": {
+          "valid": true,
+          "message": "OK"
+        }
+      },
+      "evaluation": {
+        "status": "complete",
+        "official_pose_metrics": {
+          "bop19_average_recall": 0.5657877739331026,
+          "bop19_average_recall_mspd": 0.6278200692041522,
+          "bop19_average_recall_mssd": 0.600484429065744,
+          "bop19_average_recall_vsd": 0.4690588235294117,
+          "bop19_average_time_per_image": 7.738514880255002
+        },
+        "command": [
+          "/home/jiabao/.venvs/freezev2-bop-evaluation-20261030/bin/python",
+          "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/cache/bop_toolkit/scripts/eval_bop19_pose.py",
+          "--result_filenames",
+          "freezev2base_lmo-test.csv",
+          "--results_path",
+          "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/lmo/predictions",
+          "--eval_path",
+          "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/lmo/official_evaluation",
+          "--targets_filename",
+          "test_targets_bop19.json",
+          "--renderer_type",
+          "vispy",
+          "--num_workers",
+          "1"
+        ],
+        "runtime_s": 70.30304551399968,
+        "score_file": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/lmo/official_evaluation/freezev2base_lmo-test/scores_bop19.json",
+        "score_sha256": "85b3b62d49d0e532c71dfd5cd286f2fcfc803d24ee6eaad8d776514bb57bb99a",
+        "toolkit_revision": "cea62d651c7e395b2e1962b9749e4e89693c6ac4",
+        "GT_selection": "official inst_count k-most-visible; visib_gt_min=-1",
+        "predictions_origin": "our_inference",
+        "csv_sha256": "6354eba6575850dbeb21871dd8d23e6d129b1692b2aa47654471e3c26d0c0b7a",
+        "target_sha256": "634fc970d81d10e93e1b08f97c80a914ddbe801eb67881b633b9fa0691a400c6"
+      },
+      "predictions_origin": "our_frozen_model_inference",
+      "authors_predictions_evaluated": false
+    },
+    "tless": {
+      "dataset": "tless",
+      "task": "BOP19_model_based_6D_localization",
+      "split": "test",
+      "expected_images": 1000,
+      "expected_targets": 4904,
+      "expected_instances": 6423,
+      "completed_targets": 3370,
+      "failed_targets": 1146,
+      "blocked_targets": 388,
+      "pending_targets": 0,
+      "attempted_images": 1000,
+      "valid_pose_predictions": 4553,
+      "onboarding_expected_CADs": 30,
+      "geometry_CADs": 30,
+      "frozen_feature_CADs": 27,
+      "onboarding_runtime_s": 1522.6898205879922,
+      "inference_runtime_s": 4669.232855642009,
+      "mask_source": "predicted:CNOS-FastSAM",
+      "mask_sha256": "db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+      "official_targets_sha256": "5ced8796c421baad79816fe905a36fe6ad440efe78cd640d167fc4b8f26c3cfe",
+      "status": "blocked_some_CADs",
+      "blocker": "{'CADs': {27: 'original GeDi extraction failed (check local neighborhoods, LRF degeneracy and CUDA ops): ValueError: trained GeDi descriptors must contain finite numeric values', 28: 'original GeDi extraction failed (check local neighborhoods, LRF degeneracy and CUDA ops): ValueError: trained GeDi descriptors must contain finite numeric values', 30: 'original GeDi extraction failed (check local neighborhoods, LRF degeneracy and CUDA ops): ValueError: trained GeDi descriptors must contain finite numeric values'}, 'runtime_blocked_targets': 388}",
+      "validation": {
+        "status": "passed",
+        "fixed_targets": [
+          {
+            "scene_id": 5,
+            "image_id": 7,
+            "object_id": 1,
+            "instance_count": 1
+          },
+          {
+            "scene_id": 5,
+            "image_id": 20,
+            "object_id": 1,
+            "instance_count": 1
+          },
+          {
+            "scene_id": 5,
+            "image_id": 25,
+            "object_id": 1,
+            "instance_count": 1
+          },
+          {
+            "scene_id": 9,
+            "image_id": 0,
+            "object_id": 1,
+            "instance_count": 3
+          }
+        ],
+        "valid_pose_predictions": 6,
+        "CAD_blockers": {},
+        "ground_truth_pose_access": false,
+        "runtime_blocked_targets": 0,
+        "scope": "real frozen feature extraction, global rigid registration/refinement/scoring and output validity; no accuracy tuning",
+        "official_format_check": {
+          "valid": true,
+          "message": "OK"
+        }
+      },
+      "evaluation": {
+        "status": "blocked_incomplete_inference",
+        "official_pose_metrics": null,
+        "reason": "Some target CADs remain blocked; successful cases are not the full dataset",
+        "csv_sha256": "df851bcfdc9ed2c53d0c4a83d71669b191f2e0b59c221d40bab311013ffaea5b",
+        "target_sha256": "5ced8796c421baad79816fe905a36fe6ad440efe78cd640d167fc4b8f26c3cfe"
+      },
+      "predictions_origin": "our_frozen_model_inference",
+      "authors_predictions_evaluated": false
+    },
+    "tudl": {
+      "dataset": "tudl",
+      "task": "BOP19_model_based_6D_localization",
+      "split": "test",
+      "expected_images": 600,
+      "expected_targets": 600,
+      "expected_instances": 600,
+      "completed_targets": 574,
+      "failed_targets": 26,
+      "blocked_targets": 0,
+      "pending_targets": 0,
+      "attempted_images": 600,
+      "valid_pose_predictions": 574,
+      "onboarding_expected_CADs": 3,
+      "geometry_CADs": 3,
+      "frozen_feature_CADs": 3,
+      "onboarding_runtime_s": 158.09450584499388,
+      "inference_runtime_s": 630.8517116440362,
+      "mask_source": "predicted:CNOS-FastSAM",
+      "mask_sha256": "400978b21a94aaa109d6e5039df7aefa7cdbdc6af037cbd1b05ab586ae6d540d",
+      "official_targets_sha256": "0a15509e67b66a4c20cc463880c07da16accaab40b64f274fe42fec75d2526d0",
+      "status": "complete",
+      "blocker": null,
+      "validation": {
+        "status": "passed",
+        "fixed_targets": [
+          {
+            "scene_id": 1,
+            "image_id": 0,
+            "object_id": 1,
+            "instance_count": 1
+          },
+          {
+            "scene_id": 1,
+            "image_id": 65,
+            "object_id": 1,
+            "instance_count": 1
+          },
+          {
+            "scene_id": 1,
+            "image_id": 102,
+            "object_id": 1,
+            "instance_count": 1
+          }
+        ],
+        "valid_pose_predictions": 3,
+        "CAD_blockers": {},
+        "ground_truth_pose_access": false,
+        "runtime_blocked_targets": 0,
+        "scope": "real frozen feature extraction, global rigid registration/refinement/scoring and output validity; no accuracy tuning",
+        "official_format_check": {
+          "valid": true,
+          "message": "OK"
+        }
+      },
+      "evaluation": {
+        "status": "complete",
+        "official_pose_metrics": {
+          "bop19_average_recall": 0.6919833333333334,
+          "bop19_average_recall_mspd": 0.7068333333333333,
+          "bop19_average_recall_mssd": 0.7113333333333334,
+          "bop19_average_recall_vsd": 0.6577833333333334,
+          "bop19_average_time_per_image": 1.0804055062282734
+        },
+        "command": [
+          "/home/jiabao/.venvs/freezev2-bop-evaluation-20261030/bin/python",
+          "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/cache/bop_toolkit/scripts/eval_bop19_pose.py",
+          "--result_filenames",
+          "freezev2base_tudl-test.csv",
+          "--results_path",
+          "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tudl/predictions",
+          "--eval_path",
+          "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tudl/official_evaluation",
+          "--targets_filename",
+          "test_targets_bop19.json",
+          "--renderer_type",
+          "vispy",
+          "--num_workers",
+          "1"
+        ],
+        "runtime_s": 68.36528212699886,
+        "score_file": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tudl/official_evaluation/freezev2base_tudl-test/scores_bop19.json",
+        "score_sha256": "70fab46068fc1f02895ebd63f76f3fbed96c3c4ca283fe4529456110d09d6421",
+        "toolkit_revision": "cea62d651c7e395b2e1962b9749e4e89693c6ac4",
+        "GT_selection": "official inst_count k-most-visible; visib_gt_min=-1",
+        "predictions_origin": "our_inference",
+        "csv_sha256": "5b0cd2139b29c5791fe8ab69bacb3ab206be54e0da3e3734737806bdb8450f58",
+        "target_sha256": "0a15509e67b66a4c20cc463880c07da16accaab40b64f274fe42fec75d2526d0"
+      },
+      "predictions_origin": "our_frozen_model_inference",
+      "authors_predictions_evaluated": false
+    },
+    "icbin": {
+      "dataset": "icbin",
+      "task": "BOP19_model_based_6D_localization",
+      "split": "test",
+      "expected_images": 150,
+      "expected_targets": 200,
+      "expected_instances": 1786,
+      "completed_targets": 125,
+      "failed_targets": 75,
+      "blocked_targets": 0,
+      "pending_targets": 0,
+      "attempted_images": 150,
+      "valid_pose_predictions": 1653,
+      "onboarding_expected_CADs": 2,
+      "geometry_CADs": 2,
+      "frozen_feature_CADs": 2,
+      "onboarding_runtime_s": 109.11279828199372,
+      "inference_runtime_s": 1311.7765000969976,
+      "mask_source": "predicted:CNOS-FastSAM",
+      "mask_sha256": "922b9878b1e8e8cac7d9245daa672de7568408ca0d4a8f9a7884bb532f93bcc3",
+      "official_targets_sha256": "8d2752cd4a645682540935f84a15176d3ddc1b8c3bfdc8af9935f9f1395e7c95",
+      "status": "complete",
+      "blocker": null,
+      "validation": {
+        "status": "passed",
+        "fixed_targets": [
+          {
+            "scene_id": 1,
+            "image_id": 0,
+            "object_id": 1,
+            "instance_count": 17
+          },
+          {
+            "scene_id": 1,
+            "image_id": 1,
+            "object_id": 1,
+            "instance_count": 10
+          },
+          {
+            "scene_id": 1,
+            "image_id": 2,
+            "object_id": 1,
+            "instance_count": 9
+          }
+        ],
+        "valid_pose_predictions": 34,
+        "CAD_blockers": {},
+        "ground_truth_pose_access": false,
+        "runtime_blocked_targets": 0,
+        "scope": "real frozen feature extraction, global rigid registration/refinement/scoring and output validity; no accuracy tuning",
+        "official_format_check": {
+          "valid": true,
+          "message": "OK"
+        }
+      },
+      "evaluation": {
+        "status": "complete",
+        "official_pose_metrics": {
+          "bop19_average_recall": 0.3656308324001493,
+          "bop19_average_recall_mspd": 0.3412094064949608,
+          "bop19_average_recall_mssd": 0.3550951847704367,
+          "bop19_average_recall_vsd": 0.4005879059350504,
+          "bop19_average_time_per_image": 8.745176667313316
+        },
+        "command": [
+          "/home/jiabao/.venvs/freezev2-bop-evaluation-20261030/bin/python",
+          "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/cache/bop_toolkit/scripts/eval_bop19_pose.py",
+          "--result_filenames",
+          "freezev2base_icbin-test.csv",
+          "--results_path",
+          "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/icbin/predictions",
+          "--eval_path",
+          "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/icbin/official_evaluation",
+          "--targets_filename",
+          "test_targets_bop19.json",
+          "--renderer_type",
+          "vispy",
+          "--num_workers",
+          "1"
+        ],
+        "runtime_s": 194.84314029800043,
+        "score_file": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/icbin/official_evaluation/freezev2base_icbin-test/scores_bop19.json",
+        "score_sha256": "4cd05d3c685b6333865073a28b92aa30dc6d06580ba209e0c9ec888e766ffb30",
+        "toolkit_revision": "cea62d651c7e395b2e1962b9749e4e89693c6ac4",
+        "GT_selection": "official inst_count k-most-visible; visib_gt_min=-1",
+        "predictions_origin": "our_inference",
+        "csv_sha256": "8a773654dd6d281c8e1508676d723734073a34c15ad6c356486ecc274be8774b",
+        "target_sha256": "8d2752cd4a645682540935f84a15176d3ddc1b8c3bfdc8af9935f9f1395e7c95"
+      },
+      "predictions_origin": "our_frozen_model_inference",
+      "authors_predictions_evaluated": false
+    },
+    "itodd": {
+      "dataset": "itodd",
+      "task": "BOP19_model_based_6D_localization",
+      "split": "test",
+      "expected_images": 721,
+      "expected_targets": 733,
+      "expected_instances": 3041,
+      "completed_targets": 509,
+      "failed_targets": 224,
+      "blocked_targets": 0,
+      "pending_targets": 0,
+      "attempted_images": 721,
+      "valid_pose_predictions": 2446,
+      "onboarding_expected_CADs": 28,
+      "geometry_CADs": 28,
+      "frozen_feature_CADs": 28,
+      "onboarding_runtime_s": 2150.823061423003,
+      "inference_runtime_s": 2055.023917589984,
+      "mask_source": "predicted:CNOS-FastSAM",
+      "mask_sha256": "cce4bcc9d33618e215f1099f9ac7f04598c0f39188585e739dd992496c3bbbd6",
+      "official_targets_sha256": "e77142809e2900f08f55e97187516d8a1a42f45bed4425ca6f26ca53c28a2b7b",
+      "status": "inference_complete_metrics_unavailable",
+      "blocker": null,
+      "validation": {
+        "status": "passed",
+        "fixed_targets": [
+          {
+            "scene_id": 1,
+            "image_id": 1,
+            "object_id": 25,
+            "instance_count": 1
+          },
+          {
+            "scene_id": 1,
+            "image_id": 2,
+            "object_id": 25,
+            "instance_count": 1
+          },
+          {
+            "scene_id": 1,
+            "image_id": 4,
+            "object_id": 25,
+            "instance_count": 5
+          }
+        ],
+        "valid_pose_predictions": 7,
+        "CAD_blockers": {},
+        "ground_truth_pose_access": false,
+        "runtime_blocked_targets": 0,
+        "scope": "real frozen feature extraction, global rigid registration/refinement/scoring and output validity; no accuracy tuning",
+        "official_format_check": {
+          "valid": true,
+          "message": "OK"
+        }
+      },
+      "evaluation": {
+        "status": "blocked_evaluation_assets",
+        "official_pose_metrics": null,
+        "reason": [
+          {
+            "component": "private_test_GT",
+            "reason": "Official public test GT poses/info are withheld; generate valid predictions but local VSD/MSSD/MSPD scores are unavailable. Official BOP evaluation service is the supported scoring route."
+          }
+        ],
+        "csv_sha256": "5af79f162b4b6e653eaf8ecd83bdc14d4ae91e954413e210aba3465f8a291375",
+        "target_sha256": "e77142809e2900f08f55e97187516d8a1a42f45bed4425ca6f26ca53c28a2b7b"
+      },
+      "predictions_origin": "our_frozen_model_inference",
+      "authors_predictions_evaluated": false
+    },
+    "hb": {
+      "dataset": "hb",
+      "task": "BOP19_model_based_6D_localization",
+      "split": "test",
+      "expected_images": 300,
+      "expected_targets": 1630,
+      "expected_instances": 1630,
+      "completed_targets": 1460,
+      "failed_targets": 170,
+      "blocked_targets": 0,
+      "pending_targets": 0,
+      "attempted_images": 300,
+      "valid_pose_predictions": 1460,
+      "onboarding_expected_CADs": 33,
+      "geometry_CADs": 16,
+      "frozen_feature_CADs": 16,
+      "onboarding_runtime_s": 835.5183097170575,
+      "inference_runtime_s": 1298.8481476089837,
+      "mask_source": "predicted:CNOS-FastSAM",
+      "mask_sha256": "7eb39ad0d82783dc59a49cd2f6654c99b63d3b3ef3f051f3368056755e94e6b0",
+      "official_targets_sha256": "700934902efc47c75b40a927bf6977c13087c0cdc39104fbba74a5c65a8b6692",
+      "status": "inference_complete_metrics_unavailable",
+      "blocker": null,
+      "validation": {
+        "status": "passed",
+        "fixed_targets": [
+          {
+            "scene_id": 3,
+            "image_id": 0,
+            "object_id": 4,
+            "instance_count": 1
+          },
+          {
+            "scene_id": 3,
+            "image_id": 10,
+            "object_id": 4,
+            "instance_count": 1
+          },
+          {
+            "scene_id": 3,
+            "image_id": 20,
+            "object_id": 4,
+            "instance_count": 1
+          }
+        ],
+        "valid_pose_predictions": 3,
+        "CAD_blockers": {},
+        "ground_truth_pose_access": false,
+        "runtime_blocked_targets": 0,
+        "scope": "real frozen feature extraction, global rigid registration/refinement/scoring and output validity; no accuracy tuning",
+        "official_format_check": {
+          "valid": true,
+          "message": "OK"
+        }
+      },
+      "evaluation": {
+        "status": "blocked_evaluation_assets",
+        "official_pose_metrics": null,
+        "reason": [
+          {
+            "component": "private_test_GT",
+            "reason": "Official public test GT poses/info are withheld; generate valid predictions but local VSD/MSSD/MSPD scores are unavailable. Official BOP evaluation service is the supported scoring route."
+          }
+        ],
+        "csv_sha256": "55282e9814b07b28e82c8a504bf16c65fc2cee4340a3f8e1730ab906f0a1eabe",
+        "target_sha256": "700934902efc47c75b40a927bf6977c13087c0cdc39104fbba74a5c65a8b6692"
+      },
+      "predictions_origin": "our_frozen_model_inference",
+      "authors_predictions_evaluated": false
+    },
+    "ycbv": {
+      "dataset": "ycbv",
+      "task": "BOP19_model_based_6D_localization",
+      "split": "test",
+      "expected_images": 900,
+      "expected_targets": 4123,
+      "expected_instances": 4123,
+      "completed_targets": 3994,
+      "failed_targets": 129,
+      "blocked_targets": 0,
+      "pending_targets": 0,
+      "attempted_images": 900,
+      "valid_pose_predictions": 3994,
+      "onboarding_expected_CADs": 21,
+      "geometry_CADs": 21,
+      "frozen_feature_CADs": 21,
+      "onboarding_runtime_s": 1331.9968768228332,
+      "inference_runtime_s": 3616.435496183014,
+      "mask_source": "predicted:CNOS-FastSAM",
+      "mask_sha256": "fdec15729676e15876302fc620f752cc5290ee28da5fc3c7e17da1072fd4f422",
+      "official_targets_sha256": "c2cd2e1f5d04708f40d2c433dbc7d5caa9e2004f397eab79b36b433c5b57aaea",
+      "status": "complete",
+      "blocker": null,
+      "validation": {
+        "status": "passed",
+        "fixed_targets": [
+          {
+            "scene_id": 48,
+            "image_id": 1,
+            "object_id": 1,
+            "instance_count": 1
+          },
+          {
+            "scene_id": 48,
+            "image_id": 36,
+            "object_id": 1,
+            "instance_count": 1
+          },
+          {
+            "scene_id": 48,
+            "image_id": 47,
+            "object_id": 1,
+            "instance_count": 1
+          }
+        ],
+        "valid_pose_predictions": 3,
+        "CAD_blockers": {},
+        "ground_truth_pose_access": false,
+        "runtime_blocked_targets": 0,
+        "scope": "real frozen feature extraction, global rigid registration/refinement/scoring and output validity; no accuracy tuning",
+        "official_format_check": {
+          "valid": true,
+          "message": "OK"
+        }
+      },
+      "evaluation": {
+        "status": "complete",
+        "official_pose_metrics": {
+          "bop19_average_recall": 0.7190460021020293,
+          "bop19_average_recall_mspd": 0.6924569488236721,
+          "bop19_average_recall_mssd": 0.7474654377880184,
+          "bop19_average_recall_vsd": 0.7172156196943975,
+          "bop19_average_time_per_image": 4.018261662425571
+        },
+        "command": [
+          "/home/jiabao/.venvs/freezev2-bop-evaluation-20261030/bin/python",
+          "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/cache/bop_toolkit/scripts/eval_bop19_pose.py",
+          "--result_filenames",
+          "freezev2base_ycbv-test.csv",
+          "--results_path",
+          "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/ycbv/predictions",
+          "--eval_path",
+          "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/ycbv/official_evaluation",
+          "--targets_filename",
+          "test_targets_bop19.json",
+          "--renderer_type",
+          "vispy",
+          "--num_workers",
+          "1"
+        ],
+        "runtime_s": 158.76157623299878,
+        "score_file": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/ycbv/official_evaluation/freezev2base_ycbv-test/scores_bop19.json",
+        "score_sha256": "c2b518a6855ee86f87a50df2f04384774cfa8fcfec6e3021fa660254f898ba14",
+        "toolkit_revision": "cea62d651c7e395b2e1962b9749e4e89693c6ac4",
+        "GT_selection": "official inst_count k-most-visible; visib_gt_min=-1",
+        "predictions_origin": "our_inference",
+        "csv_sha256": "556c19bb3f7496f28c7e7e00588c31396f96ecb9cfab2556cd5de61cdc9c34e6",
+        "target_sha256": "c2cd2e1f5d04708f40d2c433dbc7d5caa9e2004f397eab79b36b433c5b57aaea"
+      },
+      "predictions_origin": "our_frozen_model_inference",
+      "authors_predictions_evaluated": false
+    }
+  },
+  "GT_pose_access_in_inference": false,
+  "claim": "Own inference results only. A complete seven-dataset aggregate is withheld until every compatible official evaluation completes."
+}

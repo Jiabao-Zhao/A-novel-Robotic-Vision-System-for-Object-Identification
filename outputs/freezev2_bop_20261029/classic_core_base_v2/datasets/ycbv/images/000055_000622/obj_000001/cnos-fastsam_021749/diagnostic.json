@@ -1,0 +1,103 @@
+{
+  "candidate": {
+    "candidate_id": "cnos-fastsam:000055:000622:21749",
+    "segmentor": "cnos-fastsam",
+    "source_id": "public_BOP23_default_CNOS_FastSAM:fdec15729676e15876302fc620f752cc5290ee28da5fc3c7e17da1072fd4f422",
+    "source_kind": "predicted",
+    "source_file_sha256": "fdec15729676e15876302fc620f752cc5290ee28da5fc3c7e17da1072fd4f422",
+    "segmentation_score": 0.36397120356559753,
+    "record_index": 21749
+  },
+  "source": {
+    "rgb": "/mnt/d/BOP_SAM3_Pilot/data/ycbv/test/000055/rgb/000622.png",
+    "depth": "/mnt/d/BOP_SAM3_Pilot/data/ycbv/test/000055/depth/000622.png",
+    "camera": "/mnt/d/BOP_SAM3_Pilot/data/ycbv/test/000055/scene_camera.json",
+    "rgb_sha256": "9d46ee2b0a881c06f44545dbb4d3f941306b154fc0892c9c344a37f84825f8b9",
+    "depth_sha256": "cd078f108176aa9be73c30f00d5545983cc5e136a28dbc4d7c27a4af4cb60fde",
+    "camera_sha256": "1273e13706eed2d66b58132551e1f2c7cfb6e57880b5f612f7c29999d07d017f",
+    "modality": "rgb",
+    "image_mode": "RGB",
+    "image_dtype": "uint8",
+    "depth_mode": "I;16",
+    "depth_dtype": "uint16",
+    "image_size_hw": [
+      480,
+      640
+    ]
+  },
+  "status": "failed",
+  "identity": {
+    "recipe": "966d495e64ee265f085139832bd479241f112c2303953164b091a2a26062af3d",
+    "candidate": {
+      "candidate_id": "cnos-fastsam:000055:000622:21749",
+      "segmentor": "cnos-fastsam",
+      "source_id": "public_BOP23_default_CNOS_FastSAM:fdec15729676e15876302fc620f752cc5290ee28da5fc3c7e17da1072fd4f422",
+      "source_kind": "predicted",
+      "source_file_sha256": "fdec15729676e15876302fc620f752cc5290ee28da5fc3c7e17da1072fd4f422",
+      "segmentation_score": 0.36397120356559753,
+      "record_index": 21749
+    },
+    "source": {
+      "rgb": "/mnt/d/BOP_SAM3_Pilot/data/ycbv/test/000055/rgb/000622.png",
+      "depth": "/mnt/d/BOP_SAM3_Pilot/data/ycbv/test/000055/depth/000622.png",
+      "camera": "/mnt/d/BOP_SAM3_Pilot/data/ycbv/test/000055/scene_camera.json",
+      "rgb_sha256": "9d46ee2b0a881c06f44545dbb4d3f941306b154fc0892c9c344a37f84825f8b9",
+      "depth_sha256": "cd078f108176aa9be73c30f00d5545983cc5e136a28dbc4d7c27a4af4cb60fde",
+      "camera_sha256": "1273e13706eed2d66b58132551e1f2c7cfb6e57880b5f612f7c29999d07d017f",
+      "modality": "rgb",
+      "image_mode": "RGB",
+      "image_dtype": "uint8",
+      "depth_mode": "I;16",
+      "depth_dtype": "uint16",
+      "image_size_hw": [
+        480,
+        640
+      ]
+    },
+    "CAD_feature_identity": "0996a16714693407531625c976dd4615c5f38a9f397c01a025c56b946fe02819"
+  },
+  "pose_direction": "original_CAD_to_camera",
+  "units": "metres",
+  "model_sha256": "af8774fe78b700e5ac7f55e48411c3389813753293d20dba420704c89fed6285",
+  "frozen_CAD_feature_identity": "0996a16714693407531625c976dd4615c5f38a9f397c01a025c56b946fe02819",
+  "resource_attempts": [],
+  "previous_blocked_attempts": [],
+  "registration": {
+    "config": {
+      "k": 10,
+      "iterations": 10000,
+      "inlier_fraction": 0.03,
+      "seed": 0,
+      "edge_length_ratio": 0.9,
+      "min_triangle_area_ratio": 1e-06,
+      "hypothesis_backend": "torch_cuda",
+      "hypothesis_batch_size": 64,
+      "torch_dtype": "float32",
+      "icp_max_iterations": 30,
+      "icp_translation_tolerance_m": 1e-08,
+      "icp_rotation_tolerance_rad": 1e-07,
+      "icp_stop_when_correspondences_stable": true
+    },
+    "pose_direction": "CAD_to_camera",
+    "units": "m",
+    "requested_hypotheses": 10000,
+    "valid_hypotheses": 0,
+    "repeated_cad_triplets": 56,
+    "degenerate_triplets": 1,
+    "edge_rejected_triplets": 9943,
+    "correspondence_pairs": 1730,
+    "sparse_observed_count": 173,
+    "feature_score_denominator": "N_sparse_observed",
+    "threshold_m": 0.00516189,
+    "hypothesis_backend": "torch_cuda",
+    "numeric_dtype": "float32",
+    "sampling": "uniform_distinct_observed_rows_then_uniform_topk_per_row_fixed_budget_no_rejected_sample_replacement"
+  },
+  "failure_type": "no_valid_global_hypothesis",
+  "reason": "no_valid_hypothesis",
+  "runtime_s": 0.3666747919996851,
+  "artifact_files": {
+    "crop.png": "320f1dc2b0c34c3aa9b199fad023e42e3ac587539079f396ad48c1a3a0447ec0",
+    "mask.png": "077e8a145086621f463fbaabc1ac91593c2586c2ae35c1f3cf0c4637d94af083"
+  }
+}

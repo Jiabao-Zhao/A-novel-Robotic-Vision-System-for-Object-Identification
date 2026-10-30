@@ -169,3 +169,72 @@ venv/
 # These twelve arrays contain derived CAD validation meshes, not captures,
 # feature/pose banks or model weights. Keep their exception limited to this run.
 !/outputs/cad_grasp_selection_20261028/runs/20261028T190844Z/derived_tasks/*_validation_mesh.npz
+
+# Publish the completed FreeZeV2 base run, without downloaded assets or bulk caches.
+# Reports, all seven BOP CSVs, target/candidate traces and official score receipts.
+!/outputs/freezev2_bop_20261029/
+/outputs/freezev2_bop_20261029/*
+!/outputs/freezev2_bop_20261029/assets_manifest.json
+!/outputs/freezev2_bop_20261029/environment_inventory.json
+!/outputs/freezev2_bop_20261029/evaluation_runtime.json
+!/outputs/freezev2_bop_20261029/runtime_ready.json
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/
+/outputs/freezev2_bop_20261029/classic_core_base_v2/**
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/**/
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/*.md
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/*.json
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/source_snapshot/**/*.py
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/source_snapshot/source_manifest.json
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/auxiliary_source/evaluation_v1/*.py
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/auxiliary_source/evaluation_v1/source_manifest.json
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/*/predictions/*.csv
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/*/predictions/export_receipt.json
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/*/evaluation_receipt.json
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/*/evaluation_with_recorded_failures.json
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/*/official_evaluation*/**/scores*.json
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/*/images/*/identity.json
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/*/images/*/complete.json
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/*/images/*/partial.json
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/*/images/*/obj_*/*/diagnostic.json
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/*/validation/**/*.json
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/*/validation/**/*.csv
+
+# Only the reviewed RGB crops, predicted masks and pose overlays are published.
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/hb/images/000003_000210/obj_000009/cnos-fastsam_000463/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/hb/images/000003_000420/obj_000004/cnos-fastsam_001431/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/hb/images/000003_000630/obj_000019/cnos-fastsam_001900/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/icbin/images/000001_000028/obj_000001/cnos-fastsam_000631/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/icbin/images/000002_000031/obj_000002/cnos-fastsam_002992/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/icbin/images/000003_000017/obj_000001/cnos-fastsam_004482/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/itodd/images/000001_000068/obj_000021/cnos-fastsam_008754/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/itodd/images/000001_000131/obj_000004/cnos-fastsam_000420/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/itodd/images/000001_000194/obj_000019/cnos-fastsam_001213/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/lmo/images/000002_000061/obj_000001/cnos-fastsam_007494/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/lmo/images/000002_000124/obj_000001/cnos-fastsam_002302/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/lmo/images/000002_000224/obj_000001/cnos-fastsam_002947/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tless/images/000002_000209/obj_000006/cnos-fastsam_002962/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tless/validation/images/000005_000007/obj_000001/cnos-fastsam_012696/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tless/validation/images/000005_000020/obj_000001/cnos-fastsam_010596/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tless/validation/images/000005_000025/obj_000001/cnos-fastsam_010944/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tudl/images/000001_004088/obj_000001/cnos-fastsam_002485/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tudl/images/000002_003992/obj_000002/cnos-fastsam_007834/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tudl/images/000003_004065/obj_000003/cnos-fastsam_013700/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/ycbv/images/000048_001074/obj_000001/cnos-fastsam_000168/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/ycbv/images/000048_001104/obj_000006/cnos-fastsam_000314/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/ycbv/images/000048_001128/obj_000014/cnos-fastsam_000617/*.png
+!/outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tless/onboarding/obj_000001/geometry/render_contact_sheet.png
+
+# Small independent test receipts and the documented original GeDi LRF failure.
+!/outputs/freezev2_bop_20261029/validation/
+/outputs/freezev2_bop_20261029/validation/*
+!/outputs/freezev2_bop_20261029/validation/final_reporting_test_audit_20261030.json
+!/outputs/freezev2_bop_20261029/validation/full_tests_20261030.xml
+!/outputs/freezev2_bop_20261029/validation/gedi_lrf_20261030/
+/outputs/freezev2_bop_20261029/validation/gedi_lrf_20261030/*
+!/outputs/freezev2_bop_20261029/validation/gedi_lrf_20261030/*.md
+!/outputs/freezev2_bop_20261029/validation/gedi_lrf_20261030/*.json
+!/outputs/freezev2_bop_20261029/validation/gedi_lrf_20261030/*.py
+
+# Keep runtime caches, raw arrays, unreviewed images, logs and locks local.
+/outputs/freezev2_bop_20261029/classic_core_base_v2/**/__pycache__/
+/outputs/freezev2_bop_20261029/classic_core_base_v2/**/.pytest_cache/

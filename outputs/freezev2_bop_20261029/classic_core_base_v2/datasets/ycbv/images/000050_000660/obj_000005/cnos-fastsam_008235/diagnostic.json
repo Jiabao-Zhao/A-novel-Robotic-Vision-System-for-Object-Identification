@@ -1,0 +1,103 @@
+{
+  "candidate": {
+    "candidate_id": "cnos-fastsam:000050:000660:8235",
+    "segmentor": "cnos-fastsam",
+    "source_id": "public_BOP23_default_CNOS_FastSAM:fdec15729676e15876302fc620f752cc5290ee28da5fc3c7e17da1072fd4f422",
+    "source_kind": "predicted",
+    "source_file_sha256": "fdec15729676e15876302fc620f752cc5290ee28da5fc3c7e17da1072fd4f422",
+    "segmentation_score": 0.2872856557369232,
+    "record_index": 8235
+  },
+  "source": {
+    "rgb": "/mnt/d/BOP_SAM3_Pilot/data/ycbv/test/000050/rgb/000660.png",
+    "depth": "/mnt/d/BOP_SAM3_Pilot/data/ycbv/test/000050/depth/000660.png",
+    "camera": "/mnt/d/BOP_SAM3_Pilot/data/ycbv/test/000050/scene_camera.json",
+    "rgb_sha256": "e15f61945dc0b0485a6d383cd535e8ef16913cb116f9e13e1376fcdfdd2093fe",
+    "depth_sha256": "91a3982c9c3daac08445dab66a8a511e6295736429eb8502c6cbf64c8b309057",
+    "camera_sha256": "18ead714a6d6a96d38e44f0078404a3cb5f2754760c3e59e3caee72e6e81ed6f",
+    "modality": "rgb",
+    "image_mode": "RGB",
+    "image_dtype": "uint8",
+    "depth_mode": "I;16",
+    "depth_dtype": "uint16",
+    "image_size_hw": [
+      480,
+      640
+    ]
+  },
+  "status": "failed",
+  "identity": {
+    "recipe": "966d495e64ee265f085139832bd479241f112c2303953164b091a2a26062af3d",
+    "candidate": {
+      "candidate_id": "cnos-fastsam:000050:000660:8235",
+      "segmentor": "cnos-fastsam",
+      "source_id": "public_BOP23_default_CNOS_FastSAM:fdec15729676e15876302fc620f752cc5290ee28da5fc3c7e17da1072fd4f422",
+      "source_kind": "predicted",
+      "source_file_sha256": "fdec15729676e15876302fc620f752cc5290ee28da5fc3c7e17da1072fd4f422",
+      "segmentation_score": 0.2872856557369232,
+      "record_index": 8235
+    },
+    "source": {
+      "rgb": "/mnt/d/BOP_SAM3_Pilot/data/ycbv/test/000050/rgb/000660.png",
+      "depth": "/mnt/d/BOP_SAM3_Pilot/data/ycbv/test/000050/depth/000660.png",
+      "camera": "/mnt/d/BOP_SAM3_Pilot/data/ycbv/test/000050/scene_camera.json",
+      "rgb_sha256": "e15f61945dc0b0485a6d383cd535e8ef16913cb116f9e13e1376fcdfdd2093fe",
+      "depth_sha256": "91a3982c9c3daac08445dab66a8a511e6295736429eb8502c6cbf64c8b309057",
+      "camera_sha256": "18ead714a6d6a96d38e44f0078404a3cb5f2754760c3e59e3caee72e6e81ed6f",
+      "modality": "rgb",
+      "image_mode": "RGB",
+      "image_dtype": "uint8",
+      "depth_mode": "I;16",
+      "depth_dtype": "uint16",
+      "image_size_hw": [
+        480,
+        640
+      ]
+    },
+    "CAD_feature_identity": "bfa3c0b87aeaef6999e9dd7810e532607171ce4ef51168e63a6557ae2c1e1c89"
+  },
+  "pose_direction": "original_CAD_to_camera",
+  "units": "metres",
+  "model_sha256": "c1d093e33fe9b447812b2950c26b80fb26648a4205445986c9cc8b1731496811",
+  "frozen_CAD_feature_identity": "bfa3c0b87aeaef6999e9dd7810e532607171ce4ef51168e63a6557ae2c1e1c89",
+  "resource_attempts": [],
+  "previous_blocked_attempts": [],
+  "registration": {
+    "config": {
+      "k": 10,
+      "iterations": 10000,
+      "inlier_fraction": 0.03,
+      "seed": 0,
+      "edge_length_ratio": 0.9,
+      "min_triangle_area_ratio": 1e-06,
+      "hypothesis_backend": "torch_cuda",
+      "hypothesis_batch_size": 64,
+      "torch_dtype": "float32",
+      "icp_max_iterations": 30,
+      "icp_translation_tolerance_m": 1e-08,
+      "icp_rotation_tolerance_rad": 1e-07,
+      "icp_stop_when_correspondences_stable": true
+    },
+    "pose_direction": "CAD_to_camera",
+    "units": "m",
+    "requested_hypotheses": 10000,
+    "valid_hypotheses": 0,
+    "repeated_cad_triplets": 134,
+    "degenerate_triplets": 28,
+    "edge_rejected_triplets": 9838,
+    "correspondence_pairs": 1890,
+    "sparse_observed_count": 189,
+    "feature_score_denominator": "N_sparse_observed",
+    "threshold_m": 0.00589389,
+    "hypothesis_backend": "torch_cuda",
+    "numeric_dtype": "float32",
+    "sampling": "uniform_distinct_observed_rows_then_uniform_topk_per_row_fixed_budget_no_rejected_sample_replacement"
+  },
+  "failure_type": "no_valid_global_hypothesis",
+  "reason": "no_valid_hypothesis",
+  "runtime_s": 0.40736277800169773,
+  "artifact_files": {
+    "crop.png": "efef8a5ef4ddd416dcc695149ba5da9bff38aad8a57851737e39d9f4a3e052ac",
+    "mask.png": "108c2b710443b5ba327beefb3ffc3fd8a78ea614f614fa7ef754fe4927d1e241"
+  }
+}

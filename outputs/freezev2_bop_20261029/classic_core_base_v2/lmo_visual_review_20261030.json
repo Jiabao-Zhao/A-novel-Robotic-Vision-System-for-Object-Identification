@@ -1,0 +1,84 @@
+{
+  "verified_utc": "2026-10-30T05:49:03.196753+00:00",
+  "dataset": "lmo",
+  "scope": "Three selected candidate overlays from completed full-inference image receipts, reviewed without ground-truth poses or masks. All three use object 1; this is a scoped visual sanity check, not dataset accuracy.",
+  "selection": "Indices 10,25,40 of sorted completed LM-O image receipts at the observation snapshot; first retained prediction per receipt. Images61,124,224. No GT or metric-based selection.",
+  "method_digest": "6f3f47c445366db882b1cb30d73968053354b7ced69bff3c7765e144e557ccbc",
+  "ground_truth_pose_access": false,
+  "source_or_prediction_mutation": false,
+  "interpretation": "Orange represents coarse CAD projection, green represents ICP projection. Overlap and valid finite scores establish neither pose correctness nor published performance; official evaluation remains pending.",
+  "cases": [
+    {
+      "scene_id": 2,
+      "image_id": 61,
+      "object_id": 1,
+      "candidate_id": "cnos-fastsam:000002:000061:7494",
+      "selected_in_saved_predictions": true,
+      "diagnostic": "datasets\\lmo\\images\\000002_000061\\obj_000001\\cnos-fastsam_007494\\diagnostic.json",
+      "diagnostic_sha256": "282cc7e77fa6a92f628ad7c9886957f6537cb8aa93f9de7431e4dbc94c4d68b8",
+      "receipt_sha256": "72cbd48dcd0030d5dfa3567241d177595e3e0acb737f39fdbd31d35632a20f46",
+      "artifact_sha256": {
+        "crop.png": "caaa257305a92010923d636254de2f19acf884ba7faa1e305b9982b8b7a9b028",
+        "mask.png": "abe4f11117b5770f87b8c9a9ba3c9442453ee37dc2f44ca6a4862efe92a38657",
+        "observed.npz": "c6e6d71d3e1fd4e0801ab9495bae809426e6d18e7bd073bc8f7a6d5e993c582a",
+        "pose_overlay.png": "cc896c8cf2adfba07ecc404a0f588d3645203d1014d0aecea16c93265a96a5c2"
+      },
+      "observations": "Small projected CAD point cluster near the centre of the RGB frame; coarse orange and refined green projections largely overlap. Visible scene is cluttered and the cluster does not establish correct object pose.",
+      "scores": {
+        "coarse_feature_score": 0.08230564743280411,
+        "refined_feature_score": 0.0492247608465046,
+        "geometry_score": 0.062,
+        "joint_score": 0.00025119150029418347
+      },
+      "icp_status": "max_iterations"
+    },
+    {
+      "scene_id": 2,
+      "image_id": 124,
+      "object_id": 1,
+      "candidate_id": "cnos-fastsam:000002:000124:2302",
+      "selected_in_saved_predictions": true,
+      "diagnostic": "datasets\\lmo\\images\\000002_000124\\obj_000001\\cnos-fastsam_002302\\diagnostic.json",
+      "diagnostic_sha256": "462a3a058468b1656a9526a24f0da0dd801a140f18a2feec5f48ecdd7fd9d323",
+      "receipt_sha256": "b76588b552a83a7c54ae0f124934b197e7dd50b67070c4bfd66947eff81ad791",
+      "artifact_sha256": {
+        "crop.png": "40c6c8d81bab9013832cfccffd9411f7f6a08d7d3aac14a43f3720d4b402933a",
+        "mask.png": "894b4e14fa9a61eb8f8a46ad99e37ee541511ee817435eb7697d9817cfd17dea",
+        "observed.npz": "80142889a49c7cc1d66be85f27b1f83081bd635f92273a0e7fd75bb94f608f21",
+        "pose_overlay.png": "645c295a6779b5bdaa8ef5abd7dd86b12bf0ad78e4d1254e2eba0de1eef97fca"
+      },
+      "observations": "Compact projected CAD cluster in the lower central board region. Coarse and refined projections overlap with a visible edge offset; the full RGB image is decoded and unclipped.",
+      "scores": {
+        "coarse_feature_score": 0.12071572244167328,
+        "refined_feature_score": 0.09959787480551921,
+        "geometry_score": 0.1336,
+        "joint_score": 0.0016062767292833585
+      },
+      "icp_status": "max_iterations"
+    },
+    {
+      "scene_id": 2,
+      "image_id": 224,
+      "object_id": 1,
+      "candidate_id": "cnos-fastsam:000002:000224:2947",
+      "selected_in_saved_predictions": true,
+      "diagnostic": "datasets\\lmo\\images\\000002_000224\\obj_000001\\cnos-fastsam_002947\\diagnostic.json",
+      "diagnostic_sha256": "fc1f69bb0d88efe976a66fa8afe36b246e8ea7ec2bc8f8dad5cf37635e2e4231",
+      "receipt_sha256": "2cf7e4060c4e7351bd2a92a00522b98b4089d1e531a88738c7c5fae0bf5c44b4",
+      "artifact_sha256": {
+        "crop.png": "e94dd09332cfa2ff07296992cb48dbf0aa06fa63988ddf8b3e7b9dd36e730bcf",
+        "mask.png": "560f42d81a3ef296031598d735fe72d269a41254d9d118f10d33b696e80f3556",
+        "observed.npz": "804d7e7f0ad43f254f47e2465c6b36b7df612fe4a687c65d678df4be619a584d",
+        "pose_overlay.png": "02543a0dd7d36ee2464acc20881e61138ca7f60905e06e59eeec3b1d8307a956"
+      },
+      "observations": "Larger projected CAD footprint near the lower-right watering-can region in this view. Coarse and refined points mostly overlap with a small boundary shift; projected size and image placement differ from the other two views.",
+      "scores": {
+        "coarse_feature_score": 0.7398079633712769,
+        "refined_feature_score": 0.8032716649181022,
+        "geometry_score": 0.3654,
+        "joint_score": 0.21714507938655705
+      },
+      "icp_status": "max_iterations"
+    }
+  ]
+}

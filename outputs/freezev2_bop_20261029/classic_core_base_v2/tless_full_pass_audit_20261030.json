@@ -1,0 +1,138 @@
+{
+  "schema": "freezev2-tless-finalized-target-pass-audit-v1",
+  "verified_utc": "2026-10-30T05:49:02.336094Z",
+  "preserved_utc": "2026-10-30T05:50:56.935553+00:00",
+  "scope": "Preserved scoped summary of the already completed read-only CPU audit. Full per-file ledger inventory is not duplicated here; its verified digest is retained.",
+  "audit_provenance": {
+    "function": "audit_dataset(run_root, tless, asset, run_manifest)",
+    "helper_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\auxiliary_source\\evaluation_v1\\complete_evaluation.py",
+    "helper_sha256": "9eddc4b53a176b9aa61d7fdfd99876d65714c3b3d9fbdc1c0b62d7bfd905872a",
+    "auxiliary_source_manifest_sha256": "8a6f0e10ba4c0c35068a2c9934353e3271816a6ced907adee9efe21f8dbf86a9",
+    "primary_source_manifest_sha256": "237f10948fddc3a02fd42176e5acca3a9db1b7598e5b7a34d6d6766190e85c50",
+    "primary_sealed_source_files_verified": 19,
+    "execution": "Imported sealed helper with Python -B; called only load_frozen and audit_dataset. No main locks, queue, evaluator, GT, inference or GPU job invoked."
+  },
+  "claim": {
+    "full_target_pass_recorded": true,
+    "coverage_export_valid": true,
+    "execution_complete": false,
+    "execution_incomplete_reason": "388 target rows remain blocked because CAD27/28/30 GeDi descriptors are nonfinite.",
+    "official_metrics_status": "pending",
+    "official_pose_metrics": null,
+    "pose_accuracy_or_published_performance_claimed": false
+  },
+  "audit": {
+    "dataset": "tless",
+    "expected_images": 1000,
+    "attempted_images": 1000,
+    "expected_targets": 4904,
+    "attempted_targets": 4904,
+    "expected_instances": 6423,
+    "completed_targets": 3370,
+    "failed_targets": 1146,
+    "blocked_targets": 388,
+    "target_reason_counts": [
+      {
+        "status": "blocked",
+        "reason": "CAD_onboarding_unavailable",
+        "targets": 388
+      },
+      {
+        "status": "failed",
+        "reason": "fewer_valid_distinct_poses_than_requested",
+        "targets": 544
+      },
+      {
+        "status": "failed",
+        "reason": "no_predicted_masks",
+        "targets": 602
+      }
+    ],
+    "missing_targets": 0,
+    "unknown_targets": 0,
+    "valid_pose_predictions": 4553,
+    "valid_partial_poses_retained": true,
+    "inference_runtime_s": 4669.232855642009,
+    "strict_execution_complete": false,
+    "recorded_inference_failures": true,
+    "coverage_complete": true,
+    "export_valid": true,
+    "coverage_errors": [],
+    "export_errors": [],
+    "ledger_digest": "f80356ff393285d2915c7d3d4cfdb1046f3113903b2bcf11bca1c548ae188567",
+    "csv_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\tless\\predictions\\freezev2base_tless-test.csv",
+    "csv_sha256": "df851bcfdc9ed2c53d0c4a83d71669b191f2e0b59c221d40bab311013ffaea5b",
+    "export_receipt_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\tless\\predictions\\export_receipt.json",
+    "export_receipt_sha256": "6a11352db2aae1c4548146bd2ff09797a4ac154f528bb56e5ecc76cf041edb08",
+    "official_target_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\external\\tless_test_targets_bop19.json",
+    "target_sha256": "5ced8796c421baad79816fe905a36fe6ad440efe78cd640d167fc4b8f26c3cfe",
+    "mask_sha256": "db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+    "denominator_policy": "Unmodified complete official localization targets, including blocked and failed rows"
+  },
+  "receipt_coverage": {
+    "physical_complete_image_receipts": 708,
+    "physical_partial_image_receipts": 292,
+    "effective_partial_image_receipts": 292,
+    "superseded_partial_image_receipts": 0,
+    "poses_by_effective_receipt": {
+      "complete.json": 3622,
+      "partial.json": 931
+    },
+    "target_statuses_by_effective_receipt": {
+      "complete.json": {
+        "completed": 2525,
+        "failed": 861
+      },
+      "partial.json": {
+        "completed": 845,
+        "failed": 285,
+        "blocked": 388
+      }
+    },
+    "top_level_statuses": {
+      "complete.json": {
+        "complete": 193,
+        "complete_with_failures": 515
+      },
+      "partial.json": {
+        "complete_with_failures": 292
+      }
+    },
+    "filename_vs_blocked_target_status_errors": [],
+    "status_interpretation": "Frozen partial.json receipts retain top-level complete_with_failures; per-target blocked status and partial filename identify incompleteness."
+  },
+  "identity_verification": {
+    "config_matches_immutable_method_identity": true,
+    "retained_input_manifest_sha_matches": true,
+    "camera_snapshot_digest_matches": true,
+    "actual_scene_camera_files_checked": 20,
+    "retained_RGB_depth_source_metadata_fingerprints_checked": 1000,
+    "method_mask_target_and_camera_identity_mismatches": 0,
+    "all_CSV_poses_exactly_match_effective_ledger_multiset": true,
+    "pose_validation": "All 4553 ledger and CSV poses passed finite proper rigid rotation, dimensions, score/runtime and image-time consistency checks."
+  },
+  "onboarding": {
+    "geometry_complete": 30,
+    "features_complete": 27,
+    "blockers_intact": [
+      {
+        "CAD": 27,
+        "blocked_target_rows": 96,
+        "blocked_requested_instances": 96
+      },
+      {
+        "CAD": 28,
+        "blocked_target_rows": 148,
+        "blocked_requested_instances": 192
+      },
+      {
+        "CAD": 30,
+        "blocked_target_rows": 144,
+        "blocked_requested_instances": 144
+      }
+    ],
+    "blocker_reason": "FeatureDependencyError: original GeDi extraction failed because trained GeDi descriptors must contain finite numeric values.",
+    "blocker_file_sha256_each": "484a4e42923e787a2be602f3cb4bf9fc04914d1db59610ada716f9f95f2d58d7"
+  },
+  "preservation_action": "Only this new audit file was written. Existing source, predictions, receipts, blockers and status files were not modified; expensive checks were not rerun."
+}

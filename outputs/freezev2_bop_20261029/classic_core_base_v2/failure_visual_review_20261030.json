@@ -1,0 +1,43 @@
+{
+  "verified_utc": "2026-10-30T10:35:50.418906+00:00",
+  "scope": "Representative recorded failure inputs visually inspected without GT, evaluation or inference changes. These are failure-trace checks, not a GT-based accuracy analysis.",
+  "method_digest": "6f3f47c445366db882b1cb30d73968053354b7ced69bff3c7765e144e557ccbc",
+  "ground_truth_pose_access": false,
+  "cases": [
+    {
+      "type": "external_mask_absent",
+      "dataset": "tless",
+      "scene_id": 1,
+      "image_id": 464,
+      "object_id": 25,
+      "ledger_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\tless\\images\\000001_000464\\complete.json",
+      "ledger_sha256": "c84ebebd021974df0b84a9f5bee64cce60e790bb423cc80f1794e4ebc61c2316",
+      "RGB_path": "D:\\BOP_SAM3_Pilot\\data\\tless\\test_primesense\\000001\\rgb\\000464.png",
+      "RGB_sha256": "b52727b469397f9e02af93c1dc5e4974aaf24ac7091bbd73a11e2b95dcb9a85f",
+      "requested_instances": 1,
+      "candidate_count": 0,
+      "saved_pose_count": 0,
+      "observations": "RGB decodes normally and shows white box-like components on a marked table. The recorded requested object25 has zero external CNOS-FastSAM candidate masks. This absence is established by the saved target trace; image inspection alone does not establish why the segmentor omitted the candidate or which visible region is the requested CAD."
+    },
+    {
+      "type": "observed_GeDi_nonfinite",
+      "dataset": "tless",
+      "scene_id": 2,
+      "image_id": 209,
+      "object_id": 6,
+      "candidate_id": "cnos-fastsam:000002:000209:2962",
+      "diagnostic_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\tless\\images\\000002_000209\\obj_000006\\cnos-fastsam_002962\\diagnostic.json",
+      "diagnostic_sha256": "0520d531ce3053ada94344298d558ab28e182ad5fc6b972e8638477dbfefaa31",
+      "ledger_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\tless\\images\\000002_000209\\complete.json",
+      "ledger_sha256": "73b13f1cdef8e56485910d739c7708fb6a1a66c4ab1ade7f7a8f9249001cdab6",
+      "artifact_sha256": {
+        "crop.png": "c38a2fb4c8881afbdabf3bdd71dd7a8f5e028c245e5607ee2e2bc8c11016ff21",
+        "mask.png": "ed4af2fb6bd2247479d31271c4e33c8f27c90a849fd6a8b09c395ae0b8ad398a"
+      },
+      "reason": "original GeDi extraction failed (check local neighborhoods, LRF degeneracy and CUDA ops): ValueError: trained GeDi descriptors must contain finite numeric values",
+      "observations": "The RGB crop shows a white component with a circular recess and flat front faces. The binary predicted mask is nonempty and localized. The saved extraction trace records nonfinite trained GeDi descriptors and no candidate pose; the RGB/mask view alone does not localize the numeric cause for this candidate. No epsilon, row removal, jitter, resampling or fallback was applied."
+    }
+  ],
+  "known_CAD_GeDi_diagnosis": "../validation/gedi_lrf_20261030/GEDI_LRF_FAILURE_DIAGNOSIS_20261030.md",
+  "preservation": "Only this new audit was written; source, masks, descriptors, poses, scores and target denominators were unchanged."
+}

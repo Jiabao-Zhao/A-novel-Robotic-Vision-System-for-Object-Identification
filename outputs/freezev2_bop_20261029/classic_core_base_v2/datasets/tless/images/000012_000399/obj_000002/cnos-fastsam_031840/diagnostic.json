@@ -1,0 +1,80 @@
+{
+  "candidate": {
+    "candidate_id": "cnos-fastsam:000012:000399:31840",
+    "segmentor": "cnos-fastsam",
+    "source_id": "public_BOP23_default_CNOS_FastSAM:db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+    "source_kind": "predicted",
+    "source_file_sha256": "db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+    "segmentation_score": 0.7228600382804871,
+    "record_index": 31840
+  },
+  "source": {
+    "rgb": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000012/rgb/000399.png",
+    "depth": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000012/depth/000399.png",
+    "camera": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000012/scene_camera.json",
+    "rgb_sha256": "2db16bd9fc9b9bcd1dc27bde83ae1a2e11133bf330383fc27c905d8a3f5d5207",
+    "depth_sha256": "4934a6dd5ffe91e7e601be8448041a06718e97ba9cf21969ca6175c43e66a5e6",
+    "camera_sha256": "193b35258ad15c6b0f66b247f8666f4fe79873aa369bbdcfc4c78736ee3f4adc",
+    "modality": "rgb",
+    "image_mode": "RGB",
+    "image_dtype": "uint8",
+    "depth_mode": "I;16",
+    "depth_dtype": "uint16",
+    "image_size_hw": [
+      540,
+      720
+    ]
+  },
+  "status": "failed",
+  "identity": {
+    "recipe": "966d495e64ee265f085139832bd479241f112c2303953164b091a2a26062af3d",
+    "candidate": {
+      "candidate_id": "cnos-fastsam:000012:000399:31840",
+      "segmentor": "cnos-fastsam",
+      "source_id": "public_BOP23_default_CNOS_FastSAM:db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+      "source_kind": "predicted",
+      "source_file_sha256": "db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+      "segmentation_score": 0.7228600382804871,
+      "record_index": 31840
+    },
+    "source": {
+      "rgb": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000012/rgb/000399.png",
+      "depth": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000012/depth/000399.png",
+      "camera": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000012/scene_camera.json",
+      "rgb_sha256": "2db16bd9fc9b9bcd1dc27bde83ae1a2e11133bf330383fc27c905d8a3f5d5207",
+      "depth_sha256": "4934a6dd5ffe91e7e601be8448041a06718e97ba9cf21969ca6175c43e66a5e6",
+      "camera_sha256": "193b35258ad15c6b0f66b247f8666f4fe79873aa369bbdcfc4c78736ee3f4adc",
+      "modality": "rgb",
+      "image_mode": "RGB",
+      "image_dtype": "uint8",
+      "depth_mode": "I;16",
+      "depth_dtype": "uint16",
+      "image_size_hw": [
+        540,
+        720
+      ]
+    },
+    "CAD_feature_identity": "8bd7bb951486ec93859a0bd6952e9c37a696e3b14cb92ba1d58bac853b2857ce"
+  },
+  "pose_direction": "original_CAD_to_camera",
+  "units": "metres",
+  "model_sha256": "354d8969694176aa65d4d470badd304532bead5aa8e96bdecaa0ae41620f81b2",
+  "frozen_CAD_feature_identity": "8bd7bb951486ec93859a0bd6952e9c37a696e3b14cb92ba1d58bac853b2857ce",
+  "resource_attempts": [
+    {
+      "attempt": 0,
+      "hypothesis_batch_size": 64,
+      "type": "FeatureDependencyError",
+      "reason": "original GeDi extraction failed (check local neighborhoods, LRF degeneracy and CUDA ops): ValueError: trained GeDi descriptors must contain finite numeric values"
+    }
+  ],
+  "previous_blocked_attempts": [],
+  "failure_type": "FeatureDependencyError",
+  "reason": "original GeDi extraction failed (check local neighborhoods, LRF degeneracy and CUDA ops): ValueError: trained GeDi descriptors must contain finite numeric values",
+  "traceback": "Traceback (most recent call last):\n  File \"/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/source_snapshot/freezev2_repro/features.py\", line 513, in compute\n    value = _finite_matrix(value, \"trained GeDi descriptors\", 32)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/source_snapshot/freezev2_repro/features.py\", line 31, in _finite_matrix\n    raise ValueError(f\"{name} must contain finite numeric values\")\nValueError: trained GeDi descriptors must contain finite numeric values\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/source_snapshot/freezev2_repro/case_inference.py\", line 62, in infer_candidate\n    geometric=gedi.compute(cloud['sparse'],cloud['dense'],bundle['model']['diameter_m'])\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/classic_core_base_v2/source_snapshot/freezev2_repro/features.py\", line 518, in compute\n    raise FeatureDependencyError(\nfreezev2_repro.features.FeatureDependencyError: original GeDi extraction failed (check local neighborhoods, LRF degeneracy and CUDA ops): ValueError: trained GeDi descriptors must contain finite numeric values\n",
+  "runtime_s": 0.20059970600050292,
+  "artifact_files": {
+    "crop.png": "994677c510839bfc7bad517f64eacdd96adb6544ec7c0dff811a3749b68b71d5",
+    "mask.png": "aad508d4f8073087f9b754e3cd425dccebb2558f527bead7296764f7ae2b3b82"
+  }
+}

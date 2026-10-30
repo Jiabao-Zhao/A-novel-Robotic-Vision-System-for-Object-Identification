@@ -1,0 +1,85 @@
+{
+  "verified_utc": "2026-10-30T08:33:53.766718+00:00",
+  "dataset": "hb",
+  "scope": "Three selected full-run candidates with distinct CAD identities visually reviewed without GT; in-progress subset within scene3, not final coverage/pose accuracy.",
+  "selection": "At snapshot25%,50%,75%indices of sorted completed image receipts with predictions, then first retained CAD identity not previously sampled, searching forward with wrap. Actual scene3/images210/420/630,CAD9/4/19; no score/GT selection or tuning.",
+  "method_digest": "6f3f47c445366db882b1cb30d73968053354b7ced69bff3c7765e144e557ccbc",
+  "ground_truth_pose_access": false,
+  "test_ground_truth_availability": "private; no local pose metrics claimed",
+  "source_or_prediction_mutation": false,
+  "interpretation": "Orange=coarse, green=ICP projection. Visual overlap does not establish correct full6D pose. Feature scores sum top-k inlier pairs per observed query and can exceed1; neither component nor joint score is a probability.",
+  "cases": [
+    {
+      "scene_id": 3,
+      "image_id": 210,
+      "object_id": 9,
+      "candidate_id": "cnos-fastsam:000003:000210:463",
+      "selected_in_saved_predictions": true,
+      "diagnostic": "datasets\\hb\\images\\000003_000210\\obj_000009\\cnos-fastsam_000463\\diagnostic.json",
+      "diagnostic_sha256": "2df2b11b5520a4216b4116a91a4571b8483db8e1b75d40813f4711d224b13f13",
+      "receipt_sha256": "e9e87323ea5ccd04a81b0e2ad6fbf82f14d040cc69fae59d3cee87528878f422",
+      "artifact_sha256": {
+        "crop.png": "68b0d9be58f6df72a9bdccda2e07cd65eedc56814b817345002986eca291218e",
+        "mask.png": "e1728106f1e52981b4d1d5a6870dc9248d013d5d809daa5112cc622270e3157e",
+        "observed.npz": "7428870ce55d6d6cf63b194e0edb92a480717529bda66953329ffb1e6a302b91",
+        "pose_overlay.png": "81024fd0f5d5365daae9ea2dbbf0b05c00e4e0a3d6c0e557e85b2dfcd4ab39da"
+      },
+      "visual_observations": "The compact CAD projection covers the blue desk-object region near the upper-right of the marked board. Orange and green projections mostly coincide; dense points obscure the underlying shape and do not resolve full orientation.",
+      "scores": {
+        "coarse_feature_score": 0.42547622323036194,
+        "refined_feature_score": 0.39198661244023975,
+        "geometry_score": 0.3026,
+        "joint_score": 0.050467925582267675
+      },
+      "icp_status": "max_iterations"
+    },
+    {
+      "scene_id": 3,
+      "image_id": 420,
+      "object_id": 4,
+      "candidate_id": "cnos-fastsam:000003:000420:1431",
+      "selected_in_saved_predictions": true,
+      "diagnostic": "datasets\\hb\\images\\000003_000420\\obj_000004\\cnos-fastsam_001431\\diagnostic.json",
+      "diagnostic_sha256": "6402b96d60b91ebfc3654fb9409b9cd2dd4aea1e390a0f5ed9310e86b08bbd8d",
+      "receipt_sha256": "e20f0f869e98e03b56d161e8fafa29441c560ae5a7423da3d9e719bdcf99099d",
+      "artifact_sha256": {
+        "crop.png": "c82047fb5d18518ab6697c863c2b83d01fd686282a8b98d29e19abefaf3b787e",
+        "mask.png": "cc0a9efd0897ceb42389066dfda40183cc36becfbdbad9d1dc54005e372caad9",
+        "observed.npz": "d197f131d5c156d6bc5c77c1b0e69091e94903a5f8c7aa019ea65d50cfb7613f",
+        "pose_overlay.png": "daab69cf916e4c390ab9bf2fec68e9fe6883be5e3db26cd68f7cf8e7fae99d4d"
+      },
+      "visual_observations": "The projected CAD body and legs broadly follow the visible black/tan figurine silhouette on the marked board. Orange/green points largely overlap, and ICP records stable correspondences. This is a plausible image alignment, not private-GT verification.",
+      "scores": {
+        "coarse_feature_score": 1.8333688974380493,
+        "refined_feature_score": 1.7193161585303183,
+        "geometry_score": 0.4138,
+        "joint_score": 1.3043558505896484
+      },
+      "icp_status": "converged_stable_correspondences"
+    },
+    {
+      "scene_id": 3,
+      "image_id": 630,
+      "object_id": 19,
+      "candidate_id": "cnos-fastsam:000003:000630:1900",
+      "selected_in_saved_predictions": true,
+      "diagnostic": "datasets\\hb\\images\\000003_000630\\obj_000019\\cnos-fastsam_001900\\diagnostic.json",
+      "diagnostic_sha256": "df5e3262ffe3173d9c46a5bab7f9ad6581b274a7c9d4073c732547530ef3ae47",
+      "receipt_sha256": "9749be5a7516bc76eed43a5cbfe6cfbca5434a8fc422f7703fc40992f197cfe6",
+      "artifact_sha256": {
+        "crop.png": "4042eb8f1349ef971bba2b35e0c20b32378f022b48dd05a486d0f48756ff6d4e",
+        "mask.png": "29c48d05002312f024805062678ecfffb590ba7db9681242898e6f87c7bc859a",
+        "observed.npz": "5416eb1c20dd270525253d86ab93850f8c84b542ca3e613d40eddd329479e8a3",
+        "pose_overlay.png": "a09010b9bf15f4b2a8a0f8f8e73e90f976be83b32acb5459d3685e7209c909d3"
+      },
+      "visual_observations": "The tall CAD projection follows the yellow/blue upright figurine region near the upper-left of the board. Coarse/refined outlines mostly overlap with local edge shifts; dense projections hide some RGB detail, leaving rotation/symmetry correctness unresolved.",
+      "scores": {
+        "coarse_feature_score": 0.5977126359939575,
+        "refined_feature_score": 0.5313979552610427,
+        "geometry_score": 0.4152,
+        "joint_score": 0.13187718278388413
+      },
+      "icp_status": "max_iterations"
+    }
+  ]
+}
