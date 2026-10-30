@@ -53,7 +53,8 @@ Grasp candidates do not establish physical pickup, holding or assembly success.
 | Reusable table-constrained alignment | [CADPointCloudRegistration.py](CADPointCloudRegistration.py) |
 | Corrected scene and task references | [Implemented NIST corrections](experiments/nist_scene_corrections_20261029/README.md): full receiver transforms, finished holes, 20 mm pin goals and mating/protected regions |
 | Grasp inputs and finite-hand geometry | [inputs.py](experiments/cad_grasp_geometry_20261026/inputs.py), [geometry_kernel.py](experiments/cad_grasp_geometry_20261026/geometry_kernel.py), [hand_model.py](experiments/cad_grasp_geometry_20261026/hand_model.py) |
-| Current grasp generation and selection | [Modeled finger-end contacts](experiments/cad_fingertip_contacts_20261029/README.md), [pipeline.py](experiments/cad_fingertip_contacts_20261029/pipeline.py): CAD region rays, static first-contact fitting on original inward finger hull faces, complete-hand checks and deterministic priority selection |
+| Current grasp generation and selection | [Controlled CAD grasp study](experiments/cad_grasp_controlled_20261029/README.md), [pipeline.py](experiments/cad_grasp_controlled_20261029/pipeline.py): bounded task-informed proposals, explicit pad/finger/combined contact policy, separate contact/pickup/final geometry checks and deterministic priority selection |
+| Preserved finger-contact comparison | [Modeled finger-end contacts](experiments/cad_fingertip_contacts_20261029/README.md): the 37/96, 75-valid-pose trial; original inward finger hull faces, static first-contact fitting and unchanged complete hand geometry |
 | Preserved surface-contact baseline | [Surface-contact refinement](experiments/cad_grasp_refinement_20261029/README.md): shared one-degree contact rule, verified round-pin side normals and finite-pad witness correction; the preserved 35/96, 495-valid-pose comparison |
 | Preserved region-guided comparison | [Assembly-guided fingertip selector](experiments/cad_grasp_selection_20261029/README.md): the preceding allowed-patch sampler and fingertip/contact calibration; preserved for the controlled comparison |
 | NIST scenes and reference views | [simulation/nist_task_board_1.py](simulation/nist_task_board_1.py), [simulation/nist_capture.py](simulation/nist_capture.py), [simulation/nist_cad_views.py](simulation/nist_cad_views.py) |
@@ -76,9 +77,12 @@ docs/            Cloud handoff, current protocol context and cleanup record
 outputs/         Mostly local generated data, caches, captures and galleries
 ```
 
-The twenty catalog meshes are included at their existing
+The twenty catalog meshes and the explicitly required receiver/plate references are included at their existing
 `outputs/simulation/nist_task_board_1/assets/meshes/` paths, with conversion
-[provenance](CAD/NIST_ASSET_NOTICE.md). Other `outputs/` content is local except
+[provenance](CAD/NIST_ASSET_NOTICE.md). The derived finished plate keeps its
+recorded `finished_board_20261029/` path. The [receiver manifest](results/grasp/controlled_20261029/receiver_assets_manifest.json)
+lists the eleven receiver/plate geometry and derivation files allowed individually.
+Other `outputs/` content is local except
 the dataset README, small cleanup receipts, and the reviewed
 [October 28 grasp run](outputs/cad_grasp_selection_20261028/runs/20261028T190844Z/README.md) explicitly allowed by
 [.gitignore](.gitignore).
@@ -99,6 +103,26 @@ LIBERO/robosuite remain simulator and Panda dependencies. Their installed robot
 assets and textures do not enable additional object-layout generators.
 
 ## Results available on GitHub
+
+The [October 29 grasp evidence](results/grasp/controlled_20261029/README.md)
+includes the preserved 35/96 support-contact and 37/96 finger-contact trials:
+all per-placement decisions and complete candidate diagnostics, shared task/hand
+references, source/calibration manifests and selected-grasp galleries. Large JSON
+files are gzip copies verified against their exact original byte hashes. These
+are geometry results, not measured pickup or assembly success. The new controlled
+comparison is complete: 1,728 policy-placement records. Its preregistered primary
+combined branch selects **71/96 placements**; over three seeds, task-informed
+combined selects **203/288** versus **131/288** for random combined. Shared benchmark
+wall time is **2249.87 s**, covering all policies and the frozen-angle sweep;
+independent per-policy runtimes were not measured. Read the
+[complete report](results/grasp/controlled_20261029/controlled_trial/REPORT.md) and
+[primary gallery](results/grasp/controlled_20261029/controlled_trial/primary/gallery/index.html).
+
+The primary branch includes 43 pad-mode and 28 finger-mode grasps. Its 56 selected
+finger contact points differ from the detailed visual finger surface by
+0.038–1.327 mm; none is within 1 micrometre. This is disagreement between the
+collision and visual source models, rather than measured physical contact.
+The 43 pad selections are outside that finger-only audit's scope.
 
 The [October 28 grasp-selection run](outputs/cad_grasp_selection_20261028/runs/20261028T190844Z/README.md)
 is published at its original output paths, with all 96 case decisions, candidate
@@ -171,7 +195,7 @@ Keep these claims separate:
   pickup and assembly execution remain paused.
   Historical results and selector sources remain unchanged; the old scene
   source is preserved in a hash-checked snapshot before updating the active file.
-- The current [finger-contact study](experiments/cad_fingertip_contacts_20261029/README.md)
+- The preserved [finger-contact study](experiments/cad_fingertip_contacts_20261029/README.md)
   fits first contact on the saved finger ends rather than extending pad boxes.
   All original hand solids remain present. Its full eight-scene trial selected
   grasps in **37/96 placements**, with **75 valid poses from 9,600 proposals**,
@@ -185,6 +209,25 @@ Keep these claims separate:
   These are geometric results; VLM selection is excluded and pickup/assembly
   execution remain paused. The derived 35/96 baseline has no standalone wall
   time, so these records do not establish a measured speedup against it.
+- The current callable is
+  `experiments.cad_grasp_controlled_20261029.pipeline.select_grasp`, with
+  `strategy='task_informed'` and `mode='combined'` defaults. It retains at most
+  100 complete poses. Task-informed proposals balance allowed surface regions
+  and shaft-length thirds, include pickup-down/final-palm-up approach directions,
+  retain broad angle exploration, and apply a necessary complete-hand table
+  bound before the cap. Full mandatory checks still follow. Combined mode assigns
+  roughly half the raw poses to each contact model before validation; it does
+  not select from the union of two 100-pose pools. A runtime policy evaluates
+  only its assigned contacts. The controlled benchmark separately evaluates
+  both models on the shared bank, so up to 200 underlying candidate evaluations
+  support its three 100-pose policies. Three paired seeds and two proposal
+  strategies define 1,728 policy-placement records across the same 96 placements.
+  Contact, pickup-endpoint, final-endpoint/task and combined availability are
+  reported separately. The fixed-pose angle sensitivity changes validation
+  tolerance only; proposal settings, hand labels, calibration and fitted poses
+  remain fixed. The complete saved-result audit passed; its collision-engine and
+  physical-contact limits remain explicit. No execution or physical contact
+  validation is implied, and VLM selection is excluded.
 - The retained robustness scope is 220 NIST inputs and 2,720 queries.
   Classification accuracy evaluation remains incomplete.
 

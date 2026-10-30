@@ -1,0 +1,173 @@
+{
+  "source": {
+    "task_registry": "explicit caller-supplied corrected registry",
+    "pickup_pose_source": "explicit caller-supplied observed CAD alignment",
+    "table_plane_source": "explicit caller-supplied observation/calibration",
+    "world_T_board": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.065
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.0244958
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "mesh": {
+      "path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\simulation\\nist_task_board_1\\assets\\meshes\\KET16_Square_16mm_m.stl",
+      "sha256": "ff6944b029ae00727bb0ccc1be9b3673d72a3939baf76626085b235f1276d656"
+    },
+    "target_preprocessing": {
+      "part": "KET16_Square_16mm",
+      "method": "unchanged native vertices",
+      "proximity_tolerance_m": 0.0,
+      "merged_close_pair_count": 0,
+      "original_vertex_count": 12,
+      "validation_vertex_count": 12,
+      "triangle_count": 20,
+      "triangle_order_preserved": true,
+      "maximum_vertex_displacement_m": 0.0,
+      "original_CAD_file_modified": false,
+      "native_metric_scale_preserved": true,
+      "earlier_protocol": "experiments/cad_grasp_geometry_20261026/run_trial.py:load_target"
+    },
+    "receivers": [
+      {
+        "path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\simulation\\nist_task_board_1\\assets\\finished_board_20261029\\GMC_Laser_Plate_Finished_m.stl",
+        "sha256": "ccf26f1b8a301a085eefab6715a0630638337d323bab62ac4c1a4ab99861be02",
+        "name": "board",
+        "board_T_mesh": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            -1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "hand_pose_reference": "Panda physical fingertip midpoint; X jaw closing, +Z approach",
+    "final_goal_status": "nominal_CAD_goal_geometry_only",
+    "native_registration_status": "verified_display_geometry_correspondence",
+    "physical_assembly_validated": false,
+    "sampling_region": {
+      "method": "exact task-region triangle clipping and disjoint Boolean partition",
+      "protected_region": {
+        "type": "halfspace",
+        "normal_cad": [
+          -0.0,
+          -0.0,
+          1.0
+        ],
+        "offset_m": -0.00500000037252903,
+        "inequality": "normal@point+offset>=0",
+        "label": "20mm inserted end, including chamfer"
+      },
+      "positive_sampling_region": {
+        "type": "intersection",
+        "regions": [
+          {
+            "type": "face_ids",
+            "face_ids": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19
+            ]
+          }
+        ],
+        "label": "Exposed outward shaft sides",
+        "provenance": {
+          "source": "explicit initial CAD-region annotation",
+          "rule": "outward radial CAD faces, optional reviewed component IDs and housing limits",
+          "radial_normal_tolerance_m": 1e-08,
+          "part_mesh_sha256": "ff6944b029ae00727bb0ccc1be9b3673d72a3939baf76626085b235f1276d656",
+          "reviewed_geometry_basis": "Longitudinal CAD shaft axis; final 20 mm inserted segment is excluded separately by the protected region.",
+          "functional_graspability_validated": false,
+          "full_CAD_must_remain_in_ray_and_collision_checks": true
+        }
+      },
+      "positive_region_provided": true,
+      "boundary_margin_m": 1e-08,
+      "min_sampling_patch_area_m2": 1e-24,
+      "endpoint_source_face_tolerance_m": 1e-08,
+      "original_surface_area_m2": 0.0028670211333937873,
+      "eligible_area_m2": 0.0015599995509295176,
+      "excluded_surface_area_m2": 0.0013070215824642697,
+      "eligible_area_fraction": 0.5441186089489667,
+      "eligible_source_face_count": 8,
+      "sampling_patch_triangle_count": 12,
+      "original_collision_and_ray_mesh_unchanged": true,
+      "semantic_safety_claim": "Only explicitly declared regions are used; nonprotected geometry is not automatically certified safe gripping material.",
+      "mesh_vertex_count": 12,
+      "mesh_face_count": 20,
+      "mesh_vertices_sha256": "40e63f6248d80bd20c633dce8549c105b3c12d38a2051a3f871082bde17e1da8",
+      "mesh_faces_sha256": "d5e7f99b8c54309536cfad573d5d85262096be2bf1b34c818e436abfe7b55ee8"
+    },
+    "pin_tip_depth_below_board_top_m": 0.02,
+    "no_candidate_generation": true,
+    "no_pose_estimation": true,
+    "no_simulator_state_read": true,
+    "no_pickup_or_assembly_execution": true
+  },
+  "contact_model": {
+    "mesh_vertices_sha256": "40e63f6248d80bd20c633dce8549c105b3c12d38a2051a3f871082bde17e1da8",
+    "mesh_faces_sha256": "d5e7f99b8c54309536cfad573d5d85262096be2bf1b34c818e436abfe7b55ee8",
+    "part": "KET16_Square_16mm",
+    "method": "constant-radius straight CAD-side verification; radial normals only inside verified bands",
+    "collision_geometry": "unchanged complete original CAD triangles",
+    "status": "original_triangle_normals",
+    "verified_cylinder_bands": [],
+    "verification_reason": "part is outside the declared circular-side family"
+  },
+  "complete_CAD_vertices": 12,
+  "complete_CAD_triangles": 20,
+  "static_input_preparation_seconds": 0.0058466000482439995,
+  "contact_model_preparation_seconds": 8.539995178580284e-05
+}

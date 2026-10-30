@@ -1,8 +1,10 @@
 # Reviewable research results
 
-This directory contains exact copies of selected saved NIST results for GitHub
-and cloud analysis. No models, fitting, classification evaluation or robot actions
-were run to create the bundle. Originals remain in their study folders.
+This directory contains selected saved NIST results for GitHub and cloud
+analysis. Copies preserve the exact source bytes, including after decompression
+for the explicitly published October 29 grasp banks. No models, fitting,
+classification evaluation or robot actions were run to publish the copies.
+Originals remain in their study folders.
 
 [`bundle_manifest.json`](bundle_manifest.json) records each original path, byte
 count and SHA256. Historical protocols and source locks describe their original
@@ -12,6 +14,7 @@ runs; copying them does not certify the current reorganized checkout as that run
 
 | Evidence | Start here | Detail available |
 |---|---|---|
+| October 29 grasp evidence | [Saved trials and controlled follow-up](grasp/controlled_20261029/README.md) | Preserved 35/96 support-contact and 37/96 finger-contact results, all decisions and complete compressed candidate banks, shared task/contact references, stage counts, source manifests and selected-grasp galleries |
 | October 28 grasp selector | [Published run](../outputs/cad_grasp_selection_20261028/runs/20261028T190844Z/README.md) | All 96 case decisions, 9,600 proposal diagnostics, derived CAD meshes, audits and eight selected-grasp sheets at the original output paths |
 | Earlier CLIP retrieval and DINO selection | [Appearance summary](classification/appearance/summary.json) | Per-object counts, all decisions, paired changes, shortlist retention and within-family errors |
 | DINO plus native-scale depth verification | [Depth summary](classification/depth/summary.json) | Per-task/per-object CSVs, fixed and introduced errors, fitting protocol and illustrated pin cases |
@@ -56,17 +59,29 @@ HTML is a small local viewer whose eight PNGs are included beside it.
   results have a separate publication manifest in the run directory; the
   historical 83-file copy manifest above is unchanged. The current pipeline uses
   geometric priority selection as its final decision and excludes VLM selection.
-  Grasp generation, pickup and assembly remain paused during mating-goal review.
+  Later geometric generation/checking trials are documented in the October 29
+  evidence index. Pickup and assembly execution remain paused.
+- The October 29 publication keeps the 35/96 support result and 37/96 finger
+  result as separate historical trials. The support set combines 72 unchanged
+  cases and 24 corrected round-pin cases, so it has no standalone 96-case wall
+  time. The finger result changes the contact mode and retains 75 valid poses
+  rather than 495; those are not identical-checker counts or physical success
+  rates. The separately declared controlled follow-up reports its own shared
+  conditions. Every publication has a manifest of exact source/stored hashes;
+  the historical 83-file `bundle_manifest.json` remains unchanged.
 - The [retained robustness scope](classification/robustness_scope_only.json)
   contains 220 NIST inputs and 2,720 queries. Its classification accuracy
   evaluation is incomplete; this file is a scope receipt, not accuracy evidence.
 
 ## What stays local
 
-The twenty native-scale CAD catalog meshes are included in Git. Full RGB-D
+The twenty native-scale CAD catalog meshes and the explicitly listed October 29
+receiver/plate references are included in Git. Full RGB-D
 captures, point clouds, complete scene/CAD-render banks, model weights, installed
-third-party environments, exhaustive geometric hypothesis banks and larger
-historical galleries stay in local storage. Their absence in a cloud checkout
+third-party environments, most exhaustive geometric hypothesis banks and larger
+historical galleries stay in local storage. The explicit October 29 publication
+includes its complete grasp candidate banks as verified gzip files. Other missing
+inputs in a cloud checkout
 must be reported explicitly; do not claim to have rerun or inspected missing
 inputs. Selected diagrams and contact-atlas images are included for visual review.
 

@@ -1,0 +1,63 @@
+{
+  "method": "FreeZeV2-base-paper-v1-independent",
+  "mask_configuration": "CNOS-FastSAM-public-BOP23",
+  "dataset": "tless",
+  "object_id": 1,
+  "seed": 0,
+  "cohort": [
+    {"scene_id": 5, "im_id": 7},
+    {"scene_id": 5, "im_id": 20},
+    {"scene_id": 5, "im_id": 25},
+    {"scene_id": 9, "im_id": 0}
+  ],
+  "paths": {
+    "dataset_root": "D:/BOP_SAM3_Pilot/data",
+    "output_root": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/base_v1",
+    "dino_source": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/cache/torch_hub/facebookresearch_dinov2_e1277af2ba9496fbadf7aec6eba56e8d882d1e35",
+    "dino_checkpoint": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/cache/torch_hub/checkpoints/dinov2_vitg14_pretrain.pth",
+    "gedi_source": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/gedi",
+    "gedi_checkpoint": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/gedi/data/chkpts/3dmatch/chkpt.tar",
+    "targets": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/tless_test_targets_bop19.json",
+    "cnos_poses": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/cnos/cam_poses_level1.npy",
+    "bop_toolkit": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/cache/bop_toolkit",
+    "bop_eval_deps": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/cache/bop_eval_deps"
+  },
+  "masks": [{
+    "path": "D:/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/cnos-fastsam_tless-test_8ca61cb0-4472-4f11-bce7-1362a12d396f.json",
+    "segmentor": "cnos-fastsam",
+    "source_id": "BOP23_default_detections_task4:CRC13f07ac2:sha256db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec",
+    "source_kind": "predicted"
+  }],
+  "render": {
+    "views": 162,
+    "resolution": 480,
+    "occupancy": 0.5,
+    "visibility_tolerance_fraction": 0.005,
+    "photometry_assumption": "native vertex colors or gray0.7, two-sided headlight ambient0.4 diffuse0.6, black background"
+  },
+  "cad": {"initial_poisson_points": 20000, "points": 5000, "min_visible_views": 18},
+  "features": {
+    "dino_layer_index": 18,
+    "dino_source_revision_hint": "e1277af2ba9496fbadf7aec6eba56e8d882d1e35",
+    "dino_expected_source_hashes": {
+      "hubconf.py": "e82275b3adcc3631865d1edd4b620b89d42459169acdeb652804cd0eb0fe9615",
+      "dinov2/models/vision_transformer.py": "8dc1e2ededd4893a335aa2f524c15554bcdb14d824e310ca3df825e16081a268"
+    },
+    "layer_selection_is_assumption": true,
+    "pca_components": 64,
+    "gedi_source_sha256": "50f23311ad3173c92f834c637e63c9c0bb6fbd8f12c58dd69773a7aba6350249",
+    "gedi_source_revision": "b3dd86776750d8221f89d39975118da9839b39f7",
+    "aggregation_assumption": "uniform mean of visible rendered descriptors; PCA fit only on selected CAD, no whitening"
+  },
+  "observed": {"grid": 16, "dense_points": 3000},
+  "registration": {
+    "k": 10, "iterations": 10000, "inlier_fraction": 0.03, "seed": 0,
+    "edge_length_ratio": 0.9, "min_triangle_area_ratio": 0.000001,
+    "hypothesis_backend": "torch_cuda", "hypothesis_batch_size": 64, "torch_dtype": "float32",
+    "icp_max_iterations": 30,
+    "icp_translation_tolerance_m": 0.00000001,
+    "icp_rotation_tolerance_rad": 0.0000001,
+    "icp_stop_when_correspondences_stable": true
+  },
+  "candidate_ranking": {"translation_nms_diameter_fraction": 0.1, "nms_distance_is_assumption": true}
+}

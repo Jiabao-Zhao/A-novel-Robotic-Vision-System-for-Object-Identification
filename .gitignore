@@ -54,6 +54,22 @@ venv/
 !/outputs/simulation/nist_task_board_1/assets/meshes/DSUB_Male_m.stl
 !/outputs/simulation/nist_task_board_1/assets/provenance.json
 
+# Required receiver geometry for the reviewed October 29 final-goal checks.
+# These exact existing assets are not duplicated in the result bundles.
+!/outputs/simulation/nist_task_board_1/assets/meshes/BNC_Female_m.stl
+!/outputs/simulation/nist_task_board_1/assets/meshes/DSUB_Female_m.stl
+!/outputs/simulation/nist_task_board_1/assets/meshes/DB_Housing_m.stl
+!/outputs/simulation/nist_task_board_1/assets/meshes/Gear_Shaft_m.stl
+!/outputs/simulation/nist_task_board_1/assets/meshes/Gear_Plate_m.stl
+!/outputs/simulation/nist_task_board_1/assets/meshes/M16_Screw_m.stl
+!/outputs/simulation/nist_task_board_1/assets/meshes/USB_Female_m.stl
+!/outputs/simulation/nist_task_board_1/assets/meshes/Waterproof_Female_m.stl
+!/outputs/simulation/nist_task_board_1/assets/meshes/GMC_Laser_Plate_Virtual_m.stl
+!/outputs/simulation/nist_task_board_1/assets/finished_board_20261029/
+/outputs/simulation/nist_task_board_1/assets/finished_board_20261029/*
+!/outputs/simulation/nist_task_board_1/assets/finished_board_20261029/GMC_Laser_Plate_Finished_m.stl
+!/outputs/simulation/nist_task_board_1/assets/finished_board_20261029/finished_board.json
+
 # Small cleanup receipts document path migrations; no executable cleanup scripts.
 !/outputs/cleanup_20261027/
 /outputs/cleanup_20261027/*
@@ -132,6 +148,23 @@ venv/
 *.tar
 *.tar.gz
 *.7z
+
+# Explicit October 29 grasp evidence: exact original JSON bytes are retained in
+# gzip files with per-file source/stored hashes. Do not expose other pose banks.
+!/results/grasp/controlled_20261029/*/results.json.gz
+!/results/grasp/controlled_20261029/*/cases/N0[0-7]/*/selection.json.gz
+!/results/grasp/controlled_20261029/*/cases/N0[0-7]/*/candidate_diagnostics.json.gz
+
+# Complete controlled comparison: named shared banks and policy selections only.
+!/results/grasp/controlled_20261029/controlled_trial/banks/random/seed_[0-2]/N0[0-7]/*/sampling.json.gz
+!/results/grasp/controlled_20261029/controlled_trial/banks/random/seed_[0-2]/N0[0-7]/*/candidate_diagnostics.json.gz
+!/results/grasp/controlled_20261029/controlled_trial/banks/task_informed/seed_[0-2]/N0[0-7]/*/sampling.json.gz
+!/results/grasp/controlled_20261029/controlled_trial/banks/task_informed/seed_[0-2]/N0[0-7]/*/candidate_diagnostics.json.gz
+!/results/grasp/controlled_20261029/controlled_trial/cases/random/seed_[0-2]/*/N0[0-7]/*/selection.json.gz
+!/results/grasp/controlled_20261029/controlled_trial/cases/task_informed/seed_[0-2]/*/N0[0-7]/*/selection.json.gz
+!/results/grasp/controlled_20261029/controlled_trial/primary/results.json.gz
+!/results/grasp/controlled_20261029/controlled_trial/frozen_angle_sensitivity.json.gz
+!/results/grasp/controlled_20261029/controlled_trial/detailed_surface_audit.json.gz
 
 # These twelve arrays contain derived CAD validation meshes, not captures,
 # feature/pose banks or model weights. Keep their exception limited to this run.

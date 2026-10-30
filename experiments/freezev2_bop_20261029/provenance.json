@@ -1,0 +1,31 @@
+{
+  "method": "FreeZeV2-base-paper-v1-independent",
+  "paper": "https://arxiv.org/pdf/2506.09784",
+  "paper_version": "v1",
+  "original_freeze": "https://arxiv.org/pdf/2312.00947",
+  "third_party_reference": {"url": "https://github.com/tfwang08/FreezeV2-Re", "revision": "12f82a2f8afd435466a87cf2dafce404087aeb3f", "license_found": false, "code_copied": false},
+  "author_project_website": {"url": "https://github.com/andreacaraffa/freeze", "revision": "c59c02f6c5c5447219d2ff2d5f4ef94759d1bbfc", "verified_inference_release": false},
+  "bop_toolkit": {"revision": "cea62d651c7e395b2e1962b9749e4e89693c6ac4", "license": "MIT"},
+  "dino_source": {"revision_hint": "e1277af2ba9496fbadf7aec6eba56e8d882d1e35", "verification": "two configured source files match official pinned blobs; archive has no git metadata", "license": "Apache-2.0"},
+  "gedi_source": {"revision": "b3dd86776750d8221f89d39975118da9839b39f7", "gedi_py_sha256": "50f23311ad3173c92f834c637e63c9c0bb6fbd8f12c58dd69773a7aba6350249", "license_found": false, "external_dependency_only": true},
+  "cnos_camera_source": {"revision": "298d1f3366171464ca271659f0e2f7a6eb8e39b4", "license": "MIT", "sha256": "09bb66da2b71a7ad59ac749b510f277ce99c42240ce9d8237e5ded9181097004"},
+  "target_list": {"dataset_revision": "5fd309a04476a842d93abfb584fba9ee7caecdf1", "sha256": "5ced8796c421baad79816fe905a36fe6ad440efe78cd640d167fc4b8f26c3cfe"},
+  "predicted_masks": {"source": "BOP23 default CNOS-FastSAM T-LESS", "sha256": "db010fbce92149a54ae7a252176d6dee80823353a7e5d704c0f33657c5b1ecec", "variant_parity_with_paper_unresolved": true},
+  "no_model_training": true,
+  "ground_truth_pose_role": "evaluation_only",
+  "reproduction_claim": "independent base implementation; actual frozen DINOv2 giant and GeDi CUDA extraction verified; own pose benchmark and published-performance reproduction require separate measured run receipts",
+  "current_suite": {
+    "protocol": "protocol.json",
+    "run_version": "classic_core_base_v2",
+    "datasets": ["lmo", "tless", "tudl", "icbin", "itodd", "hb", "ycbv"],
+    "assets_manifest": "outputs/freezev2_bop_20261029/assets_manifest.json",
+    "trained_runtime": "outputs/freezev2_bop_20261029/runtime_ready.json",
+    "mask_configuration": "CNOS-FastSAM-public-BOP23",
+    "historical_target_and_mask_fields_above": "initial T-LESS pilot only; suite binds all seven exact files in assets_manifest and each run identity",
+    "public_GT": ["lmo", "tless", "tudl", "icbin", "ycbv"],
+    "private_test_GT": ["itodd", "hb"],
+    "official_GT_selection": "inst_count most-visible GT instances; visib_gt_min=-1",
+    "authors_predictions_evaluated": false,
+    "no_seven_dataset_aggregate_without_all_seven_evaluations": true
+  }
+}

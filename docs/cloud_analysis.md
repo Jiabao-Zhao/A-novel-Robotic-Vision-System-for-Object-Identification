@@ -22,6 +22,17 @@ the saved evidence hashes. The gallery HTML can be opened after cloning; GitHub
 displays the linked PNG sheets directly. Saved observation/calibration inputs
 and installed dependencies outside that run are still required for a rerun.
 
+The [October 29 evidence index](../results/grasp/controlled_20261029/README.md)
+includes complete saved banks for the 35/96 support baseline and 37/96 finger
+trial. Large JSON files are gzip copies with exact original/decompressed hashes,
+not trimmed candidate subsets. Start with each summary, `decisions.csv`, report
+and gallery; read a case's compressed diagnostics only when needed. Shared hand,
+observed-alignment, task-goal and source-contact references and the saved stage
+audit are included. Nine required receiver meshes plus the source virtual plate
+and finished-hole receipt are individually allowed at original asset paths.
+The receiver manifest documents exact roles/hashes. Installed libraries, weights,
+raw captures and all other local assets remain separate requirements.
+
 The pipeline is target-CAD retrieval by cosine similarity, depth localization,
 calibrated RGB crops, DINO/depth matching and CAD alignment, followed by grasp
 research. Some tested fitting and fusion code lives in the historically named
@@ -32,9 +43,9 @@ The current grasp pipeline makes the final selection itself: mandatory geometry
 checks, then moment arm, surface centrality, downward preference and a
 deterministic candidate-ID tie break. VLM ranking/selection is not a pipeline
 stage. Historical VLM studies and captions do not define the current policy.
-The candidate-generation and geometric-selection comparison across eight saved
-NIST scenes is complete. VLM selection is excluded; pickup and assembly execution
-remain paused.
+Earlier candidate-generation and geometric-selection comparisons across eight
+saved NIST scenes are complete; the new controlled comparison is complete (1,728 policy rows).
+VLM selection is excluded; pickup and assembly execution remain paused.
 The [implemented NIST corrections](../experiments/nist_scene_corrections_20261029/README.md)
 supersede the earlier horizontal waterproof reference and wrong USB/DSUB and
 M4/M12 assignments. Current task inputs use 20 mm pin depth and explicit native/
@@ -84,7 +95,7 @@ and [selected-contact/pickup-side gallery](../outputs/cad_grasp_refinement_20261
 The historical October 28 4/96 result used different goals and contact conventions.
 No pickup or assembly improvement is measured by these geometric trials.
 
-The current callable is
+The preserved finger-contact callable is
 `experiments.cad_fingertip_contacts_20261029.pipeline.select_grasp`.
 The [finger-contact revision](../experiments/cad_fingertip_contacts_20261029/README.md)
 uses existing inward-facing triangles near the ends of the saved finger collision
@@ -115,6 +126,44 @@ and [selected contacts with pickup side views](../outputs/cad_fingertip_contacts
 VLM selection is excluded; pickup and assembly execution remain paused.
 The active scene source changed, with exact old bytes retained in a recorded
 hash-checked snapshot. Source CAD assets remain unchanged.
+
+The current callable is
+`experiments.cad_grasp_controlled_20261029.pipeline.select_grasp`.
+It defaults to task-informed proposals and a predefined combined contact policy.
+The controlled experiment compares random and task-informed proposals with pad,
+finger and combined contact policies under three paired seeds. Task-informed
+generation balances allowed components/shaft-length thirds, includes two explicit
+task-related approach directions plus broad angles, and applies a necessary
+complete-hand table bound before retaining at most 100 poses. The same complete
+geometry and mandatory final checks remain in use. Combined mode assigns about
+half the raw poses to each contact model before validation, rather than selecting
+from a union of two already evaluated 100-pose sets.
+
+The callable evaluates at most 100 mode-specific candidates. The comparison
+evaluates both versions of the shared 100-pose bank, so up to 200 underlying
+evaluations support three logical policies. The preregistered 1,728 policy-placement rows
+represent 96 placements, three seeds, two strategies and three policies; they
+are not independent physical trials. Contact, pickup-endpoint, final-goal/task
+and joint pass counts must be read separately. Total benchmark time includes
+all policies and the validation-only sensitivity, not a measured runtime for
+one deployed policy. Calibration and hand-surface labels stay fixed when testing
+0.5/1/2/3/5-degree validation tolerances on the exactly frozen primary random
+finger poses. No retraining or new pose estimation occurs. The audited primary
+combined branch selects 71/96 placements. Across three
+seeds, task-informed combined selects 203/288 versus random combined 131/288.
+Shared benchmark time is 2249.87 s; per-policy elapsed times remain unavailable.
+Read the [full published report](../results/grasp/controlled_20261029/controlled_trial/REPORT.md),
+[all policy decisions](../results/grasp/controlled_20261029/controlled_trial/decisions.csv),
+and [primary gallery](../results/grasp/controlled_20261029/controlled_trial/primary/gallery/index.html).
+The independent audit verifies saved counts, source hashes, rigid transforms,
+priority math and full-hand table distances; it does not rerun or independently
+certify target/receiver collision engines or physical contact.
+The primary selection contains 43 pad and 28 finger-mode grasps. All 56 selected
+finger contact points are 0.038–1.327 mm from the detailed visual finger surface,
+outside its closed solid, with none within 1 micrometre. They match the declared
+collision geometry. This exposes a source-model mismatch; the visual mesh is
+not physical material truth. The 43 pad selections were not assessed by that
+finger-only comparison.
 
 ## Questions the evidence can answer
 

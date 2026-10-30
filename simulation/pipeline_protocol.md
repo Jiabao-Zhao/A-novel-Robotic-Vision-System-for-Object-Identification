@@ -25,13 +25,21 @@ selection is the final decision, not a preliminary ranking for a VLM. Pickup
 and assembly execution remain paused.
 
 The current selector is
-`experiments/cad_fingertip_contacts_20261029/pipeline.py:select_grasp`.
+`experiments/cad_grasp_controlled_20261029/pipeline.py:select_grasp`.
+Its default is the task-informed proposal strategy with a predefined combined
+contact policy. The complete three-seed comparison contains 1,728 policy rows.
+The primary task-informed combined branch selects 71/96 placements; combined
+availability across three seeds is 203/288 for task-informed and 131/288 for random.
+Total shared benchmark wall time is 2249.87 s, not an independent policy
+runtime. The saved-result audit passed; physical success remains unmeasured. The preceding
+`cad_fingertip_contacts_20261029.pipeline.select_grasp` is preserved with its
+37/96 result as the finger-contact comparison.
 The prior `cad_grasp_refinement_20261029.support_pipeline.select_grasp` and its
 35/96 result are preserved as the modeled pad-contact baseline.
 The preceding `experiments/cad_grasp_selection_20261029` implementation is
 preserved as the region-guided comparison and supplies the shared task and
 fingertip calibration helpers.
-The current selector keeps the physical fingertip pose reference separate from
+The finger-contact model keeps the physical fingertip pose reference separate from
 actual modeled contact points on the original inward finger hull faces. Static
 first-contact fitting determines where each jaw first touches the complete CAD;
 it does not simulate closing or move the part. Complete finger/pad/palm geometry
@@ -123,6 +131,49 @@ VLM selection is excluded; pickup, assembly, insertion and release execution
 remain paused. No corrected-scene physics/capture is part of this trial.
 Galleries show selected contacts from above, with optional pickup side views of
 the complete modeled hand and table; they contain no final assembly views.
+
+The controlled revision separates proposal normal tolerance, target-contact
+validation tolerance and fixed hand-surface labeling tolerance. Its main trial
+uses one degree for all three, while a validation-only 0.5/1/2/3/5-degree
+sensitivity reuses the primary random seed's exactly frozen calibration and
+fitted finger poses. It performs no new proposals or fits. Other failed or
+unavailable checks cannot become assumed passes when explaining a rescued pose.
+
+Two proposal strategies share the same 200 surface-origin and ten-orientations-
+per-pair limits, allowed CAD patches and final geometry. The random strategy is
+the reference. Task-informed generation balances mesh components and three equal
+length intervals along the mating axis. It includes projected pickup-down and
+final-palm-up approaches while retaining broad angular exploration, then balances
+the retained pose bank across regions and closing directions. A common necessary
+table bound rejects a pose only if neither the exact pad endpoint bound nor the
+optimistic independent-jaw finger holding bound can clear the table. Full
+complete-hand geometry validation remains mandatory after the 100-pose cap.
+This is an experimental construction, not a claim that the new proposals improve
+assembly or solve physical contact uncertainty.
+
+Each policy evaluates at most 100 complete candidates. Pad mode uses the saved
+finite-pad model; finger mode uses static first contact on the unchanged distal
+inward finger hull faces. Combined mode assigns alternating pad/finger labels
+within balanced proposal groups before validation, giving 50/50 when the bank
+has 100 poses. It is a predefined subset, not a union selected after seeing both
+models' outcomes. The callable evaluates only the requested policy. The benchmark
+evaluates both pad and finger versions of the shared raw bank (up to 200
+underlying evaluations), then replays the combined subset. Its logical per-policy
+budget and actual benchmark work are reported separately.
+
+The preregistered complete comparison contains 96 placements, three paired seeds, two
+proposal strategies and three contact policies: 1,728 policy-placement records.
+This is not 1,728 independent scenes or physical trials. Contact validity combines
+local input/opening/reconstruction/normal/contact-support/closing checks. Pickup
+validity additionally requires table clearance. Final-goal validity additionally
+requires receiver clearance and protected-surface compatibility. Joint validity
+requires all of them. Only explicit passes count; unavailable checks do not pass.
+Local CAD and fixed-final-goal checks may be cached under a full task binding,
+but table clearance and approach preference are recomputed for every observed
+pickup pose. Total benchmark wall time includes all policies, seeds and the
+separate validation-only sweep; independent per-policy elapsed time is not
+measured. No CAD alignment, VLM inference, pickup, assembly, insertion or release
+execution is performed.
 Historical numerical
 results and selector sources remain unchanged. The changed active scene source
 has an exact old snapshot recorded in
