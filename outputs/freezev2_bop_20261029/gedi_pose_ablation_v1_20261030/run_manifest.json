@@ -1,0 +1,101 @@
+{
+  "identity": {
+    "method": "finite-GeDi-rows-controlled-ablation-v1",
+    "sources": {
+      "run_pose_ablation.py": "c3f5e3b956576a47194770aec871122b85a0845305635d908e349185687659cd",
+      "gedi_valid_rows.py": "1454d0287c2dd35a7e52db88256f8afb44a0a2b58a5a08a2cc8249f45b2f5dc0",
+      "visual_ablation.py": "10f4fe0538e6d9f3761f66eaa57e89c5f402e3f0d8df5b436a9d22f0a58eb37e",
+      "pose_alignment.py": "966a36a765052f3347fce650d7177427a141cc9d49b68e169e01dcc29a6d2f02"
+    },
+    "cohort_sha256": "159e79ef634f56a6d8c287a898a570e0984fd058c74b8f12690d43c0be73c3ba",
+    "config_sha256": "ebc4a599ed0081cd1db04e87c3a9fb7da86b14eec940e74602ca5a67bc21ddac",
+    "base_recipe": {
+      "seed": 0,
+      "render": {
+        "views": 162,
+        "resolution": 480,
+        "occupancy": 0.5,
+        "visibility_tolerance_fraction": 0.005,
+        "photometry_assumption": "native vertex colors or gray0.7, two-sided headlight ambient0.4 diffuse0.6, black background",
+        "texture_sampling": "BOP bottom-left UV; bilinear clamped sRGB; original PNG; Open3D native float32 intersections"
+      },
+      "cad": {
+        "initial_poisson_points": 20000,
+        "points": 5000,
+        "min_visible_views": 18
+      },
+      "features": {
+        "dino_layer_index": 18,
+        "dino_source_revision_hint": "e1277af2ba9496fbadf7aec6eba56e8d882d1e35",
+        "dino_expected_source_hashes": {
+          "hubconf.py": "e82275b3adcc3631865d1edd4b620b89d42459169acdeb652804cd0eb0fe9615",
+          "dinov2/models/vision_transformer.py": "8dc1e2ededd4893a335aa2f524c15554bcdb14d824e310ca3df825e16081a268"
+        },
+        "layer_selection_is_assumption": true,
+        "pca_components": 64,
+        "gedi_source_sha256": "50f23311ad3173c92f834c637e63c9c0bb6fbd8f12c58dd69773a7aba6350249",
+        "gedi_source_revision": "b3dd86776750d8221f89d39975118da9839b39f7",
+        "aggregation_assumption": "uniform mean of visible rendered descriptors; PCA fit only on selected CAD, no whitening",
+        "dino_checkpoint_sha256": "baf8467e50af277596bbbafa06887c177ee899ab46033649c383577d7e9309d3",
+        "gedi_checkpoint_sha256": "15723f382ecf60f7efbf9161f70bffda2d1c817025cb0702350baaa04060f5f4",
+        "gedi_sampling_batch_size": 500,
+        "gedi_patch_lrf_points": 4000,
+        "gedi_patch_network_points": 512,
+        "frozen_math_precision": "float32",
+        "tf32_matmul": false,
+        "tf32_cudnn": false
+      },
+      "observed": {
+        "grid": 16,
+        "dense_points": 3000
+      },
+      "registration": {
+        "k": 10,
+        "iterations": 10000,
+        "inlier_fraction": 0.03,
+        "seed": 0,
+        "edge_length_ratio": 0.9,
+        "min_triangle_area_ratio": 1e-06,
+        "hypothesis_backend": "torch_cuda",
+        "hypothesis_batch_size": 64,
+        "torch_dtype": "float32",
+        "icp_max_iterations": 30,
+        "icp_translation_tolerance_m": 1e-08,
+        "icp_rotation_tolerance_rad": 1e-07,
+        "icp_stop_when_correspondences_stable": true
+      },
+      "candidate_ranking": {
+        "translation_nms_diameter_fraction": 0.1,
+        "nms_distance_is_assumption": true
+      }
+    },
+    "frozen_source_manifest_sha256": "237f10948fddc3a02fd42176e5acca3a9db1b7598e5b7a34d6d6766190e85c50",
+    "dino": {
+      "dino_layer_index": 18,
+      "dino_source_revision_hint": "e1277af2ba9496fbadf7aec6eba56e8d882d1e35",
+      "dino_expected_source_hashes": {
+        "hubconf.py": "e82275b3adcc3631865d1edd4b620b89d42459169acdeb652804cd0eb0fe9615",
+        "dinov2/models/vision_transformer.py": "8dc1e2ededd4893a335aa2f524c15554bcdb14d824e310ca3df825e16081a268"
+      },
+      "dino_checkpoint_sha256": "baf8467e50af277596bbbafa06887c177ee899ab46033649c383577d7e9309d3"
+    },
+    "gedi": {
+      "gedi_source_sha256": "50f23311ad3173c92f834c637e63c9c0bb6fbd8f12c58dd69773a7aba6350249",
+      "gedi_source_revision": "b3dd86776750d8221f89d39975118da9839b39f7",
+      "gedi_checkpoint_sha256": "15723f382ecf60f7efbf9161f70bffda2d1c817025cb0702350baaa04060f5f4",
+      "gedi_sampling_batch_size": 500,
+      "gedi_patch_lrf_points": 4000,
+      "gedi_patch_network_points": 512
+    },
+    "baseline_final_results_sha256": "d05a2e2908b2fab5a21cb05c9b68b9e9b9cec18e47206cc143990034dbc0f878",
+    "digest": "88859f7dc53d51af17849d403a8f76157960b78086965611437778eaecb18ed1"
+  },
+  "protocol": "seven fixed original official rows; all failures in evaluation denominator",
+  "CAD_geometry_policy": "full 5000 original CAD points for ICP and geometry score; valid feature subset only for correspondences",
+  "PCA_policy": "fit all original CAD visual rows before GeDi mask; no test observations/GT",
+  "arms": [
+    "repair224",
+    "repair476"
+  ],
+  "public_reference_revision": "12f82a2f8afd435466a87cf2dafce404087aeb3f"
+}

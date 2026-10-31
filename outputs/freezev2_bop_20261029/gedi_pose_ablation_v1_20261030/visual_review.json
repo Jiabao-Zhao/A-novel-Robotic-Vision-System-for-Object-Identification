@@ -1,0 +1,81 @@
+{
+  "reviewed_utc": "2026-10-30T15:45:08.192911+00:00",
+  "reviewer": "Codex visual inspection of actual generated saved-result contact sheets",
+  "GT_pose_comparison": false,
+  "accuracy_claim_from_visuals": false,
+  "contact_manifest_sha256": "eee6eca7bce6adb0b4dac713d18fdad0b61d808a86aa9aeb7e5e74e75efcf521",
+  "reviewed_files": [
+    {
+      "path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\gedi_pose_ablation_v1_20261030\\visuals\\failed_candidate_7748.png",
+      "sha256": "6de9378a3eebf8889cc916076b8d54cca2765491e1482ca81d61caabc80e33c8"
+    },
+    {
+      "path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\gedi_pose_ablation_v1_20261030\\visuals\\retained_pose_comparison_1.png",
+      "sha256": "ffbb53770485f015dc5bfef787460821789f8886204c922f47e0b08f65671ed6"
+    },
+    {
+      "path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\gedi_pose_ablation_v1_20261030\\visuals\\retained_pose_comparison_2.png",
+      "sha256": "4c7ea3a990fa8f061aff6a3e7cfcbee35cfc6578957036b6b48536ed151974a0"
+    }
+  ],
+  "coverage": {
+    "fixed_target_rows": 7,
+    "baseline_selected_poses": 3,
+    "repair224_selected_poses": 7,
+    "repair476_selected_poses": 7,
+    "additional_candidate_7748_status_panel": true
+  },
+  "observations": [
+    {
+      "scene_id": 1,
+      "im_id": 1,
+      "obj_id": 30,
+      "observation": "Both repaired arms project a CAD point cloud over the circular foreground mask. The original baseline had no retained pose. Overlay overlap alone does not establish3D orientation or metric correctness."
+    },
+    {
+      "scene_id": 3,
+      "im_id": 5,
+      "obj_id": 8,
+      "observation": "224 retains baseline mask7325 over lower-left background/fiducial mat;476 selects mask7324 over lower-right background/fiducial mat. Both masks visibly miss the foreground objects; changing CAD resolution does not repair these external mask inputs."
+    },
+    {
+      "scene_id": 3,
+      "im_id": 476,
+      "obj_id": 8,
+      "observation": "Selected mask7747 spans multiple visible parts. Both repaired projections cover that merged region. A numerical descriptor/pose recovery is not evidence that a single instance has been localized correctly."
+    },
+    {
+      "scene_id": 4,
+      "im_id": 0,
+      "obj_id": 28,
+      "observation": "224 selects background/fiducial mask7526 and projects near the right image boundary.476 selects foreground square-object mask7525; its projection overlaps the visible square face. This is an observed candidate-ranking change; official metrics judge pose accuracy."
+    },
+    {
+      "scene_id": 5,
+      "im_id": 7,
+      "obj_id": 1,
+      "observation": "Baseline and224 overlays match, as confirmed separately by exact feature/pose/score comparison.476 changes the point projection. Computationally healthy control is not a ground-truth accuracy label."
+    },
+    {
+      "scene_id": 5,
+      "im_id": 7,
+      "obj_id": 27,
+      "observation": "Both arms retain mask12728 on the elongated object; projected points extend beyond its visible right edge, particularly224. No GT pose is used to interpret or select these outputs."
+    },
+    {
+      "scene_id": 5,
+      "im_id": 20,
+      "obj_id": 1,
+      "observation": "Baseline and224 overlays match the separately verified exact saved pose.476 changes the projection; no pose was chosen based on this visual review."
+    },
+    {
+      "scene_id": 3,
+      "im_id": 476,
+      "obj_id": 8,
+      "candidate_record": 7748,
+      "observation": "Mask/crop depict a background wall.224 fails with no valid RANSAC hypothesis;476 computes a pose but does not select it. The final panel explicitly distinguishes these statuses."
+    }
+  ],
+  "inputs_or_predictions_changed_after_review": false,
+  "selection_policy": "Inspect every fixed retained result plus the recorded failed candidate; no accuracy-based case selection or parameter changes."
+}

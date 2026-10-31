@@ -1,0 +1,151 @@
+{
+  "identity": {
+    "run": "88859f7dc53d51af17849d403a8f76157960b78086965611437778eaecb18ed1",
+    "arm": "repair224",
+    "targets": [
+      {
+        "im_id": 7,
+        "inst_count": 1,
+        "obj_id": 1,
+        "scene_id": 5
+      },
+      {
+        "im_id": 7,
+        "inst_count": 1,
+        "obj_id": 27,
+        "scene_id": 5
+      }
+    ]
+  },
+  "targets": [
+    {
+      "im_id": 7,
+      "inst_count": 1,
+      "obj_id": 1,
+      "scene_id": 5,
+      "status": "completed",
+      "predictions": 1,
+      "candidates": [
+        {
+          "directory": "obj_000001/cnos-fastsam_012696",
+          "candidate_id": "cnos-fastsam:000005:000007:12696",
+          "status": "complete",
+          "sha256": "03b2e01a2c407d407791c63bc2797e03c8024c3b60529cf7d9488fb225867951"
+        }
+      ],
+      "suppressed": [],
+      "rejected": []
+    },
+    {
+      "im_id": 7,
+      "inst_count": 1,
+      "obj_id": 27,
+      "scene_id": 5,
+      "status": "completed",
+      "predictions": 1,
+      "candidates": [
+        {
+          "directory": "obj_000027/cnos-fastsam_012727",
+          "candidate_id": "cnos-fastsam:000005:000007:12727",
+          "status": "complete",
+          "sha256": "623ca6360128a0af121910b3d423fa708d9fc483d373ba686d8547758a9e2aab"
+        },
+        {
+          "directory": "obj_000027/cnos-fastsam_012728",
+          "candidate_id": "cnos-fastsam:000005:000007:12728",
+          "status": "complete",
+          "sha256": "1117552eaa71f813346204cb51437cd8bcd73a9143cade5f2bd91797225234a9"
+        }
+      ],
+      "suppressed": [
+        {
+          "candidate_id": "cnos-fastsam:000005:000007:12727",
+          "input_index": 0,
+          "reason": "instance_count_limit"
+        }
+      ],
+      "rejected": []
+    }
+  ],
+  "predictions": [
+    {
+      "scene_id": 5,
+      "image_id": 7,
+      "object_id": 1,
+      "score": 8.835747942777897e-06,
+      "R_m2c": [
+        [
+          -0.9913868939219712,
+          -0.07819002300776665,
+          -0.10506353726098926
+        ],
+        [
+          -0.09696165982128803,
+          0.9774695299143419,
+          0.18748801192006104
+        ],
+        [
+          0.0880367144119269,
+          0.19606029274455605,
+          -0.9766319155774467
+        ]
+      ],
+      "t_m": [
+        -0.04853802627157499,
+        0.052287685921302354,
+        0.6348111849588425
+      ],
+      "candidate_id": "cnos-fastsam:000005:000007:12696",
+      "image_time_s": 3.052063591999996
+    },
+    {
+      "scene_id": 5,
+      "image_id": 7,
+      "object_id": 27,
+      "score": 0.00013748578301812296,
+      "R_m2c": [
+        [
+          0.08654259375173456,
+          -0.9925060767594289,
+          -0.0862674159942583
+        ],
+        [
+          -0.9887696451500468,
+          -0.09616045065864014,
+          0.11440173319917835
+        ],
+        [
+          -0.12183992899116004,
+          0.07539797957990316,
+          -0.9896818561430215
+        ]
+      ],
+      "t_m": [
+        0.0554010171560104,
+        -0.07020486627523442,
+        0.7717604178333906
+      ],
+      "candidate_id": "cnos-fastsam:000005:000007:12728",
+      "image_time_s": 3.052063591999996
+    }
+  ],
+  "runtime_s": 3.052063591999996,
+  "source": {
+    "rgb": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000005/rgb/000007.png",
+    "depth": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000005/depth/000007.png",
+    "camera": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000005/scene_camera.json",
+    "rgb_sha256": "f1854299ad4053c63d92da2883bb1f7a8175e4e0c31f3fea301f483abea64744",
+    "depth_sha256": "55d0499b516283f45f90ab02c0d2eeb3b6ed911818df6516083c331792e55185",
+    "camera_sha256": "4c1b115bac191cd0cf015301a6c6fcfc6a16cd4a9c621193e1764fc7d58e02b0",
+    "modality": "rgb",
+    "image_mode": "RGB",
+    "image_dtype": "uint8",
+    "depth_mode": "I;16",
+    "depth_dtype": "uint16",
+    "image_size_hw": [
+      540,
+      720
+    ]
+  },
+  "GT_pose_access": false
+}

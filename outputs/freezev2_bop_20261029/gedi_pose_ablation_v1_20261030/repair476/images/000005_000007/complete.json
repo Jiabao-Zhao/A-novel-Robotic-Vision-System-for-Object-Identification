@@ -1,0 +1,151 @@
+{
+  "identity": {
+    "run": "88859f7dc53d51af17849d403a8f76157960b78086965611437778eaecb18ed1",
+    "arm": "repair476",
+    "targets": [
+      {
+        "im_id": 7,
+        "inst_count": 1,
+        "obj_id": 1,
+        "scene_id": 5
+      },
+      {
+        "im_id": 7,
+        "inst_count": 1,
+        "obj_id": 27,
+        "scene_id": 5
+      }
+    ]
+  },
+  "targets": [
+    {
+      "im_id": 7,
+      "inst_count": 1,
+      "obj_id": 1,
+      "scene_id": 5,
+      "status": "completed",
+      "predictions": 1,
+      "candidates": [
+        {
+          "directory": "obj_000001/cnos-fastsam_012696",
+          "candidate_id": "cnos-fastsam:000005:000007:12696",
+          "status": "complete",
+          "sha256": "b179e459c5d8a60a2fc8c9710c4752fcd08ec5995f8481b96bc0cdba383cd49c"
+        }
+      ],
+      "suppressed": [],
+      "rejected": []
+    },
+    {
+      "im_id": 7,
+      "inst_count": 1,
+      "obj_id": 27,
+      "scene_id": 5,
+      "status": "completed",
+      "predictions": 1,
+      "candidates": [
+        {
+          "directory": "obj_000027/cnos-fastsam_012727",
+          "candidate_id": "cnos-fastsam:000005:000007:12727",
+          "status": "complete",
+          "sha256": "3bb05b543476423ce0c2c5cc5e2381888f5c43c87cfa7b6dda33115cfc4bef30"
+        },
+        {
+          "directory": "obj_000027/cnos-fastsam_012728",
+          "candidate_id": "cnos-fastsam:000005:000007:12728",
+          "status": "complete",
+          "sha256": "0b2e25674b36eca525bf873c79f097391872dcc622282d7b4d462013f4432051"
+        }
+      ],
+      "suppressed": [
+        {
+          "candidate_id": "cnos-fastsam:000005:000007:12727",
+          "input_index": 0,
+          "reason": "instance_count_limit"
+        }
+      ],
+      "rejected": []
+    }
+  ],
+  "predictions": [
+    {
+      "scene_id": 5,
+      "image_id": 7,
+      "object_id": 1,
+      "score": 9.037822122463663e-05,
+      "R_m2c": [
+        [
+          0.8208325588525409,
+          0.5639126236067925,
+          0.09075496275407965
+        ],
+        [
+          -0.5484786542289669,
+          0.8225509778614307,
+          -0.15026993935709723
+        ],
+        [
+          -0.1593896991112405,
+          0.07356929900514508,
+          0.9844706608432378
+        ]
+      ],
+      "t_m": [
+        -0.0441236608715432,
+        0.038170278827345264,
+        0.6419153224440177
+      ],
+      "candidate_id": "cnos-fastsam:000005:000007:12696",
+      "image_time_s": 2.1034071289999474
+    },
+    {
+      "scene_id": 5,
+      "image_id": 7,
+      "object_id": 27,
+      "score": 0.00030718001414458356,
+      "R_m2c": [
+        [
+          0.35799899464415413,
+          -0.6256362529870423,
+          -0.6931204792690138
+        ],
+        [
+          -0.892453166080441,
+          -0.011022823608294468,
+          -0.4510053699377617
+        ],
+        [
+          0.27452516494261775,
+          0.7800370352156576,
+          -0.562297214562899
+        ]
+      ],
+      "t_m": [
+        0.026664196744308723,
+        -0.07260464230262838,
+        0.7180477926357989
+      ],
+      "candidate_id": "cnos-fastsam:000005:000007:12728",
+      "image_time_s": 2.1034071289999474
+    }
+  ],
+  "runtime_s": 2.1034071289999474,
+  "source": {
+    "rgb": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000005/rgb/000007.png",
+    "depth": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000005/depth/000007.png",
+    "camera": "/mnt/d/BOP_SAM3_Pilot/data/tless/test_primesense/000005/scene_camera.json",
+    "rgb_sha256": "f1854299ad4053c63d92da2883bb1f7a8175e4e0c31f3fea301f483abea64744",
+    "depth_sha256": "55d0499b516283f45f90ab02c0d2eeb3b6ed911818df6516083c331792e55185",
+    "camera_sha256": "4c1b115bac191cd0cf015301a6c6fcfc6a16cd4a9c621193e1764fc7d58e02b0",
+    "modality": "rgb",
+    "image_mode": "RGB",
+    "image_dtype": "uint8",
+    "depth_mode": "I;16",
+    "depth_dtype": "uint16",
+    "image_size_hw": [
+      540,
+      720
+    ]
+  },
+  "GT_pose_access": false
+}

@@ -1,0 +1,132 @@
+{
+  "GT_role": "evaluation_only",
+  "asset_links": [
+    {
+      "link": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/gedi_pose_ablation_v1_20261030/repair476/evaluation/bop_view/tless/models_eval",
+      "name": "models_eval",
+      "source": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/external/evaluation_models/tless/models_eval"
+    },
+    {
+      "link": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/gedi_pose_ablation_v1_20261030/repair476/evaluation/bop_view/tless/test_primesense",
+      "name": "test_primesense",
+      "source": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/evaluation_view/tless/test_primesense"
+    }
+  ],
+  "cohort_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/experiments/freezev2_gedi_valid_rows_20261030/cohort.json",
+  "command": [
+    "/home/jiabao/.venvs/freezev2-bop-evaluation-20261030/bin/python",
+    "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/cache/bop_toolkit/scripts/eval_bop19_pose.py",
+    "--result_filenames",
+    "freezev2cohort_tless-test.csv",
+    "--results_path",
+    "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/gedi_pose_ablation_v1_20261030/repair476/evaluation/results",
+    "--eval_path",
+    "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/gedi_pose_ablation_v1_20261030/repair476/evaluation/official_evaluation",
+    "--targets_filename",
+    "test_targets_fixed_cohort.json",
+    "--renderer_type",
+    "vispy",
+    "--num_workers",
+    "1"
+  ],
+  "dataset": "tless",
+  "denominator_policy": "All fixed official target rows and inst_count retained, including every failed/blocked/zero-prediction target",
+  "evaluated_csv": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/gedi_pose_ablation_v1_20261030/repair476/evaluation/results/freezev2cohort_tless-test.csv",
+  "evaluator_returncode": 0,
+  "excluded_source_rows_outside_fixed_cohort": 0,
+  "metric_scope": "Fixed diagnostic cohort only; not the full TLESS benchmark or published-performance parity",
+  "metrics": {
+    "bop19_average_recall": 0.051904761904761905,
+    "bop19_average_recall_mspd": 0.02857142857142857,
+    "bop19_average_recall_mssd": 0.0,
+    "bop19_average_recall_vsd": 0.12714285714285714
+  },
+  "missing_prediction_instances": 0,
+  "official_format": "BOP19 localization, VSD/MSSD/MSPD, unchanged cohort inst_count most-visible GT semantics",
+  "per_target_coverage": [
+    {
+      "im_id": 1,
+      "missing_predictions": 0,
+      "obj_id": 30,
+      "requested_instances": 1,
+      "saved_predictions": 1,
+      "scene_id": 1
+    },
+    {
+      "im_id": 5,
+      "missing_predictions": 0,
+      "obj_id": 8,
+      "requested_instances": 1,
+      "saved_predictions": 1,
+      "scene_id": 3
+    },
+    {
+      "im_id": 476,
+      "missing_predictions": 0,
+      "obj_id": 8,
+      "requested_instances": 1,
+      "saved_predictions": 1,
+      "scene_id": 3
+    },
+    {
+      "im_id": 0,
+      "missing_predictions": 0,
+      "obj_id": 28,
+      "requested_instances": 1,
+      "saved_predictions": 1,
+      "scene_id": 4
+    },
+    {
+      "im_id": 7,
+      "missing_predictions": 0,
+      "obj_id": 1,
+      "requested_instances": 1,
+      "saved_predictions": 1,
+      "scene_id": 5
+    },
+    {
+      "im_id": 7,
+      "missing_predictions": 0,
+      "obj_id": 27,
+      "requested_instances": 1,
+      "saved_predictions": 1,
+      "scene_id": 5
+    },
+    {
+      "im_id": 20,
+      "missing_predictions": 0,
+      "obj_id": 1,
+      "requested_instances": 1,
+      "saved_predictions": 1,
+      "scene_id": 5
+    }
+  ],
+  "predictions_origin": "our saved inference; authors' predictions not used",
+  "requested_instances": 7,
+  "runtime_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/evaluation_runtime.json",
+  "runtime_s": 68.3086728180001,
+  "saved_predictions": 7,
+  "schema": "freezev2-fixed-cohort-official-evaluation-v1",
+  "score_file": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/gedi_pose_ablation_v1_20261030/repair476/evaluation/official_evaluation/freezev2cohort_tless-test/scores_bop19.json",
+  "score_sha256": "b6d74fcc85b3a7455d130edfb7955aa58796342279e7cbe1b4582ab4a111e34c",
+  "source_csv": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/gedi_pose_ablation_v1_20261030/repair476/freezev2cohort_tless-test.csv",
+  "source_pins": {
+    "cohort_sha256": "159e79ef634f56a6d8c287a898a570e0984fd058c74b8f12690d43c0be73c3ba",
+    "cohort_targets_sha256": "bcf85e5e16f7d3c122d9f1367c9584bcdb374155519fd7a5863f45ca5b66b96c",
+    "evaluated_csv_sha256": "f1b30b3fa768a476c6fe90e7d9a956eaf96433150d6592a32858f0cc97cdb235",
+    "frozen_helpers_manifest_sha256": "237f10948fddc3a02fd42176e5acca3a9db1b7598e5b7a34d6d6766190e85c50",
+    "helper_sha256": "b0fafe1628bc9852505d9cbc0784f54e3528824f70d0e04feefaffb145fdd7af",
+    "input_csv_sha256": "f1b30b3fa768a476c6fe90e7d9a956eaf96433150d6592a32858f0cc97cdb235",
+    "official_script_sha256": "953a016e47a31ed05a5032302b8154722049d8dd953aeb7794ecedbf607bfcce",
+    "official_targets_sha256": "5ced8796c421baad79816fe905a36fe6ad440efe78cd640d167fc4b8f26c3cfe",
+    "runtime_sha256": "8a8a080f8470e55f237c285748521d747eb8fbe688b6b48a966a0fef8735932e",
+    "toolkit_revision": "cea62d651c7e395b2e1962b9749e4e89693c6ac4"
+  },
+  "status": "complete",
+  "target_images": 6,
+  "target_rows": 7,
+  "target_rows_without_predictions": 0,
+  "targets_path": "/mnt/d/GitHub/A-novel-Robotic-Vision-System-for-Object-Identification/outputs/freezev2_bop_20261029/gedi_pose_ablation_v1_20261030/repair476/evaluation/bop_view/tless/test_targets_fixed_cohort.json",
+  "timing_scope": "CSV timings are preserved. A filtered full-scene baseline may include work outside this cohort; do not treat these as controlled cohort runtime comparisons.",
+  "visib_gt_min": -1
+}

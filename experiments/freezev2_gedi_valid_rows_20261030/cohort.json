@@ -1,0 +1,285 @@
+{
+  "schema": "freezev2-gedi-finite-row-fixed-cohort-v1",
+  "created_utc": "2026-10-30T15:20:27.157574+00:00",
+  "dataset": "tless",
+  "task": "BOP19 model-based 6D localization, diagnostic subset of official object-image targets",
+  "scope": "Seven explicitly selected object-image rows, not all targets in the six images and not the complete TLESS benchmark. Every selected official inst_count is retained; failed/blocked predictions stay in the evaluation denominator.",
+  "selection_uses_GT_poses_or_metric_scores": false,
+  "selection_policy": "Fixed recorded numerical failures plus lexicographic execution-valid controls, selected before running the repaired method. Baseline completion is computational validity, not GT accuracy.",
+  "official_targets": {
+    "path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\external\\tless_test_targets_bop19.json",
+    "repo_relative_path": "outputs/freezev2_bop_20261029/external/tless_test_targets_bop19.json",
+    "sha256": "5ced8796c421baad79816fe905a36fe6ad440efe78cd640d167fc4b8f26c3cfe",
+    "total_object_image_rows": 4904
+  },
+  "baseline_run": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2",
+  "baseline_method_digest": "6f3f47c445366db882b1cb30d73968053354b7ced69bff3c7765e144e557ccbc",
+  "mask_source": "CNOS-FastSAM-public-BOP23, unchanged public predicted mask records",
+  "expected": {
+    "target_rows": 7,
+    "requested_instances": 7,
+    "unique_images": 6,
+    "required_CAD_ids": [
+      1,
+      8,
+      27,
+      28,
+      30
+    ]
+  },
+  "targets": [
+    {
+      "im_id": 1,
+      "inst_count": 1,
+      "obj_id": 30,
+      "scene_id": 1
+    },
+    {
+      "im_id": 5,
+      "inst_count": 1,
+      "obj_id": 8,
+      "scene_id": 3
+    },
+    {
+      "im_id": 476,
+      "inst_count": 1,
+      "obj_id": 8,
+      "scene_id": 3
+    },
+    {
+      "im_id": 0,
+      "inst_count": 1,
+      "obj_id": 28,
+      "scene_id": 4
+    },
+    {
+      "im_id": 7,
+      "inst_count": 1,
+      "obj_id": 1,
+      "scene_id": 5
+    },
+    {
+      "im_id": 7,
+      "inst_count": 1,
+      "obj_id": 27,
+      "scene_id": 5
+    },
+    {
+      "im_id": 20,
+      "inst_count": 1,
+      "obj_id": 1,
+      "scene_id": 5
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "blocked_CAD27_first_official_target",
+      "target": {
+        "im_id": 7,
+        "inst_count": 1,
+        "obj_id": 27,
+        "scene_id": 5
+      },
+      "selection_reason": "Lexicographically first official (scene_id,im_id) target for CAD27; original CAD extraction blocked.",
+      "baseline": {
+        "ledger_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\tless\\images\\000005_000007\\partial.json",
+        "ledger_repo_relative_path": "outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tless/images/000005_000007/partial.json",
+        "ledger_sha256": "3db07d8fada9cb816c17eca32640ce3de756363005dabb5a15c0950ff92c50bd",
+        "target_status": "blocked",
+        "target_reason": "CAD_onboarding_unavailable",
+        "candidate_count": null,
+        "valid_predictions": 0,
+        "candidates": []
+      }
+    },
+    {
+      "case_id": "blocked_CAD28_first_official_target",
+      "target": {
+        "im_id": 0,
+        "inst_count": 1,
+        "obj_id": 28,
+        "scene_id": 4
+      },
+      "selection_reason": "Lexicographically first official (scene_id,im_id) target for CAD28; original CAD extraction blocked.",
+      "baseline": {
+        "ledger_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\tless\\images\\000004_000000\\partial.json",
+        "ledger_repo_relative_path": "outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tless/images/000004_000000/partial.json",
+        "ledger_sha256": "e1823787f3d360d8898d6b3ca09dc5d8a31399d7404e025bf8559bc324af3097",
+        "target_status": "blocked",
+        "target_reason": "CAD_onboarding_unavailable",
+        "candidate_count": null,
+        "valid_predictions": 0,
+        "candidates": []
+      }
+    },
+    {
+      "case_id": "blocked_CAD30_first_official_target",
+      "target": {
+        "im_id": 1,
+        "inst_count": 1,
+        "obj_id": 30,
+        "scene_id": 1
+      },
+      "selection_reason": "Lexicographically first official (scene_id,im_id) target for CAD30; original CAD extraction blocked.",
+      "baseline": {
+        "ledger_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\tless\\images\\000001_000001\\partial.json",
+        "ledger_repo_relative_path": "outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tless/images/000001_000001/partial.json",
+        "ledger_sha256": "c86349748c177e327739f3923acc85efc567e68100e56ad991699044bffb7191",
+        "target_status": "blocked",
+        "target_reason": "CAD_onboarding_unavailable",
+        "candidate_count": null,
+        "valid_predictions": 0,
+        "candidates": []
+      }
+    },
+    {
+      "case_id": "observed_GeDi_nonfinite_witness",
+      "target": {
+        "im_id": 476,
+        "inst_count": 1,
+        "obj_id": 8,
+        "scene_id": 3
+      },
+      "selection_reason": "Previously recorded CPU-proven planar-LRF candidate failure, CNOS record7747, query32; selected without GT.",
+      "baseline": {
+        "ledger_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\tless\\images\\000003_000476\\complete.json",
+        "ledger_repo_relative_path": "outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tless/images/000003_000476/complete.json",
+        "ledger_sha256": "e205d24530981b0fbf6f33581dcd0fc43351d87dc9c75d30969910956d4cb02e",
+        "target_status": "failed",
+        "target_reason": "fewer_valid_distinct_poses_than_requested",
+        "candidate_count": 2,
+        "valid_predictions": 0,
+        "candidates": [
+          {
+            "candidate_id": "cnos-fastsam:000003:000476:7747",
+            "record_index": 7747,
+            "status": "failed",
+            "reason": "original GeDi extraction failed (check local neighborhoods, LRF degeneracy and CUDA ops): ValueError: trained GeDi descriptors must contain finite numeric values",
+            "diagnostic_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\tless\\images\\000003_000476\\obj_000008\\cnos-fastsam_007747\\diagnostic.json",
+            "diagnostic_repo_relative_path": "outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tless/images/000003_000476/obj_000008/cnos-fastsam_007747/diagnostic.json",
+            "diagnostic_sha256": "549f14253420c5b57f48be1dac3ade7446abc3b5874ebe413a705c9d9a8bc53b"
+          },
+          {
+            "candidate_id": "cnos-fastsam:000003:000476:7748",
+            "record_index": 7748,
+            "status": "failed",
+            "reason": "no_valid_hypothesis",
+            "diagnostic_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\tless\\images\\000003_000476\\obj_000008\\cnos-fastsam_007748\\diagnostic.json",
+            "diagnostic_repo_relative_path": "outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tless/images/000003_000476/obj_000008/cnos-fastsam_007748/diagnostic.json",
+            "diagnostic_sha256": "f72ae0d1b657a496efeccf50bed42ee3f687ff3c576c6e98b31117650133193d"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "healthy_CAD1_fixed_control_1",
+      "target": {
+        "im_id": 7,
+        "inst_count": 1,
+        "obj_id": 1,
+        "scene_id": 5
+      },
+      "selection_reason": "Previously fixed trained validation frame and first sorted official CAD1 target; original extraction/inference completed, with no GT-accuracy selection.",
+      "baseline": {
+        "ledger_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\tless\\images\\000005_000007\\partial.json",
+        "ledger_repo_relative_path": "outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tless/images/000005_000007/partial.json",
+        "ledger_sha256": "3db07d8fada9cb816c17eca32640ce3de756363005dabb5a15c0950ff92c50bd",
+        "target_status": "completed",
+        "target_reason": null,
+        "candidate_count": 1,
+        "valid_predictions": 1,
+        "candidates": [
+          {
+            "candidate_id": "cnos-fastsam:000005:000007:12696",
+            "record_index": 12696,
+            "status": "complete",
+            "reason": null,
+            "diagnostic_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\tless\\images\\000005_000007\\obj_000001\\cnos-fastsam_012696\\diagnostic.json",
+            "diagnostic_repo_relative_path": "outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tless/images/000005_000007/obj_000001/cnos-fastsam_012696/diagnostic.json",
+            "diagnostic_sha256": "8c93a02689a7d4b66b41f665530ec7cc2097cdea8aa1333f81d1b410b34b8453"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "healthy_CAD1_fixed_control_2",
+      "target": {
+        "im_id": 20,
+        "inst_count": 1,
+        "obj_id": 1,
+        "scene_id": 5
+      },
+      "selection_reason": "Previously fixed trained validation frame and second sorted official CAD1 target; original extraction/inference completed, with no GT-accuracy selection.",
+      "baseline": {
+        "ledger_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\tless\\images\\000005_000020\\partial.json",
+        "ledger_repo_relative_path": "outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tless/images/000005_000020/partial.json",
+        "ledger_sha256": "556c4b0264305385951d05ad74640ad181ae82b920a62d4595e10b3faf9680de",
+        "target_status": "completed",
+        "target_reason": null,
+        "candidate_count": 1,
+        "valid_predictions": 1,
+        "candidates": [
+          {
+            "candidate_id": "cnos-fastsam:000005:000020:10596",
+            "record_index": 10596,
+            "status": "complete",
+            "reason": null,
+            "diagnostic_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\tless\\images\\000005_000020\\obj_000001\\cnos-fastsam_010596\\diagnostic.json",
+            "diagnostic_repo_relative_path": "outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tless/images/000005_000020/obj_000001/cnos-fastsam_010596/diagnostic.json",
+            "diagnostic_sha256": "423808537db0828b90bb9b0999d6e0be1af6dd42662d9c45bcb6c9a9b2b1c7f8"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "healthy_CAD8_first_completed_control",
+      "target": {
+        "im_id": 5,
+        "inst_count": 1,
+        "obj_id": 8,
+        "scene_id": 3
+      },
+      "selection_reason": "Lexicographically first official CAD8 target whose original target ledger records completed computation; selected by execution validity, never pose quality.",
+      "baseline": {
+        "ledger_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\tless\\images\\000003_000005\\complete.json",
+        "ledger_repo_relative_path": "outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tless/images/000003_000005/complete.json",
+        "ledger_sha256": "02e6ea29f6ce0bdadb5a6cf08b8f85a8e01c6443ddddaa669ee9076c75704446",
+        "target_status": "completed",
+        "target_reason": null,
+        "candidate_count": 2,
+        "valid_predictions": 1,
+        "candidates": [
+          {
+            "candidate_id": "cnos-fastsam:000003:000005:7324",
+            "record_index": 7324,
+            "status": "complete",
+            "reason": null,
+            "diagnostic_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\tless\\images\\000003_000005\\obj_000008\\cnos-fastsam_007324\\diagnostic.json",
+            "diagnostic_repo_relative_path": "outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tless/images/000003_000005/obj_000008/cnos-fastsam_007324/diagnostic.json",
+            "diagnostic_sha256": "3b68f74e68b3e0bb4315439a7d0f3411daf1e0cf849474014cf8bfe4eb6a6dda"
+          },
+          {
+            "candidate_id": "cnos-fastsam:000003:000005:7325",
+            "record_index": 7325,
+            "status": "complete",
+            "reason": null,
+            "diagnostic_path": "D:\\GitHub\\A-novel-Robotic-Vision-System-for-Object-Identification\\outputs\\freezev2_bop_20261029\\classic_core_base_v2\\datasets\\tless\\images\\000003_000005\\obj_000008\\cnos-fastsam_007325\\diagnostic.json",
+            "diagnostic_repo_relative_path": "outputs/freezev2_bop_20261029/classic_core_base_v2/datasets/tless/images/000003_000005/obj_000008/cnos-fastsam_007325/diagnostic.json",
+            "diagnostic_sha256": "ae99e95b0ccb528c89ed08b2aa6b128cf617f2b8dab6d2dc4280328a8d409630"
+          }
+        ]
+      }
+    }
+  ],
+  "evaluation_contract": {
+    "toolkit_revision": "cea62d651c7e395b2e1962b9749e4e89693c6ac4",
+    "visib_gt_min": -1,
+    "localization_instance_policy": "Unchanged inst_count most-visible GT, evaluation-only",
+    "custom_targets_payload": "Serialize targets list verbatim as the custom BOP target JSON; pass its filename to eval_bop19_pose.py --targets_filename in an isolated evaluation view.",
+    "assert_each_threshold_score_targets_count": 7,
+    "metric": "Official BOP average of VSD/MSSD/MSPD threshold recalls on these seven requested instances",
+    "ancillary_metric_warning": "Do not call mean_obj_recall a five-CAD cohort macro: pinned toolkit initializes all30 dataset object IDs. BOP19 final score uses global recall, which must have targets_count7.",
+    "baseline_comparison": "Filter saved baseline CSV to exact selected target keys, preserving pose values, scores, failures and original per-image runtime. Evaluate baseline and repaired CSVs against the same custom target list.",
+    "unseen_other_targets": "Other official rows in the same images are outside this explicitly labeled diagnostic subset; do not silently include them or claim full-image/full-dataset scores."
+  }
+}
